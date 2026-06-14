@@ -310,6 +310,23 @@ footer a:hover { color: var(--green); }
     into this toolkit. The architecture of how Defender checks, what it trusts, and where
     the seams are.
   </p>
+
+  <div class="term" data-title="highlights">
+<span class="out-green">  [SYSTEM]   Replaced a LocalSystem service binary as a standard user.</span>
+<span class="out-green">             No admin creds. No UAC. Full SYSTEM token on reboot.</span>
+<span class="out"></span>
+<span class="out-amber">  [MSRC]     Defender tamper protection blind spot: hardware breakpoints</span>
+<span class="out-amber">             bypass AMSI + ETW without modifying a single byte of memory.</span>
+<span class="out-amber">             No behavioral rule exists for SetThreadContext on debug registers.</span>
+<span class="out"></span>
+<span class="out-cyan">  [CWE-427]  User-writable directories in the machine-level SYSTEM PATH.</span>
+<span class="out-cyan">             Third-party installers created a system-wide privesc vector.</span>
+<span class="out"></span>
+<span class="out">  [CWE-732]  Vendor hardened DLL loading with manifest redirection</span>
+<span class="out">             but left the service binary itself writable by everyone.</span>
+<span class="out">             Hardened the windows. Left the front door open.</span>
+  </div>
+
   <p>
     <strong>Target environment:</strong> Windows 11 Home 24H2, standard user context,
     Defender RTP enabled, tamper protection varies by machine. All testing on
