@@ -324,6 +324,9 @@ footer a:hover { color: var(--green); }
 <span class="out-cyan">  [CWE-427]  User-writable directories in the machine-level SYSTEM PATH.</span>
 <span class="out-cyan">             Third-party installers created a system-wide privesc vector.</span>
 <span class="out"></span>
+<span class="out-amber">  [PHANTOM]  Microsoft Office service delay-loads a DLL that doesn't exist</span>
+<span class="out-amber">             anywhere on disk. User-owned PATH dir fills the void. SYSTEM.</span>
+<span class="out"></span>
 <span class="out">  [CWE-732]  Vendor hardened DLL loading with manifest redirection</span>
 <span class="out">             but left the service binary itself writable by everyone.</span>
 <span class="out">             Hardened the windows. Left the front door open.</span>
@@ -340,7 +343,8 @@ footer a:hover { color: var(--green); }
 <span class="out">OPERATOR:        VADER (george wu / 22DIV)</span>
 <span class="out">AUTHORISATION:   CSEC academic research, own hardware</span>
 <span class="out">DISCLOSURE:      Responsible disclosure via MSRC</span>
-<span class="out">FINDINGS:        52+ (30 TOCTOU + 22 rootkit phase)</span>
+<span class="out">MSRC CASE:       <span class="out-amber">VULN-195458 (SUBMITTED 2026-06-16)</span></span>
+<span class="out">FINDINGS:        53 (30 TOCTOU + 23 privesc/recon phase)</span>
   </div>
 </section>
 
@@ -808,13 +812,14 @@ footer a:hover { color: var(--green); }
 <span class="out">  via novel attack vector discovered through this research</span>
 <span class="out">  Reported via MSRC/MITRE -> CVE assigned -> george wu credited</span>
 <span class="out"></span>
-<span class="out-green">  SYSTEM captured:  #42 Wondershare binary replacement (CWE-732)</span>
+<span class="out-green">  SYSTEM captured:  #53 Wondershare binary replacement (CWE-732)</span>
 <span class="out-green">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
 <span class="out"></span>
+<span class="out-green">  MSRC filed:</span>
+<span class="out-green">    #36 -> VULN-195458  Tamper Protection HWBP bypass (90-day embargo)</span>
 <span class="out-amber">  CVE submissions ready:</span>
-<span class="out-amber">    #36 -> MSRC   Tamper Protection bypass — under coordinated disclosure</span>
-<span class="out-amber">    #49 -> MITRE  PATH injection, CWE-426 — vendor disclosure pending (60-70%)</span>
-<span class="out-amber">    #42 -> Vendor Wondershare service binary, CWE-732 (60-70%)</span>
+<span class="out-amber">    #53 -> MITRE  NativePushService LPE, CWE-732 — report written</span>
+<span class="out-amber">    #49 -> MITRE  PATH injection, CWE-426 — canary-tested, pending</span>
 <span class="out"></span>
 <span class="out-cyan">  Moonshot:</span>
 <span class="out-cyan">    VADER-PRIME cldflt race -> print processor -> SYSTEM (15-25%)</span>
@@ -828,7 +833,7 @@ footer a:hover { color: var(--green); }
   </div>
 
   <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
-    52+ findings across 14 engagements. Every technique built from scratch against live
+    53 findings across 14 engagements. One MSRC case filed. Every technique built from scratch against live
     defenses. The wall held where it was supposed to. The gaps are where it wasn't looking.
     The defeats mapped the architecture. The architecture informed the pivots.
   </p>

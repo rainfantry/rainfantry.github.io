@@ -4,7 +4,7 @@
 
 Security research against live Windows 11 defenses. CSEC student. Sydney.
 
-46 findings across 12 engagements. Every technique built from first principles against Defender with Real-Time Protection enabled on my own hardware. Responsible disclosure via MSRC.
+50 findings across 13 engagements. Every technique built from first principles against Defender with Real-Time Protection enabled on my own hardware. Responsible disclosure via MSRC.
 
 ---
 
@@ -19,6 +19,8 @@ Security research against live Windows 11 defenses. CSEC student. Sydney.
 - **Vendor hardened the wrong layer** — target service had manifest-based DLL redirection locking all imports to System32. They hardened the windows but left the front door open: the exe itself was writable by everyone.
 
 - **User-writable directories in the machine SYSTEM PATH** — third-party installers placed user-owned directories into the machine-level PATH. Any SYSTEM process searching PATH for a DLL finds attacker-controlled territory first. (CWE-427, MSRC potential)
+
+- **Phantom DLL in first-party Microsoft service** — Office ClickToRunSvc (LocalSystem, auto-start) delay-loads a DLL that doesn't exist anywhere on disk. User-owned PATH directory fills the void. (CWE-427, MSRC high)
 
 - **Defender's ML has a ~15 minute blind spot** — first deployment of a payload survives static analysis. Cloud/ML catches up retroactively but the binary is already planted and grandfathered.
 
