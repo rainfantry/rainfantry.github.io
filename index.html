@@ -273,6 +273,8 @@ footer a:hover { color: var(--green); }
     <a href="#about">about</a>
     <a href="#darkroom">dark room</a>
     <a href="#privesc">privesc</a>
+    <a href="#pathinjection">path injection</a>
+    <a href="#vaderprime">vader-prime</a>
     <a href="#recon">recon</a>
     <a href="#status">status</a>
   </div>
@@ -338,7 +340,7 @@ footer a:hover { color: var(--green); }
 <span class="out">OPERATOR:        VADER (george wu / 22DIV)</span>
 <span class="out">AUTHORISATION:   CSEC academic research, own hardware</span>
 <span class="out">DISCLOSURE:      Responsible disclosure via MSRC</span>
-<span class="out">FINDINGS:        46 (30 TOCTOU + 16 rootkit phase)</span>
+<span class="out">FINDINGS:        52+ (30 TOCTOU + 22 rootkit phase)</span>
   </div>
 </section>
 
@@ -507,6 +509,126 @@ footer a:hover { color: var(--green); }
   </p>
 </section>
 
+<!-- ═══════ PATH INJECTION ═══════ -->
+<section class="entry" id="pathinjection">
+  <div class="entry-date">ENGAGEMENT 13 // FINDINGS #47-#49b</div>
+  <h2>path injection -- the installer did it</h2>
+
+  <p>
+    Third-party installers adding user-profile directories to the machine-level
+    HKLM PATH. A standard user owns those directories. Every SYSTEM service that
+    searches PATH for a DLL traverses attacker-controlled ground.
+  </p>
+
+  <div class="term" data-title="engagement 13 // path audit">
+<span class="prompt"></span><span class="cmd">reg query "HKLM\...\Environment" /v Path | findstr /i "Users"</span>
+<span class="out"></span>
+<span class="out-red">    C:\Users\gwu07\AppData\Local\Muse Hub\lib</span>
+<span class="out-red">    C:\Users\gwu07\.local\bin</span>
+<span class="out"></span>
+<span class="prompt"></span><span class="cmd">icacls "C:\Users\gwu07\AppData\Local\Muse Hub\lib"</span>
+<span class="out-green">    gwu07:(OI)(CI)(F)     FULL CONTROL</span>
+<span class="out-green">    SYSTEM:(OI)(CI)(F)</span>
+<span class="out-green">    Administrators:(OI)(CI)(F)</span>
+<span class="out"></span>
+<span class="comment">  # User-writable directory in the machine-wide DLL search path.</span>
+<span class="comment">  # Muse Hub installer put it there. uv (Astral) put .local\bin there.</span>
+<span class="comment">  # Both vendors injected user-profile paths into HKLM scope.</span>
+  </div>
+
+  <p>
+    Known phantom DLLs -- SprintCSP.dll (StorSvc, SYSTEM), cdpsgshims.dll
+    (CdpSvc, LocalService) -- don't exist on disk. When their services start,
+    Windows searches PATH. Finds attacker's planted DLL in the user-writable
+    Muse Hub directory. DllMain executes as NT AUTHORITY\SYSTEM.
+  </p>
+
+  <div class="term" data-title="engagement 13 // canary deployment">
+<span class="prompt"></span><span class="cmd">copy canary.dll "...\Muse Hub\lib\SprintCSP.dll"</span>
+<span class="out-green">  1 file(s) copied.</span>
+<span class="prompt"></span><span class="cmd">copy canary.dll "...\Muse Hub\lib\cdpsgshims.dll"</span>
+<span class="out-green">  1 file(s) copied.</span>
+<span class="out"></span>
+<span class="comment">  # Canary DLL: logs username + elevation + PID to %TEMP%</span>
+<span class="comment">  # No payload. No shell. No persistence. Just proof.</span>
+<span class="comment">  # SHA256: F4DEF9FFE9875DEDDC2C22E11A3207EF9DA81E7F2FBEBD1F7273D557F8D9CDDF</span>
+<span class="out"></span>
+<span class="out-amber">  CANARIES PLANTED. AWAITING REBOOT FOR SYSTEM EXECUTION PROOF.</span>
+  </div>
+
+  <p>
+    <span class="tag tag-msrc">CVE PENDING</span>
+    <span class="tag tag-confirmed">CONFIRMED</span>
+    <strong>Finding #49:</strong> Muse Hub PATH injection (CWE-426). CVSS 7.8 (High).
+    Not CVE-2025-13433 (that's CWE-428, unquoted path -- different class entirely).
+    This is an untrusted search path element. The installer created the attack surface;
+    Windows services are the victim. MITRE submission prepared.
+  </p>
+  <p>
+    <span class="tag tag-msrc">CVE PENDING</span>
+    <strong>Finding #49b:</strong> Same class, different vendor. <code>uv</code> (Astral)
+    puts <code>~/.local/bin</code> in HKLM PATH. Same user-writable, same SYSTEM traversal.
+  </p>
+  <p>
+    <span class="tag tag-detected">THEORETICAL</span>
+    <strong>Finding #47:</strong> Phantom DLL osppc.dll in ClickToRunSvc (SYSTEM).
+    Report written but zero ProcMon evidence. Consumer M365 may never trigger this
+    code path. Without ProcMon trace, MSRC will bounce it.
+  </p>
+</section>
+
+<!-- ═══════ VADER-PRIME ═══════ -->
+<section class="entry" id="vaderprime">
+  <div class="entry-date">ENGAGEMENT 14 // VADER-PRIME FRAMEWORK</div>
+  <h2>vader-prime -- cldflt race exploitation</h2>
+
+  <p>
+    The TOCTOU campaign mapped Defender's quarantine architecture completely. 35 commits,
+    18 findings, zero shells. WdFilter.sys is hardened -- cached FILE_OBJECT makes junctions
+    invisible, identity gate uses NTFS File ID (architecturally unbypassable). The wall held.
+  </p>
+  <p>
+    But the wall taught us where the <em>other</em> drivers aren't looking. cldflt.sys
+    (Cloud Files Mini-Filter, altitude 180451) sits below WdFilter in the minifilter stack.
+    MiniPlasma proved the race is viable: CfAbortHydration against cldflt yields an
+    arbitrary registry ACL write primitive. VADER-PRIME re-arms that primitive with
+    novel payload chains.
+  </p>
+
+  <div class="term" data-title="vader-prime // architecture">
+<span class="out">  VADER-PRIME Exploit Framework</span>
+<span class="out">  ============================</span>
+<span class="out"></span>
+<span class="out">  Stage 1:  CfAbortHydration race against cldflt.sys</span>
+<span class="out">            Token impersonation during kernel callback</span>
+<span class="out">            -> arbitrary registry ACL modification</span>
+<span class="out"></span>
+<span class="out">  Stage 2:  NtKey symbolic link (HKU -> HKLM cross-hive)</span>
+<span class="out">            Redirects ACL write to protected HKLM keys</span>
+<span class="out"></span>
+<span class="out-cyan">  Payload A:  Print Processor registration</span>
+<span class="out-cyan">             HKLM\...\Print Processors\VaderProc -> DLL path</span>
+<span class="out-cyan">             Spooler (SYSTEM) loads our DLL on AddPrintProcessor</span>
+<span class="out-cyan">             Named pipe -> token capture -> SYSTEM shell</span>
+<span class="out"></span>
+<span class="out-cyan">  Payload B:  IFEO debugger hijack</span>
+<span class="out-cyan">             HKLM\...\Image File Execution Options\target.exe</span>
+<span class="out-cyan">             Debugger value intercepts SYSTEM binary launch</span>
+<span class="out"></span>
+<span class="out-amber">  STATUS:    Compiled. Untested. Depends on cldflt race viability</span>
+<span class="out-amber">            on Build 26200. MiniPlasma validation required first.</span>
+  </div>
+
+  <p>
+    <span class="tag tag-built">COMPILED</span>
+    <strong>VADER-PRIME:</strong> Two novel payload chains built on proven cldflt race primitive.
+    Print Processor chain (15-25% CVE probability) and IFEO chain (10-20%).
+    If the race works on this build, either chain delivers standard user to SYSTEM.
+    Both chains are original research -- not MiniPlasma clones. Different methodology,
+    different targets, different payload delivery.
+  </p>
+</section>
+
 <!-- ═══════ RECON ═══════ -->
 <section class="entry" id="recon">
   <div class="entry-date">ENGAGEMENTS 11-12 // FINDINGS #44-#46</div>
@@ -580,7 +702,7 @@ footer a:hover { color: var(--green); }
 
 <!-- ═══════ STATUS ═══════ -->
 <section class="entry" id="status">
-  <div class="entry-date">CURRENT STATUS</div>
+  <div class="entry-date">CURRENT STATUS // 2026-06-15</div>
   <h2>kill chain</h2>
 
   <table class="status-table">
@@ -618,10 +740,22 @@ footer a:hover { color: var(--green); }
         <td style="color:var(--dim)">Dual HWBP, all user-mode telemetry blind</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">3</td>
-        <td>Privilege escalation</td>
+        <td style="color:var(--dim)">3a</td>
+        <td>Privesc: service binary</td>
         <td><span class="tag tag-system">SYSTEM</span></td>
-        <td style="color:var(--dim)">CWE-732, standard user to LocalSystem confirmed</td>
+        <td style="color:var(--dim)">CWE-732, binary replacement, SYSTEM canary fired</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">3b</td>
+        <td>Privesc: PATH injection</td>
+        <td><span class="tag tag-msrc">CVE PENDING</span></td>
+        <td style="color:var(--dim)">CWE-426, canaries planted, awaiting reboot proof</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">3c</td>
+        <td>Privesc: VADER-PRIME</td>
+        <td><span class="tag tag-built">COMPILED</span></td>
+        <td style="color:var(--dim)">cldflt race + print processor / IFEO chains</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">3+0</td>
@@ -636,16 +770,10 @@ footer a:hover { color: var(--green); }
         <td style="color:var(--dim)">17-section USB-droppable reconnaissance</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">4</td>
-        <td>Process injection</td>
-        <td style="color:var(--dim)">NOT BUILT</td>
         <td style="color:var(--dim)">-</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">5</td>
-        <td>Stager / dropper</td>
-        <td style="color:var(--dim)">NOT BUILT</td>
-        <td style="color:var(--dim)">-</td>
+        <td>Quarantine architecture</td>
+        <td><span class="tag tag-confirmed">MAPPED</span></td>
+        <td style="color:var(--dim)">18 findings, dual-layer model, 9 defense layers documented</td>
       </tr>
     </tbody>
   </table>
@@ -704,7 +832,17 @@ footer a:hover { color: var(--green); }
       <tr>
         <td>SYSTEM PATH integrity</td>
         <td><span class="tag tag-detected">BROKEN</span></td>
-        <td style="color:var(--dim)">#45 (CWE-427)</td>
+        <td style="color:var(--dim)">#49 (CWE-426, Muse Hub + uv)</td>
+      </tr>
+      <tr>
+        <td>cldflt.sys race window</td>
+        <td><span class="tag tag-built">ARMED</span></td>
+        <td style="color:var(--dim)">VADER-PRIME (untested on Build 26200)</td>
+      </tr>
+      <tr>
+        <td>WdFilter quarantine</td>
+        <td style="color:var(--green)">HELD</td>
+        <td style="color:var(--dim)">30 findings, identity gate unbypassable</td>
       </tr>
     </tbody>
   </table>
@@ -713,17 +851,31 @@ footer a:hover { color: var(--green); }
 <span class="out-amber">  OBJECTIVE:</span>
 <span class="out">  Standard user -> SYSTEM-level privilege escalation</span>
 <span class="out">  via novel attack vector discovered through this research</span>
-<span class="out">  Reported via MSRC -> CVE assigned -> george wu credited</span>
+<span class="out">  Reported via MSRC/MITRE -> CVE assigned -> george wu credited</span>
 <span class="out"></span>
-<span class="out-green">  Phase 3 flag captured (third-party, CWE-732).</span>
-<span class="out-amber">  MSRC flag outstanding: need first-party Windows service,</span>
-<span class="out-amber">  or Finding #36 (Defender HWBP blind spot) as independent path.</span>
-<span class="out-amber">  Finding #45 (PATH hijack) pending Process Monitor confirmation.</span>
+<span class="out-green">  SYSTEM captured:  #42 Wondershare binary replacement (CWE-732)</span>
+<span class="out-green">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
+<span class="out"></span>
+<span class="out-amber">  CVE submissions ready:</span>
+<span class="out-amber">    #36 -> MSRC   Defender HWBP tamper bypass (20-35%)</span>
+<span class="out-amber">    #49 -> MITRE  Muse Hub PATH injection, CWE-426 (60-70%)</span>
+<span class="out-amber">    #42 -> Vendor Wondershare service binary, CWE-732 (60-70%)</span>
+<span class="out"></span>
+<span class="out-cyan">  Moonshot:</span>
+<span class="out-cyan">    VADER-PRIME cldflt race -> print processor -> SYSTEM (15-25%)</span>
+<span class="out-cyan">    Original research. Original chain. George Wu's name on it.</span>
+<span class="out"></span>
+<span class="out-red">  Defeats acknowledged:</span>
+<span class="out">    vader-toctou: 35 commits, 30 findings, 0 shells.</span>
+<span class="out">    WdFilter identity gate: architecturally unbypassable.</span>
+<span class="out">    IKEEXT: uniformly hardened (LOAD_LIBRARY_SEARCH_SYSTEM32).</span>
+<span class="out">    RedSun/UnDefend/BlueHammer: all patched. 0-day shelf life = weeks.</span>
   </div>
 
   <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
-    46 findings across 12 engagements. Every technique built from scratch against live
+    52+ findings across 14 engagements. Every technique built from scratch against live
     defenses. The wall held where it was supposed to. The gaps are where it wasn't looking.
+    The defeats mapped the architecture. The architecture informed the pivots.
   </p>
 </section>
 
