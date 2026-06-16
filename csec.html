@@ -463,10 +463,12 @@ body::after {
 
     <div class="brief">
       <h2>// MISSION BRIEF</h2>
-      <p>Complete kill chain curriculum for the <strong>Cert IV Cyber Security (22603VIC)</strong> program. 26 chapters across 6 volumes &mdash; from C programming foundations through enterprise threat emulation. Every chapter is field manual format: direct, annotated, no filler.</p>
+      <p>Complete kill chain curriculum for the <strong>Cert IV Cyber Security (22603VIC)</strong> program. 42 chapters across 10 volumes &mdash; from Windows fundamentals and TOCTOU exploit mechanics through enterprise threat emulation. Every chapter is field manual format: direct, annotated, no filler.</p>
       <p><strong>The doctrine:</strong> understand the system, build the tools, execute the chain, document everything.</p>
       <div class="pipeline">
-        <span class="step">FOUNDATIONS</span>
+        <span class="step">MISSION</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">EXPLOIT</span>
         <span class="arrow">&rarr;</span>
         <span class="step">ARSENAL</span>
         <span class="arrow">&rarr;</span>
@@ -476,24 +478,24 @@ body::after {
         <span class="arrow">&rarr;</span>
         <span class="step">WARFARE</span>
       </div>
-      <p>Scope: <strong>Windows offensive security</strong> &mdash; reverse shells, process injection, privilege escalation, lateral movement, evasion, social engineering, CTF execution, and enterprise red team emulation.</p>
+      <p>Scope: <strong>Windows offensive security</strong> &mdash; TOCTOU race conditions, reverse shells, process injection, privilege escalation, lateral movement, evasion, social engineering, CTF execution, and enterprise red team emulation.</p>
     </div>
 
     <div class="stats">
       <div class="stat-box">
-        <span class="stat-num">26</span>
+        <span class="stat-num">42</span>
         <span class="stat-label">CHAPTERS</span>
       </div>
       <div class="stat-box">
-        <span class="stat-num">26</span>
+        <span class="stat-num">42</span>
         <span class="stat-label">COMPLETE</span>
       </div>
       <div class="stat-box">
-        <span class="stat-num">6</span>
+        <span class="stat-num">10</span>
         <span class="stat-label">VOLUMES</span>
       </div>
       <div class="stat-box">
-        <span class="stat-num">11749</span>
+        <span class="stat-num">15542</span>
         <span class="stat-label">LINES WRITTEN</span>
       </div>
     </div>
@@ -502,32 +504,44 @@ body::after {
     <div class="volume">
       <div class="vol-header">
         <span class="vol-num">VOL I</span>
-        <span class="vol-title">FOUNDATIONS &mdash; Programming &amp; System Theory</span>
-        <span class="vol-sub">4/4 COMPLETE</span>
+        <span class="vol-title">OPERATION VADER &mdash; Mission &amp; Windows Fundamentals</span>
+        <span class="vol-sub">6/6 COMPLETE</span>
       </div>
       <ul class="chapters">
-        <li class="available" onclick="loadChapter(1)">
+        <li class="available" onclick="loadChapter(1)" style="cursor:pointer">
           <span class="ch-num">01</span>
-          <span class="ch-title">C Programming Primer &mdash; The Language of Exploitation</span>
-          <span class="ch-sub">preprocessor, pointers, structs, WinMain, Win32 types</span>
+          <span class="ch-title">Mission Brief &mdash; Operation VADER OPORD</span>
+          <span class="ch-sub">TOCTOU overview, kill chain, training syllabus</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(2)">
+        <li class="available" onclick="loadChapter(2)" style="cursor:pointer">
           <span class="ch-num">02</span>
-          <span class="ch-title">Windows Internals &mdash; Know Your Battlefield</span>
-          <span class="ch-sub">user/kernel mode, NT API, PE format, kernel objects</span>
+          <span class="ch-title">Dev Environment &mdash; Setting Up The Armoury</span>
+          <span class="ch-sub">VS Build Tools, cl.exe, compiler flags, project structure</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(3)">
+        <li class="available" onclick="loadChapter(3)" style="cursor:pointer">
           <span class="ch-num">03</span>
-          <span class="ch-title">Networking Concepts &mdash; TCP/IP For Red Teams</span>
-          <span class="ch-sub">sockets, Winsock, 3-way handshake, port selection, VNC/RDP</span>
+          <span class="ch-title">Handles &amp; Objects &mdash; Your Grip On The Weapon</span>
+          <span class="ch-sub">kernel handle tables, object types, CreateFile basics, error codes</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(4)">
+        <li class="available" onclick="loadChapter(4)" style="cursor:pointer">
           <span class="ch-num">04</span>
-          <span class="ch-title">Compilation &amp; Build Ops &mdash; Forging The Weapons</span>
-          <span class="ch-sub">MSVC pipeline, optimization flags, security mitigations, binary stripping</span>
+          <span class="ch-title">Filesystem &amp; Paths &mdash; The Patrol Route</span>
+          <span class="ch-sub">path resolution chain, DOS vs NT namespace, MFT, reparse points, filter drivers</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(5)" style="cursor:pointer">
+          <span class="ch-num">05</span>
+          <span class="ch-title">CreateFile Deep Dive &mdash; The Primary Weapon System</span>
+          <span class="ch-sub">all 7 parameters, 5 exploit configurations, sync vs async</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(6)" style="cursor:pointer">
+          <span class="ch-num">06</span>
+          <span class="ch-title">DeviceIoControl &mdash; The Fire Command</span>
+          <span class="ch-sub">IOCTL codes, FSCTL_SET_REPARSE_POINT, FSCTL_REQUEST_BATCH_OPLOCK</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
       </ul>
@@ -537,38 +551,26 @@ body::after {
     <div class="volume">
       <div class="vol-header">
         <span class="vol-num">VOL II</span>
-        <span class="vol-title">SHADOW ARSENAL &mdash; Tool Documentation</span>
-        <span class="vol-sub">5/5 COMPLETE</span>
+        <span class="vol-title">EXPLOIT MECHANICS &mdash; Race Condition Arsenal</span>
+        <span class="vol-sub">3/3 COMPLETE</span>
       </div>
       <ul class="chapters">
-        <li class="available" onclick="loadChapter(5)">
-          <span class="ch-num">05</span>
-          <span class="ch-title">Shadow Shell &mdash; The Reverse Connection</span>
-          <span class="ch-sub">Winsock reverse shell, connect-back, GUI subsystem hiding</span>
-          <span class="status status-complete">COMPLETE</span>
-        </li>
-        <li class="available" onclick="loadChapter(6)">
-          <span class="ch-num">06</span>
-          <span class="ch-title">Process Injection &mdash; Theory &amp; Practice</span>
-          <span class="ch-sub">classic DLL injection, reflective, hollowing, APC, thread hijack</span>
-          <span class="status status-complete">COMPLETE</span>
-        </li>
-        <li class="available" onclick="loadChapter(7)">
+        <li class="available" onclick="loadChapter(7)" style="cursor:pointer">
           <span class="ch-num">07</span>
-          <span class="ch-title">DLL Injector &mdash; Code Injection</span>
-          <span class="ch-sub">OpenProcess, VirtualAllocEx, WriteProcessMemory, CreateRemoteThread</span>
+          <span class="ch-title">Async I/O &mdash; The Radio Receiver</span>
+          <span class="ch-sub">OVERLAPPED, Windows events, WaitForSingleObject, QPC timing</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(8)">
+        <li class="available" onclick="loadChapter(8)" style="cursor:pointer">
           <span class="ch-num">08</span>
-          <span class="ch-title">Payload DLL &mdash; The Warhead</span>
-          <span class="ch-sub">DllMain, DLL_PROCESS_ATTACH, reverse shell launch, VNC callback</span>
+          <span class="ch-title">Oplocks &mdash; The Claymore</span>
+          <span class="ch-sub">batch oplock break mechanism, kernel hold pattern, sharing requirements</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(9)">
+        <li class="available" onclick="loadChapter(9)" style="cursor:pointer">
           <span class="ch-num">09</span>
-          <span class="ch-title">Shadow Token &mdash; Privilege Escalation</span>
-          <span class="ch-sub">SeDebugPrivilege, token theft, SYSTEM process scanning, SAM dump</span>
+          <span class="ch-title">NTFS Junctions &mdash; The Road Sign Swap</span>
+          <span class="ch-sub">transparent redirect, no admin required, reparse buffer, cross-privilege</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
       </ul>
@@ -578,32 +580,38 @@ body::after {
     <div class="volume">
       <div class="vol-header">
         <span class="vol-num">VOL III</span>
-        <span class="vol-title">GHOST OPERATIONS &mdash; Persistence &amp; Evasion</span>
-        <span class="vol-sub">4/4 COMPLETE</span>
+        <span class="vol-title">THE TARGET &mdash; Defender &amp; TOCTOU</span>
+        <span class="vol-sub">5/5 COMPLETE</span>
       </div>
       <ul class="chapters">
-        <li class="available" onclick="loadChapter(10)">
+        <li class="available" onclick="loadChapter(10)" style="cursor:pointer">
           <span class="ch-num">10</span>
-          <span class="ch-title">Shadow Evasion &mdash; Blinding The EDR</span>
-          <span class="ch-sub">Defender service freeze, registry exclusions, signature corruption</span>
+          <span class="ch-title">Defender Architecture &mdash; Know Thy Enemy</span>
+          <span class="ch-sub">MsMpEng.exe, WdFilter.sys, RTP pipeline, scan-to-quarantine flow</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(11)">
+        <li class="available" onclick="loadChapter(11)" style="cursor:pointer">
           <span class="ch-num">11</span>
-          <span class="ch-title">Ghost Service &mdash; The Persistent Backdoor</span>
-          <span class="ch-sub">Windows Service installation, SYSTEM persistence, service masquerade</span>
+          <span class="ch-title">TOCTOU Theory &mdash; The Ambush Doctrine</span>
+          <span class="ch-sub">race condition fundamentals, check-use gap, timing analysis</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(12)">
+        <li class="available" onclick="loadChapter(12)" style="cursor:pointer">
           <span class="ch-num">12</span>
-          <span class="ch-title">Shadow Lateral &mdash; Network Movement</span>
-          <span class="ch-sub">SMB admin shares, remote service creation, file copy, cleanup</span>
+          <span class="ch-title">The Chain &mdash; Full Operations Order</span>
+          <span class="ch-sub">complete exploit chain, oplock+junction combo, SYSTEM redirect</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(13)">
+        <li class="available" onclick="loadChapter(13)" style="cursor:pointer">
           <span class="ch-num">13</span>
-          <span class="ch-title">OPSEC Tradecraft &mdash; Operational Security</span>
-          <span class="ch-sub">digital footprint, anti-forensics, log clearing, artifact cleanup</span>
+          <span class="ch-title">RPC Attack Surface &mdash; Enemy Comms Intercepted</span>
+          <span class="ch-sub">236-procedure RPC interface, IDL reverse engineering</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(14)" style="cursor:pointer">
+          <span class="ch-num">14</span>
+          <span class="ch-title">Reverse Shell &mdash; The Callback Mechanism</span>
+          <span class="ch-sub">Winsock connect-back, hidden cmd.exe, payload delivery</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
       </ul>
@@ -613,38 +621,20 @@ body::after {
     <div class="volume">
       <div class="vol-header">
         <span class="vol-num">VOL IV</span>
-        <span class="vol-title">KILL CHAIN &mdash; Full Chain Operations</span>
-        <span class="vol-sub">5/5 COMPLETE</span>
+        <span class="vol-title">POST-EXPLOIT &mdash; Beyond TOCTOU</span>
+        <span class="vol-sub">2/2 COMPLETE</span>
       </div>
       <ul class="chapters">
-        <li class="available" onclick="loadChapter(14)">
-          <span class="ch-num">14</span>
-          <span class="ch-title">CSEC Curriculum Overview &mdash; The Integrated Textbook</span>
-          <span class="ch-sub">13-chapter theory from memory to defense, CODE_DOCS integration</span>
-          <span class="status status-complete">COMPLETE</span>
-        </li>
-        <li class="available" onclick="loadChapter(15)">
+        <li class="available" onclick="loadChapter(15)" style="cursor:pointer">
           <span class="ch-num">15</span>
-          <span class="ch-title">Kill Chain Master Runbook &mdash; 9-Step Execution</span>
-          <span class="ch-sub">TEST chain, REAL chain, troubleshooting, cleanup, AutoChain</span>
+          <span class="ch-title">Beyond TOCTOU &mdash; The Rootkit Phase</span>
+          <span class="ch-sub">HWBP bypass, phantom DLLs, service ACLs, 17 vectors audited</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(16)">
+        <li class="available" onclick="loadChapter(16)" style="cursor:pointer">
           <span class="ch-num">16</span>
-          <span class="ch-title">Assessment Completion Guide &mdash; UnDefend &amp; YellowKey</span>
-          <span class="ch-sub">lab VM walkthroughs, exact compilation, EDR deception</span>
-          <span class="status status-complete">COMPLETE</span>
-        </li>
-        <li class="available" onclick="loadChapter(17)">
-          <span class="ch-num">17</span>
-          <span class="ch-title">Recreation Spec &mdash; Cold Rebuild From Scratch</span>
-          <span class="ch-sub">environment stamp, build matrix, verification checklists</span>
-          <span class="status status-complete">COMPLETE</span>
-        </li>
-        <li class="available" onclick="loadChapter(18)">
-          <span class="ch-num">18</span>
-          <span class="ch-title">Viability Assessment &mdash; Honest Defense Analysis</span>
-          <span class="ch-sub">what survives production, Tamper Protection, Credential Guard</span>
+          <span class="ch-title">Glossary &mdash; Military-to-Technical Field Reference</span>
+          <span class="ch-sub">70+ term mappings, 8 categories, signals intelligence</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
       </ul>
@@ -654,32 +644,32 @@ body::after {
     <div class="volume">
       <div class="vol-header">
         <span class="vol-num">VOL V</span>
-        <span class="vol-title">FIELD OPERATIONS &mdash; CTF &amp; Deployment</span>
+        <span class="vol-title">FOUNDATIONS &mdash; Programming &amp; System Theory</span>
         <span class="vol-sub">4/4 COMPLETE</span>
       </div>
       <ul class="chapters">
-        <li class="available" onclick="loadChapter(19)">
+        <li class="available" onclick="loadChapter(17)" style="cursor:pointer">
+          <span class="ch-num">17</span>
+          <span class="ch-title">C Programming Primer &mdash; The Language of Exploitation</span>
+          <span class="ch-sub">preprocessor, pointers, structs, WinMain, Win32 types</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(18)" style="cursor:pointer">
+          <span class="ch-num">18</span>
+          <span class="ch-title">Windows Internals &mdash; Know Your Battlefield</span>
+          <span class="ch-sub">user/kernel mode, NT API, PE format, kernel objects</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(19)" style="cursor:pointer">
           <span class="ch-num">19</span>
-          <span class="ch-title">Tactical Operations Guide &mdash; Plan to Codebase</span>
-          <span class="ch-sub">week-by-week lab manual, reverse shell, buffer overflow, DNS tunneling</span>
+          <span class="ch-title">Networking Concepts &mdash; TCP/IP For Red Teams</span>
+          <span class="ch-sub">sockets, Winsock, 3-way handshake, port selection</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(20)">
+        <li class="available" onclick="loadChapter(20)" style="cursor:pointer">
           <span class="ch-num">20</span>
-          <span class="ch-title">CTF Execution Playbook &mdash; Final Demonstration</span>
-          <span class="ch-sub">5-phase demo script, C2 commands, evasion FAQ, foothold setup</span>
-          <span class="status status-complete">COMPLETE</span>
-        </li>
-        <li class="available" onclick="loadChapter(21)">
-          <span class="ch-num">21</span>
-          <span class="ch-title">Cross-Network Operations &mdash; Tunneling &amp; Callback</span>
-          <span class="ch-sub">ngrok tunneling, TCP callback, cross-network reverse shell</span>
-          <span class="status status-complete">COMPLETE</span>
-        </li>
-        <li class="available" onclick="loadChapter(22)">
-          <span class="ch-num">22</span>
-          <span class="ch-title">Self-Teaching Roadmap &mdash; 7-Level Curriculum</span>
-          <span class="ch-sub">from Cert IV to red teamer, resources, build projects per level</span>
+          <span class="ch-title">Compilation &amp; Build Ops &mdash; Forging The Weapons</span>
+          <span class="ch-sub">MSVC pipeline, optimization flags, binary stripping</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
       </ul>
@@ -689,30 +679,182 @@ body::after {
     <div class="volume">
       <div class="vol-header">
         <span class="vol-num">VOL VI</span>
+        <span class="vol-title">SHADOW ARSENAL &mdash; Tool Documentation</span>
+        <span class="vol-sub">5/5 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(21)" style="cursor:pointer">
+          <span class="ch-num">21</span>
+          <span class="ch-title">Shadow Shell &mdash; The Reverse Connection</span>
+          <span class="ch-sub">Winsock reverse shell, connect-back, GUI subsystem hiding</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(22)" style="cursor:pointer">
+          <span class="ch-num">22</span>
+          <span class="ch-title">Process Injection &mdash; Theory &amp; Practice</span>
+          <span class="ch-sub">classic DLL injection, reflective, hollowing, APC, thread hijack</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(23)" style="cursor:pointer">
+          <span class="ch-num">23</span>
+          <span class="ch-title">DLL Injector &mdash; Code Injection</span>
+          <span class="ch-sub">OpenProcess, VirtualAllocEx, WriteProcessMemory, CreateRemoteThread</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(24)" style="cursor:pointer">
+          <span class="ch-num">24</span>
+          <span class="ch-title">Payload DLL &mdash; The Warhead</span>
+          <span class="ch-sub">DllMain, DLL_PROCESS_ATTACH, reverse shell launch, VNC callback</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(25)" style="cursor:pointer">
+          <span class="ch-num">25</span>
+          <span class="ch-title">Shadow Token &mdash; Privilege Escalation</span>
+          <span class="ch-sub">SeDebugPrivilege, token theft, SYSTEM scanning, SAM dump</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME VII -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL VII</span>
+        <span class="vol-title">GHOST OPERATIONS &mdash; Persistence &amp; Evasion</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(26)" style="cursor:pointer">
+          <span class="ch-num">26</span>
+          <span class="ch-title">Shadow Evasion &mdash; Blinding The EDR</span>
+          <span class="ch-sub">Defender service freeze, registry exclusions, signature corruption</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(27)" style="cursor:pointer">
+          <span class="ch-num">27</span>
+          <span class="ch-title">Ghost Service &mdash; The Persistent Backdoor</span>
+          <span class="ch-sub">Windows Service masquerade, SYSTEM persistence, boot survival</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(28)" style="cursor:pointer">
+          <span class="ch-num">28</span>
+          <span class="ch-title">Shadow Lateral &mdash; Network Movement</span>
+          <span class="ch-sub">SMB admin shares, remote service creation, file copy, cleanup</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(29)" style="cursor:pointer">
+          <span class="ch-num">29</span>
+          <span class="ch-title">OPSEC Tradecraft &mdash; Operational Security</span>
+          <span class="ch-sub">digital footprint, anti-forensics, log clearing, artifact cleanup</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME VIII -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL VIII</span>
+        <span class="vol-title">KILL CHAIN &mdash; Full Chain Operations</span>
+        <span class="vol-sub">5/5 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(30)" style="cursor:pointer">
+          <span class="ch-num">30</span>
+          <span class="ch-title">CSEC Curriculum Overview &mdash; The Integrated Textbook</span>
+          <span class="ch-sub">13-chapter theory, CODE_DOCS integration</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(31)" style="cursor:pointer">
+          <span class="ch-num">31</span>
+          <span class="ch-title">Kill Chain Master Runbook &mdash; 9-Step Execution</span>
+          <span class="ch-sub">TEST chain, REAL chain, troubleshooting, AutoChain</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(32)" style="cursor:pointer">
+          <span class="ch-num">32</span>
+          <span class="ch-title">Assessment Completion &mdash; UnDefend &amp; YellowKey</span>
+          <span class="ch-sub">lab VM walkthroughs, exact compilation, EDR deception</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(33)" style="cursor:pointer">
+          <span class="ch-num">33</span>
+          <span class="ch-title">Recreation Spec &mdash; Cold Rebuild From Scratch</span>
+          <span class="ch-sub">environment stamp, build matrix, verification checklists</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(34)" style="cursor:pointer">
+          <span class="ch-num">34</span>
+          <span class="ch-title">Viability Assessment &mdash; Honest Defense Analysis</span>
+          <span class="ch-sub">what survives production, Tamper Protection, Credential Guard</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME IX -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL IX</span>
+        <span class="vol-title">FIELD OPERATIONS &mdash; CTF &amp; Deployment</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(35)" style="cursor:pointer">
+          <span class="ch-num">35</span>
+          <span class="ch-title">Tactical Operations &mdash; Plan to Codebase</span>
+          <span class="ch-sub">week-by-week lab manual, buffer overflow, DNS tunneling</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(36)" style="cursor:pointer">
+          <span class="ch-num">36</span>
+          <span class="ch-title">CTF Execution Playbook &mdash; Final Demonstration</span>
+          <span class="ch-sub">5-phase demo, C2 commands, evasion FAQ, foothold setup</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(37)" style="cursor:pointer">
+          <span class="ch-num">37</span>
+          <span class="ch-title">Cross-Network Operations &mdash; Tunneling &amp; Callback</span>
+          <span class="ch-sub">ngrok tunneling, TCP callback, cross-network shell</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(38)" style="cursor:pointer">
+          <span class="ch-num">38</span>
+          <span class="ch-title">Self-Teaching Roadmap &mdash; 7-Level Curriculum</span>
+          <span class="ch-sub">Cert IV to red teamer, resources, build projects</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME X -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL X</span>
         <span class="vol-title">WARFARE DOCTRINE &mdash; Social Engineering &amp; Advanced</span>
         <span class="vol-sub">4/4 COMPLETE</span>
       </div>
       <ul class="chapters">
-        <li class="available" onclick="loadChapter(23)">
-          <span class="ch-num">23</span>
+        <li class="available" onclick="loadChapter(39)" style="cursor:pointer">
+          <span class="ch-num">39</span>
           <span class="ch-title">ASF Social Engineering &mdash; Adversarial Survival Framework</span>
-          <span class="ch-sub">pretexts, trust calibration, body language, phishing delivery, LNK spoofs</span>
+          <span class="ch-sub">pretexts, trust calibration, phishing, LNK spoofs</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(24)">
-          <span class="ch-num">24</span>
+        <li class="available" onclick="loadChapter(40)" style="cursor:pointer">
+          <span class="ch-num">40</span>
           <span class="ch-title">DataTrust Presentation &mdash; Speaking Script</span>
-          <span class="ch-sub">16-slide presentation, NIST CSF, ACSC Essential Eight, case studies</span>
+          <span class="ch-sub">16-slide presentation, NIST CSF, ACSC Essential Eight</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(25)">
-          <span class="ch-num">25</span>
+        <li class="available" onclick="loadChapter(41)" style="cursor:pointer">
+          <span class="ch-num">41</span>
           <span class="ch-title">Semester 2 Vulnerability Analysis &mdash; Four Exploits</span>
-          <span class="ch-sub">RedSun TOCTOU, GreenPlasma CTFMON, MiniPlasma Cloud Filter, BlueHammer SAM</span>
+          <span class="ch-sub">RedSun TOCTOU, GreenPlasma, MiniPlasma, BlueHammer</span>
           <span class="status status-complete">COMPLETE</span>
         </li>
-        <li class="available" onclick="loadChapter(26)">
-          <span class="ch-num">26</span>
+        <li class="available" onclick="loadChapter(42)" style="cursor:pointer">
+          <span class="ch-num">42</span>
           <span class="ch-title">Enterprise Threat Emulation &mdash; Red vs Blue</span>
           <span class="ch-sub">corporate role-play, Sysmon detection, blue team response</span>
           <span class="status status-complete">COMPLETE</span>
@@ -753,35 +895,51 @@ body::after {
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
 const CHAPTERS = {
-  1: { file: 'csec/01_C_PROGRAMMING.md', title: 'Ch 01 — C Programming Primer' },
-  2: { file: 'csec/02_WINDOWS_INTERNALS.md', title: 'Ch 02 — Windows Internals' },
-  3: { file: 'csec/03_NETWORKING.md', title: 'Ch 03 — Networking Concepts' },
-  4: { file: 'csec/04_COMPILATION.md', title: 'Ch 04 — Compilation & Build Ops' },
-  5: { file: 'csec/05_SHADOW_SHELL.md', title: 'Ch 05 — Shadow Shell' },
-  6: { file: 'csec/06_PROCESS_INJECTION.md', title: 'Ch 06 — Process Injection' },
-  7: { file: 'csec/07_INJECTOR.md', title: 'Ch 07 — DLL Injector' },
-  8: { file: 'csec/08_PAYLOAD_DLL.md', title: 'Ch 08 — Payload DLL' },
-  9: { file: 'csec/09_SHADOW_TOKEN.md', title: 'Ch 09 — Shadow Token' },
-  10: { file: 'csec/10_SHADOW_EVASION.md', title: 'Ch 10 — Shadow Evasion' },
-  11: { file: 'csec/11_GHOST_SERVICE.md', title: 'Ch 11 — Ghost Service' },
-  12: { file: 'csec/12_SHADOW_LATERAL.md', title: 'Ch 12 — Shadow Lateral' },
-  13: { file: 'csec/13_OPSEC_TRADECRAFT.md', title: 'Ch 13 — OPSEC Tradecraft' },
-  14: { file: 'csec/14_CSEC_CURRICULUM.md', title: 'Ch 14 — CSEC Curriculum' },
-  15: { file: 'csec/15_KILL_CHAIN.md', title: 'Ch 15 — Kill Chain Runbook' },
-  16: { file: 'csec/16_ASSESSMENT_GUIDE.md', title: 'Ch 16 — Assessment Guide' },
-  17: { file: 'csec/17_RECREATION_SPEC.md', title: 'Ch 17 — Recreation Spec' },
-  18: { file: 'csec/18_VIABILITY.md', title: 'Ch 18 — Viability Assessment' },
-  19: { file: 'csec/19_TACTICAL_OPS.md', title: 'Ch 19 — Tactical Operations' },
-  20: { file: 'csec/20_CTF_PLAYBOOK.md', title: 'Ch 20 — CTF Playbook' },
-  21: { file: 'csec/21_CROSS_NETWORK.md', title: 'Ch 21 — Cross-Network Ops' },
-  22: { file: 'csec/22_SELF_TEACHING.md', title: 'Ch 22 — Self-Teaching Roadmap' },
-  23: { file: 'csec/23_SOCIAL_ENGINEERING.md', title: 'Ch 23 — Social Engineering' },
-  24: { file: 'csec/24_DATATRUST_PRESENTATION.md', title: 'Ch 24 — DataTrust Presentation' },
-  25: { file: 'csec/25_S2_VULNERABILITY_ANALYSIS.md', title: 'Ch 25 — Vulnerability Analysis' },
-  26: { file: 'csec/26_ENTERPRISE_EMULATION.md', title: 'Ch 26 — Enterprise Emulation' }
+  1: { file: 'csec/v00_OVERVIEW.md', title: 'Ch 01 — Mission Brief' },
+  2: { file: 'csec/v00A_DEV_ENVIRONMENT.md', title: 'Ch 02 — Dev Environment' },
+  3: { file: 'csec/v01_HANDLES_AND_OBJECTS.md', title: 'Ch 03 — Handles & Objects' },
+  4: { file: 'csec/v02_FILESYSTEM_AND_PATHS.md', title: 'Ch 04 — Filesystem & Paths' },
+  5: { file: 'csec/v03_CREATEFILE_DEEP_DIVE.md', title: 'Ch 05 — CreateFile Deep Dive' },
+  6: { file: 'csec/v04_DEVICEIOCONTROL.md', title: 'Ch 06 — DeviceIoControl' },
+  7: { file: 'csec/v05_ASYNC_IO.md', title: 'Ch 07 — Async I/O' },
+  8: { file: 'csec/v06_OPLOCKS.md', title: 'Ch 08 — Oplocks' },
+  9: { file: 'csec/v07_NTFS_JUNCTIONS.md', title: 'Ch 09 — NTFS Junctions' },
+  10: { file: 'csec/v08_DEFENDER_ARCHITECTURE.md', title: 'Ch 10 — Defender Architecture' },
+  11: { file: 'csec/v09_TOCTOU_THEORY.md', title: 'Ch 11 — TOCTOU Theory' },
+  12: { file: 'csec/v10_THE_CHAIN.md', title: 'Ch 12 — The Chain' },
+  13: { file: 'csec/v11_RPC_ATTACK_SURFACE.md', title: 'Ch 13 — RPC Attack Surface' },
+  14: { file: 'csec/v12_REVERSE_SHELL.md', title: 'Ch 14 — Reverse Shell' },
+  15: { file: 'csec/v13_BEYOND_TOCTOU.md', title: 'Ch 15 — Beyond TOCTOU' },
+  16: { file: 'csec/vGLOSSARY.md', title: 'Ch 16 — Glossary' },
+  17: { file: 'csec/01_C_PROGRAMMING.md', title: 'Ch 17 — C Programming Primer' },
+  18: { file: 'csec/02_WINDOWS_INTERNALS.md', title: 'Ch 18 — Windows Internals' },
+  19: { file: 'csec/03_NETWORKING.md', title: 'Ch 19 — Networking Concepts' },
+  20: { file: 'csec/04_COMPILATION.md', title: 'Ch 20 — Compilation & Build Ops' },
+  21: { file: 'csec/05_SHADOW_SHELL.md', title: 'Ch 21 — Shadow Shell' },
+  22: { file: 'csec/06_PROCESS_INJECTION.md', title: 'Ch 22 — Process Injection' },
+  23: { file: 'csec/07_INJECTOR.md', title: 'Ch 23 — DLL Injector' },
+  24: { file: 'csec/08_PAYLOAD_DLL.md', title: 'Ch 24 — Payload DLL' },
+  25: { file: 'csec/09_SHADOW_TOKEN.md', title: 'Ch 25 — Shadow Token' },
+  26: { file: 'csec/10_SHADOW_EVASION.md', title: 'Ch 26 — Shadow Evasion' },
+  27: { file: 'csec/11_GHOST_SERVICE.md', title: 'Ch 27 — Ghost Service' },
+  28: { file: 'csec/12_SHADOW_LATERAL.md', title: 'Ch 28 — Shadow Lateral' },
+  29: { file: 'csec/13_OPSEC_TRADECRAFT.md', title: 'Ch 29 — OPSEC Tradecraft' },
+  30: { file: 'csec/14_CSEC_CURRICULUM.md', title: 'Ch 30 — CSEC Curriculum' },
+  31: { file: 'csec/15_KILL_CHAIN.md', title: 'Ch 31 — Kill Chain Runbook' },
+  32: { file: 'csec/16_ASSESSMENT_GUIDE.md', title: 'Ch 32 — Assessment Completion' },
+  33: { file: 'csec/17_RECREATION_SPEC.md', title: 'Ch 33 — Recreation Spec' },
+  34: { file: 'csec/18_VIABILITY.md', title: 'Ch 34 — Viability Assessment' },
+  35: { file: 'csec/19_TACTICAL_OPS.md', title: 'Ch 35 — Tactical Operations' },
+  36: { file: 'csec/20_CTF_PLAYBOOK.md', title: 'Ch 36 — CTF Playbook' },
+  37: { file: 'csec/21_CROSS_NETWORK.md', title: 'Ch 37 — Cross-Network Ops' },
+  38: { file: 'csec/22_SELF_TEACHING.md', title: 'Ch 38 — Self-Teaching Roadmap' },
+  39: { file: 'csec/23_SOCIAL_ENGINEERING.md', title: 'Ch 39 — Social Engineering' },
+  40: { file: 'csec/24_DATATRUST_PRESENTATION.md', title: 'Ch 40 — DataTrust Presentation' },
+  41: { file: 'csec/25_S2_VULNERABILITY_ANALYSIS.md', title: 'Ch 41 — Vulnerability Analysis' },
+  42: { file: 'csec/26_ENTERPRISE_EMULATION.md', title: 'Ch 42 — Enterprise Emulation' }
 };
 
-const MAX_AVAILABLE = 26;
+const MAX_AVAILABLE = 42;
 let currentChapter = 0;
 
 function showTOC() {
