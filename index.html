@@ -277,6 +277,8 @@ nav a {
 
 nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
 nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
+nav a.nav-book { color: var(--red); }
+nav a.nav-book:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
 
 /* ── FOOTER ── */
 footer {
@@ -306,8 +308,8 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <div class="inner">
     <a href="#top" class="brand">22DIV</a>
     <a href="journal.html">journal</a>
-    <a href="books.html">field manual</a>
-    <a href="csec.html">kill chain</a>
+    <a href="books.html" class="nav-book">field manual</a>
+    <a href="csec.html" class="nav-book">kill chain</a>
     <a href="#about">about</a>
     <a href="#darkroom">dark room</a>
     <a href="#privesc">privesc</a>
@@ -318,6 +320,18 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     <a href="#status">status</a>
   </div>
 </nav>
+
+<div style="background: rgba(255,68,68,0.08); border-top: 2px solid var(--red); border-bottom: 2px solid var(--red); padding: 1rem 1.5rem; text-align: center;">
+  <p style="color: var(--red); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.1em; margin: 0;">
+    &#9888; THIS CONTENT WILL BE MADE PRIVATE SOON
+  </p>
+  <p style="color: var(--muted); font-size: 0.75rem; margin: 0.4rem 0 0 0;">
+    As development progresses and original research matures, this portfolio will transition
+    to private access for security reasons. Full exploit chains, bypass techniques, and attack
+    surface analysis will be restricted. Read and absorb everything while it's public &mdash;
+    this window is closing.
+  </p>
+</div>
 
 <div class="container" id="top">
 
