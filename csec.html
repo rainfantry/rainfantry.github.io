@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSEC Kill Chain — Field Manual // 22DIV</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --bg2: #111;
+  --bg3: #161616;
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #009922;
+  --amber: #ffb000;
+  --red: #ff4444;
+  --cyan: #00e5ff;
+  --dim: #555;
+  --muted: #888;
+  --text: #ccc;
+  --bright: #eee;
+  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── HEADER ── */
+.header {
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  color: var(--green);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.header .sub {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.header nav {
+  font-size: 0.78rem;
+}
+
+.header nav a {
+  color: var(--dim);
+  text-decoration: none;
+}
+.header nav a:hover { color: var(--green2); }
+.header nav .sep { color: #333; margin: 0 0.3rem; }
+
+/* ── CURRICULUM TOC ── */
+#toc { display: block; }
+
+.volume {
+  margin-bottom: 2.5rem;
+}
+
+.vol-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.vol-num {
+  color: var(--green);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  min-width: 3.5rem;
+}
+
+.vol-title {
+  color: var(--bright);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.vol-sub {
+  color: var(--dim);
+  font-size: 0.72rem;
+  margin-left: auto;
+}
+
+.chapters {
+  list-style: none;
+  padding: 0;
+}
+
+.chapters li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.35rem 0 0.35rem 1rem;
+  border-left: 1px solid #1a1a1a;
+  font-size: 0.82rem;
+  cursor: default;
+}
+
+.chapters li.available {
+  cursor: pointer;
+  border-left-color: var(--green3);
+}
+
+.chapters li.available:hover {
+  background: rgba(0,255,65,0.03);
+  border-left-color: var(--green);
+}
+
+.ch-num {
+  color: var(--dim);
+  min-width: 2rem;
+  font-size: 0.72rem;
+}
+
+.ch-title {
+  color: var(--text);
+  flex: 1;
+}
+
+.chapters li.available .ch-title { color: var(--bright); }
+
+.ch-sub {
+  color: var(--dim);
+  font-size: 0.72rem;
+  font-style: italic;
+}
+
+.status {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.status-complete {
+  color: var(--green);
+  border: 1px solid var(--green3);
+}
+
+.status-planned {
+  color: var(--dim);
+  border: 1px solid #222;
+}
+
+.status-writing {
+  color: var(--amber);
+  border: 1px solid #664400;
+}
+
+/* ── MISSION BRIEF ── */
+.brief {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2.5rem;
+  font-size: 0.82rem;
+  line-height: 1.8;
+}
+
+.brief h2 {
+  color: var(--green);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+}
+
+.brief p { margin-bottom: 0.6rem; }
+.brief strong { color: var(--bright); }
+
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.8rem 0;
+  font-size: 0.78rem;
+}
+
+.pipeline .step {
+  color: var(--amber);
+  padding: 0.15rem 0.5rem;
+  border: 1px solid #664400;
+  border-radius: 3px;
+}
+
+.pipeline .arrow { color: var(--dim); }
+
+/* ── READER VIEW ── */
+#reader {
+  display: none;
+}
+
+.reader-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #1a1a1a;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.reader-nav button {
+  background: none;
+  border: 1px solid #333;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reader-nav button:hover {
+  border-color: var(--green3);
+  color: var(--green2);
+}
+
+.reader-nav .ch-label {
+  color: var(--dim);
+  font-size: 0.72rem;
+}
+
+#chapter-content {
+  font-size: 0.85rem;
+  line-height: 1.85;
+}
+
+#chapter-content h1 {
+  color: var(--green);
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+
+#chapter-content h2 {
+  color: var(--amber);
+  font-size: 1.05rem;
+  font-weight: 400;
+  margin-top: 2.5rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+#chapter-content h3 {
+  color: var(--bright);
+  font-size: 0.92rem;
+  font-weight: 400;
+  margin-top: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+#chapter-content p {
+  margin-bottom: 1rem;
+}
+
+#chapter-content strong {
+  color: var(--bright);
+}
+
+#chapter-content em {
+  color: var(--muted);
+  font-style: italic;
+}
+
+#chapter-content code {
+  background: var(--bg3);
+  color: var(--cyan);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.82rem;
+}
+
+#chapter-content pre {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0 1.5rem;
+  overflow-x: auto;
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+#chapter-content pre code {
+  background: none;
+  color: var(--text);
+  padding: 0;
+}
+
+#chapter-content hr {
+  border: none;
+  border-top: 1px solid #1a1a1a;
+  margin: 2.5rem 0;
+}
+
+#chapter-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.78rem;
+}
+
+#chapter-content th {
+  text-align: left;
+  color: var(--green2);
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid var(--green3);
+  font-weight: 400;
+}
+
+#chapter-content td {
+  padding: 0.35rem 0.8rem;
+  border-bottom: 1px solid #1a1a1a;
+  vertical-align: top;
+}
+
+#chapter-content ul, #chapter-content ol {
+  margin: 0.5rem 0 1rem 1.5rem;
+}
+
+#chapter-content li {
+  margin-bottom: 0.3rem;
+}
+
+#chapter-content blockquote {
+  border-left: 2px solid var(--green3);
+  padding-left: 1rem;
+  color: var(--muted);
+  margin: 1rem 0;
+}
+
+/* ── STATS ── */
+.stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  font-size: 0.78rem;
+}
+
+.stat-box {
+  text-align: center;
+}
+
+.stat-num {
+  color: var(--green);
+  font-size: 1.4rem;
+  display: block;
+}
+
+.stat-label {
+  color: var(--dim);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+/* ── FOOTER ── */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #1a1a1a;
+  color: var(--dim);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--green3);
+  text-decoration: none;
+}
+.footer a:hover { color: var(--green); }
+
+/* ── LOADING ── */
+.loading {
+  color: var(--dim);
+  font-size: 0.82rem;
+  padding: 2rem 0;
+}
+
+.loading::after {
+  content: '...';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 1rem; }
+  .header h1 { font-size: 1.2rem; }
+  .vol-header { flex-wrap: wrap; }
+  .vol-sub { margin-left: 0; }
+  .chapters li { padding-left: 0.5rem; font-size: 0.78rem; }
+  .pipeline { font-size: 0.7rem; }
+  .stats { gap: 1rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <h1>CSEC KILL CHAIN // FIELD MANUAL</h1>
+      <div class="sub">Cert IV Cyber Security &mdash; 22603VIC &mdash; PTE George Wu</div>
+    </div>
+    <nav>
+      <a href="index.html">index</a>
+      <span class="sep">|</span>
+      <a href="books.html">field manual</a>
+      <span class="sep">|</span>
+      <a href="about.html">about</a>
+    </nav>
+  </div>
+
+  <!-- ── CURRICULUM VIEW ── -->
+  <div id="toc">
+
+    <div class="brief">
+      <h2>// MISSION BRIEF</h2>
+      <p>Complete kill chain curriculum for the <strong>Cert IV Cyber Security (22603VIC)</strong> program. 26 chapters across 6 volumes &mdash; from C programming foundations through enterprise threat emulation. Every chapter is field manual format: direct, annotated, no filler.</p>
+      <p><strong>The doctrine:</strong> understand the system, build the tools, execute the chain, document everything.</p>
+      <div class="pipeline">
+        <span class="step">FOUNDATIONS</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">ARSENAL</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">PERSISTENCE</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">KILL CHAIN</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">WARFARE</span>
+      </div>
+      <p>Scope: <strong>Windows offensive security</strong> &mdash; reverse shells, process injection, privilege escalation, lateral movement, evasion, social engineering, CTF execution, and enterprise red team emulation.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <span class="stat-num">26</span>
+        <span class="stat-label">CHAPTERS</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">26</span>
+        <span class="stat-label">COMPLETE</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">6</span>
+        <span class="stat-label">VOLUMES</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">11749</span>
+        <span class="stat-label">LINES WRITTEN</span>
+      </div>
+    </div>
+
+    <!-- VOLUME I -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL I</span>
+        <span class="vol-title">FOUNDATIONS &mdash; Programming &amp; System Theory</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(1)">
+          <span class="ch-num">01</span>
+          <span class="ch-title">C Programming Primer &mdash; The Language of Exploitation</span>
+          <span class="ch-sub">preprocessor, pointers, structs, WinMain, Win32 types</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(2)">
+          <span class="ch-num">02</span>
+          <span class="ch-title">Windows Internals &mdash; Know Your Battlefield</span>
+          <span class="ch-sub">user/kernel mode, NT API, PE format, kernel objects</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(3)">
+          <span class="ch-num">03</span>
+          <span class="ch-title">Networking Concepts &mdash; TCP/IP For Red Teams</span>
+          <span class="ch-sub">sockets, Winsock, 3-way handshake, port selection, VNC/RDP</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(4)">
+          <span class="ch-num">04</span>
+          <span class="ch-title">Compilation &amp; Build Ops &mdash; Forging The Weapons</span>
+          <span class="ch-sub">MSVC pipeline, optimization flags, security mitigations, binary stripping</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME II -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL II</span>
+        <span class="vol-title">SHADOW ARSENAL &mdash; Tool Documentation</span>
+        <span class="vol-sub">5/5 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(5)">
+          <span class="ch-num">05</span>
+          <span class="ch-title">Shadow Shell &mdash; The Reverse Connection</span>
+          <span class="ch-sub">Winsock reverse shell, connect-back, GUI subsystem hiding</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(6)">
+          <span class="ch-num">06</span>
+          <span class="ch-title">Process Injection &mdash; Theory &amp; Practice</span>
+          <span class="ch-sub">classic DLL injection, reflective, hollowing, APC, thread hijack</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(7)">
+          <span class="ch-num">07</span>
+          <span class="ch-title">DLL Injector &mdash; Code Injection</span>
+          <span class="ch-sub">OpenProcess, VirtualAllocEx, WriteProcessMemory, CreateRemoteThread</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(8)">
+          <span class="ch-num">08</span>
+          <span class="ch-title">Payload DLL &mdash; The Warhead</span>
+          <span class="ch-sub">DllMain, DLL_PROCESS_ATTACH, reverse shell launch, VNC callback</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(9)">
+          <span class="ch-num">09</span>
+          <span class="ch-title">Shadow Token &mdash; Privilege Escalation</span>
+          <span class="ch-sub">SeDebugPrivilege, token theft, SYSTEM process scanning, SAM dump</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME III -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL III</span>
+        <span class="vol-title">GHOST OPERATIONS &mdash; Persistence &amp; Evasion</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(10)">
+          <span class="ch-num">10</span>
+          <span class="ch-title">Shadow Evasion &mdash; Blinding The EDR</span>
+          <span class="ch-sub">Defender service freeze, registry exclusions, signature corruption</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(11)">
+          <span class="ch-num">11</span>
+          <span class="ch-title">Ghost Service &mdash; The Persistent Backdoor</span>
+          <span class="ch-sub">Windows Service installation, SYSTEM persistence, service masquerade</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(12)">
+          <span class="ch-num">12</span>
+          <span class="ch-title">Shadow Lateral &mdash; Network Movement</span>
+          <span class="ch-sub">SMB admin shares, remote service creation, file copy, cleanup</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(13)">
+          <span class="ch-num">13</span>
+          <span class="ch-title">OPSEC Tradecraft &mdash; Operational Security</span>
+          <span class="ch-sub">digital footprint, anti-forensics, log clearing, artifact cleanup</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME IV -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL IV</span>
+        <span class="vol-title">KILL CHAIN &mdash; Full Chain Operations</span>
+        <span class="vol-sub">5/5 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(14)">
+          <span class="ch-num">14</span>
+          <span class="ch-title">CSEC Curriculum Overview &mdash; The Integrated Textbook</span>
+          <span class="ch-sub">13-chapter theory from memory to defense, CODE_DOCS integration</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(15)">
+          <span class="ch-num">15</span>
+          <span class="ch-title">Kill Chain Master Runbook &mdash; 9-Step Execution</span>
+          <span class="ch-sub">TEST chain, REAL chain, troubleshooting, cleanup, AutoChain</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(16)">
+          <span class="ch-num">16</span>
+          <span class="ch-title">Assessment Completion Guide &mdash; UnDefend &amp; YellowKey</span>
+          <span class="ch-sub">lab VM walkthroughs, exact compilation, EDR deception</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(17)">
+          <span class="ch-num">17</span>
+          <span class="ch-title">Recreation Spec &mdash; Cold Rebuild From Scratch</span>
+          <span class="ch-sub">environment stamp, build matrix, verification checklists</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(18)">
+          <span class="ch-num">18</span>
+          <span class="ch-title">Viability Assessment &mdash; Honest Defense Analysis</span>
+          <span class="ch-sub">what survives production, Tamper Protection, Credential Guard</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME V -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL V</span>
+        <span class="vol-title">FIELD OPERATIONS &mdash; CTF &amp; Deployment</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(19)">
+          <span class="ch-num">19</span>
+          <span class="ch-title">Tactical Operations Guide &mdash; Plan to Codebase</span>
+          <span class="ch-sub">week-by-week lab manual, reverse shell, buffer overflow, DNS tunneling</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(20)">
+          <span class="ch-num">20</span>
+          <span class="ch-title">CTF Execution Playbook &mdash; Final Demonstration</span>
+          <span class="ch-sub">5-phase demo script, C2 commands, evasion FAQ, foothold setup</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(21)">
+          <span class="ch-num">21</span>
+          <span class="ch-title">Cross-Network Operations &mdash; Tunneling &amp; Callback</span>
+          <span class="ch-sub">ngrok tunneling, TCP callback, cross-network reverse shell</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(22)">
+          <span class="ch-num">22</span>
+          <span class="ch-title">Self-Teaching Roadmap &mdash; 7-Level Curriculum</span>
+          <span class="ch-sub">from Cert IV to red teamer, resources, build projects per level</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME VI -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL VI</span>
+        <span class="vol-title">WARFARE DOCTRINE &mdash; Social Engineering &amp; Advanced</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(23)">
+          <span class="ch-num">23</span>
+          <span class="ch-title">ASF Social Engineering &mdash; Adversarial Survival Framework</span>
+          <span class="ch-sub">pretexts, trust calibration, body language, phishing delivery, LNK spoofs</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(24)">
+          <span class="ch-num">24</span>
+          <span class="ch-title">DataTrust Presentation &mdash; Speaking Script</span>
+          <span class="ch-sub">16-slide presentation, NIST CSF, ACSC Essential Eight, case studies</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(25)">
+          <span class="ch-num">25</span>
+          <span class="ch-title">Semester 2 Vulnerability Analysis &mdash; Four Exploits</span>
+          <span class="ch-sub">RedSun TOCTOU, GreenPlasma CTFMON, MiniPlasma Cloud Filter, BlueHammer SAM</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(26)">
+          <span class="ch-num">26</span>
+          <span class="ch-title">Enterprise Threat Emulation &mdash; Red vs Blue</span>
+          <span class="ch-sub">corporate role-play, Sysmon detection, blue team response</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+  </div><!-- /toc -->
+
+  <!-- ── READER VIEW ── -->
+  <div id="reader">
+    <div class="reader-nav">
+      <button onclick="showTOC()">&larr; Back to Curriculum</button>
+      <span class="ch-label" id="reader-label"></span>
+      <div>
+        <button id="btn-prev" onclick="prevChapter()">&larr; Prev</button>
+        <button id="btn-next" onclick="nextChapter()">Next &rarr;</button>
+      </div>
+    </div>
+    <div id="chapter-content"></div>
+    <div class="reader-nav" style="margin-top:2rem; border-top:1px solid #1a1a1a; padding-top:0.8rem; border-bottom:none;">
+      <button onclick="showTOC()">&larr; Back to Curriculum</button>
+      <span></span>
+      <div>
+        <button onclick="prevChapter()">&larr; Prev</button>
+        <button onclick="nextChapter()">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>George Wu. 22DIV. VADER.</p>
+    <p style="margin-top:0.3rem;"><a href="index.html">22DIV Home</a> &middot; <a href="books.html">VADER-RCE Manual</a> &middot; <a href="https://github.com/rainfantry">GitHub</a></p>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const CHAPTERS = {
+  1: { file: 'csec/01_C_PROGRAMMING.md', title: 'Ch 01 — C Programming Primer' },
+  2: { file: 'csec/02_WINDOWS_INTERNALS.md', title: 'Ch 02 — Windows Internals' },
+  3: { file: 'csec/03_NETWORKING.md', title: 'Ch 03 — Networking Concepts' },
+  4: { file: 'csec/04_COMPILATION.md', title: 'Ch 04 — Compilation & Build Ops' },
+  5: { file: 'csec/05_SHADOW_SHELL.md', title: 'Ch 05 — Shadow Shell' },
+  6: { file: 'csec/06_PROCESS_INJECTION.md', title: 'Ch 06 — Process Injection' },
+  7: { file: 'csec/07_INJECTOR.md', title: 'Ch 07 — DLL Injector' },
+  8: { file: 'csec/08_PAYLOAD_DLL.md', title: 'Ch 08 — Payload DLL' },
+  9: { file: 'csec/09_SHADOW_TOKEN.md', title: 'Ch 09 — Shadow Token' },
+  10: { file: 'csec/10_SHADOW_EVASION.md', title: 'Ch 10 — Shadow Evasion' },
+  11: { file: 'csec/11_GHOST_SERVICE.md', title: 'Ch 11 — Ghost Service' },
+  12: { file: 'csec/12_SHADOW_LATERAL.md', title: 'Ch 12 — Shadow Lateral' },
+  13: { file: 'csec/13_OPSEC_TRADECRAFT.md', title: 'Ch 13 — OPSEC Tradecraft' },
+  14: { file: 'csec/14_CSEC_CURRICULUM.md', title: 'Ch 14 — CSEC Curriculum' },
+  15: { file: 'csec/15_KILL_CHAIN.md', title: 'Ch 15 — Kill Chain Runbook' },
+  16: { file: 'csec/16_ASSESSMENT_GUIDE.md', title: 'Ch 16 — Assessment Guide' },
+  17: { file: 'csec/17_RECREATION_SPEC.md', title: 'Ch 17 — Recreation Spec' },
+  18: { file: 'csec/18_VIABILITY.md', title: 'Ch 18 — Viability Assessment' },
+  19: { file: 'csec/19_TACTICAL_OPS.md', title: 'Ch 19 — Tactical Operations' },
+  20: { file: 'csec/20_CTF_PLAYBOOK.md', title: 'Ch 20 — CTF Playbook' },
+  21: { file: 'csec/21_CROSS_NETWORK.md', title: 'Ch 21 — Cross-Network Ops' },
+  22: { file: 'csec/22_SELF_TEACHING.md', title: 'Ch 22 — Self-Teaching Roadmap' },
+  23: { file: 'csec/23_SOCIAL_ENGINEERING.md', title: 'Ch 23 — Social Engineering' },
+  24: { file: 'csec/24_DATATRUST_PRESENTATION.md', title: 'Ch 24 — DataTrust Presentation' },
+  25: { file: 'csec/25_S2_VULNERABILITY_ANALYSIS.md', title: 'Ch 25 — Vulnerability Analysis' },
+  26: { file: 'csec/26_ENTERPRISE_EMULATION.md', title: 'Ch 26 — Enterprise Emulation' }
+};
+
+const MAX_AVAILABLE = 26;
+let currentChapter = 0;
+
+function showTOC() {
+  document.getElementById('toc').style.display = 'block';
+  document.getElementById('reader').style.display = 'none';
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', 'csec.html');
+}
+
+function loadChapter(num) {
+  if (!CHAPTERS[num]) return;
+  currentChapter = num;
+
+  document.getElementById('toc').style.display = 'none';
+  document.getElementById('reader').style.display = 'block';
+  document.getElementById('reader-label').textContent = CHAPTERS[num].title;
+  document.getElementById('chapter-content').innerHTML = '<div class="loading">Loading chapter</div>';
+
+  document.getElementById('btn-prev').style.visibility = num > 1 ? 'visible' : 'hidden';
+  document.getElementById('btn-next').style.visibility = num < MAX_AVAILABLE ? 'visible' : 'hidden';
+
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', 'csec.html#ch' + String(num).padStart(2, '0'));
+
+  fetch(CHAPTERS[num].file)
+    .then(r => {
+      if (!r.ok) throw new Error('Failed to load');
+      return r.text();
+    })
+    .then(md => {
+      document.getElementById('chapter-content').innerHTML = marked.parse(md);
+    })
+    .catch(() => {
+      document.getElementById('chapter-content').innerHTML =
+        '<p style="color:var(--red);">Failed to load chapter. Check console.</p>';
+    });
+}
+
+function prevChapter() {
+  if (currentChapter > 1) loadChapter(currentChapter - 1);
+}
+
+function nextChapter() {
+  if (currentChapter < MAX_AVAILABLE) loadChapter(currentChapter + 1);
+}
+
+// Handle direct links like csec.html#ch03
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#ch')) {
+    const num = parseInt(hash.replace('#ch', ''), 10);
+    if (CHAPTERS[num]) loadChapter(num);
+  }
+});
+</script>
+</body>
+</html>
