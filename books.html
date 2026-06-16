@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VADER-RCE Field Manual // 22DIV</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --bg2: #111;
+  --bg3: #161616;
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #009922;
+  --amber: #ffb000;
+  --red: #ff4444;
+  --cyan: #00e5ff;
+  --dim: #555;
+  --muted: #888;
+  --text: #ccc;
+  --bright: #eee;
+  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── HEADER ── */
+.header {
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  color: var(--green);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.header .sub {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.header a {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 0.78rem;
+}
+.header a:hover { color: var(--green2); }
+
+/* ── CURRICULUM TOC ── */
+#toc { display: block; }
+
+.volume {
+  margin-bottom: 2.5rem;
+}
+
+.vol-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.vol-num {
+  color: var(--green);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  min-width: 3.5rem;
+}
+
+.vol-title {
+  color: var(--bright);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.vol-sub {
+  color: var(--dim);
+  font-size: 0.72rem;
+  margin-left: auto;
+}
+
+.chapters {
+  list-style: none;
+  padding: 0;
+}
+
+.chapters li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.35rem 0 0.35rem 1rem;
+  border-left: 1px solid #1a1a1a;
+  font-size: 0.82rem;
+  cursor: default;
+}
+
+.chapters li.available {
+  cursor: pointer;
+  border-left-color: var(--green3);
+}
+
+.chapters li.available:hover {
+  background: rgba(0,255,65,0.03);
+  border-left-color: var(--green);
+}
+
+.ch-num {
+  color: var(--dim);
+  min-width: 2rem;
+  font-size: 0.72rem;
+}
+
+.ch-title {
+  color: var(--text);
+  flex: 1;
+}
+
+.chapters li.available .ch-title { color: var(--bright); }
+
+.ch-sub {
+  color: var(--dim);
+  font-size: 0.72rem;
+  font-style: italic;
+}
+
+.status {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.status-complete {
+  color: var(--green);
+  border: 1px solid var(--green3);
+}
+
+.status-planned {
+  color: var(--dim);
+  border: 1px solid #222;
+}
+
+.status-writing {
+  color: var(--amber);
+  border: 1px solid #664400;
+}
+
+/* ── MISSION BRIEF ── */
+.brief {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2.5rem;
+  font-size: 0.82rem;
+  line-height: 1.8;
+}
+
+.brief h2 {
+  color: var(--green);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+}
+
+.brief p { margin-bottom: 0.6rem; }
+.brief strong { color: var(--bright); }
+
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.8rem 0;
+  font-size: 0.78rem;
+}
+
+.pipeline .step {
+  color: var(--amber);
+  padding: 0.15rem 0.5rem;
+  border: 1px solid #664400;
+  border-radius: 3px;
+}
+
+.pipeline .arrow { color: var(--dim); }
+
+/* ── READER VIEW ── */
+#reader {
+  display: none;
+}
+
+.reader-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #1a1a1a;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.reader-nav button {
+  background: none;
+  border: 1px solid #333;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reader-nav button:hover {
+  border-color: var(--green3);
+  color: var(--green2);
+}
+
+.reader-nav .ch-label {
+  color: var(--dim);
+  font-size: 0.72rem;
+}
+
+#chapter-content {
+  font-size: 0.85rem;
+  line-height: 1.85;
+}
+
+#chapter-content h1 {
+  color: var(--green);
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+
+#chapter-content h2 {
+  color: var(--amber);
+  font-size: 1.05rem;
+  font-weight: 400;
+  margin-top: 2.5rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+#chapter-content h3 {
+  color: var(--bright);
+  font-size: 0.92rem;
+  font-weight: 400;
+  margin-top: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+#chapter-content p {
+  margin-bottom: 1rem;
+}
+
+#chapter-content strong {
+  color: var(--bright);
+}
+
+#chapter-content em {
+  color: var(--muted);
+  font-style: italic;
+}
+
+#chapter-content code {
+  background: var(--bg3);
+  color: var(--cyan);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.82rem;
+}
+
+#chapter-content pre {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0 1.5rem;
+  overflow-x: auto;
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+#chapter-content pre code {
+  background: none;
+  color: var(--text);
+  padding: 0;
+}
+
+#chapter-content hr {
+  border: none;
+  border-top: 1px solid #1a1a1a;
+  margin: 2.5rem 0;
+}
+
+#chapter-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.78rem;
+}
+
+#chapter-content th {
+  text-align: left;
+  color: var(--green2);
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid var(--green3);
+  font-weight: 400;
+}
+
+#chapter-content td {
+  padding: 0.35rem 0.8rem;
+  border-bottom: 1px solid #1a1a1a;
+  vertical-align: top;
+}
+
+#chapter-content ul, #chapter-content ol {
+  margin: 0.5rem 0 1rem 1.5rem;
+}
+
+#chapter-content li {
+  margin-bottom: 0.3rem;
+}
+
+#chapter-content blockquote {
+  border-left: 2px solid var(--green3);
+  padding-left: 1rem;
+  color: var(--muted);
+  margin: 1rem 0;
+}
+
+/* ── STATS ── */
+.stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  font-size: 0.78rem;
+}
+
+.stat-box {
+  text-align: center;
+}
+
+.stat-num {
+  color: var(--green);
+  font-size: 1.4rem;
+  display: block;
+}
+
+.stat-label {
+  color: var(--dim);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+/* ── FOOTER ── */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #1a1a1a;
+  color: var(--dim);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--green3);
+  text-decoration: none;
+}
+.footer a:hover { color: var(--green); }
+
+/* ── LOADING ── */
+.loading {
+  color: var(--dim);
+  font-size: 0.82rem;
+  padding: 2rem 0;
+}
+
+.loading::after {
+  content: '...';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 1rem; }
+  .header h1 { font-size: 1.2rem; }
+  .vol-header { flex-wrap: wrap; }
+  .vol-sub { margin-left: 0; }
+  .chapters li { padding-left: 0.5rem; font-size: 0.78rem; }
+  .pipeline { font-size: 0.7rem; }
+  .stats { gap: 1rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <h1>VADER-RCE // FIELD MANUAL</h1>
+      <div class="sub">0-Day Remote Code Execution Research Program</div>
+    </div>
+    <a href="index.html">&larr; 22DIV</a>
+  </div>
+
+  <!-- ── CURRICULUM VIEW ── -->
+  <div id="toc">
+
+    <div class="brief">
+      <h2>// MISSION BRIEF</h2>
+      <p>This is the complete training curriculum for the VADER-RCE program. Every chapter is written in field manual format &mdash; direct, annotated, no filler. The doctrine comes from the <strong>0x1security</strong> research framework:</p>
+      <p><strong>Search for knowledge, not for 0-days.</strong> The understanding produces the bugs.</p>
+      <div class="pipeline">
+        <span class="step">CRASH</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">LEAK MEMORY</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">EXECUTE CODE</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">CVE</span>
+        <span class="arrow">&rarr;</span>
+        <span class="step">BOUNTY</span>
+      </div>
+      <p>Target: <strong>mpengine.dll</strong> (Microsoft Malware Protection Engine). Runs as SYSTEM. Parses every file format. Network-reachable via email attachment. RCE = $100k&ndash;$150k bounty.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <span class="stat-num">22</span>
+        <span class="stat-label">TOTAL CHAPTERS</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">8</span>
+        <span class="stat-label">COMPLETE</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">5</span>
+        <span class="stat-label">VOLUMES</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">4443</span>
+        <span class="stat-label">LINES WRITTEN</span>
+      </div>
+    </div>
+
+    <!-- VOLUME I -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL I</span>
+        <span class="vol-title">BOOT CAMP &mdash; Memory Corruption Foundations</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(1)">
+          <span class="ch-num">01</span>
+          <span class="ch-title">Heap Internals &mdash; The Ammunition Depot</span>
+          <span class="ch-sub">heap vs stack, Windows heap arch, LFH, segment heap</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(2)">
+          <span class="ch-num">02</span>
+          <span class="ch-title">Overflow Patterns &mdash; The Corruption Playbook</span>
+          <span class="ch-sub">stack/heap/integer overflow, off-by-one, heap grooming</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(3)">
+          <span class="ch-num">03</span>
+          <span class="ch-title">UAF &amp; Type Confusion &mdash; The Ghost and the Impostor</span>
+          <span class="ch-sub">object lifecycles, dangling pointers, vtable hijack, double-free</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(4)">
+          <span class="ch-num">04</span>
+          <span class="ch-title">Mitigations &mdash; The Walls They Built</span>
+          <span class="ch-sub">DEP, ASLR, CFG, CET, ACG, stack cookies, heap hardening</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME II -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL II</span>
+        <span class="vol-title">WEAPONS SCHOOL &mdash; Offensive Operations</span>
+        <span class="vol-sub">4/4 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(5)">
+          <span class="ch-num">05</span>
+          <span class="ch-title">Fuzzing Theory &mdash; The Automated Assault</span>
+          <span class="ch-sub">coverage-guided fuzzing, WinAFL, harness design, seed corpus</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(6)">
+          <span class="ch-num">06</span>
+          <span class="ch-title">Crash Triage &mdash; Separating Gold From Gravel</span>
+          <span class="ch-sub">WinDbg, !exploitable, dedup, exploitability assessment</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(7)">
+          <span class="ch-num">07</span>
+          <span class="ch-title">Exploit Primitives &mdash; Building The Kill Chain</span>
+          <span class="ch-sub">info leak, arb read/write, ROP, JOP, stack pivot</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(8)">
+          <span class="ch-num">08</span>
+          <span class="ch-title">Target Reversing &mdash; Know Thy Enemy</span>
+          <span class="ch-sub">IDA/Ghidra, PE analysis, attack surface mapping, mpengine deep dive</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME III -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL III</span>
+        <span class="vol-title">CAMPAIGN OPS &mdash; Live Fire Against mpengine.dll</span>
+        <span class="vol-sub">0/4 PLANNED</span>
+      </div>
+      <ul class="chapters">
+        <li>
+          <span class="ch-num">09</span>
+          <span class="ch-title">Harness Engineering &mdash; Forging The Weapon</span>
+          <span class="ch-sub">WinAFL harness for mpengine, persistent mode, DynamoRIO setup</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">10</span>
+          <span class="ch-title">Corpus &amp; Dictionary Design &mdash; Feeding The Machine</span>
+          <span class="ch-sub">minimal seeds per format, magic bytes, mutation strategy</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">11</span>
+          <span class="ch-title">Campaign Management &mdash; The Long War</span>
+          <span class="ch-sub">RunPod 24/7 ops, coverage tracking, pivot decisions, weekly triage</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">12</span>
+          <span class="ch-title">Exploit Development &mdash; From Crash to Shell</span>
+          <span class="ch-sub">heap spray, grooming, reliability, mitigation bypass chains</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME IV -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL IV</span>
+        <span class="vol-title">WAR COLLEGE &mdash; Strategic Doctrine</span>
+        <span class="vol-sub">0/4 PLANNED</span>
+      </div>
+      <ul class="chapters">
+        <li>
+          <span class="ch-num">13</span>
+          <span class="ch-title">The 0x1security Doctrine &mdash; Search For Knowledge, Not For Bugs</span>
+          <span class="ch-sub">trust boundaries, the mentor's framework, research methodology</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">14</span>
+          <span class="ch-title">Case Studies &mdash; CVEs That Changed The War</span>
+          <span class="ch-sub">CVE-2021-1647, CVE-2021-31985, CVE-2026-45584, Tavis Ormandy's work</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">15</span>
+          <span class="ch-title">Post-Exploitation &mdash; Holding Ground After Breach</span>
+          <span class="ch-sub">persistence, lateral movement, C2, privilege escalation chains</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">16</span>
+          <span class="ch-title">Responsible Disclosure &mdash; The Warrior's Code</span>
+          <span class="ch-sub">MSRC submission, bounty process, CVE lifecycle, ethics of 0-day</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- VOLUME V -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL V</span>
+        <span class="vol-title">SPECIAL FORCES &mdash; Domain Warfare</span>
+        <span class="vol-sub">0/6 PLANNED</span>
+      </div>
+      <ul class="chapters">
+        <li>
+          <span class="ch-num">17</span>
+          <span class="ch-title">Network Warfare &mdash; TCP/IP From The Attacker's Perspective</span>
+          <span class="ch-sub">packet anatomy, ARP/DNS attacks, MITM, port scanning, firewall evasion</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">18</span>
+          <span class="ch-title">Cryptography &amp; Evasion &mdash; The Art of Hiding</span>
+          <span class="ch-sub">XOR, AES, obfuscation, packing, AMSI bypass, ETW blinding</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">19</span>
+          <span class="ch-title">Living Off The Land &mdash; The Enemy's Tools Are Your Tools</span>
+          <span class="ch-sub">LOLBins, rundll32, mshta, odbcconf, PowerShell tradecraft</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">20</span>
+          <span class="ch-title">Active Directory Warfare &mdash; Conquering The Domain</span>
+          <span class="ch-sub">BloodHound, Kerberoasting, DCSync, Golden Ticket, lateral movement</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">21</span>
+          <span class="ch-title">Web Application Warfare &mdash; OWASP and Beyond</span>
+          <span class="ch-sub">SQLi, XSS, SSRF, deserialization, auth bypass, RCE through web</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+        <li>
+          <span class="ch-num">22</span>
+          <span class="ch-title">OSINT &amp; Social Engineering &mdash; The Human Factor</span>
+          <span class="ch-sub">recon, HUMINT, phishing, pretexting, physical security</span>
+          <span class="status status-planned">PLANNED</span>
+        </li>
+      </ul>
+    </div>
+
+  </div><!-- /toc -->
+
+  <!-- ── READER VIEW ── -->
+  <div id="reader">
+    <div class="reader-nav">
+      <button onclick="showTOC()">&larr; Back to Curriculum</button>
+      <span class="ch-label" id="reader-label"></span>
+      <div>
+        <button id="btn-prev" onclick="prevChapter()">&larr; Prev</button>
+        <button id="btn-next" onclick="nextChapter()">Next &rarr;</button>
+      </div>
+    </div>
+    <div id="chapter-content"></div>
+    <div class="reader-nav" style="margin-top:2rem; border-top:1px solid #1a1a1a; padding-top:0.8rem; border-bottom:none;">
+      <button onclick="showTOC()">&larr; Back to Curriculum</button>
+      <span></span>
+      <div>
+        <button onclick="prevChapter()">&larr; Prev</button>
+        <button onclick="nextChapter()">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>George Wu. 22DIV. VADER.</p>
+    <p style="margin-top:0.3rem;"><a href="index.html">22DIV Home</a> &middot; <a href="journal.html">OFFSEC Journal</a> &middot; <a href="https://github.com/rainfantry/vader-rce">vader-rce repo</a></p>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const CHAPTERS = {
+  1: { file: 'books/01_HEAP_INTERNALS.md', title: 'Ch 01 — Heap Internals' },
+  2: { file: 'books/02_OVERFLOW_PATTERNS.md', title: 'Ch 02 — Overflow Patterns' },
+  3: { file: 'books/03_UAF_TYPE_CONFUSION.md', title: 'Ch 03 — UAF & Type Confusion' },
+  4: { file: 'books/04_MITIGATIONS.md', title: 'Ch 04 — Mitigations' },
+  5: { file: 'books/05_FUZZING_THEORY.md', title: 'Ch 05 — Fuzzing Theory' },
+  6: { file: 'books/06_CRASH_TRIAGE.md', title: 'Ch 06 — Crash Triage' },
+  7: { file: 'books/07_EXPLOIT_PRIMITIVES.md', title: 'Ch 07 — Exploit Primitives' },
+  8: { file: 'books/08_TARGET_REVERSING.md', title: 'Ch 08 — Target Reversing' }
+};
+
+const MAX_AVAILABLE = 8;
+let currentChapter = 0;
+
+function showTOC() {
+  document.getElementById('toc').style.display = 'block';
+  document.getElementById('reader').style.display = 'none';
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', 'books.html');
+}
+
+function loadChapter(num) {
+  if (!CHAPTERS[num]) return;
+  currentChapter = num;
+
+  document.getElementById('toc').style.display = 'none';
+  document.getElementById('reader').style.display = 'block';
+  document.getElementById('reader-label').textContent = CHAPTERS[num].title;
+  document.getElementById('chapter-content').innerHTML = '<div class="loading">Loading chapter</div>';
+
+  document.getElementById('btn-prev').style.visibility = num > 1 ? 'visible' : 'hidden';
+  document.getElementById('btn-next').style.visibility = num < MAX_AVAILABLE ? 'visible' : 'hidden';
+
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', 'books.html#ch' + String(num).padStart(2, '0'));
+
+  fetch(CHAPTERS[num].file)
+    .then(r => {
+      if (!r.ok) throw new Error('Failed to load');
+      return r.text();
+    })
+    .then(md => {
+      document.getElementById('chapter-content').innerHTML = marked.parse(md);
+    })
+    .catch(() => {
+      document.getElementById('chapter-content').innerHTML =
+        '<p style="color:var(--red);">Failed to load chapter. Check console.</p>';
+    });
+}
+
+function prevChapter() {
+  if (currentChapter > 1) loadChapter(currentChapter - 1);
+}
+
+function nextChapter() {
+  if (currentChapter < MAX_AVAILABLE) loadChapter(currentChapter + 1);
+}
+
+// Handle direct links like books.html#ch03
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#ch')) {
+    const num = parseInt(hash.replace('#ch', ''), 10);
+    if (CHAPTERS[num]) loadChapter(num);
+  }
+});
+</script>
+</body>
+</html>
