@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OFFSEC JOURNAL — VADER // 22DIV</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --bg2: #111;
+  --bg3: #161616;
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #009922;
+  --amber: #ffb000;
+  --red: #ff4444;
+  --cyan: #00e5ff;
+  --dim: #555;
+  --muted: #888;
+  --text: #ccc;
+  --bright: #eee;
+  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+.header {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--green);
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.header .sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.header .sub span { color: var(--dim); }
+
+.prompt {
+  color: var(--green2);
+  user-select: none;
+}
+
+.prompt::before {
+  content: 'vader@22div';
+  color: var(--green3);
+}
+
+.prompt::after {
+  content: ' $ ';
+  color: var(--dim);
+}
+
+.term {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  position: relative;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.term::before {
+  content: attr(data-title);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #1a1a1a;
+  color: var(--dim);
+  padding: 0.15rem 0.6rem;
+  font-size: 0.7rem;
+  border-radius: 0 6px 0 4px;
+}
+
+.term .cmd { color: var(--bright); }
+.term .out { color: var(--muted); }
+.term .out-green { color: var(--green2); }
+.term .out-amber { color: var(--amber); }
+.term .out-red { color: var(--red); }
+.term .out-cyan { color: var(--cyan); }
+.term .comment { color: var(--dim); font-style: italic; }
+
+.entry {
+  margin-bottom: 3.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #141414;
+}
+
+.entry:last-child { border-bottom: none; }
+
+.entry-date {
+  color: var(--dim);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+}
+
+.entry h2 {
+  color: var(--amber);
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.entry h3 {
+  color: var(--cyan);
+  font-size: 0.95rem;
+  font-weight: 400;
+  margin: 1.8rem 0 0.8rem;
+}
+
+.entry h4 {
+  color: var(--bright);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.5rem;
+}
+
+.entry p {
+  color: var(--text);
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+  max-width: 75ch;
+}
+
+.entry p strong {
+  color: var(--bright);
+  font-weight: 600;
+}
+
+.entry p code {
+  background: var(--bg2);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  color: var(--cyan);
+}
+
+.entry p em {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.entry ul, .entry ol {
+  margin: 0.8rem 0 0.8rem 1.5rem;
+  font-size: 0.85rem;
+}
+
+.entry li {
+  margin-bottom: 0.3rem;
+  color: var(--text);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  border-radius: 3px;
+  margin-right: 0.3rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.tag-confirmed { background: #002200; color: var(--green); border: 1px solid #003300; }
+.tag-detected { background: #220000; color: var(--red); border: 1px solid #330000; }
+.tag-msrc { background: #1a1400; color: var(--amber); border: 1px solid #2a2000; }
+.tag-built { background: #001a1a; color: var(--cyan); border: 1px solid #002a2a; }
+.tag-system { background: #001100; color: #00ff88; border: 1px solid #002200; }
+.tag-warning { background: #1a1400; color: #ff8800; border: 1px solid #2a1800; }
+
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.8rem;
+}
+
+.status-table th {
+  text-align: left;
+  color: var(--dim);
+  font-weight: 400;
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid #1e1e1e;
+  letter-spacing: 0.05em;
+}
+
+.status-table td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid #111;
+  color: var(--muted);
+}
+
+.status-table tr:hover td { background: #0e0e0e; }
+
+/* ── EVIDENCE IMAGES ── */
+.evidence {
+  margin: 1.5rem 0;
+}
+
+.evidence img {
+  max-width: 100%;
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  display: block;
+}
+
+.evidence-cap {
+  color: var(--dim);
+  font-size: 0.72rem;
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(12,12,12,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  padding: 0.6rem 0;
+}
+
+nav .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+
+nav a:hover { color: var(--green); }
+nav .brand { color: var(--green3); font-weight: 600; }
+nav .sep { color: #1e1e1e; user-select: none; }
+
+footer {
+  border-top: 1px solid #1a1a1a;
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+
+footer a { color: var(--green3); text-decoration: none; }
+footer a:hover { color: var(--green); }
+
+@media (max-width: 640px) {
+  .container { padding: 1rem; }
+  .term { padding: 0.8rem 1rem; font-size: 0.75rem; }
+  .header h1 { font-size: 1.4rem; }
+  nav .inner { gap: 0.8rem; }
+  nav a { font-size: 0.65rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <span class="sep">|</span>
+    <a href="#top">journal</a>
+    <a href="#recon">recon</a>
+    <a href="#source">source</a>
+    <a href="#chain">chain</a>
+    <a href="#ch7">compile</a>
+    <a href="#ch8">detected</a>
+    <a href="#ch11">xor</a>
+    <a href="#ch12">rogueplanet</a>
+    <a href="#ch13">custom</a>
+  </div>
+</nav>
+
+<div class="container" id="top">
+
+<!-- ═══════ HEADER ═══════ -->
+<div class="header">
+  <h1>OFFSEC JOURNAL — VADER</h1>
+  <div class="sub">
+    full kill chain assessment <span>//</span> radon_laptop1 <span>//</span> 2026-06-13
+  </div>
+  <br>
+  <div class="sub">
+    Authorized penetration test against a real work laptop. Standard user.
+    Defender active. HVCI enforced. Every finding earned from scratch.
+    This journal documents every command, every failure, every pivot.
+  </div>
+</div>
+
+<!-- ═══════ SETUP ═══════ -->
+<section class="entry" id="setup">
+  <div class="entry-date">PRELIMINARY // ASSESSMENT CONTEXT</div>
+  <h2>what is offsec</h2>
+
+  <p>
+    OFFSEC = Offensive Security. The red team side of cybersecurity — attacking systems
+    with permission to find weaknesses before real attackers do. This journal documents
+    a full kill chain: reconnaissance, exploitation, privilege escalation, persistence,
+    and lateral movement on a deliberately configured test machine.
+  </p>
+
+  <h3>setup — why i did it this way</h3>
+
+  <p>
+    I had access to Raed's work laptop (<code>radon_laptop1</code>) with his explicit
+    permission. Rather than testing with an admin account — which would make everything
+    trivially easy — I logged in as a <strong>standard user account</strong>
+    (<code>ghaleb jomma</code>) to add real-world control.
+  </p>
+  <p>
+    The point: simulate how an attacker actually lands. A phishing link, a dodgy USB,
+    a social engineering play — initial access almost always lands you as a standard user.
+    If my tools only work from admin, they're not realistic.
+  </p>
+  <p>
+    I also deliberately set a PIN on the machine beforehand to test whether findings
+    are reachable through a screen-locked session.
+  </p>
+</section>
+
+<!-- ═══════ TARGET ═══════ -->
+<section class="entry" id="target">
+  <div class="entry-date">TARGET PROFILE</div>
+  <h2>the target</h2>
+
+  <table class="status-table">
+    <thead><tr><th>property</th><th>value</th></tr></thead>
+    <tbody>
+      <tr><td>Hostname</td><td style="color:var(--bright)">RADON_LAPTOP1</td></tr>
+      <tr><td>OS</td><td>Windows 11 Home, Build 26200 (24H2)</td></tr>
+      <tr><td>User</td><td style="color:var(--bright)">ghaleb jomma</td></tr>
+      <tr><td>Domain</td><td>WORKGROUP (no Active Directory)</td></tr>
+      <tr><td>IP</td><td style="color:var(--cyan)">192.168.1.145</td></tr>
+      <tr><td>Hardware</td><td>GIGABYTE G7 GD, Intel i7-11800H, 16GB RAM</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════ PART 1 — RECON ═══════ -->
+<section class="entry" id="recon">
+  <div class="entry-date">PART 1 // RECONNAISSANCE</div>
+  <h2>recon — commands run in order</h2>
+
+  <h3>1.1 — uac configuration check</h3>
+
+  <p>
+    I wanted to understand UAC config before doing anything else. UAC pops those
+    "Do you want to allow this app to make changes?" dialogs. If misconfigured,
+    privilege escalation gets easier.
+  </p>
+
+  <div class="term" data-title="uac check">
+<span class="prompt"></span><span class="cmd">reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"</span>
+<span class="out"></span>
+<span class="out">ConsentPromptBehaviorAdmin    REG_DWORD    0x5</span>
+<span class="out">EnableLUA                     REG_DWORD    0x1</span>
+  </div>
+
+  <p>
+    <code>ConsentPromptBehaviorAdmin 0x5</code> = UAC prompts for consent on secure desktop (default).
+    <code>EnableLUA 0x1</code> = UAC enabled. Admin accounts run as standard until explicitly elevated.
+  </p>
+  <p>
+    <strong>Deduction:</strong> UAC is default. Not a bypass target. GaySun doesn't need to touch
+    UAC — it bypasses it entirely by abusing Defender's SYSTEM-level file access.
+  </p>
+
+  <h3>1.2 — defender / edr status check</h3>
+
+  <div class="term" data-title="defender status">
+<span class="prompt"></span><span class="cmd">Get-MpComputerStatus | Select-Object IsTamperProtected, AMRunningMode, RealTimeProtectionEnabled, BehaviorMonitorEnabled</span>
+<span class="out"></span>
+<span class="out-red">IsTamperProtected        : False</span>
+<span class="out">AMRunningMode            : Normal</span>
+<span class="out">RealTimeProtectionEnabled: True</span>
+<span class="out">BehaviorMonitorEnabled   : True</span>
+  </div>
+
+  <p>
+    <strong>Tamper Protection is the lock on Defender itself.</strong> When ON, you can't stop
+    Defender's services even as admin — it blocks SCM calls. When OFF (as here), those calls
+    go through once I have SYSTEM.
+  </p>
+  <p>
+    <span class="tag tag-detected">CRITICAL</span>
+    <strong>Tamper Protection = False.</strong> The single most important finding in the recon.
+    Once I have SYSTEM access, I can stop Defender services programmatically. My evasion
+    binary can blind Defender. Everything after that runs clean.
+  </p>
+
+  <h3>1.3 — process snapshot attempt</h3>
+
+  <div class="term" data-title="shell syntax lesson">
+<span class="prompt"></span><span class="cmd">tasklist /v /fo csv > %TEMP%\proc_snapshot.csv</span>
+<span class="out-red">Error: Could not find a part of the path 'C:\%TEMP%\proc_snapshot.csv'</span>
+<span class="out"></span>
+<span class="comment"># %TEMP% is CMD.exe syntax. PowerShell uses $env:TEMP.</span>
+<span class="comment"># Know your shell.</span>
+<span class="out"></span>
+<span class="prompt"></span><span class="cmd">tasklist /v /fo csv > "$env:TEMP\proc_snapshot.csv"</span>
+<span class="out-green">Process snapshot captured.</span>
+  </div>
+
+  <h3>1.4 — identity and privilege check</h3>
+
+  <div class="term" data-title="whoami">
+<span class="prompt"></span><span class="cmd">whoami /all</span>
+<span class="out"></span>
+<span class="out">User: radon_laptop1\ghaleb jomma</span>
+<span class="out">Groups: BUILTIN\Users (standard user — NOT Administrators)</span>
+<span class="out">Integrity Level: Medium Mandatory Level</span>
+<span class="out">Privileges: SeChangeNotifyPrivilege (only basic user privilege)</span>
+  </div>
+
+  <p>
+    I am a nobody on this machine. <code>BUILTIN\Users</code> = standard user.
+    No admin. Medium integrity = can't write to system directories.
+    No <code>SeDebugPrivilege</code>. No <code>SeImpersonatePrivilege</code>.
+  </p>
+  <p>
+    <strong>Almost everything in my kill chain requires admin or SYSTEM.</strong>
+    GaySun.exe (the TOCTOU escalation) is the ONLY viable path from here.
+    Everything unlocks after that.
+  </p>
+
+  <h3>1.5 — system information</h3>
+
+  <table class="status-table">
+    <thead><tr><th>finding</th><th>value</th><th>implication</th></tr></thead>
+    <tbody>
+      <tr><td>OS Build</td><td style="color:var(--bright)">26200 (24H2)</td><td>Latest Windows 11 — hardened defaults</td></tr>
+      <tr><td>VBS Status</td><td style="color:var(--red)">Running</td><td>Hypervisor active</td></tr>
+      <tr><td>HVCI</td><td style="color:var(--red)">Running</td><td>Kernel code integrity enforced</td></tr>
+      <tr><td>App Control (kernel)</td><td style="color:var(--red)">Enforced</td><td>Unsigned kernel drivers blocked</td></tr>
+      <tr><td>App Control (user)</td><td style="color:var(--green2)">OFF</td><td>Unsigned user-mode .exe CAN run</td></tr>
+      <tr><td>Secure Boot</td><td>Enabled</td><td>Bootloader tamper blocked</td></tr>
+      <tr><td>DMA Protection</td><td>Enabled</td><td>PCIe DMA attacks blocked</td></tr>
+      <tr><td>Domain</td><td>WORKGROUP</td><td>No Active Directory</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>VBS + HVCI = the big finding I didn't expect.</strong> The CPU's hypervisor
+    creates a protected zone that the Windows kernel itself can't touch. Every kernel
+    driver must be Microsoft-signed. Any attack that loads an unsigned kernel driver,
+    patches kernel memory, or uses Mimikatz-style kernel credential theft is dead.
+  </p>
+  <p>
+    <strong>What it DOESN'T kill:</strong> Everything my chain does is user-mode.
+    <code>CreateRemoteThread</code>, DLL injection, service installation via SCM —
+    all Win32 API calls. The hypervisor doesn't watch user-space. And user-mode App
+    Control is OFF, so my unsigned binaries can execute.
+  </p>
+
+  <h3>1.6 — network state</h3>
+
+  <div class="term" data-title="listening services">
+<span class="prompt"></span><span class="cmd">netstat -ano | Select-String "LISTEN"</span>
+<span class="out"></span>
+<span class="out">  Port   PID      Service         Significance</span>
+<span class="out">  ────   ───      ───────         ────────────</span>
+<span class="out-amber">  445    4        SMB             NetExec lateral movement target</span>
+<span class="out-red">  5939   19632    TeamViewer      SYSTEM-level remote access already present</span>
+<span class="out-amber">  17500  18584    Dropbox         Data exfil + passive C2 dead-drop</span>
+<span class="out">  6463   5868     Discord         User-space injection target</span>
+<span class="out">  135    1548     RPC             SCM accessible post-SYSTEM</span>
+<span class="out">  7680   18168    Windows Update  Benign</span>
+  </div>
+
+  <p>
+    <strong>TeamViewer:</strong> Already installed, running as a service (likely SYSTEM).
+    Post-SYSTEM, I could extract the TeamViewer ID and set a permanent unattended
+    password via registry — a more stable persistent backdoor than my custom VNC.
+    It's signed and trusted. Much less suspicious than <code>vncserver.exe</code>.
+  </p>
+  <p>
+    <strong>Dropbox:</strong> Syncs to cloud. Post-SYSTEM, any file I write to the Dropbox sync
+    folder gets automatically exfiltrated. I could use a text file as a dead-drop C2
+    channel — implant polls the file for commands, writes results back. All traffic
+    looks like normal Dropbox HTTPS to a CDN.
+  </p>
+
+  <div class="evidence">
+    <img src="showcase/CSEC_BindShell_vs_ReverseShell_Diagram.png" alt="Bind shell vs reverse shell architecture comparison" loading="lazy">
+    <div class="evidence-cap">Theory: bind shell vs reverse shell architecture — two fundamental C2 patterns</div>
+  </div>
+
+  <h3>1.7 — teamviewer registry check</h3>
+
+  <div class="term" data-title="teamviewer recon">
+<span class="prompt"></span><span class="cmd">reg query "HKLM\SOFTWARE\TeamViewer" /s</span>
+<span class="out"></span>
+<span class="out">Version: 15.78.4</span>
+<span class="out-amber">Always_Online: 0x0</span>
+<span class="out">Security_ActivateDirectIn: 0x0</span>
+  </div>
+
+  <p>
+    <code>Always_Online = 0</code> means no permanent unattended password set.
+    Post-SYSTEM, I can write <code>SecurityPasswordAES</code> to the registry
+    to set a permanent password, converting TeamViewer into a persistent backdoor.
+  </p>
+</section>
+
+<!-- ═══════ PART 2 — SOURCE CODE ANALYSIS ═══════ -->
+<section class="entry" id="source">
+  <div class="entry-date">PART 2 // SOURCE CODE ANALYSIS</div>
+  <h2>the escalation tool — gaysun.exe</h2>
+
+  <p>
+    This is the linchpin of the whole chain. Everything depends on it working.
+  </p>
+
+  <div class="evidence">
+    <img src="showcase/GaySun_TOCTOU_SourceCode_VSS_EICAR.png" alt="GaySun source code in VS Code showing VSS shadow copy and EICAR handling" loading="lazy">
+    <div class="evidence-cap">GaySun.exe source: VSS shadow copy oplock sync, EICAR string stored reversed for static analysis bypass</div>
+  </div>
+
+  <p>
+    <strong>How it works:</strong> Windows Defender runs as SYSTEM — it can write files
+    anywhere, including <code>C:\Windows\System32</code>. I, as a standard user, cannot.
+    The trick: make Defender write MY file into System32 for me.
+  </p>
+
+  <ol>
+    <li>Write an EICAR test string to a temp file called <code>TieringEngineService.exe</code></li>
+    <li>Defender sees it and tries to quarantine/delete it</li>
+    <li>Request a <strong>batch oplock</strong> on the file — Windows notifies me the instant Defender opens it</li>
+    <li>In that notification window (the TOCTOU gap): rename my temp directory and point it at <code>C:\Windows\System32</code> using an NTFS junction</li>
+    <li>Defender, following its original file path, now resolves to <code>System32\TieringEngineService.exe</code></li>
+    <li>Defender writes there — effectively writing MY payload into System32 as SYSTEM</li>
+    <li>Trigger <code>TieringEngineService</code> via COM — it runs as SYSTEM</li>
+    <li>When it detects SYSTEM context, it opens a named pipe, grabs my session ID, and spawns <code>conhost.exe</code> in my session — interactive SYSTEM console</li>
+  </ol>
+
+  <p>
+    <strong>Why HVCI doesn't stop this:</strong> Every step is user-mode Win32 API.
+    No kernel drivers. No kernel memory. This is a logic flaw in Defender's file
+    handling, exploited entirely from user space.
+  </p>
+
+  <h3>complete kill chain — all 8 binaries</h3>
+
+  <h4>stage 0 — delivery: spoolsv.exe (shadow_shell.c)</h4>
+  <p>
+    Reverse TCP shell. Connects back to attacker on port 8080. Spawns hidden
+    <code>cmd.exe</code> with stdin/stdout/stderr piped through the socket.
+  </p>
+
+  <div class="evidence">
+    <img src="showcase/CSEC_GUI_Listener_ReverseShell.png" alt="CSEC GUI Listener with active reverse shell connection" loading="lazy">
+    <div class="evidence-cap">Live: CSEC GUI Listener receiving reverse shell — shell3.exe on port 8888, connection from 192.168.1.201</div>
+  </div>
+
+  <h4>stage 1 — privilege escalation: gaysun.exe</h4>
+  <p>
+    Defender TOCTOU via CF_API + oplock + NTFS junction.
+    Requires standard user access + Defender RealTimeProtection=True (the trigger).
+    Fresh binary compiled this session. Test pending.
+  </p>
+
+  <h4>stage 2 — defense evasion: svchost_update.exe (shadow_evasion.c)</h4>
+  <p>
+    From SYSTEM: stops <code>WinDefend</code>, <code>WdNisSvc</code>, <code>Sense</code>,
+    <code>WdBoot</code>. Adds filesystem exclusions. Corrupts signature update metadata.
+    <strong>Prerequisite:</strong> Tamper Protection must be OFF — confirmed.
+  </p>
+
+  <div class="evidence">
+    <img src="showcase/UnDefend_Engine_Unavailable.png" alt="Windows Security showing Engine unavailable after evasion" loading="lazy">
+    <div class="evidence-cap">Post-evasion: Windows Security reads "Virus &amp; threat protection: Engine unavailable" — Defender is blind</div>
+  </div>
+
+  <div class="evidence">
+    <img src="showcase/UnDefend_Update_Error.png" alt="Defender definitions update blocked with error 80070643" loading="lazy">
+    <div class="evidence-cap">Defender definitions update blocked — error 80070643, stale signatures from months ago</div>
+  </div>
+
+  <h4>stage 3 — persistence: securityhealthhost.exe (ghost_svc.c)</h4>
+  <p>
+    Installs as Windows service named <code>SecurityHealthHost</code> ("Windows Security
+    Health Host"). Auto-starts on boot, runs as SYSTEM. Launches reverse shell +
+    VNC callback. Service name spoofs a legitimate Windows component.
+  </p>
+
+  <h4>stage 4 — process injection: injector.exe + payload.dll</h4>
+  <p>
+    Classic DLL injection via <code>CreateRemoteThread</code> + <code>LoadLibraryA</code>.
+    Injects into <code>explorer.exe</code> — shell and VNC now appear to originate
+    from a trusted process. Harder to flag than a process spawned from temp.
+  </p>
+
+  <div class="evidence">
+    <img src="showcase/GaySun_RunPayload_Source_GitHub.png" alt="RunPayload DLL injection source on GitHub" loading="lazy">
+    <div class="evidence-cap">RunPayload() source on GitHub: proof file creation, reverse shell launch from explorer.exe, VNC callback</div>
+  </div>
+
+  <h4>stage 5 — credential access: tokenvault.exe (shadow_token.c)</h4>
+  <p>
+    Token theft + SAM hive dump. Enumerates processes, finds winlogon.exe (SYSTEM),
+    duplicates the token, dumps SAM registry hive (contains NTLM password hashes).
+    HVCI blocks kernel-mode credential theft but user-mode token duplication via
+    <code>OpenProcessToken</code> should still work from SYSTEM context.
+  </p>
+
+  <h4>stage 6 — lateral movement: netexec.exe (shadow_lateral.c)</h4>
+  <p>
+    PsExec from scratch. SMB authentication + remote service creation.
+    Connects to target's IPC$ share, copies payload, creates and starts a remote
+    service as SYSTEM. Scope on this network: WORKGROUP only, limited to 192.168.1.0/24.
+  </p>
+
+  <h4>stage 7 — c2 (vnc): vncserver.exe</h4>
+  <p>
+    Reverse VNC callback. Full graphical desktop of the target machine.
+    Alternative: TeamViewer (already installed, runs as SYSTEM, harder to flag).
+  </p>
+</section>
+
+<!-- ═══════ PART 3 — KILL CHAIN VIABILITY ═══════ -->
+<section class="entry" id="chain">
+  <div class="entry-date">PART 3 // KILL CHAIN VIABILITY</div>
+  <h2>viability on this target</h2>
+
+  <table class="status-table">
+    <thead><tr><th>stage</th><th>binary</th><th>status</th><th>notes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Delivery</td>
+        <td style="color:var(--bright)">spoolsv.exe</td>
+        <td><span class="tag tag-warning">NEEDS IP</span></td>
+        <td>C2 IP hardcoded as 192.168.1.92</td>
+      </tr>
+      <tr>
+        <td>Escalation</td>
+        <td style="color:var(--bright)">GaySun.exe</td>
+        <td><span class="tag tag-warning">TEST PENDING</span></td>
+        <td>Fresh compile. 24H2 patch status unknown.</td>
+      </tr>
+      <tr>
+        <td>Evasion</td>
+        <td style="color:var(--bright)">svchost_update.exe</td>
+        <td><span class="tag tag-confirmed">VIABLE</span></td>
+        <td>TP=False confirmed. Runs from SYSTEM.</td>
+      </tr>
+      <tr>
+        <td>Persistence</td>
+        <td style="color:var(--bright)">SecurityHealthHost.exe</td>
+        <td><span class="tag tag-confirmed">VIABLE</span></td>
+        <td>Post-SYSTEM + Defender blind</td>
+      </tr>
+      <tr>
+        <td>Injection</td>
+        <td style="color:var(--bright)">Injector.exe</td>
+        <td><span class="tag tag-confirmed">VIABLE</span></td>
+        <td>HVCI doesn't block user-mode injection</td>
+      </tr>
+      <tr>
+        <td>Credentials</td>
+        <td style="color:var(--bright)">TokenVault.exe</td>
+        <td><span class="tag tag-warning">DEGRADED</span></td>
+        <td>HVCI blocks kernel path. User-mode token theft should work.</td>
+      </tr>
+      <tr>
+        <td>Lateral</td>
+        <td style="color:var(--bright)">NetExec.exe</td>
+        <td><span class="tag tag-warning">LIMITED</span></td>
+        <td>WORKGROUP. Need credentials. 192.168.1.0/24 only.</td>
+      </tr>
+      <tr>
+        <td>VNC</td>
+        <td style="color:var(--bright)">vncserver.exe</td>
+        <td><span class="tag tag-confirmed">VIABLE</span></td>
+        <td>Or use TeamViewer (already on target)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>The single gate:</strong> If GaySun.exe's TOCTOU works on Build 26200,
+    the chain flows. If it fails, everything stalls at standard user and we need
+    an alternative escalation path.
+  </p>
+
+  <h3>prep checklist</h3>
+  <ul>
+    <li>Confirm attacker machine IP on 192.168.1.0/24</li>
+    <li>Update hardcoded IP in shadow_shell.c → recompile spoolsv.exe</li>
+    <li>GaySun.exe fresh compile — <strong>IN PROGRESS</strong></li>
+    <li>Create staging directory: <code>mkdir C:\Windows\Temp\c2\</code></li>
+    <li>Copy all binaries to staging</li>
+    <li>Start C2 listener: <code>nc -lvp 8080</code></li>
+    <li>Run GaySun.exe — observe result</li>
+    <li>If "The red sun shall prevail." → SYSTEM → proceed</li>
+    <li>If "Something went wrong." → TOCTOU blocked → run alt escalation recon</li>
+  </ul>
+
+  <h3>alternate escalation (if gaysun fails)</h3>
+
+  <div class="term" data-title="fallback recon">
+<span class="comment"># AlwaysInstallElevated — MSI runs as SYSTEM if both keys = 1</span>
+<span class="prompt"></span><span class="cmd">reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span>
+<span class="prompt"></span><span class="cmd">reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated</span>
+<span class="out"></span>
+<span class="comment"># Unquoted service paths — spaces without quotes = DLL hijack</span>
+<span class="prompt"></span><span class="cmd">wmic service get name,pathname,startmode | findstr /i /v "C:\\Windows"</span>
+<span class="out"></span>
+<span class="comment"># Writable directories in service binary paths</span>
+<span class="prompt"></span><span class="cmd">icacls "C:\Program Files" /T 2>nul | findstr /i "Everyone\|Users\|BUILTIN"</span>
+  </div>
+</section>
+
+<!-- ═══════ CHAPTER 7 — COMPILING ═══════ -->
+<section class="entry" id="ch7">
+  <div class="entry-date">CHAPTER 7 // COMPILATION</div>
+  <h2>compiling gaysun.exe — what went wrong and why</h2>
+
+  <p>
+    The plan: take RedSun.cpp, mutate the hash, compile a clean binary Defender
+    won't recognise by signature. I renamed the copy GaySun.cpp and started trying
+    to build it. I did <strong>not</strong> use a pre-compiled binary. The whole point
+    was a unique hash — Defender's cloud database has flagged known hashes.
+  </p>
+
+  <div class="evidence">
+    <img src="showcase/vader_fix_compile.png" alt="Compilation fix session for GaySun.exe" loading="lazy">
+    <div class="evidence-cap">Compilation fix session — iterating through build errors in Developer Command Prompt</div>
+  </div>
+
+  <div class="evidence">
+    <img src="showcase/Discord_GaySun_Development.png" alt="VADER Discord channel showing GaySun development" loading="lazy">
+    <div class="evidence-cap">Discord (claude-mythos-vader): GaySun.cpp compilation fixes in progress with Oracle</div>
+  </div>
+
+  <h3>the mutation</h3>
+
+  <div class="term" data-title="hash mutation code">
+<span class="out-cyan">int SysHealthCheck(int a, int b) {</span>
+<span class="out-cyan">    volatile int x = a * 0x1EA7A55 + b * 0x80085;</span>
+<span class="out-cyan">    for (int i = 0; i < 14; i++) {x ^= (i << 5); }</span>
+<span class="out-cyan">    return x ^ 0x4242;</span>
+<span class="out-cyan">}</span>
+<span class="out"></span>
+<span class="comment">// Does nothing useful. Exists only to change the binary's SHA256.</span>
+<span class="comment">// Constants 0x1EA7A55 and 0x80085 are mine — nobody else has these.</span>
+<span class="comment">// volatile keyword prevents compiler from optimising it away.</span>
+<span class="comment">// Called from main() to prevent linker dead-code elimination.</span>
+  </div>
+
+  <p>
+    I also had trouble with the constants initially. I tried <code>0xRAINMAN</code> and
+    <code>0xSUNSHINEGIRL</code>. Oracle had to explain that hex only uses digits 0-9
+    and letters A-F. The "0x" prefix just means "this is hex." I re-encoded my
+    callsign as <code>0x1EA7A55</code> and used <code>0x80085</code> for the second.
+  </p>
+
+  <h3>attempt 1 — missing libraries</h3>
+
+  <div class="term" data-title="LNK2019 errors">
+<span class="prompt"></span><span class="cmd">cl.exe GaySun.cpp /Fe:GaySun.exe /O1 /GS- /std:c++17</span>
+<span class="out"></span>
+<span class="out-red">LNK2019: unresolved external symbol __imp_IsWellKnownSid</span>
+<span class="out-red">LNK2019: unresolved external symbol __imp_SetTokenInformation</span>
+<span class="out-red">LNK2019: unresolved external symbol __imp_DuplicateTokenEx</span>
+<span class="out-red">LNK2019: unresolved external symbol __imp_OpenProcessToken</span>
+<span class="out-red">LNK2019: unresolved external symbol __imp_wsprintfW</span>
+<span class="out-red">LNK2019: unresolved external symbol __imp_CreateNamedPipeW</span>
+  </div>
+
+  <p>
+    The compiler found function <em>declarations</em> (.h header) but not the
+    <em>implementations</em> (.lib import library). Security functions live in
+    <code>advapi32.lib</code>, UI functions in <code>user32.lib</code>. Neither
+    was in the compile command.
+  </p>
+
+  <h3>attempt 2 — STATUS code conflicts</h3>
+
+  <div class="term" data-title="header collision">
+<span class="out-red">error C2065: 'STATUS_SUCCESS': undeclared identifier</span>
+<span class="out-red">error C2065: 'STATUS_MORE_ENTRIES': undeclared identifier</span>
+<span class="out-red">error C2065: 'STATUS_NO_SUCH_DEVICE': undeclared identifier</span>
+<span class="out"></span>
+<span class="comment"># Windows.h and ntstatus.h both define STATUS codes.</span>
+<span class="comment"># Windows.h loads first, puts up a guard, ntstatus.h skips its defs.</span>
+<span class="comment"># Fix: #define WIN32_NO_STATUS before Windows.h, #undef after,</span>
+<span class="comment"># then #include ntstatus.h — no collision.</span>
+  </div>
+
+  <h3>attempt 3 — wide string vs ansi mismatch</h3>
+
+  <div class="term" data-title="UNICODE error">
+<span class="out-red">error C2664: 'BOOL CopyFileA(LPCSTR,LPCSTR,BOOL)': cannot convert argument 1 from 'wchar_t[260]' to 'LPCSTR'</span>
+<span class="out"></span>
+<span class="comment"># Source uses wide strings (wchar_t, L"...") throughout.</span>
+<span class="comment"># Without UNICODE define, CopyFile resolves to CopyFileA (ANSI).</span>
+<span class="comment"># Fix: add /DUNICODE /D_UNICODE to compile command.</span>
+  </div>
+
+  <h3>successful compile</h3>
+
+  <div class="term" data-title="build success">
+<span class="prompt"></span><span class="cmd">cl.exe GaySun.cpp /Fe:GaySun.exe /O1 /GS- /std:c++17 /DUNICODE /D_UNICODE ole32.lib advapi32.lib user32.lib</span>
+<span class="out"></span>
+<span class="out">Microsoft (R) C/C++ Optimizing Compiler Version 19.xx</span>
+<span class="out">GaySun.cpp</span>
+<span class="out-amber">GaySun.cpp(742): warning C4838: narrowing conversion from 'LONG' to 'DWORD'</span>
+<span class="out"></span>
+<span class="out-green">GaySun.exe — Build succeeded. 1 Warning(s). 0 Error(s).</span>
+  </div>
+
+  <table class="status-table">
+    <thead><tr><th>flag</th><th>purpose</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--cyan)">/O1</td><td>Optimise for size (smaller = lower entropy = less suspicious)</td></tr>
+      <tr><td style="color:var(--cyan)">/GS-</td><td>Disable stack canaries (might trip behavioral detection)</td></tr>
+      <tr><td style="color:var(--cyan)">/DUNICODE /D_UNICODE</td><td>Force wide string APIs (fixes CopyFileA errors)</td></tr>
+      <tr><td style="color:var(--cyan)">ole32.lib</td><td>COM: CoCreateInstance, CoInitialize</td></tr>
+      <tr><td style="color:var(--cyan)">advapi32.lib</td><td>Security: token functions, SID functions</td></tr>
+      <tr><td style="color:var(--cyan)">user32.lib</td><td>UI: wsprintfW (string formatting)</td></tr>
+    </tbody>
+  </table>
+
+  <table class="status-table">
+    <thead><tr><th>error</th><th>cause</th><th>fix</th><th>lesson</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--red)">LNK2019</td>
+        <td>Missing library files</td>
+        <td style="color:var(--green2)">Add advapi32.lib user32.lib</td>
+        <td>Header declares function. .lib provides code. Both required.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)">STATUS_* undeclared</td>
+        <td>Windows.h/ntstatus.h collision</td>
+        <td style="color:var(--green2)">WIN32_NO_STATUS guard</td>
+        <td>Include order matters. Two headers defining same names need conflict resolution.</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)">CopyFileA mismatch</td>
+        <td>UNICODE not defined</td>
+        <td style="color:var(--green2)">/DUNICODE /D_UNICODE</td>
+        <td>Windows has two string ABIs. wchar_t code needs W macros.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════ CHAPTER 8 — DETECTED ═══════ -->
+<section class="entry" id="ch8">
+  <div class="entry-date">CHAPTER 8 // LIVE TEST</div>
+  <h2>gaysun.exe live test — detected</h2>
+
+  <p>
+    GaySun.exe was deployed on <code>radon_laptop1</code>. Defender flagged it.
+  </p>
+
+  <div class="evidence">
+    <img src="showcase/Defender_Quarantine_GaySun.png" alt="Defender quarantining GaySun.exe as Exploit:Win32/DfndrPERedSun.BC" loading="lazy">
+    <div class="evidence-cap">Defender catches GaySun.exe: Exploit:Win32/DfndrPERedSun.BC — quarantined at drop, signature detection</div>
+  </div>
+
+  <table class="status-table">
+    <thead><tr><th>detection point</th><th>meaning</th><th>fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Quarantined at file drop</td>
+        <td style="color:var(--red)">Signature match despite hash mutation</td>
+        <td>Need different binary entirely</td>
+      </tr>
+      <tr>
+        <td>Blocked during run</td>
+        <td style="color:var(--red)">CF_API TOCTOU patched on Build 26200</td>
+        <td>Need different escalation technique</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <span class="tag tag-detected">DETECTED</span>
+    Detection name: <code>Exploit:Win32/DfndrPERedSun.BC</code>. The <code>.BC</code>
+    variant tag means Microsoft has a dedicated rule for this entire exploit family —
+    not just one hash.
+  </p>
+</section>
+
+<!-- ═══════ CHAPTER 9 — PIVOT ═══════ -->
+<section class="entry" id="ch9">
+  <div class="entry-date">CHAPTER 9 // PIVOT</div>
+  <h2>alternate escalation vectors</h2>
+
+  <p>
+    Three Semester 2 POCs in the existing codebase provide alternate escalation paths.
+    None depend on the CF_API TOCTOU pattern that GaySun uses.
+  </p>
+
+  <h3>option a — greenplasma</h3>
+  <p>
+    Uses <code>CfAbortOperation()</code> instead of GaySun's oplock + VSS approach.
+    Same CF_API abuse class but a different code path through Windows. If Microsoft's
+    patch targeted the specific oplock/VSS flow, GreenPlasma may still land.
+  </p>
+
+  <h3>option b — miniplasma</h3>
+  <p>
+    C# (.NET) implementation. Uses <code>AbortHydration</code> flag + anonymous token
+    impersonation. Completely different binary format — Defender behavioral signatures
+    are tuned separately for managed vs native code.
+  </p>
+
+  <h3>option c — hkclipsvc unquoted service path</h3>
+  <p>
+    Recon sweep found <code>HKClipSvc</code> — a third-party ControlCenter service
+    with path <code>C:\Program Files (x86)\ControlCenter\Driver\x64\HKClipSvc.exe</code>.
+    If stored without quotes in the registry AND any parent directory is writable →
+    Windows will find and execute a binary named <code>Program.exe</code> or
+    <code>ControlCenter.exe</code> in a writable path. No compile needed.
+  </p>
+</section>
+
+<!-- ═══════ CHAPTER 10 — ANNOTATION ═══════ -->
+<section class="entry" id="ch10">
+  <div class="entry-date">CHAPTER 10 // ANNOTATION &amp; BUG FIXES</div>
+  <h2>source code annotation and bug fixes</h2>
+
+  <p>
+    All 8 source files annotated line-by-line in plain English. Four bugs found
+    that would silently break the kill chain at deployment time. All fixed.
+  </p>
+
+  <h3>bug 1 — %USERNAME% not expanded</h3>
+
+  <div class="term" data-title="shadow_evasion.c line 89">
+<span class="comment">// Before (broken):</span>
+<span class="out-red">AddDefenderExclusion(L"C:\\Users\\%USERNAME%\\Desktop");</span>
+<span class="out"></span>
+<span class="comment">// After (fixed):</span>
+<span class="out-green">WCHAR desktopPath[MAX_PATH];</span>
+<span class="out-green">ExpandEnvironmentStringsW(L"%USERPROFILE%\\Desktop", desktopPath, MAX_PATH);</span>
+<span class="out-green">AddDefenderExclusion(desktopPath);</span>
+  </div>
+
+  <p>Environment variables aren't expanded when written to registry string values.
+  The exclusion was adding the literal string <code>C:\Users\%USERNAME%\Desktop</code>
+  which doesn't exist as a real path.</p>
+
+  <h3>bug 2 — no reconnect loop</h3>
+
+  <div class="term" data-title="shadow_shell.c">
+<span class="comment">// Before: exits on first disconnect</span>
+<span class="out-red">SOCKET channel = EstablishChannel();</span>
+<span class="out-red">if (channel == INVALID_SOCKET) return 1;</span>
+<span class="out-red">SpawnRemoteSession(channel);</span>
+<span class="out-red">closesocket(channel);</span>
+<span class="out"></span>
+<span class="comment">// After: retries every 15 seconds</span>
+<span class="out-green">while (1) {</span>
+<span class="out-green">    SOCKET channel = EstablishChannel();</span>
+<span class="out-green">    if (channel != INVALID_SOCKET) {</span>
+<span class="out-green">        SpawnRemoteSession(channel);</span>
+<span class="out-green">        closesocket(channel);</span>
+<span class="out-green">    }</span>
+<span class="out-green">    Sleep(15000);</span>
+<span class="out-green">}</span>
+  </div>
+
+  <p>One dropped session = permanent loss of access until reboot. For a tool meant
+  to persist, this is critical.</p>
+
+  <h3>bug 3 — staging directory assumed to exist</h3>
+
+  <div class="term" data-title="ghost_svc.c">
+<span class="comment">// Added at top of DoPayload():</span>
+<span class="out-green">CreateDirectoryW(L"C:\\Windows\\Temp\\c2", NULL);</span>
+<span class="comment">// No-op if directory already exists — safe to call unconditionally</span>
+  </div>
+
+  <h3>bug 4 — relative dll path fails in explorer.exe context</h3>
+  <p>
+    Running <code>Injector.exe payload.dll</code> passes a relative path to
+    <code>LoadLibraryA</code> inside <code>explorer.exe</code>. LoadLibraryA
+    searches <em>explorer.exe's</em> working directory (not the caller's).
+    <strong>Fix:</strong> always supply absolute path:
+    <code>Injector.exe C:\Windows\Temp\c2\payload.dll</code>
+  </p>
+
+  <h3>annotated files created</h3>
+
+  <table class="status-table">
+    <thead><tr><th>file</th><th>key concepts covered</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--cyan)">GaySun_annotated.cpp</td><td>TOCTOU, CF_API, oplock, NTFS junction, named pipe IPC</td></tr>
+      <tr><td style="color:var(--cyan)">shadow_shell_annotated.c</td><td>Winsock init, STARTF_USESTDHANDLES, WinMain vs main</td></tr>
+      <tr><td style="color:var(--cyan)">shadow_evasion_annotated.c</td><td>SCM service stop, registry write, Tamper Protection</td></tr>
+      <tr><td style="color:var(--cyan)">ghost_svc_annotated.c</td><td>Service lifecycle, SvcMain, SvcCtrlHandler, DoPayload</td></tr>
+      <tr><td style="color:var(--cyan)">injector_annotated.c</td><td>CreateToolhelp32Snapshot, VirtualAllocEx, CreateRemoteThread</td></tr>
+      <tr><td style="color:var(--cyan)">payload_dll_annotated.c</td><td>DllMain, DLL_PROCESS_ATTACH, Loader Lock</td></tr>
+      <tr><td style="color:var(--cyan)">shadow_token_annotated.c</td><td>SeDebugPrivilege, token duplication, SAM dump</td></tr>
+      <tr><td style="color:var(--cyan)">shadow_lateral_annotated.c</td><td>WNetAddConnection2A, remote SCM, PsExec pattern</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════ CHAPTER 11 — XOR EVASION ═══════ -->
+<section class="entry" id="ch11">
+  <div class="entry-date">CHAPTER 11 // EVASION ENGINEERING</div>
+  <h2>string signature evasion</h2>
+
+  <p>
+    GaySun.exe was flagged as <code>Exploit:Win32/DfndrPERedSun.BC</code> at file drop.
+    The detection name breaks down: <code>DfndrPE</code> = Defender PE analysis,
+    <code>RedSun</code> = the exact exploit family, <code>.BC</code> = variant tag.
+  </p>
+
+  <h3>defender detection layers (learned through testing)</h3>
+
+  <table class="status-table">
+    <thead><tr><th>layer</th><th>what it checks</th><th>how to beat it</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--bright)">1. Hash IOC</td>
+        <td>SHA256 of binary</td>
+        <td style="color:var(--green2)">Recompile (any code change)</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bright)">2. String signatures</td>
+        <td>Known strings in .rdata section</td>
+        <td style="color:var(--green2)">Rename/encrypt strings</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bright)">3. PE structure</td>
+        <td>Import table, section layout, code patterns</td>
+        <td style="color:var(--amber)">Different compiler flags, different imports</td>
+      </tr>
+      <tr>
+        <td style="color:var(--bright)">4. Behavioral</td>
+        <td>API call sequences at runtime</td>
+        <td style="color:var(--red)">Different technique entirely</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Recompiling beats layer 1. We attacked layer 2. Layers 3-4 still caught us.</p>
+
+  <div class="evidence">
+    <img src="showcase/XOR_Obfuscate.png" alt="XOR obfuscation applied to GaySun signature strings" loading="lazy">
+    <div class="evidence-cap">XOR obfuscation: TieringEngineService.exe encoded to bypass .rdata pattern matching</div>
+  </div>
+
+  <div class="evidence">
+    <img src="showcase/GaySun_XOR_Obfuscation_Explained.png" alt="XOR evasion technique explanation" loading="lazy">
+    <div class="evidence-cap">XOR evasion explained: how each character is encoded with key 0x5A, 3 call sites + 1 helper function</div>
+  </div>
+
+  <h3>what we changed (5 signature strings)</h3>
+
+  <table class="status-table">
+    <thead><tr><th>original</th><th>replacement</th><th>method</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="color:var(--red)">\\??\\pipe\\REDSUN</td>
+        <td style="color:var(--green2)">\\??\\pipe\\GAYSUN</td>
+        <td>Find-replace</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)">"The sun is shinning..."</td>
+        <td style="color:var(--green2)">"It's a Sunny Day... Not for you.."</td>
+        <td>Find-replace</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)">SERIOUSLYMSFT</td>
+        <td style="color:var(--green2)">REINFORCEMENTS</td>
+        <td>Find-replace</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)">"The red sun shall prevail."</td>
+        <td style="color:var(--green2)">"Unwise of you to think you could defeat the Sith."</td>
+        <td>Find-replace</td>
+      </tr>
+      <tr>
+        <td style="color:var(--red)">TieringEngineService.exe</td>
+        <td style="color:var(--cyan)">XOR-decoded at runtime (key 0x5A)</td>
+        <td>decode_tgt() helper</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>xor encoding</h3>
+
+  <div class="term" data-title="xor math">
+<span class="out">  XOR encoding: each character XOR'd with key (0x5A), stored as result.</span>
+<span class="out">  At runtime, XOR again with same key to recover original.</span>
+<span class="out">  A ^ KEY ^ KEY = A</span>
+<span class="out"></span>
+<span class="out-cyan">  T (0x54) ^ 0x5A = 0x0E    (stored in binary — gibberish to scanner)</span>
+<span class="out-cyan">  0x0E     ^ 0x5A = 0x54 = T (decoded at runtime)</span>
+  </div>
+
+  <div class="evidence">
+    <img src="showcase/GaySun_ImportTable_Evasion.png" alt="PE import table cleanup for evasion" loading="lazy">
+    <div class="evidence-cap">PE Layer 3 evasion: removing user32.lib dependency, verifying zero cldapi.dll entries in import table</div>
+  </div>
+
+  <div class="term" data-title="verification">
+<span class="prompt"></span><span class="cmd">findstr /i "TieringEngineService REDSUN shinning SERIOUSLYMSFT prevail" GaySun.exe</span>
+<span class="out-green">Zero matches. All signature strings absent from binary.</span>
+<span class="out"></span>
+<span class="out-red">Test result: STILL DETECTED.</span>
+<span class="out-red">Detection survived the string mutations.</span>
+  </div>
+
+  <p>
+    <span class="tag tag-detected">STILL DETECTED</span>
+    <strong>Conclusion:</strong> Defender's <code>DfndrPERedSun</code> rule isn't just matching
+    strings — it's profiling PE structure. The import table (CldApi.dll + ntdll.dll +
+    ole32.lib together = "CF_API TOCTOU exploit") and code patterns are fingerprinted
+    independently of string content.
+  </p>
+  <p>
+    <strong>Lesson:</strong> String mutation beats layer 2 but doesn't touch layers 3-4.
+    To beat all layers, you need fundamentally different code — different imports,
+    different structure, or a different technique entirely.
+  </p>
+</section>
+
+<!-- ═══════ CHAPTER 12 — ROGUEPLANET ═══════ -->
+<section class="entry" id="ch12">
+  <div class="entry-date">CHAPTER 12 // ROGUEPLANET</div>
+  <h2>rogueplanet — signatured in 4 days</h2>
+
+  <p>
+    RoguePlanet: the latest exploit from Nightmare Eclipse (RedSun, GreenPlasma,
+    BlueHammer, UnDefend, YellowKey, MiniPlasma). Released June 9 2026, hours
+    after Microsoft's June Patch Tuesday.
+  </p>
+
+  <table class="status-table">
+    <thead><tr><th>property</th><th>rogueplanet</th><th>redsun/gaysun</th></tr></thead>
+    <tbody>
+      <tr><td>Trigger</td><td style="color:var(--cyan)">Virtual disk (ISO/VHDX) mount</td><td>CF_API Cloud Files placeholder</td></tr>
+      <tr><td>Libraries</td><td>virtdisk.lib, taskschd.lib, bcrypt.lib</td><td>CldApi.lib</td></tr>
+      <tr><td>Bypasses May patch?</td><td style="color:var(--green2)">Yes</td><td style="color:var(--red)">No</td></tr>
+      <tr><td>Source size</td><td>5.7MB (embedded binary data)</td><td>27KB</td></tr>
+    </tbody>
+  </table>
+
+  <div class="evidence">
+    <img src="showcase/Defender_Quarantine_RoguePlanet.png" alt="Defender catches RoguePlanet.exe" loading="lazy">
+    <div class="evidence-cap">Defender catches RoguePlanet.exe: Exploit:Win32/DfndrRugPlnt.BB — signatured 4 days after public release</div>
+  </div>
+
+  <p>
+    <span class="tag tag-detected">DETECTED</span>
+    Compiled and immediately quarantined. <strong>4 days from public release to full
+    signature coverage.</strong> This is the critical insight.
+  </p>
+
+  <h3>the lesson</h3>
+
+  <table class="status-table">
+    <thead><tr><th>exploit</th><th>detection</th><th>time to signature</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--bright)">RedSun</td><td style="color:var(--red)">DfndrPERedSun.BC</td><td>Days</td></tr>
+      <tr><td style="color:var(--bright)">RoguePlanet</td><td style="color:var(--red)">DfndrRugPlnt.BB</td><td>~4 days</td></tr>
+      <tr><td style="color:var(--bright)">GreenPlasma</td><td style="color:var(--red)">Patched (CVE-2026-45586)</td><td>Patched June PT</td></tr>
+      <tr><td style="color:var(--bright)">MiniPlasma</td><td style="color:var(--red)">CVE-2020-17103</td><td>Known</td></tr>
+      <tr><td style="color:var(--bright)">BlueHammer</td><td style="color:var(--red)">CVE-2026-33825</td><td>Patched April 2026</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>Using someone else's published exploit code is a fundamentally losing strategy.</strong>
+    Microsoft's response time is faster than our deployment cycle. The only path forward:
+    write our own.
+  </p>
+</section>
+
+<!-- ═══════ CHAPTER 13 — CUSTOM TOCTOU ═══════ -->
+<section class="entry" id="ch13">
+  <div class="entry-date">CHAPTER 13 // ORIGINAL RESEARCH</div>
+  <h2>pivot — writing a custom toctou exploit</h2>
+
+  <h3>why custom code wins</h3>
+
+  <ol>
+    <li><strong>No existing signatures.</strong> Defender's detection database has zero rules for code that doesn't exist yet.</li>
+    <li><strong>Different PE fingerprint.</strong> Our import table, code structure, and function names won't match any <code>DfndrPE*</code> pattern.</li>
+    <li><strong>Educational value.</strong> Understanding the technique deeply enough to write it from scratch demonstrates mastery, not just script execution.</li>
+  </ol>
+
+  <div class="evidence">
+    <img src="showcase/TOCTOU_Junction_Code_Walkthrough.png" alt="Learning to write NTFS junction from scratch" loading="lazy">
+    <div class="evidence-cap">Building from first principles: REPARSE_DATA_BUFFER struct definition, bb1_junction.c building block</div>
+  </div>
+
+  <h3>the core primitive</h3>
+
+  <p>
+    Every exploit in this engagement — RedSun, GreenPlasma, RoguePlanet, BlueHammer —
+    abuses the same fundamental pattern:
+  </p>
+
+  <div class="term" data-title="the shared primitive">
+<span class="out-amber">  1. TRIGGER</span>
+<span class="out">     Defender runs as SYSTEM and performs file operations.</span>
+<span class="out">     Make Defender touch a file we control (e.g. EICAR test string).</span>
+<span class="out"></span>
+<span class="out-amber">  2. SYNCHRONIZE</span>
+<span class="out">     Know exactly WHEN Defender opens our file.</span>
+<span class="out">     (Oplocks, callbacks, timing)</span>
+<span class="out"></span>
+<span class="out-amber">  3. REDIRECT</span>
+<span class="out">     Swap the filesystem path (NTFS junction) so Defender's</span>
+<span class="out">     SYSTEM-level write follows our redirect into a protected location.</span>
+<span class="out"></span>
+<span class="out-amber">  4. PAYLOAD</span>
+<span class="out">     The file Defender writes (or the binary it triggers) is our code,</span>
+<span class="out">     now running as SYSTEM.</span>
+<span class="out"></span>
+<span class="comment">  The difference between exploits is only HOW they implement each step.</span>
+  </div>
+
+  <div class="evidence">
+    <img src="showcase/TOCTOU_Exploit_Live_Execution.png" alt="TOCTOU exploit running live with junction swap phases" loading="lazy">
+    <div class="evidence-cap">Live TOCTOU: junction swap phases, VSS watcher, quarantine pipeline interception — color-coded terminal</div>
+  </div>
+
+  <div class="evidence">
+    <img src="showcase/TOCTOU_Vulnerability_Confirmed.png" alt="TOCTOU vulnerability confirmed" loading="lazy">
+    <div class="evidence-cap">Confirmed: "TOCTOU in Defender quarantine pipeline for Cloud Files placeholders. Standard user can force MsMpEng.exe (SYSTEM) to follow an NTFS junction"</div>
+  </div>
+
+  <p>
+    <span class="tag tag-built">IN PROGRESS</span>
+    Custom exploit architecture and implementation — design phase active.
+    No published signatures exist for novel code.
+  </p>
+</section>
+
+<!-- ═══════ METHODOLOGY ═══════ -->
+<section class="entry" id="methodology">
+  <div class="entry-date">APPENDIX // RESEARCH METHODOLOGY</div>
+  <h2>how the research was conducted</h2>
+
+  <div class="evidence">
+    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="Parallel research agents running AMSI, ETW, and DLL sideloading research" loading="lazy">
+    <div class="evidence-cap">Research methodology: parallel agents running AMSI bypass, ETW patching, and DLL sideloading research simultaneously</div>
+  </div>
+
+  <div class="evidence">
+    <img src="showcase/0x1security_Mentorship_0day_Methodology.png" alt="0x1security mentorship on 0-day methodology" loading="lazy">
+    <div class="evidence-cap">Mentorship from 0x1security: "More than 50% of 0-days are created from a crash. Crash > leak memory > execute arbitrary code. To find crashes, you need fuzzing."</div>
+  </div>
+
+  <h3>current status</h3>
+
+  <table class="status-table">
+    <thead><tr><th>stage</th><th>status</th><th>notes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Reconnaissance</td>
+        <td><span class="tag tag-confirmed">COMPLETE</span></td>
+        <td>Full recon documented</td>
+      </tr>
+      <tr>
+        <td>GaySun compilation</td>
+        <td><span class="tag tag-confirmed">COMPLETE</span></td>
+        <td>4 attempts, all errors resolved</td>
+      </tr>
+      <tr>
+        <td>Source annotation</td>
+        <td><span class="tag tag-confirmed">COMPLETE</span></td>
+        <td>All 8 sources annotated</td>
+      </tr>
+      <tr>
+        <td>Bug fixes</td>
+        <td><span class="tag tag-confirmed">COMPLETE</span></td>
+        <td>4 bugs patched in live sources</td>
+      </tr>
+      <tr>
+        <td>GaySun live test</td>
+        <td><span class="tag tag-detected">DETECTED</span></td>
+        <td>Exploit:Win32/DfndrPERedSun.BC</td>
+      </tr>
+      <tr>
+        <td>String mutation</td>
+        <td><span class="tag tag-confirmed">COMPLETE</span></td>
+        <td>5 sig strings removed</td>
+      </tr>
+      <tr>
+        <td>Mutated GaySun test</td>
+        <td><span class="tag tag-detected">STILL DETECTED</span></td>
+        <td>PE structure sigs survive string changes</td>
+      </tr>
+      <tr>
+        <td>RoguePlanet test</td>
+        <td><span class="tag tag-detected">DETECTED</span></td>
+        <td>Signatured in 4 days</td>
+      </tr>
+      <tr>
+        <td>Custom exploit</td>
+        <td><span class="tag tag-built">ACTIVE</span></td>
+        <td>Writing from scratch — no published sigs exist</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="term" data-title="the conclusion" style="margin-top: 2rem;">
+<span class="out-amber">  Every published exploit has a shelf life measured in days.</span>
+<span class="out-amber">  Microsoft's detection pipeline is faster than deployment.</span>
+<span class="out"></span>
+<span class="out-green">  The only durable edge: write your own.</span>
+<span class="out-green">  Novel code has no signatures. Novel techniques have no rules.</span>
+<span class="out-green">  If it doesn't exist in their database, it doesn't get caught.</span>
+<span class="out"></span>
+<span class="out">  Defeats acknowledged. Architecture mapped. Pivots earned.</span>
+<span class="out">  The wall held where it was supposed to.</span>
+<span class="out">  The gaps are where it wasn't looking.</span>
+  </div>
+
+  <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
+    George Wu. 22DIV. VADER. All testing on personally-owned hardware with explicit
+    authorization. Responsible disclosure via MSRC. The defeats mapped the architecture.
+    The architecture informed the pivots.
+  </p>
+</section>
+
+</div>
+
+<footer>
+  <div>george wu / 22DIV</div>
+  <div style="margin-top: 0.3rem;">
+    <a href="index.html">main</a> &middot;
+    <a href="https://github.com/rainfantry">github</a>
+  </div>
+  <div style="margin-top: 0.5rem; color: #333;">CSEC // authorized assessment // responsible disclosure via MSRC</div>
+</footer>
+
+</body>
+</html>
