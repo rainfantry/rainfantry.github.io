@@ -276,6 +276,7 @@ footer a:hover { color: var(--green); }
     <a href="#pathinjection">path injection</a>
     <a href="#vaderprime">vader-prime</a>
     <a href="#recon">recon</a>
+    <a href="#ai-research">ai exploitation</a>
     <a href="#status">status</a>
   </div>
 </nav>
@@ -343,8 +344,9 @@ footer a:hover { color: var(--green); }
 <span class="out">OPERATOR:        VADER (george wu / 22DIV)</span>
 <span class="out">AUTHORISATION:   CSEC academic research, own hardware</span>
 <span class="out">DISCLOSURE:      Responsible disclosure via MSRC</span>
-<span class="out">MSRC CASE:       <span class="out-amber">VULN-195458 (SUBMITTED 2026-06-16)</span></span>
+<span class="out">MSRC CASE:       <span class="out-red">VULN-195458 (REJECTED — not a security boundary)</span></span>
 <span class="out">FINDINGS:        53 (30 TOCTOU + 23 privesc/recon phase)</span>
+<span class="out">PIVOT:           <span class="out-cyan">AI vulnerability research (prompt injection, Copilot)</span></span>
   </div>
 </section>
 
@@ -381,43 +383,54 @@ footer a:hover { color: var(--green); }
     to memory altogether and found a way to get the same result without it.
   </p>
   <p>
-    Can't talk about the mechanism. It's under coordinated disclosure with MSRC.
-    What I'll put on the record: zero bytes modified in the target DLLs. No
-    VirtualProtect. The thing Tamper Protection monitors — memory integrity —
-    never gets touched. Because the approach doesn't go through memory.
+    The mechanism: <strong>Hardware Breakpoints (HWBP)</strong>. Instead of patching
+    the target DLL in memory (which Tamper Protection catches), you set a hardware
+    breakpoint on the function entry point via debug registers (DR0-DR7). The CPU
+    fires a single-step exception before the function executes. A Vectored Exception
+    Handler catches it and returns a clean result. Zero bytes modified. Tamper
+    Protection monitors memory integrity — debug registers aren't memory. The
+    monitoring boundary doesn't cover them.
   </p>
   <p>
-    Applied it to AMSI. Applied it to ETW. Combined both into one loader.
-    All user-mode telemetry went dark from a standard user context. No elevation.
-    No admin credentials. The control test proved the gap — classic memory patch
-    gets caught every time. This doesn't.
+    Applied it to AMSI (AmsiScanBuffer) and ETW (NtTraceEvent). SetThreadContext
+    writes the breakpoint address into DR0 and arms DR7. When the target function
+    is called, the CPU traps. The VEH skips the function body. All user-mode
+    telemetry goes dark from a standard user context. No elevation. No admin.
   </p>
   <p>
-    I reported it because I want Microsoft to close this, not leave it open for
-    someone who won't say anything. Details drop when the embargo lifts.
+    Reported it to MSRC as VULN-195458. They rejected it. Detection evasion bypasses
+    are not a security boundary under Microsoft's servicing criteria. The rejection
+    referenced <a href="https://www.crowdstrike.com/en-us/blog/crowdstrike-investigates-threat-of-patchless-amsi-bypass-attacks/" style="color:var(--cyan)">CrowdStrike's research on patchless AMSI bypass</a> —
+    the technique class was already known. Fair. The wall I was testing isn't the
+    kind of wall they patch.
   </p>
 
-  <div class="term" data-title="coordinated disclosure">
-<span class="out-amber">  MSRC SUBMISSION ACTIVE</span>
-<span class="out">  Technique details embargoed pending Microsoft review.</span>
-<span class="out">  Full PoC source, evidence package, and remediation</span>
-<span class="out">  recommendations provided to MSRC directly.</span>
+  <div class="term" data-title="VULN-195458 // HWBP tamper bypass — technique disclosed">
+<span class="out-red">  MSRC VERDICT: NOT A VULNERABILITY</span>
+<span class="out-red">  "Detection or evasion bypasses are not considered to cross</span>
+<span class="out-red">   a recognized security boundary."</span>
 <span class="out"></span>
-<span class="out">  What I can say publicly:</span>
-<span class="out">    - Tamper Protection monitors memory integrity</span>
-<span class="out">    - This technique does not modify memory</span>
-<span class="out">    - AMSI + ETW defeated simultaneously</span>
-<span class="out">    - Standard user privilege, no elevation</span>
-<span class="out">    - Control test confirms the detection gap</span>
+<span class="out">  Technique: Hardware Breakpoint (HWBP) on AMSI + ETW functions</span>
+<span class="out">  Mechanism: SetThreadContext → DR0 = target addr, DR7 = 0x1</span>
+<span class="out">  Handler:   Vectored Exception Handler skips function body</span>
+<span class="out">  Result:    AMSI returns AMSI_RESULT_CLEAN, ETW drops all events</span>
+<span class="out">  Modified:  0 bytes. No VirtualProtect. No memory writes.</span>
+<span class="out">  Privilege: Standard user. No elevation.</span>
 <span class="out"></span>
-<span class="out">  Details on patch or after embargo window closes.</span>
+<span class="out">  Control test: classic memory patch → Behavior:Win32/AMSI_Patch_T.B12</span>
+<span class="out">  HWBP method:  → undetected. Tamper Protection does not monitor DR0-DR7.</span>
+<span class="out"></span>
+<span class="out-amber">  LESSON: Detection bypass ≠ security boundary.</span>
+<span class="out-amber">  Microsoft won't patch it. The gap is by design.</span>
+<span class="out-amber">  Full source: <a href="https://github.com/rainfantry/vader-rootkit" style="color:var(--cyan)">github.com/rainfantry/vader-rootkit</a></span>
   </div>
 
   <p>
-    <span class="tag tag-msrc">EMBARGOED</span>
-    Tamper Protection bypass identified and submitted to MSRC. The classic
-    memory-patch technique is detected (proven above). This technique isn't.
-    Same result, different road. Everything else is under the embargo.
+    <span class="tag tag-detected">REJECTED</span>
+    <span class="tag tag-confirmed">TECHNIQUE PUBLIC</span>
+    VULN-195458 closed by MSRC. Detection bypasses are defense-in-depth, not
+    security boundaries. The technique works. Microsoft won't fix it. Published
+    because there's nothing left to protect — the category itself is out of scope.
   </p>
 </section>
 
@@ -659,6 +672,91 @@ footer a:hover { color: var(--green); }
   </p>
 </section>
 
+<!-- ═══════ AI EXPLOITATION ═══════ -->
+<section class="entry" id="ai-research">
+  <div class="entry-date">ENGAGEMENT 15 // 2026</div>
+  <h2>ai exploitation -- the pivot</h2>
+
+  <p>
+    MSRC rejection taught me what I should've read before the first submission:
+    Microsoft's <a href="https://www.microsoft.com/msrc/windows-security-servicing-criteria" style="color:var(--cyan)">security servicing criteria</a>.
+    Detection bypasses aren't security boundaries. Never were. The entire TOCTOU
+    campaign, the HWBP discovery, the EtwTi analysis — technically sound, architecturally
+    irrelevant to their bounty program. Wrong target category.
+  </p>
+  <p>
+    But MSRC included something in the rejection letter that changed the game:
+    a link to their <a href="https://www.microsoft.com/en-us/msrc/aibugbar" style="color:var(--cyan)">AI vulnerability classification</a>.
+    Prompt injection that exfiltrates another user's data with zero interaction:
+    <strong>CRITICAL severity</strong>. Model theft of confidential models: <strong>CRITICAL</strong>.
+    Input extraction across user boundaries: <strong>IMPORTANT</strong>. These cross
+    actual security boundaries — user isolation, data classification, tenant separation.
+  </p>
+
+  <div class="term" data-title="ai bug bar // what actually pays">
+<span class="out-green">  CRITICAL:</span>
+<span class="out">    Prompt injection → exfiltrate another user's data (zero-click)</span>
+<span class="out">    Model theft → extract confidential model architecture/weights</span>
+<span class="out"></span>
+<span class="out-amber">  IMPORTANT:</span>
+<span class="out">    Prompt injection → exfiltrate data (requires user interaction)</span>
+<span class="out">    Training data reconstruction → recover confidential records</span>
+<span class="out">    Input extraction → recover other users' prompts/inputs</span>
+<span class="out"></span>
+<span class="out-red">  NOT A VULNERABILITY:</span>
+<span class="out">    System prompt extraction (explicitly excluded)</span>
+<span class="out">    Detection/evasion bypass (learned that one the hard way)</span>
+<span class="out"></span>
+<span class="out-cyan">  TARGET SURFACE:</span>
+<span class="out">    Microsoft Copilot (free, publicly accessible)</span>
+<span class="out">    M365 Copilot (Word, Excel, Teams, Outlook — enterprise)</span>
+<span class="out">    Azure AI services</span>
+<span class="out">    GitHub Copilot</span>
+  </div>
+
+  <p>
+    The attack surface is newer than Windows kernel exploitation. Fewer researchers,
+    more unexplored territory. And the skill transfer from Windows internals is real —
+    the methodology is the same. Controlled test. Evidence-grade documentation. Map the
+    boundary. Find where the boundary logic fails. Prove the crossing.
+  </p>
+  <p>
+    The difference: instead of VirtualProtect and debug registers, the primitives are
+    indirect prompt injection, cross-context data exfiltration, and action abuse. Instead
+    of Defender's quarantine pipeline, the target is Copilot's trust boundary between
+    attacker-controlled content and user data. Different domain. Same thinking.
+  </p>
+
+  <div class="term" data-title="attack vectors // active research">
+<span class="out">  Vector 1: Document injection</span>
+<span class="out">    Hidden instructions in shared Word/Excel docs (white text, metadata,</span>
+<span class="out">    comments). Copilot reads the doc → follows attacker instructions →</span>
+<span class="out">    leaks victim's other documents, emails, calendar.</span>
+<span class="out"></span>
+<span class="out">  Vector 2: Email injection</span>
+<span class="out">    Prompt payload in email body/headers. Victim's Copilot summarises</span>
+<span class="out">    inbox → injected instruction causes cross-email data leakage.</span>
+<span class="out"></span>
+<span class="out">  Vector 3: Web injection (Copilot in Edge)</span>
+<span class="out">    Payload in HTML comments, hidden divs, meta tags. User asks Copilot</span>
+<span class="out">    about the page → injection overrides system instructions.</span>
+<span class="out"></span>
+<span class="out">  Vector 4: Action abuse</span>
+<span class="out">    If Copilot has actions enabled (send email, search files, create events),</span>
+<span class="out">    can injection trigger those actions with attacker-controlled parameters?</span>
+<span class="out"></span>
+<span class="out-amber">  STATUS: ACTIVE RESEARCH — test infrastructure being deployed</span>
+  </div>
+
+  <p>
+    <span class="tag tag-built">IN PROGRESS</span>
+    New attack surface. Same methodology. The TOCTOU campaign taught me how to
+    systematically map a defensive architecture and find the seams. The MSRC
+    rejection taught me which seams they actually care about fixing. Now I know
+    both. Applying that to AI.
+  </p>
+</section>
+
 <!-- ═══════ STATUS ═══════ -->
 <section class="entry" id="status">
   <div class="entry-date">CURRENT STATUS // 2026-06-15</div>
@@ -683,20 +781,20 @@ footer a:hover { color: var(--green); }
       <tr>
         <td style="color:var(--dim)">1</td>
         <td>AMSI bypass</td>
-        <td><span class="tag tag-msrc">EMBARGOED</span></td>
-        <td style="color:var(--dim)">0 bytes modified — technique under MSRC disclosure</td>
+        <td><span class="tag tag-confirmed">PUBLIC</span></td>
+        <td style="color:var(--dim)">HWBP on AmsiScanBuffer — MSRC rejected, technique published</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">2</td>
         <td>ETW bypass</td>
-        <td><span class="tag tag-msrc">EMBARGOED</span></td>
-        <td style="color:var(--dim)">Dead man test passed — technique under MSRC disclosure</td>
+        <td><span class="tag tag-confirmed">PUBLIC</span></td>
+        <td style="color:var(--dim)">HWBP on NtTraceEvent — MSRC rejected, technique published</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">1+2</td>
         <td>Dark room</td>
-        <td><span class="tag tag-msrc">EMBARGOED</span></td>
-        <td style="color:var(--dim)">Combined bypass — details under coordinated disclosure</td>
+        <td><span class="tag tag-confirmed">PUBLIC</span></td>
+        <td style="color:var(--dim)">Combined AMSI+ETW HWBP bypass — not a security boundary</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">3a</td>
@@ -750,13 +848,13 @@ footer a:hover { color: var(--green); }
     <tbody>
       <tr>
         <td>AMSI tamper protection</td>
-        <td><span class="tag tag-msrc">EMBARGOED</span></td>
-        <td style="color:var(--dim)">VULN-195458 — MSRC coordinated disclosure</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
+        <td style="color:var(--dim)">HWBP on AmsiScanBuffer — VULN-195458 rejected by MSRC</td>
       </tr>
       <tr>
         <td>ETW process telemetry</td>
-        <td><span class="tag tag-msrc">EMBARGOED</span></td>
-        <td style="color:var(--dim)">VULN-195458 — MSRC coordinated disclosure</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
+        <td style="color:var(--dim)">HWBP on NtTraceEvent — not a security boundary</td>
       </tr>
       <tr>
         <td>Defender static analysis</td>
@@ -765,8 +863,8 @@ footer a:hover { color: var(--green); }
       </tr>
       <tr>
         <td>Defender behavioral analysis</td>
-        <td><span class="tag tag-msrc">EMBARGOED</span></td>
-        <td style="color:var(--dim)">Technique avoids known signatures</td>
+        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
+        <td style="color:var(--dim)">HWBP avoids all known behavioral signatures</td>
       </tr>
       <tr>
         <td>Service binary ACLs</td>
@@ -808,34 +906,37 @@ footer a:hover { color: var(--green); }
 
   <div class="term" data-title="the flag" style="margin-top: 2rem;">
 <span class="out-amber">  OBJECTIVE:</span>
-<span class="out">  Standard user -> SYSTEM-level privilege escalation</span>
-<span class="out">  via novel attack vector discovered through this research</span>
-<span class="out">  Reported via MSRC/MITRE -> CVE assigned -> george wu credited</span>
+<span class="out">  CVE with george wu's name on it. Security boundary crossing.</span>
+<span class="out">  Reported via MSRC/MITRE -> assigned -> credited.</span>
 <span class="out"></span>
 <span class="out-green">  SYSTEM captured:  #53 Wondershare binary replacement (CWE-732)</span>
 <span class="out-green">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
 <span class="out"></span>
-<span class="out-green">  MSRC filed:</span>
-<span class="out-green">    #36 -> VULN-195458  Tamper Protection HWBP bypass (90-day embargo)</span>
+<span class="out-red">  MSRC rejected:</span>
+<span class="out-red">    #36 -> VULN-195458  HWBP tamper bypass — "not a security boundary"</span>
+<span class="out-red">    Lesson: detection bypass ≠ vulnerability. Category was wrong.</span>
+<span class="out"></span>
 <span class="out-amber">  CVE submissions ready:</span>
 <span class="out-amber">    #53 -> MITRE  NativePushService LPE, CWE-732 — report written</span>
 <span class="out-amber">    #49 -> MITRE  PATH injection, CWE-426 — canary-tested, pending</span>
 <span class="out"></span>
-<span class="out-cyan">  Moonshot:</span>
-<span class="out-cyan">    VADER-PRIME cldflt race -> print processor -> SYSTEM (15-25%)</span>
-<span class="out-cyan">    Original research. Original chain. George Wu's name on it.</span>
+<span class="out-cyan">  New direction: AI vulnerability research</span>
+<span class="out-cyan">    Target: Microsoft Copilot indirect prompt injection</span>
+<span class="out-cyan">    Goal: cross-user data exfiltration = CRITICAL severity</span>
+<span class="out-cyan">    Surface: M365 Copilot, Azure AI, Copilot in Edge</span>
+<span class="out-cyan">    Same methodology. Right target category this time.</span>
 <span class="out"></span>
 <span class="out-red">  Defeats acknowledged:</span>
 <span class="out">    vader-toctou: 35 commits, 30 findings, 0 shells.</span>
 <span class="out">    WdFilter identity gate: architecturally unbypassable.</span>
 <span class="out">    IKEEXT: uniformly hardened (LOAD_LIBRARY_SEARCH_SYSTEM32).</span>
-<span class="out">    RedSun/UnDefend/BlueHammer: all patched. 0-day shelf life = weeks.</span>
+<span class="out">    VULN-195458: valid technique, wrong category. No CVE.</span>
   </div>
 
   <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
-    53 findings across 14 engagements. One MSRC case filed. Every technique built from scratch against live
-    defenses. The wall held where it was supposed to. The gaps are where it wasn't looking.
-    The defeats mapped the architecture. The architecture informed the pivots.
+    53 findings across 14 engagements. One MSRC case filed and rejected. Every technique built from scratch
+    against live defenses. The wall held where it was supposed to. The MSRC rejection taught me which walls
+    they actually fix. Now targeting AI security boundaries — same methodology, right category.
   </p>
 </section>
 
@@ -846,7 +947,7 @@ footer a:hover { color: var(--green); }
   <div style="margin-top: 0.3rem;">
     <a href="https://github.com/rainfantry">github</a>
   </div>
-  <div style="margin-top: 0.5rem; color: #333;">CSEC // responsible disclosure via MSRC</div>
+  <div style="margin-top: 0.5rem; color: #333;">CSEC // windows internals // ai exploitation // responsible disclosure</div>
 </footer>
 
 </body>
