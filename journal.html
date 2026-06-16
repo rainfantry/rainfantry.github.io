@@ -805,8 +805,8 @@ footer a:hover { color: var(--green); }
   </div>
 
   <div class="evidence">
-    <img src="showcase/Discord_GaySun_Development.png" alt="VADER Discord channel showing GaySun development" loading="lazy">
-    <div class="evidence-cap">Discord (claude-mythos-vader): GaySun.cpp compilation fixes in progress with Oracle</div>
+    <img src="showcase/Discord_GaySun_Development.png" alt="AI-assisted debugging — resolving C++ linker errors during GaySun compilation" loading="lazy">
+    <div class="evidence-cap">AI-assisted debugging: asking targeted questions about MSVC linker errors and Windows API calling conventions — "what does LNK2019 mean for this import?" "why does cl.exe need /link ws2_32.lib here?"</div>
   </div>
 
   <h3>the mutation</h3>
@@ -1319,9 +1319,31 @@ footer a:hover { color: var(--green); }
   <div class="entry-date">APPENDIX // RESEARCH METHODOLOGY</div>
   <h2>how the research was conducted</h2>
 
+  <h3>AI-augmented learning</h3>
+  <p>
+    This research uses large language models as a <strong>teaching and explanation tool</strong>.
+    The methodology: I identify a concept I need to understand — AMSI internals, ETW provider
+    architecture, DLL search order mechanics — and prompt the AI to explain it at the implementation
+    level. "How does AmsiScanBuffer get called? What parameters does it take? What return value
+    tells the caller the scan was clean?" Then I verify every claim against Microsoft documentation,
+    debugger output, and live testing on my own hardware.
+  </p>
+  <p>
+    The AI doesn't write the exploits. It explains the concepts — the same way a textbook or a
+    mentor would, except I can ask follow-up questions in real time. "What does DR7 bit 0 control?"
+    "Why does VirtualProtect trigger Tamper Protection but SetThreadContext doesn't?" "Show me the
+    EXCEPTION_RECORD structure layout." Every technical claim gets validated against observed
+    behaviour before it becomes part of the research.
+  </p>
+  <p>
+    The screenshots below show this process: directed questions about specific Windows internals,
+    not "write me an exploit." The implementation, testing, debugging, and architectural decisions
+    are mine. The AI is the reference library I can interrogate.
+  </p>
+
   <div class="evidence">
-    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="Parallel research agents running AMSI, ETW, and DLL sideloading research" loading="lazy">
-    <div class="evidence-cap">Research methodology: parallel agents running AMSI bypass, ETW patching, and DLL sideloading research simultaneously</div>
+    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="AI-assisted research — querying AMSI, ETW, and DLL sideloading internals" loading="lazy">
+    <div class="evidence-cap">AI-augmented research: directed queries on AMSI hook mechanics, ETW provider architecture, and DLL search order internals — concepts explained, then verified against live testing</div>
   </div>
 
   <h3>current status</h3>
