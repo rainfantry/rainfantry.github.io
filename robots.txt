@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://rainfantry.github.io/sitemap.xml

@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSEC Kill Chain — Field Manual // 22DIV</title>
+<title>George Wu | CSEC Kill Chain Field Manual — Cybersecurity Curriculum</title>
+<meta name="description" content="45-chapter cybersecurity field manual by George Wu. Windows internals, exploit development, process injection, privilege escalation, OPSEC tradecraft, ASF doctrine, CTF operations. 17,543 lines of original content.">
+<meta name="keywords" content="George Wu, CSEC, cybersecurity curriculum, kill chain, exploit development, process injection, privilege escalation, DLL hijacking, AMSI bypass, OPSEC, red team, CTF, penetration testing, Windows security">
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rainfantry.github.io/csec.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="George Wu | CSEC Kill Chain Field Manual — 45 Chapters">
+<meta property="og:description" content="Complete cybersecurity curriculum: Windows exploitation, reverse engineering, process injection, privilege escalation, ASF tactical doctrine. 11 volumes of original research.">
+<meta property="og:url" content="https://rainfantry.github.io/csec.html">
+<meta property="og:site_name" content="22DIV — George Wu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSEC Kill Chain Field Manual — George Wu">
+<meta name="twitter:description" content="45-chapter cybersecurity field manual. Windows exploitation, ASF doctrine, CTF operations. 17,543 lines of original content.">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -483,19 +496,19 @@ body::after {
 
     <div class="stats">
       <div class="stat-box">
-        <span class="stat-num">42</span>
+        <span class="stat-num">45</span>
         <span class="stat-label">CHAPTERS</span>
       </div>
       <div class="stat-box">
-        <span class="stat-num">42</span>
+        <span class="stat-num">45</span>
         <span class="stat-label">COMPLETE</span>
       </div>
       <div class="stat-box">
-        <span class="stat-num">10</span>
+        <span class="stat-num">11</span>
         <span class="stat-label">VOLUMES</span>
       </div>
       <div class="stat-box">
-        <span class="stat-num">15542</span>
+        <span class="stat-num">17543</span>
         <span class="stat-label">LINES WRITTEN</span>
       </div>
     </div>
@@ -862,6 +875,35 @@ body::after {
       </ul>
     </div>
 
+    <!-- VOLUME XI -->
+    <div class="volume">
+      <div class="vol-header">
+        <span class="vol-num">VOL XI</span>
+        <span class="vol-title">ADVERSARIAL TRADECRAFT &mdash; Formalized ASF Tactics</span>
+        <span class="vol-sub">3/3 COMPLETE</span>
+      </div>
+      <ul class="chapters">
+        <li class="available" onclick="loadChapter(43)" style="cursor:pointer">
+          <span class="ch-num">43</span>
+          <span class="ch-title">Obfuscation &amp; Payload Encoding &mdash; ASF Tactic: CONCEALMENT</span>
+          <span class="ch-sub">XOR encoding, string concealment, .rdata vs stack, encoding ladder, VADER principle</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(44)" style="cursor:pointer">
+          <span class="ch-num">44</span>
+          <span class="ch-title">Defense Evasion &amp; Anti-Analysis &mdash; ASF Tactic: COUNTER-INTELLIGENCE</span>
+          <span class="ch-sub">HWBP AMSI bypass (VULN-195458), ETW blinding, VEH handler, anti-sandbox</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+        <li class="available" onclick="loadChapter(45)" style="cursor:pointer">
+          <span class="ch-num">45</span>
+          <span class="ch-title">DLL Search Order Exploitation &mdash; ASF Tactic: INFILTRATION</span>
+          <span class="ch-sub">phantom DLLs, osppc.dll discovery, PATH hijack, sideloading, DLL proxying</span>
+          <span class="status status-complete">COMPLETE</span>
+        </li>
+      </ul>
+    </div>
+
   </div><!-- /toc -->
 
   <!-- ── READER VIEW ── -->
@@ -936,10 +978,13 @@ const CHAPTERS = {
   39: { file: 'csec/23_SOCIAL_ENGINEERING.md', title: 'Ch 39 — Social Engineering' },
   40: { file: 'csec/24_DATATRUST_PRESENTATION.md', title: 'Ch 40 — DataTrust Presentation' },
   41: { file: 'csec/25_S2_VULNERABILITY_ANALYSIS.md', title: 'Ch 41 — Vulnerability Analysis' },
-  42: { file: 'csec/26_ENTERPRISE_EMULATION.md', title: 'Ch 42 — Enterprise Emulation' }
+  42: { file: 'csec/26_ENTERPRISE_EMULATION.md', title: 'Ch 42 — Enterprise Emulation' },
+  43: { file: 'csec/43_OBFUSCATION.md', title: 'Ch 43 — Obfuscation & Payload Encoding' },
+  44: { file: 'csec/44_DEFENSE_EVASION.md', title: 'Ch 44 — Defense Evasion & Anti-Analysis' },
+  45: { file: 'csec/45_DLL_HIJACKING.md', title: 'Ch 45 — DLL Search Order Exploitation' }
 };
 
-const MAX_AVAILABLE = 42;
+const MAX_AVAILABLE = 45;
 let currentChapter = 0;
 
 function showTOC() {
