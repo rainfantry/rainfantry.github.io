@@ -340,6 +340,11 @@ footer a:hover { color: var(--green); }
     personally-owned hardware. Household consent documented.
   </p>
 
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/Discord_GaySun_Development.png" alt="VADER Discord — GaySun exploit development session" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Development session — building the escalation binary from scratch</div>
+  </div>
+
   <div class="term" data-title="classification">
 <span class="out">CLASSIFICATION:  UNCLASSIFIED // ACADEMIC USE ONLY</span>
 <span class="out">OPERATOR:        VADER (george wu / 22DIV)</span>
@@ -375,6 +380,11 @@ footer a:hover { color: var(--green); }
 <span class="out"></span>
 <span class="comment">  # Named rule. Specific to memory permission change + write on AMSI.</span>
 <span class="comment">  # Good. Now I know exactly what you're looking for.</span>
+  </div>
+
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="Parallel research agents running AMSI, ETW, and DLL sideloading research" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Parallel research — AMSI, ETW, and DLL sideloading attack surface mapping</div>
   </div>
 
   <p>
@@ -438,6 +448,17 @@ footer a:hover { color: var(--green); }
     security boundaries. The technique works. Microsoft won't fix it. Published
     because there's nothing left to protect — the category itself is out of scope.
   </p>
+
+  <div style="margin: 1.5rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <img src="showcase/UnDefend_Engine_Unavailable.png" alt="Windows Security showing Engine unavailable after evasion" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Defender engine unavailable — evasion successful</div>
+    </div>
+    <div style="flex:1; min-width:280px;">
+      <img src="showcase/UnDefend_Update_Error.png" alt="Defender definitions update blocked with error 80070643" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Defender signature updates blocked post-evasion</div>
+    </div>
+  </div>
 </section>
 
 <!-- ═══════ PRIVESC ═══════ -->
@@ -496,6 +517,12 @@ footer a:hover { color: var(--green); }
 <span class="out">                   ^^^^^^ ^^^^^^</span>
 <span class="out-amber">                   NT AUTHORITY\SYSTEM. Full token. Elevated.</span>
 <span class="out-amber">                   No admin creds entered. No UAC prompt.</span>
+  </div>
+
+  <p>
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/TOCTOU_Vulnerability_Confirmed.png" alt="TOCTOU vulnerability confirmed — payload written to System32" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Vulnerability confirmed — SYSTEM token captured from standard user context</div>
   </div>
 
   <p>
@@ -567,6 +594,11 @@ footer a:hover { color: var(--green); }
     18 findings, zero shells. WdFilter.sys is hardened -- cached FILE_OBJECT makes junctions
     invisible, identity gate uses NTFS File ID (architecturally unbypassable). The wall held.
   </p>
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/GaySun_TOCTOU_SourceCode_VSS_EICAR.png" alt="GaySun TOCTOU source code — VSS shadow copy and EICAR trigger mechanism" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">TOCTOU source — VSS shadow copy trigger + EICAR bait mechanism</div>
+  </div>
+
   <p>
     But the wall taught us where the <em>other</em> drivers aren't looking. cldflt.sys
     (Cloud Files Mini-Filter, altitude 180451) sits below WdFilter in the minifilter stack.
@@ -599,6 +631,16 @@ footer a:hover { color: var(--green); }
 <span class="out-amber">            on Build 26200. MiniPlasma validation required first.</span>
   </div>
 
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/TOCTOU_Exploit_Live_Execution.png" alt="TOCTOU exploit running live — junction swap phases visible" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">TOCTOU exploit live execution — junction swap racing Defender's quarantine pipeline</div>
+  </div>
+
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/TOCTOU_Junction_Code_Walkthrough.png" alt="NTFS junction code walkthrough — custom exploit development" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Writing the NTFS junction from scratch — custom exploit, not a fork</div>
+  </div>
+
   <p>
     <span class="tag tag-built">COMPILED</span>
     <strong>VADER-PRIME:</strong> Two novel payload chains built on proven cldflt race primitive.
@@ -620,6 +662,11 @@ footer a:hover { color: var(--green); }
     is unavailable.
   </p>
 
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/CSEC_GUI_Listener_ReverseShell.png" alt="CSEC GUI Listener with active reverse shell connection" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">C2 listener — active reverse shell connection from target</div>
+  </div>
+
   <div class="term" data-title="engagement 11 // recon execution">
 <span class="prompt"></span><span class="cmd">powershell -ep bypass .\vader_recon.ps1</span>
 <span class="out"></span>
@@ -638,6 +685,11 @@ footer a:hover { color: var(--green); }
 <span class="out-cyan">  [MEDIUM] RTP_ACTIVE -- Real-Time Protection enabled</span>
 <span class="out"></span>
 <span class="out-green">  RECON COMPLETE -- 1169 lines written to RECON_TARGET-PC_20260615.log</span>
+  </div>
+
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/CSEC_BindShell_vs_ReverseShell_Diagram.png" alt="Bind shell vs reverse shell architecture comparison" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Network attack patterns — bind shell vs reverse shell architecture</div>
   </div>
 
   <p>
@@ -693,6 +745,14 @@ footer a:hover { color: var(--green); }
   <p>
     But MSRC included something in the rejection letter that changed the game:
     a link to their <a href="https://www.microsoft.com/en-us/msrc/aibugbar" style="color:var(--cyan)">AI vulnerability classification</a>.
+  </p>
+
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/0x1security_Mentorship_0day_Methodology.png" alt="0x1security mentorship — 0-day research methodology" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Research methodology influenced by 0x1security mentorship community</div>
+  </div>
+
+  <p>
     Prompt injection that exfiltrates another user's data with zero interaction:
     <strong>CRITICAL severity</strong>. Model theft of confidential models: <strong>CRITICAL</strong>.
     Input extraction across user boundaries: <strong>IMPORTANT</strong>. These cross
@@ -732,6 +792,11 @@ footer a:hover { color: var(--green); }
     of Defender's quarantine pipeline, the target is Copilot's trust boundary between
     attacker-controlled content and user data. Different domain. Same thinking.
   </p>
+
+  <div style="margin: 1.5rem 0;">
+    <img src="showcase/GaySun_XOR_Obfuscation_Explained.png" alt="XOR evasion technique — encoding explained" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">XOR evasion technique — the methodology that transfers to any target</div>
+  </div>
 
   <div class="term" data-title="attack vectors // active research">
 <span class="out">  Vector 1: Document injection</span>
@@ -909,6 +974,28 @@ footer a:hover { color: var(--green); }
       </tr>
     </tbody>
   </table>
+
+  <div style="margin: 1.5rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <img src="showcase/Defender_Quarantine_GaySun.png" alt="Defender quarantining GaySun.exe — Exploit:Win32/DfndrPERedSun.BC" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">GaySun.exe caught — Defender signature detection</div>
+    </div>
+    <div style="flex:1; min-width:280px;">
+      <img src="showcase/Defender_Quarantine_RoguePlanet.png" alt="Defender quarantining RoguePlanet.exe — signatured in 4 days" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">RoguePlanet detected — signatured within 4 days of release</div>
+    </div>
+  </div>
+
+  <div style="margin: 1.5rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
+    <div style="flex:1; min-width:280px;">
+      <img src="showcase/XOR_Obfuscate.png" alt="XOR obfuscation applied to signature strings" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">XOR obfuscation — encoding signature strings at compile time</div>
+    </div>
+    <div style="flex:1; min-width:280px;">
+      <img src="showcase/GaySun_ImportTable_Evasion.png" alt="PE import table analysis — structural evasion" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Import table analysis — why string mutation wasn't enough</div>
+    </div>
+  </div>
 
   <div class="term" data-title="the flag" style="margin-top: 2rem;">
 <span class="out-amber">  OBJECTIVE:</span>
