@@ -378,20 +378,20 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   </p>
 
   <div style="margin: 1.5rem 0;">
-    <img src="showcase/Discord_GaySun_Development.png" alt="AI-assisted debugging — resolving build errors during exploit compilation" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">AI-assisted debugging — VADER Discord agent (left) explains linker error C2065 and the fix. Developer Command Prompt (right) shows the compile attempt. The AI teaches what the error means and why. I type every line.</div>
+    <img src="showcase/Discord_GaySun_Development.png" alt="AI-augmented exploit development — VADER Discord agent and Developer Command Prompt" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">AI-augmented development &mdash; VADER Discord agent (left) explains linker error C2065 and the required fix. Developer Command Prompt (right) shows the live compile. The AI teaches. I build.</div>
   </div>
 
   <div style="margin: 1.2rem 0; padding: 1rem; border-left: 2px solid var(--green3); background: rgba(0,255,65,0.02);">
     <p style="color: var(--muted); font-size: 0.8rem; margin: 0;">
-      <strong style="color: var(--green2);">How I use AI in this research:</strong>
-      I use LLMs (Claude, local models via Discord) as a <strong>teaching and explanation tool</strong> &mdash;
-      never as a code generator I don't understand. The workflow: I hit an error or need to understand a Windows internal,
-      I ask the AI to explain it at the implementation level &mdash; "what does LNK2019 mean for this import?"
-      "why does cl.exe need /link ws2_32.lib?" &mdash; then I verify every answer against documentation,
-      debugger output, and live testing on my own hardware. The AI doesn't write my exploits.
-      It explains the concepts the same way a textbook would, except I can ask follow-up questions in real time.
-      <strong>Every line of code is typed by hand. Every technique is understood before it's used.</strong>
+      <strong style="color: var(--green2);">AI-augmented security research.</strong>
+      This research uses LLMs (Claude Opus, local models via Discord) as an integrated part of the
+      offensive security workflow. AI explains Windows internals, parses error messages, maps attack
+      surfaces, and accelerates the research cycle &mdash; the same way a disassembler, a debugger,
+      or a fuzzer accelerates it. It's a tool. MSRC evaluates whether a vulnerability is real and
+      reproducible &mdash; not whether the researcher used AI, IDA Pro, or a napkin to find it.
+      The rule: <strong>no code ships that I can't explain line by line.</strong> Understanding is
+      non-negotiable. AI accelerates learning &mdash; it doesn't replace it.
     </p>
   </div>
 
@@ -433,20 +433,21 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   </div>
 
   <div style="margin: 1.5rem 0;">
-    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="Claude Code running parallel research agents for AMSI, ETW, and DLL sideloading" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Claude Code (Opus) running three parallel research agents &mdash; each one querying a different attack surface: AMSI bypass mechanics, ETW provider architecture, DLL search order internals. I read the output, verify against live testing, then build from understanding.</div>
+    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="Claude Code running parallel research agents across three Windows attack surfaces" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
+    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Claude Code (Opus) &mdash; three parallel research agents mapping AMSI bypass mechanics, ETW provider architecture, and DLL search order internals simultaneously. Results verified against live Defender behaviour.</div>
   </div>
 
   <div style="margin: 1.2rem 0; padding: 1rem; border-left: 2px solid var(--green3); background: rgba(0,255,65,0.02);">
     <p style="color: var(--muted); font-size: 0.8rem; margin: 0;">
-      <strong style="color: var(--green2);">What you're seeing above:</strong>
-      Three AI research agents running in parallel, each exploring a different Windows security subsystem.
-      This is how I use AI to <strong>conduct research at scale</strong> &mdash; I direct the agents with specific questions
-      ("how does AmsiScanBuffer validate its parameters?", "which ETW providers feed Defender's behavioral engine?",
-      "what's the full DLL search order when SafeDllSearchMode is enabled?"), then I cross-reference
-      every answer against Microsoft documentation, WinDbg output, and observed behaviour on my test machines.
-      <strong>The AI is the research library I can interrogate. The testing, the implementation, and the architectural
-      decisions are mine.</strong> No code is written that I can't explain line by line.
+      <strong style="color: var(--green2);">Parallel attack surface research.</strong>
+      Three AI agents running concurrently &mdash; each one mapping a different Windows security subsystem.
+      This is force multiplication. One researcher, three simultaneous research threads, each returning
+      structured analysis of a different defensive layer. The questions are directed: "how does
+      AmsiScanBuffer validate its parameters?", "which ETW providers feed Defender's behavioral engine?",
+      "what is the full DLL search order when SafeDllSearchMode is enabled?" Every answer gets
+      cross-referenced against Microsoft documentation and debugger output before it becomes part
+      of the exploit chain. The vulnerability either exists or it doesn't. The exploit either works
+      or it doesn't. <strong>How you found it is methodology, not merit.</strong>
     </p>
   </div>
 

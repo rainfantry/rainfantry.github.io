@@ -1321,31 +1321,35 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <div class="entry-date">APPENDIX // RESEARCH METHODOLOGY</div>
   <h2>how the research was conducted</h2>
 
-  <h3>AI-augmented learning</h3>
+  <h3>AI-augmented offensive security research</h3>
   <p>
-    This research uses large language models as a <strong>teaching and explanation tool</strong>.
-    The methodology: I identify a concept I need to understand — AMSI internals, ETW provider
-    architecture, DLL search order mechanics — and prompt the AI to explain it at the implementation
-    level. "How does AmsiScanBuffer get called? What parameters does it take? What return value
-    tells the caller the scan was clean?" Then I verify every claim against Microsoft documentation,
-    debugger output, and live testing on my own hardware.
+    This research is AI-augmented. LLMs (Claude Opus, locally-hosted models via Discord) are used
+    throughout the research cycle — explaining Windows internals, mapping attack surfaces, parsing
+    error output, and accelerating the feedback loop between hypothesis and test. The same way this
+    research uses IDA Pro, WinDbg, Process Monitor, and Wireshark — it uses AI. They're all tools.
   </p>
   <p>
-    The AI doesn't write the exploits. It explains the concepts — the same way a textbook or a
-    mentor would, except I can ask follow-up questions in real time. "What does DR7 bit 0 control?"
-    "Why does VirtualProtect trigger Tamper Protection but SetThreadContext doesn't?" "Show me the
-    EXCEPTION_RECORD structure layout." Every technical claim gets validated against observed
-    behaviour before it becomes part of the research.
+    The methodology: identify a security boundary, query the AI for implementation-level detail
+    ("how does AmsiScanBuffer validate its parameters?", "what's the full DLL search order when
+    SafeDllSearchMode is enabled?", "which ETW providers feed Defender's behavioral engine?"),
+    then verify every claim against Microsoft documentation, debugger output, and live testing.
+    AI output that can't be reproduced on a real machine gets discarded. What survives becomes
+    part of the exploit chain.
   </p>
   <p>
-    The screenshots below show this process: directed questions about specific Windows internals,
-    not "write me an exploit." The implementation, testing, debugging, and architectural decisions
-    are mine. The AI is the reference library I can interrogate.
+    MSRC evaluates whether a vulnerability is real and reproducible — not whether the researcher
+    used AI, a disassembler, or a whiteboard to find it. Bug bounty platforms don't disqualify
+    AI-assisted findings. The vulnerability exists or it doesn't. The exploit works or it doesn't.
+    <strong>How you found it is methodology, not merit.</strong>
+  </p>
+  <p>
+    The one rule: no code ships that I can't explain line by line. AI accelerates understanding.
+    It doesn't replace it.
   </p>
 
   <div class="evidence">
-    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="AI-assisted research — querying AMSI, ETW, and DLL sideloading internals" loading="lazy">
-    <div class="evidence-cap">AI-augmented research: directed queries on AMSI hook mechanics, ETW provider architecture, and DLL search order internals — concepts explained, then verified against live testing</div>
+    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="Claude Code running parallel research agents across AMSI, ETW, and DLL attack surfaces" loading="lazy">
+    <div class="evidence-cap">Parallel attack surface research — three AI agents mapping AMSI bypass mechanics, ETW provider architecture, and DLL search order internals simultaneously. All findings verified against live Defender behaviour.</div>
   </div>
 
   <h3>current status</h3>
