@@ -281,15 +281,15 @@ nav .inner {
 }
 
 nav a {
-  color: var(--dim);
+  color: var(--green2);
   text-decoration: none;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   transition: color 0.2s;
 }
 
-nav a:hover { color: var(--green); }
-nav .brand { color: var(--green3); font-weight: 600; }
+nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
 nav .sep { color: #1e1e1e; user-select: none; }
 
 footer {
@@ -338,7 +338,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <div class="header">
   <h1>OFFSEC JOURNAL — VADER</h1>
   <div class="sub">
-    full kill chain assessment <span>//</span> radon_laptop1 <span>//</span> 2026-06-13
+    full kill chain assessment <span>//</span> target_laptop1 <span>//</span> 2026-06-13
   </div>
   <br>
   <div class="sub">
@@ -381,10 +381,10 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <h3>setup — why i did it this way</h3>
 
   <p>
-    I had access to Raed's work laptop (<code>radon_laptop1</code>) with his explicit
+    I had access to a colleague's work laptop (<code>target_laptop1</code>) with explicit
     permission. Rather than testing with an admin account — which would make everything
     trivially easy — I logged in as a <strong>standard user account</strong>
-    (<code>ghaleb jomma</code>) to add real-world control.
+    to add real-world control.
   </p>
   <p>
     The point: simulate how an attacker actually lands. A phishing link, a dodgy USB,
@@ -405,9 +405,9 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <table class="status-table">
     <thead><tr><th>property</th><th>value</th></tr></thead>
     <tbody>
-      <tr><td>Hostname</td><td style="color:var(--bright)">RADON_LAPTOP1</td></tr>
+      <tr><td>Hostname</td><td style="color:var(--bright)">TARGET_LAPTOP1</td></tr>
       <tr><td>OS</td><td>Windows 11 Home, Build 26200 (24H2)</td></tr>
-      <tr><td>User</td><td style="color:var(--bright)">ghaleb jomma</td></tr>
+      <tr><td>User</td><td style="color:var(--bright)">standard.user</td></tr>
       <tr><td>Domain</td><td>WORKGROUP (no Active Directory)</td></tr>
       <tr><td>IP</td><td style="color:var(--cyan)">192.168.1.145</td></tr>
       <tr><td>Hardware</td><td>GIGABYTE G7 GD, Intel i7-11800H, 16GB RAM</td></tr>
@@ -485,7 +485,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <div class="term" data-title="whoami">
 <span class="prompt"></span><span class="cmd">whoami /all</span>
 <span class="out"></span>
-<span class="out">User: radon_laptop1\ghaleb jomma</span>
+<span class="out">User: target_laptop1\standard.user</span>
 <span class="out">Groups: BUILTIN\Users (standard user — NOT Administrators)</span>
 <span class="out">Integrity Level: Medium Mandatory Level</span>
 <span class="out">Privileges: SeChangeNotifyPrivilege (only basic user privilege)</span>
@@ -931,7 +931,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <h2>gaysun.exe live test — detected</h2>
 
   <p>
-    GaySun.exe was deployed on <code>radon_laptop1</code>. Defender flagged it.
+    GaySun.exe was deployed on <code>target_laptop1</code>. Defender flagged it.
   </p>
 
   <div class="evidence">
