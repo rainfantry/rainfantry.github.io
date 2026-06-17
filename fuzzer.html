@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Wu | VADER FUZZ — mpengine.dll Fuzzing Campaign Intelligence</title>
+<meta name="description" content="VADER FUZZ campaign intelligence — coverage-guided fuzzing of mpengine.dll (Microsoft Malware Protection Engine). Methodology, architecture, campaign results, and path to CVE-grade vulnerability discovery.">
+<meta name="keywords" content="George Wu, VADER FUZZ, mpengine.dll, fuzzing, Windows Defender, vulnerability research, coverage-guided fuzzing, WinAFL, mutation fuzzing, exploit development, Microsoft Malware Protection Engine">
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rainfantry.github.io/fuzzer.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="George Wu | VADER FUZZ — mpengine.dll Fuzzing Campaign Intelligence">
+<meta property="og:description" content="Coverage-guided fuzzing of Microsoft's Malware Protection Engine. Campaign results, mutation strategies, fuzzer architecture, and path forward to CVE-grade discovery.">
+<meta property="og:url" content="https://rainfantry.github.io/fuzzer.html">
+<meta property="og:site_name" content="22DIV — George Wu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VADER FUZZ — mpengine.dll Fuzzing Campaign Intelligence">
+<meta name="twitter:description" content="Coverage-guided fuzzing of mpengine.dll. Campaign results, mutation strategies, architecture, and path to CVE-grade vulnerability discovery.">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --bg2: #111;
+  --bg3: #161616;
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #009922;
+  --amber: #ffb000;
+  --red: #ff4444;
+  --cyan: #00e5ff;
+  --dim: #555;
+  --muted: #888;
+  --text: #ccc;
+  --bright: #eee;
+  --blue: #4488ff;
+  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* -- NAV -- */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(12,12,12,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  padding: 0.6rem 0;
+}
+
+nav .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--green2);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+
+nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
+nav .sep { color: var(--dim); font-size: 0.7rem; user-select: none; }
+nav a.nav-red { color: var(--red); }
+nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
+nav a.nav-blue { color: var(--blue); }
+nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
+nav a.nav-yellow { color: var(--amber); }
+nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+
+/* -- HEADER -- */
+.header {
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  color: var(--amber);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.header .sub {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 0.3rem;
+}
+
+/* -- SECTION NAV -- */
+.section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.2rem;
+  margin-bottom: 2rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 0.72rem;
+}
+
+.section-nav a {
+  color: var(--amber);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+
+.section-nav a:hover {
+  color: #ffc040;
+  text-shadow: 0 0 8px rgba(255,176,0,0.3);
+}
+
+/* -- BRIEF BOX -- */
+.brief {
+  background: var(--bg2);
+  border: 1px solid #332200;
+  border-left: 3px solid var(--amber);
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2.5rem;
+  font-size: 0.82rem;
+  line-height: 1.8;
+}
+
+.brief h2 {
+  color: var(--amber);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+}
+
+.brief p { margin-bottom: 0.6rem; }
+.brief strong { color: var(--bright); }
+.brief .doctrine { color: var(--amber); font-weight: 600; }
+
+/* -- SECTIONS -- */
+.section {
+  margin-bottom: 3rem;
+}
+
+.section h2 {
+  color: var(--amber);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #332200;
+}
+
+.section h3 {
+  color: var(--bright);
+  font-size: 0.88rem;
+  font-weight: 400;
+  margin: 1.2rem 0 0.6rem;
+}
+
+.section p {
+  font-size: 0.82rem;
+  margin-bottom: 0.8rem;
+}
+
+.section ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.section ul li {
+  font-size: 0.82rem;
+  padding: 0.25rem 0 0.25rem 1.2rem;
+  position: relative;
+}
+
+.section ul li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--amber);
+  font-size: 0.72rem;
+}
+
+.section a {
+  color: var(--amber);
+  text-decoration: none;
+  border-bottom: 1px solid #664400;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.section a:hover {
+  color: #ffc040;
+  border-bottom-color: #ffc040;
+}
+
+/* -- CAMPAIGN BOXES -- */
+.campaign-box {
+  background: var(--bg2);
+  border: 1px solid #332200;
+  border-left: 3px solid var(--amber);
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.campaign-box h3 {
+  color: var(--amber);
+  font-size: 0.88rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #221100;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.2rem 1.5rem;
+  font-size: 0.8rem;
+}
+
+.stat-key {
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+.stat-val {
+  color: var(--bright);
+}
+
+.stat-val.amber { color: var(--amber); }
+.stat-val.green { color: var(--green); }
+.stat-val.zero { color: var(--green); font-weight: 600; }
+.stat-val.dim { color: var(--dim); }
+
+/* -- ARCHITECTURE DIAGRAM -- */
+.arch-diagram {
+  background: var(--bg2);
+  border: 1px solid #221100;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.arch-diagram pre {
+  color: var(--amber);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  white-space: pre;
+  margin: 0;
+}
+
+.arch-diagram .label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 1rem;
+  border-top: 1px solid #1a1a1a;
+  padding-top: 0.6rem;
+}
+
+/* -- PATH FORWARD ITEMS -- */
+.path-item {
+  background: var(--bg2);
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+}
+
+.path-item .num {
+  color: var(--amber);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+}
+
+.path-item h4 {
+  color: var(--bright);
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-bottom: 0.4rem;
+}
+
+.path-item p {
+  font-size: 0.78rem;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.path-item .impact {
+  color: var(--amber);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+/* -- SEED TABLE -- */
+.seed-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.78rem;
+}
+
+.seed-table th {
+  color: var(--amber);
+  font-weight: 400;
+  text-align: left;
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid #332200;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+}
+
+.seed-table td {
+  padding: 0.35rem 0.8rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.seed-table tr:hover td { background: rgba(255,176,0,0.02); }
+
+/* -- PIPELINE -- */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.8rem 0;
+  font-size: 0.78rem;
+}
+
+.pipeline .step {
+  color: var(--amber);
+  padding: 0.15rem 0.5rem;
+  border: 1px solid #664400;
+  border-radius: 3px;
+}
+
+.pipeline .arrow { color: var(--dim); }
+
+/* -- FOOTER -- */
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #1a1a1a;
+  color: var(--green);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+
+/* -- RESPONSIVE -- */
+@media (max-width: 640px) {
+  .container { padding: 1rem; }
+  .header h1 { font-size: 1.2rem; }
+  .stat-grid { grid-template-columns: 8rem 1fr; font-size: 0.75rem; }
+  .arch-diagram pre { font-size: 0.65rem; }
+  .section-nav { gap: 0.4rem 0.8rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <span class="sep">|</span>
+    <a href="index.html">home</a>
+    <a href="journal.html">journal</a>
+    <a href="books.html" class="nav-red">field manual</a>
+    <a href="csec.html" class="nav-red">kill chain</a>
+    <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+    <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>VADER FUZZ // CAMPAIGN INTELLIGENCE</h1>
+    <p class="sub">mpengine.dll Fuzzing &mdash; Coverage-Guided Vulnerability Discovery</p>
+  </div>
+
+  <!-- SECTION NAV -->
+  <div class="section-nav">
+    <a href="#target">target</a>
+    <a href="#methodology">methodology</a>
+    <a href="#campaigns">campaigns</a>
+    <a href="#architecture">architecture</a>
+    <a href="#path-forward">path forward</a>
+    <a href="#logs">logs</a>
+  </div>
+
+  <!-- MISSION BRIEF -->
+  <div class="brief">
+    <h2>// MISSION BRIEF</h2>
+    <p><span class="doctrine">ASF Doctrine: Crash &rarr; Leak &rarr; Execute.</span> To find crashes, you need fuzzing.</p>
+    <p><strong>Target:</strong> <code style="color:var(--amber);">mpengine.dll</code> &mdash; the Microsoft Malware Protection Engine. It runs as <strong>NT AUTHORITY\SYSTEM</strong>. It parses every file format that touches the machine. It is network-reachable &mdash; send an email, drop a file on a share, visit a URL. The engine scans it before anything else does.</p>
+    <p>Every file format parser is attack surface. Every parser bug at SYSTEM privilege is a potential remote code execution. This is the campaign to find those bugs.</p>
+  </div>
+
+  <!-- TARGET ANALYSIS -->
+  <div class="section" id="target">
+    <h2>// TARGET ANALYSIS</h2>
+
+    <h3>What is mpengine.dll</h3>
+    <p>mpengine.dll is the core scanning engine behind Microsoft Defender (formerly Windows Defender), Microsoft Security Essentials, and the Malicious Software Removal Tool. It ships on every Windows installation and runs as a privileged SYSTEM service via <code style="color:var(--amber);">MsMpEng.exe</code>.</p>
+
+    <h3>Why this target</h3>
+    <ul>
+      <li><strong>Privilege level:</strong> SYSTEM &mdash; a crash or code execution here is game over for the host</li>
+      <li><strong>Attack surface:</strong> parses PE, scripts, documents, archives, ELF, Mach-O, custom containers, and dozens of other formats</li>
+      <li><strong>Reachability:</strong> real-time protection triggers scans on file create, email receipt, web download, network share access &mdash; no user interaction required</li>
+      <li><strong>Ubiquity:</strong> default on every Windows 10/11 installation. Billions of endpoints.</li>
+    </ul>
+
+    <h3>Scan pipeline</h3>
+    <p>The Defender scan pipeline processes files through multiple stages before reaching a verdict. For the full breakdown of how the engine loads, initialises, and processes scan requests, see <a href="rootkit.html#learn-ch1">Rootkit Manual Ch.1 &mdash; Scan Pipeline</a>.</p>
+    <div class="pipeline">
+      <span class="step">FILE INPUT</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">FORMAT ID</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">PARSER SELECT</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">UNPACK / DECODE</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">SIGNATURE MATCH</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">HEURISTIC</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">VERDICT</span>
+    </div>
+    <p>Every parser that handles a format is a distinct attack surface. Container formats that trigger recursive unpacking (ZIP inside RAR inside ISO) multiply the code paths exercised per input.</p>
+
+    <h3>Prior art</h3>
+    <p>Tavis Ormandy (Google Project Zero) disclosed multiple critical vulnerabilities in mpengine.dll during 2017&ndash;2018, including CVE-2017-0290 (type confusion in the NScript JavaScript engine, RCE as SYSTEM via email/web). His work demonstrated that the engine's file format parsers are rich targets. Microsoft has hardened the engine since, but the attack surface &mdash; parsing arbitrary file formats at SYSTEM &mdash; remains structurally unchanged.</p>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="section" id="methodology">
+    <h2>// METHODOLOGY</h2>
+
+    <h3>Fuzzing approach</h3>
+    <p>Mutation-based black-box fuzzing. Take known file samples (seed corpus), apply random mutations, feed the mutated files to the scan engine, classify the result (clean / detection / crash / hang), and triage anything interesting.</p>
+
+    <div class="pipeline">
+      <span class="step">SEED CORPUS</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">MUTATE</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">SCAN</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">TRIAGE</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">FEEDBACK</span>
+    </div>
+
+    <h3>Seed corpus categories</h3>
+    <table class="seed-table">
+      <thead>
+        <tr>
+          <th>CATEGORY</th>
+          <th>FORMATS</th>
+          <th>RATIONALE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--amber);">PE</td>
+          <td>EXE, DLL</td>
+          <td>Primary scan target &mdash; most complex parser path</td>
+        </tr>
+        <tr>
+          <td style="color:var(--amber);">Script</td>
+          <td>JS, VBS, PS1</td>
+          <td>NScript engine + AMSI integration &mdash; prior CVE target</td>
+        </tr>
+        <tr>
+          <td style="color:var(--amber);">Document</td>
+          <td>DOC, PDF</td>
+          <td>OLE/compound document parsers &mdash; historically buggy</td>
+        </tr>
+        <tr>
+          <td style="color:var(--amber);">Archive</td>
+          <td>ZIP, RAR, CAB, ISO</td>
+          <td>Recursive unpacking &mdash; multiplied code paths</td>
+        </tr>
+        <tr>
+          <td style="color:var(--amber);">Cross-platform</td>
+          <td>ELF, Mach-O</td>
+          <td>Less-fuzzed parsers &mdash; Defender scans these too</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Mutation strategies</h3>
+    <ul>
+      <li><strong>Bit flipping:</strong> random single-bit and multi-bit flips across the file</li>
+      <li><strong>Byte insertion:</strong> random byte insertion/deletion to shift structure boundaries</li>
+      <li><strong>Format-aware header mutation:</strong> targeted corruption of format headers (PE optional header, ZIP local file header, ELF program headers)</li>
+      <li><strong>Magic byte corruption:</strong> corrupt format magic bytes (MZ, PK, 7fELF) to probe format detection fallback paths</li>
+      <li><strong>Weighted selection:</strong> mutation type selected per-iteration based on file format &mdash; archive seeds get more header mutations, script seeds get more content insertion</li>
+    </ul>
+    <p>For the theory behind mutation strategies and corpus design, see <a href="books.html#ch5">Field Manual Ch.5 &mdash; Fuzzing Theory</a> and <a href="books.html#ch10">Ch.10 &mdash; Corpus &amp; Dictionary Design</a>.</p>
+  </div>
+
+  <!-- CAMPAIGN RESULTS -->
+  <div class="section" id="campaigns">
+    <h2>// CAMPAIGN RESULTS</h2>
+
+    <!-- Campaign 1 -->
+    <div class="campaign-box">
+      <h3>CAMPAIGN 1: PARALLEL FUZZING (100K)</h3>
+      <div class="stat-grid">
+        <span class="stat-key">ENGINE</span>
+        <span class="stat-val">mpengine.dll v1.1.26050.11</span>
+
+        <span class="stat-key">ITERATIONS</span>
+        <span class="stat-val amber">100,000</span>
+
+        <span class="stat-key">WORKERS</span>
+        <span class="stat-val">4 parallel</span>
+
+        <span class="stat-key">RATE</span>
+        <span class="stat-val amber">3.8 exec/sec</span>
+
+        <span class="stat-key">DETECTIONS</span>
+        <span class="stat-val dim">19 (mostly script seeds &mdash; expected, not bugs)</span>
+
+        <span class="stat-key">CRASHES</span>
+        <span class="stat-val zero">0</span>
+
+        <span class="stat-key">HANGS</span>
+        <span class="stat-val zero">0</span>
+
+        <span class="stat-key">DURATION</span>
+        <span class="stat-val">~7.3 hours</span>
+      </div>
+    </div>
+
+    <!-- Campaign 2 -->
+    <div class="campaign-box">
+      <h3>CAMPAIGN 2: DIFFERENTIAL FUZZING (10K)</h3>
+      <div class="stat-grid">
+        <span class="stat-key">ENGINE</span>
+        <span class="stat-val">mpengine.dll v1.1.26050.11</span>
+
+        <span class="stat-key">ITERATIONS</span>
+        <span class="stat-val amber">10,000</span>
+
+        <span class="stat-key">WORKERS</span>
+        <span class="stat-val">1 (differential mode)</span>
+
+        <span class="stat-key">RATE</span>
+        <span class="stat-val amber">2.1 &rarr; 1.3 exec/sec</span>
+
+        <span class="stat-key">RATE NOTE</span>
+        <span class="stat-val dim">degradation over time &mdash; engine resource accumulation</span>
+
+        <span class="stat-key">CLEAN</span>
+        <span class="stat-val">10,000</span>
+
+        <span class="stat-key">DETECTIONS</span>
+        <span class="stat-val zero">0</span>
+
+        <span class="stat-key">CRASHES</span>
+        <span class="stat-val zero">0</span>
+
+        <span class="stat-key">HANGS</span>
+        <span class="stat-val zero">0</span>
+
+        <span class="stat-key">DURATION</span>
+        <span class="stat-val">~2.1 hours</span>
+      </div>
+    </div>
+
+    <h3>Analysis</h3>
+    <p>Zero crashes across 110,000 iterations confirms that blind mutation fuzzing at 3.8 exec/sec is insufficient to find bugs in a hardened target like mpengine.dll. The engine has been fuzzed extensively by Microsoft's internal teams and by external researchers (OSS-Fuzz, Project Zero). Finding new vulnerabilities requires either dramatically higher throughput (10,000+ exec/sec), coverage-guided feedback to evolve inputs toward unexplored code paths, or both.</p>
+    <p>The 19 detections in Campaign 1 are false positives from the fuzzer's perspective &mdash; script seeds with known-malicious patterns that survive mutation. These confirm the engine is scanning correctly, not that mutations found anything new.</p>
+    <p>The rate degradation in Campaign 2 (2.1 to 1.3 exec/sec) suggests the engine accumulates resources over long runs. This is a signal for snapshot-based fuzzing &mdash; start each iteration from a clean memory state.</p>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="section" id="architecture">
+    <h2>// FUZZER ARCHITECTURE</h2>
+
+    <div class="arch-diagram">
+<pre>
+ SEED CORPUS (13 seeds)
+       |
+       v
+ MUTATION ENGINE -------- weighted selection by format
+       |
+       v
+ TEMP FILE (mutated) ---- written to scan directory
+       |
+       v
+ MpCmdRun.exe SCAN ------ -Scan -ScanType 3 -File &lt;path&gt;
+       |
+       v
+ RESULT TRIAGE ---------- exit code + output parsing
+       |
+       |---&gt; CLEAN (0)  ---&gt; discard
+       |---&gt; DETECTION (2) -&gt; log + save sample
+       |---&gt; CRASH/HANG ---&gt; save sample + full report
+       |
+       v
+ FEEDBACK LOOP ---------- detection/clean ratio per format
+       |                    mutation weight adjustment
+       v
+ NEXT ITERATION
+</pre>
+      <div class="label">
+        <strong style="color:var(--bright);">Key components:</strong>
+        <code style="color:var(--amber);">vader_fuzz.py</code> (main fuzzer, parallel workers)
+        &middot; <code style="color:var(--amber);">diff_fuzz.py</code> (differential mode)
+        &middot; <code style="color:var(--amber);">MpCmdRun.exe</code> (scan engine CLI interface)
+      </div>
+    </div>
+
+    <h3>Current limitation</h3>
+    <p>The fuzzer invokes <code style="color:var(--amber);">MpCmdRun.exe</code> as a subprocess for each scan. This means every iteration pays the cost of process creation, engine initialisation, definition loading, and file I/O. At 3.8 exec/sec with 4 workers, each individual scan takes ~1 second &mdash; and most of that time is overhead, not actual parsing.</p>
+    <p>This is the primary bottleneck. See <a href="#path-forward">Path Forward</a> for the fix.</p>
+  </div>
+
+  <!-- PATH FORWARD -->
+  <div class="section" id="path-forward">
+    <h2>// PATH FORWARD</h2>
+    <p>What's needed to make this CVE-grade. Each step is a multiplier on the previous.</p>
+
+    <div class="path-item">
+      <div class="num">01</div>
+      <h4>Direct mpengine.dll loading</h4>
+      <p>Bypass MpCmdRun.exe entirely. Load mpengine.dll as a library, call the scan API directly. Eliminates process creation, engine init, and definition reload per iteration.</p>
+      <p class="impact">IMPACT: 50&ndash;500x speed improvement. Target: 200&ndash;2,000 exec/sec.</p>
+      <p>See <a href="rootkit.html#learn-ch5">Rootkit Manual Ch.5 &mdash; Automation &amp; Engine Interfaces</a> for the scan API surface.</p>
+    </div>
+
+    <div class="path-item">
+      <div class="num">02</div>
+      <h4>Coverage-guided feedback</h4>
+      <p>Instrument mpengine.dll with WinAFL or build a LibFuzzer harness. Track which code paths each input exercises. Evolve the corpus toward inputs that hit new basic blocks &mdash; especially in less-exercised format parsers.</p>
+      <p class="impact">IMPACT: finds bugs that blind mutation never reaches. Required for novel CVEs.</p>
+      <p>See <a href="books.html#ch5">Field Manual Ch.5 &mdash; Fuzzing Theory</a> for coverage-guided fundamentals, and <a href="books.html#ch9">Ch.9 &mdash; Harness Engineering</a> for harness construction.</p>
+    </div>
+
+    <div class="path-item">
+      <div class="num">03</div>
+      <h4>WTF snapshot fuzzing</h4>
+      <p>Snapshot the engine's memory state on Hyper-V at the point where it's about to parse a file. Replay from snapshot for each iteration &mdash; no process start, no init, no definition load. Combine with coverage feedback.</p>
+      <p class="impact">IMPACT: thousands of exec/sec. This is how Microsoft's own teams fuzz internally.</p>
+      <p>Compute target: RunPod RTX 5090 for parallelised snapshot execution.</p>
+    </div>
+
+    <div class="path-item">
+      <div class="num">04</div>
+      <h4>Format-specific corpus engineering</h4>
+      <p>Hand-crafted seeds targeting less-fuzzed parsers: container formats (ISO, VHD, WIM), nested archives (ZIP-in-RAR-in-CAB), recently-added format support, and edge-case file structures designed to exercise unusual code paths.</p>
+      <p class="impact">IMPACT: reaches parser code that random mutation from generic seeds never touches.</p>
+      <p>See <a href="books.html#ch10">Field Manual Ch.10 &mdash; Corpus &amp; Dictionary Design</a> for systematic corpus construction.</p>
+    </div>
+
+    <div class="path-item">
+      <div class="num">05</div>
+      <h4>Crash triage pipeline</h4>
+      <p>Automated exploitability assessment for any crashes found. WinDBG <code style="color:var(--amber);">!exploitable</code> classification, custom triage scripts for root cause analysis, automated minimisation to find the smallest input that reproduces the crash.</p>
+      <p class="impact">IMPACT: turns a crash into an actionable vulnerability report. Required for responsible disclosure via MSRC.</p>
+      <p>See <a href="books.html#ch6">Field Manual Ch.6 &mdash; Crash Triage</a> for triage methodology and <a href="books.html#ch12">Ch.12 &mdash; Exploit Development</a> for the crash-to-exploit pipeline.</p>
+    </div>
+  </div>
+
+  <!-- LOGS -->
+  <div class="section" id="logs">
+    <h2>// CAMPAIGN LOGS</h2>
+    <p>Full campaign logs, seed corpus, mutation engine source, and triage results are in the vader-fuzz repository.</p>
+    <p><a href="https://github.com/rainfantry/vader-fuzz">github.com/rainfantry/vader-fuzz</a></p>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>George Wu. 22DIV. VADER.</p>
+    <p style="margin-top:0.3rem;">
+      <a href="index.html">22DIV Home</a>
+      &middot; <a href="https://github.com/rainfantry/vader-fuzz">vader-fuzz repo</a>
+      &middot; <a href="https://github.com/rainfantry">GitHub</a>
+    </p>
+  </div>
+
+</div>
+
+</body>
+</html>

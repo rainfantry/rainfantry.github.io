@@ -30,6 +30,7 @@
   --amber: #ffb000;
   --red: #ff4444;
   --cyan: #00e5ff;
+  --blue: #4488ff;
   --dim: #555;
   --muted: #888;
   --text: #ccc;
@@ -290,7 +291,13 @@ nav a {
 
 nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
 nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
-nav .sep { color: #1e1e1e; user-select: none; }
+nav a.nav-red { color: var(--red); }
+nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
+nav a.nav-blue { color: #4488ff; }
+nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
+nav a.nav-yellow { color: var(--amber); }
+nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+nav .sep { color: var(--dim); font-size: 0.7rem; user-select: none; }
 
 footer {
   border-top: 1px solid #1a1a1a;
@@ -320,15 +327,12 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <div class="inner">
     <a href="index.html" class="brand">22DIV</a>
     <span class="sep">|</span>
-    <a href="#top">journal</a>
-    <a href="#recon">recon</a>
-    <a href="#source">source</a>
-    <a href="#chain">chain</a>
-    <a href="#ch7">compile</a>
-    <a href="#ch8">detected</a>
-    <a href="#ch11">xor</a>
-    <a href="#ch12">rogueplanet</a>
-    <a href="#ch13">custom</a>
+    <a href="index.html">home</a>
+    <a href="journal.html">journal</a>
+    <a href="books.html" class="nav-red">field manual</a>
+    <a href="csec.html" class="nav-red">kill chain</a>
+    <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+    <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
   </div>
 </nav>
 

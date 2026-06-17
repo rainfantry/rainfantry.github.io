@@ -30,6 +30,7 @@
   --amber: #ffb000;
   --red: #ff4444;
   --cyan: #00e5ff;
+  --blue: #4488ff;
   --dim: #555;
   --muted: #888;
   --text: #ccc;
@@ -82,16 +83,44 @@ body::after {
   font-size: 0.78rem;
 }
 
-.header nav {
-  font-size: 0.78rem;
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(12,12,12,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  padding: 0.6rem 0;
 }
 
-.header nav a {
+nav .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
   color: var(--green2);
   text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
 }
-.header nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
-.header nav .sep { color: #333; margin: 0 0.3rem; }
+
+nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
+nav a.nav-red { color: var(--red); }
+nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
+nav a.nav-blue { color: #4488ff; }
+nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
+nav a.nav-yellow { color: var(--amber); }
+nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+nav .sep { color: var(--dim); font-size: 0.7rem; user-select: none; }
 
 /* ── CURRICULUM TOC ── */
 #toc { display: block; }
@@ -457,6 +486,20 @@ body::after {
 </style>
 </head>
 <body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <span class="sep">|</span>
+    <a href="index.html">home</a>
+    <a href="journal.html">journal</a>
+    <a href="books.html" class="nav-red">field manual</a>
+    <a href="csec.html" class="nav-red">kill chain</a>
+    <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+    <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+  </div>
+</nav>
+
 <div class="container">
 
   <div class="header">
@@ -464,13 +507,6 @@ body::after {
       <h1>CSEC KILL CHAIN // FIELD MANUAL</h1>
       <div class="sub">George Wu &mdash; 22DIV</div>
     </div>
-    <nav>
-      <a href="index.html">index</a>
-      <span class="sep">|</span>
-      <a href="books.html" style="color:var(--red);">field manual</a>
-      <span class="sep">|</span>
-      <a href="index.html#about">about</a>
-    </nav>
   </div>
 
   <!-- ── CURRICULUM VIEW ── -->
