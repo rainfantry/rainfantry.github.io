@@ -894,7 +894,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 
 <!-- ═══════ STATUS ═══════ -->
 <section class="entry" id="status">
-  <div class="entry-date">CURRENT STATUS // 2026-06-15</div>
+  <div class="entry-date">CURRENT STATUS // 2026-06-17</div>
   <h2>kill chain</h2>
 
   <table class="status-table">
@@ -944,6 +944,12 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
         <td style="color:var(--dim)">CWE-426, canaries planted, awaiting reboot proof</td>
       </tr>
       <tr>
+        <td style="color:var(--dim)">3d</td>
+        <td>Privesc: phantom DLL</td>
+        <td><span class="tag tag-system">SYSTEM</span></td>
+        <td style="color:var(--dim)">CWE-427, osppc.dll via ClickToRunSvc. First-party MS service. Highest-value finding.</td>
+      </tr>
+      <tr>
         <td style="color:var(--dim)">3c</td>
         <td>Privesc: VADER-PRIME</td>
         <td><span class="tag tag-built">COMPILED</span></td>
@@ -956,6 +962,12 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
         <td style="color:var(--dim)">Service replacement + C2 callback integrated</td>
       </tr>
       <tr>
+        <td style="color:var(--dim)">4</td>
+        <td>Process injection</td>
+        <td style="color:var(--dim)">NOT BUILT</td>
+        <td style="color:var(--dim)">HWBP propagation to child processes — design documented</td>
+      </tr>
+      <tr>
         <td style="color:var(--dim)">-</td>
         <td>Recon package</td>
         <td><span class="tag tag-built">TESTED</span></td>
@@ -963,9 +975,27 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
       </tr>
       <tr>
         <td style="color:var(--dim)">-</td>
+        <td>Detection scanner</td>
+        <td><span class="tag tag-confirmed">28/28 CLEAN</span></td>
+        <td style="color:var(--dim)">Automated MpCmdRun scan of all binaries — full evasion confirmed</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">-</td>
+        <td>Deploy automation</td>
+        <td><span class="tag tag-built">BUILT</span></td>
+        <td style="color:var(--dim)">Kill chain orchestrator: recon → dark room → privesc → C2</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">-</td>
         <td>Quarantine architecture</td>
         <td><span class="tag tag-confirmed">MAPPED</span></td>
         <td style="color:var(--dim)">18 findings, dual-layer model, 9 defense layers documented</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">-</td>
+        <td>mpengine.dll fuzzing</td>
+        <td><span class="tag tag-msrc">ACTIVE</span></td>
+        <td style="color:var(--dim)">100K campaign, 4 parallel workers, 20 mutation strategies, 0 crashes</td>
       </tr>
     </tbody>
   </table>
@@ -1066,15 +1096,18 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <span class="out">  CVE with george wu's name on it. Security boundary crossing.</span>
 <span class="out">  Reported via MSRC/MITRE -> assigned -> credited.</span>
 <span class="out"></span>
-<span class="out-green">  SYSTEM captured:  #53 Wondershare binary replacement (CWE-732)</span>
+<span class="out-green">  SYSTEM captured:  #42 Wondershare binary replacement (CWE-732)</span>
 <span class="out-green">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
+<span class="out-green">  SYSTEM captured:  #47 Phantom DLL — osppc.dll via ClickToRunSvc (CWE-427)</span>
+<span class="out-green">                    First-party MS service. User-writable PATH fills the void.</span>
 <span class="out"></span>
 <span class="out-red">  MSRC rejected:</span>
 <span class="out-red">    #36 -> VULN-195458  HWBP tamper bypass — "not a security boundary"</span>
 <span class="out-red">    Lesson: detection bypass ≠ vulnerability. Category was wrong.</span>
 <span class="out"></span>
 <span class="out-amber">  CVE submissions ready:</span>
-<span class="out-amber">    #53 -> MITRE  NativePushService LPE, CWE-732 — report written</span>
+<span class="out-amber">    #42 -> MITRE  NativePushService LPE, CWE-732 — report written</span>
+<span class="out-amber">    #47 -> MSRC   Phantom DLL in ClickToRunSvc, CWE-427 — MSRC HIGH</span>
 <span class="out-amber">    #49 -> MITRE  PATH injection, CWE-426 — canary-tested, pending</span>
 <span class="out"></span>
 <span class="out-cyan">  New direction: AI vulnerability research</span>
