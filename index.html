@@ -899,7 +899,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 
 <!-- ═══════ STATUS ═══════ -->
 <section class="entry" id="status">
-  <div class="entry-date">CURRENT STATUS // 2026-06-17</div>
+  <div class="entry-date">CURRENT STATUS // 2026-06-18</div>
   <h2>kill chain</h2>
 
   <table class="status-table">
@@ -968,9 +968,33 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
       </tr>
       <tr>
         <td style="color:var(--dim)">4</td>
-        <td>Process injection</td>
-        <td style="color:var(--dim)">NOT BUILT</td>
-        <td style="color:var(--dim)">HWBP propagation to child processes — design documented</td>
+        <td>Process injection (HOTEL)</td>
+        <td><span class="tag tag-built">TESTED</span></td>
+        <td style="color:var(--dim)">DLL injection — PID attach + CREATE_SUSPENDED spawn. AMSI/ETW blind in target</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">5</td>
+        <td>HTTP stager (INDIA)</td>
+        <td><span class="tag tag-built">TESTED</span></td>
+        <td style="color:var(--dim)">WinHTTP dropper — fetch, decrypt, execute in memory. XOR 0x88</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">6</td>
+        <td>Anti-forensics (JULIET)</td>
+        <td><span class="tag tag-built">TESTED</span></td>
+        <td style="color:var(--dim)">Canary wipe, prefetch purge, USN journal flush, timestomp. XOR 0x93</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim)">&#8734;</td>
+        <td>Mutation pipeline</td>
+        <td><span class="tag tag-confirmed">ACTIVE</span></td>
+        <td style="color:var(--dim)">mutate.py — auto-rotate XOR keys, recompile all vectors. Signature-proof rebuild</td>
+      </tr>
+      <tr>
+        <td style="color:var(--amber)">II</td>
+        <td>SKYWALKER</td>
+        <td><span class="tag tag-system">COLD STANDBY</span></td>
+        <td style="color:var(--dim)">Complete fork — independent key set, own C2 (eclipse), own injection (thread). Survives VADER burn</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">-</td>
@@ -1101,10 +1125,26 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <span class="out">  CVE with george wu's name on it. Security boundary crossing.</span>
 <span class="out">  Reported via MSRC/MITRE -> assigned -> credited.</span>
 <span class="out"></span>
-<span class="out-green">  SYSTEM captured:  #42 Wondershare binary replacement (CWE-732)</span>
-<span class="out-green">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
-<span class="out-green">  SYSTEM captured:  #47 Phantom DLL — osppc.dll via ClickToRunSvc (CWE-427)</span>
-<span class="out-green">                    First-party MS service. User-writable PATH fills the void.</span>
+<span class="out-green">  KILL CHAIN COMPLETE — 7 PHASES OPERATIONAL</span>
+<span class="out-green">    Phase 0: C2 reverse shell (XOR-obfuscated)</span>
+<span class="out-green">    Phase 1: AMSI bypass (HWBP DR0)</span>
+<span class="out-green">    Phase 2: ETW bypass (HWBP DR1)</span>
+<span class="out-green">    Phase 3: Privilege escalation (4 vectors, 2 confirmed SYSTEM)</span>
+<span class="out-green">    Phase 4: Process injection (DLL inject, PID + SUSPENDED)</span>
+<span class="out-green">    Phase 5: HTTP stager (WinHTTP fetch/decrypt/execute)</span>
+<span class="out-green">    Phase 6: Anti-forensics (canary/prefetch/USN/timestomp)</span>
+<span class="out"></span>
+<span class="out-amber">  SYSTEM captured:  #42 Wondershare binary replacement (CWE-732)</span>
+<span class="out-amber">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
+<span class="out-amber">  SYSTEM captured:  #47 Phantom DLL — osppc.dll via ClickToRunSvc (CWE-427)</span>
+<span class="out-amber">                    First-party MS service. User-writable PATH fills the void.</span>
+<span class="out"></span>
+<span class="out-cyan">  SKYWALKER — independent cold-standby fork</span>
+<span class="out-cyan">    Own C2 (eclipse), own injection (thread hijack), own keys.</span>
+<span class="out-cyan">    Survives total VADER compromise. Different binary fingerprint.</span>
+<span class="out"></span>
+<span class="out-amber">  Mutation pipeline: mutate.py auto-rotates all XOR keys + recompiles.</span>
+<span class="out-amber">    Every build = unique signature. Defender can't pattern-match.</span>
 <span class="out"></span>
 <span class="out-red">  MSRC rejected:</span>
 <span class="out-red">    #36 -> VULN-195458  HWBP tamper bypass — "not a security boundary"</span>
@@ -1129,9 +1169,11 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   </div>
 
   <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
-    53 findings across 14 engagements. One MSRC case filed and rejected. Every technique built from scratch
-    against live defenses. The wall held where it was supposed to. The MSRC rejection taught me which walls
-    they actually fix. Now targeting AI security boundaries — same methodology, right category.
+    53 findings across 14 engagements. One MSRC case filed and rejected. 7-phase kill chain from C2 to
+    anti-forensics — built, tested, Defender-invisible. Mutation pipeline rotates every signature automatically.
+    SKYWALKER stands cold — independent fork, independent keys, survives total VADER compromise.
+    Every technique built from scratch against live defenses. The wall held where it was supposed to.
+    Now targeting AI security boundaries — same methodology, right category.
   </p>
 </section>
 
