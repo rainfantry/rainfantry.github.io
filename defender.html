@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Wu | DEFENDER ENGAGEMENT — Structural Detection Research — 22DIV</title>
+<meta name="description" content="Research into Windows Defender structural detection of DLL injection patterns. Detection chain analysis, ETW-TI telemetry, emulation engine, and documented gaps.">
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rainfantry.github.io/defender.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="George Wu | DEFENDER ENGAGEMENT — Structural Detection Research">
+<meta property="og:description" content="Research into Windows Defender structural detection of DLL injection patterns.">
+<meta property="og:url" content="https://rainfantry.github.io/defender.html">
+<meta property="og:site_name" content="22DIV — George Wu">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --bg2: #111;
+  --bg3: #161616;
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #009922;
+  --amber: #ffb000;
+  --red: #ff4444;
+  --cyan: #00e5ff;
+  --blue: #4488ff;
+  --dim: #555;
+  --muted: #888;
+  --text: #ccc;
+  --bright: #eee;
+  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(12,12,12,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  padding: 0.6rem 0;
+}
+
+nav .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--green2);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+
+nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
+nav a.nav-red { color: var(--red); }
+nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
+nav a.nav-blue { color: var(--blue); }
+nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
+nav a.nav-yellow { color: var(--amber); }
+nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+nav a.nav-pink { color: #ff2d8a; }
+nav a.nav-pink:hover { color: #ff5ca8; text-shadow: 0 0 8px rgba(255,45,138,0.4); }
+nav a.nav-cyan { color: var(--cyan); }
+nav a.nav-cyan:hover { color: #33eeff; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
+nav .sep { color: var(--dim); font-size: 0.7rem; user-select: none; }
+
+.header {
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  color: var(--cyan);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.header .sub {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 0.3rem;
+}
+
+.section { margin-bottom: 3rem; }
+
+.section h2 {
+  color: var(--cyan);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #003344;
+}
+
+.section h3 {
+  color: var(--bright);
+  font-size: 0.88rem;
+  font-weight: 400;
+  margin: 1.5rem 0 0.6rem;
+}
+
+.section p {
+  font-size: 0.82rem;
+  margin-bottom: 0.8rem;
+}
+
+.section ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.section ul li {
+  font-size: 0.82rem;
+  padding: 0.25rem 0 0.25rem 1.2rem;
+  position: relative;
+}
+
+.section ul li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--cyan);
+  font-size: 0.72rem;
+}
+
+pre {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  font-size: 0.78rem;
+  margin: 1rem 0;
+  line-height: 1.6;
+}
+
+code { color: var(--green); }
+
+.evidence-box {
+  background: var(--bg2);
+  border: 1px solid #003344;
+  border-left: 3px solid var(--cyan);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+  font-size: 0.8rem;
+}
+
+.evidence-box .label {
+  color: var(--cyan);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.finding {
+  background: var(--bg3);
+  border: 1px solid #1a2a1a;
+  border-left: 3px solid var(--green);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+  font-size: 0.8rem;
+}
+
+.finding .label {
+  color: var(--green);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.critical {
+  background: #1a1111;
+  border: 1px solid #331a1a;
+  border-left: 3px solid var(--red);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+  font-size: 0.8rem;
+}
+
+.critical .label {
+  color: var(--red);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.amber-box {
+  background: #1a1608;
+  border: 1px solid #332a0a;
+  border-left: 3px solid var(--amber);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+  font-size: 0.8rem;
+}
+
+.amber-box .label {
+  color: var(--amber);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.78rem;
+}
+
+th {
+  text-align: left;
+  color: var(--cyan);
+  border-bottom: 1px solid #003344;
+  padding: 0.5rem 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.status-clean { color: var(--green); }
+.status-detected { color: var(--red); }
+.status-partial { color: var(--amber); }
+
+.toc {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.toc .label {
+  color: var(--cyan);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.8rem;
+}
+
+.toc a {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.78rem;
+  padding: 0.2rem 0;
+  transition: color 0.2s;
+}
+
+.toc a:hover { color: var(--cyan); }
+.toc a .num { color: var(--dim); margin-right: 0.5rem; }
+
+footer {
+  border-top: 1px solid #1a1a1a;
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--green);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+@media (max-width: 640px) {
+  .container { padding: 1rem; }
+  .header h1 { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <span class="sep">|</span>
+    <a href="index.html">home</a>
+    <a href="journal.html">journal</a>
+    <a href="books.html" class="nav-red">field manual</a>
+    <a href="csec.html" class="nav-red">kill chain</a>
+    <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+    <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+    <a href="report.html" class="nav-pink">book report</a>
+    <a href="defender.html" class="nav-cyan">defender</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="header">
+    <h1>DEFENDER ENGAGEMENT // STRUCTURAL DETECTION RESEARCH</h1>
+    <div class="sub">22DIV / george wu // CSEC research on own hardware // June 2026</div>
+  </div>
+
+  <div class="toc">
+    <div class="label">TABLE OF CONTENTS</div>
+    <a href="#situation"><span class="num">01</span> Situation Report</a>
+    <a href="#mutation"><span class="num">02</span> Mutation Pipeline Results</a>
+    <a href="#detection"><span class="num">03</span> Detection Chain Analysis</a>
+    <a href="#emulator"><span class="num">04</span> Defender Emulation Engine</a>
+    <a href="#etw-ti"><span class="num">05</span> ETW Threat Intelligence (Kernel)</a>
+    <a href="#ntcontinue"><span class="num">06</span> NtContinue — The Documented Gap</a>
+    <a href="#dark-vs-inject"><span class="num">07</span> Why dark_room Passes but inject_dll Fails</a>
+    <a href="#pipeline-fixes"><span class="num">08</span> Pipeline Fixes — Defender Quarantine Handling</a>
+    <a href="#structural-diff"><span class="num">09</span> Structural Diff — VADER vs SKYWALKER</a>
+    <a href="#research-directions"><span class="num">10</span> Research Directions</a>
+    <a href="#sources"><span class="num">11</span> Sources</a>
+  </div>
+
+  <!-- SECTION 01 -->
+  <div class="section" id="situation">
+    <h2>01 // SITUATION REPORT</h2>
+
+    <p>The VADER rootkit kill chain has 8 components. 7 pass Defender's static scan cleanly after XOR key mutation. One component &mdash; <code>inject_dll</code> (signature set HOTEL) &mdash; is detected regardless of which XOR key is used. After 10 consecutive key rotations across the full 0x00-0xFF range, every compiled binary is flagged.</p>
+
+    <p>This document analyses WHY Defender detects inject_dll, maps the three-layer detection chain, and identifies documented gaps in each layer. This is research into detection mechanics &mdash; understanding how endpoint security works from the inside.</p>
+
+    <div class="evidence-box">
+      <div class="label">COMPONENT STATUS</div>
+      <table>
+        <tr><th>Component</th><th>Signature</th><th>Mutation</th><th>Status</th></tr>
+        <tr><td>dark_room</td><td>ALPHA</td><td>0xB0 &rarr; 0x38</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>inject_dll</td><td>HOTEL</td><td>10 keys tried</td><td class="status-detected">DETECTED (all 10)</td></tr>
+        <tr><td>inject_exe</td><td>ECHO</td><td>0x7F &rarr; 0x30</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v4_svc_replace</td><td>V4</td><td>0x24 &rarr; 0xCA</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v5_dll_proxy</td><td>V5</td><td>0x6A &rarr; 0xB1</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v6_path_hijack</td><td>V6</td><td>0x14 &rarr; 0xF7</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v7_phantom_dll</td><td>V7</td><td>0x13 &rarr; 0x93</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>shell</td><td>BRAVO</td><td>0x37 &rarr; 0xB9</td><td class="status-partial">CLEAN (attempt 2)</td></tr>
+      </table>
+    </div>
+
+    <p>SKYWALKER (cold standby fork) has the same inject_dll pattern. It found a clean key after 8 attempts &mdash; suggesting Defender's confidence threshold is marginally lower on the SKYWALKER variant. Structural comparison between the two files is a priority research item.</p>
+  </div>
+
+  <!-- SECTION 02 -->
+  <div class="section" id="mutation">
+    <h2>02 // MUTATION PIPELINE RESULTS</h2>
+
+    <p>The XOR key mutation pipeline (<code>mutate.py</code>) automates the compile &rarr; scan &rarr; rotate cycle. For each component, it generates a new random XOR key, re-encodes all string arrays, recompiles, and scans with <code>MpCmdRun.exe -Scan -ScanType 3</code>. Up to 10 attempts per component.</p>
+
+    <h3>What XOR Mutation Does</h3>
+    <p>XOR encoding transforms plaintext strings (API names, DLL names, file paths) into byte arrays that don't match Defender's string signatures. At runtime, a single-byte XOR key decodes them back. The encoding is its own inverse: <code>A ^ K = E</code>, <code>E ^ K = A</code>.</p>
+
+    <h3>What XOR Mutation Does NOT Do</h3>
+    <p>It changes the <em>data</em> in .rdata, not the <em>code</em> in .text. The API call sequence, the function structure, the import table, the PE layout &mdash; all remain identical regardless of key. If Defender's signature is on code structure rather than string patterns, XOR rotation has zero effect.</p>
+
+    <div class="critical">
+      <div class="label">KEY FINDING</div>
+      <p>inject_dll is detected via <strong>structural signature</strong>, not string matching. The detection targets the code pattern itself: VEH registration + thread enumeration + cross-thread SetThreadContext with debug register flags. This is why 10/10 key rotations fail &mdash; the key changes the strings but the code shape is constant.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 03 -->
+  <div class="section" id="detection">
+    <h2>03 // DETECTION CHAIN ANALYSIS</h2>
+
+    <p>Defender operates a three-layer detection pipeline. Each layer uses different signals. inject_dll likely triggers all three.</p>
+
+    <h3>Layer 1 &mdash; Static Analysis (Import Table)</h3>
+    <p>Before any code executes, Defender inspects the PE file's Import Address Table. Combinations of APIs associated with injection patterns raise a heuristic score:</p>
+
+    <pre><code>SUSPICIOUS IMPORT COMBINATION (inject_dll):
+  CreateToolhelp32Snapshot   &larr; thread/process enumeration
+  Thread32First / Thread32Next
+  OpenThread                 &larr; accessing other threads
+  SuspendThread / ResumeThread
+  GetThreadContext / SetThreadContext  &larr; context manipulation
+  AddVectoredExceptionHandler         &larr; VEH registration
+  GetProcAddress / LoadLibraryA       &larr; dynamic resolution</code></pre>
+
+    <p>A DLL with this import combination and minimal legitimate exports is flagged with elevated confidence before the emulator even starts.</p>
+
+    <h3>Layer 2 &mdash; Emulation (mpengine.dll)</h3>
+    <p>Defender's ~14MB emulation engine translates machine code to an intermediate language and executes it in a sandbox. It emulates x86/x64 instructions, Windows API calls, kernel functions, filesystem, and registry. The emulator enters at <code>DllMain(DLL_PROCESS_ATTACH)</code> and follows code flow from there.</p>
+
+    <p>inject_dll does ALL suspicious work inside DllMain: resolve targets, register VEH, enumerate threads, set debug registers. This is the worst case for emulation detection &mdash; everything is reachable within the emulator's instruction budget in a single linear code path.</p>
+
+    <h3>Layer 3 &mdash; Runtime Behavioral (ETW-TI)</h3>
+    <p>The Microsoft-Windows-Threat-Intelligence ETW provider instruments thread manipulation from kernel space. This layer only fires at runtime (not during file scan), but Defender's cloud analysis and AMSI integration can correlate runtime signals back to the file.</p>
+  </div>
+
+  <!-- SECTION 04 -->
+  <div class="section" id="emulator">
+    <h2>04 // DEFENDER EMULATION ENGINE</h2>
+
+    <p>The emulator is the second line. Understanding its capabilities and limits is essential for understanding detection.</p>
+
+    <h3>Capabilities</h3>
+    <ul>
+      <li>Full x86/x64 instruction set emulation</li>
+      <li>Emulated Windows API (CreateFile, LoadLibrary, GetProcAddress, etc.)</li>
+      <li>Emulated NT kernel calls (NtCreateFile, NtAllocateVirtualMemory, etc.)</li>
+      <li>Emulated filesystem and registry</li>
+      <li>DLL loading and dependency resolution</li>
+      <li>Entry point analysis: DllMain for DLLs, main/WinMain for EXEs</li>
+    </ul>
+
+    <h3>Known Limits</h3>
+    <ul>
+      <li>Finite instruction budget &mdash; terminates after N instructions or N API calls</li>
+      <li>Time limit on total emulation</li>
+      <li>Memory ceiling on emulated allocations</li>
+      <li>Known environment artifacts: <code>GetComputerName</code> returns "HAL9TH", <code>GetUserName</code> returns "JohnDoe"</li>
+      <li>Cannot fully emulate multi-threaded behavior</li>
+      <li>Network calls return simulated responses</li>
+    </ul>
+
+    <div class="amber-box">
+      <div class="label">IMPLICATION FOR INJECT_DLL</div>
+      <p>All suspicious API calls in inject_dll happen inside DllMain in a linear sequence. The emulator can follow this entire path within its budget. If the suspicious work were moved to a separate exported function called later (not from DllMain), the emulator would need to follow a more complex call graph and might not reach it within budget.</p>
+    </div>
+
+    <h3>Reference</h3>
+    <p><a href="https://i.blackhat.com/us-18/Thu-August-9/us-18-Bulazel-Windows-Offender-Reverse-Engineering-Windows-Defenders-Antivirus-Emulator.pdf" style="color: var(--cyan);">BlackHat 2018: Windows Offender &mdash; Reverse Engineering Windows Defender's Emulator</a></p>
+    <p><a href="https://github.com/0xAlexei/WindowsDefenderTools" style="color: var(--cyan);">0xAlexei/WindowsDefenderTools (GitHub)</a></p>
+  </div>
+
+  <!-- SECTION 05 -->
+  <div class="section" id="etw-ti">
+    <h2>05 // ETW THREAT INTELLIGENCE (KERNEL TELEMETRY)</h2>
+
+    <p>ETW-TI is the highest-fidelity detection layer. It operates at kernel level &mdash; usermode code cannot hook, intercept, or disable it without a kernel driver.</p>
+
+    <h3>Relevant Events</h3>
+    <pre><code>ETW-TI Event           Trigger                        inject_dll fires?
+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;           &mdash;&mdash;&mdash;&mdash;&mdash;                        &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+Task 5  (local)        NtSetContextThread (self)       YES (own thread)
+Task 10 (remote)       NtSetContextThread (other)      YES (all threads)
+Memory alloc events    VirtualAllocEx (remote)         NO
+APC queue events       NtQueueApcThread                NO</code></pre>
+
+    <h3>Debug Register Inspection</h3>
+    <p>When <code>NtSetThreadContext</code> fires with <code>CONTEXT_DEBUG_REGISTERS</code> flags, kernel-level telemetry can inspect the DR0-DR3 values being written. If those values resolve to addresses within <code>amsi.dll</code> (AmsiScanBuffer) or <code>ntdll.dll</code> (EtwEventWrite), that is a near-certain indicator of a patchless AMSI/ETW bypass.</p>
+
+    <div class="critical">
+      <div class="label">THIS IS THE PRIMARY DETECTION SIGNAL</div>
+      <p>Cross-thread <code>SetThreadContext</code> with debug registers pointing at security module functions is the highest-confidence heuristic. No amount of string encoding, import hiding, or timing evasion affects this signal. It is generated by the kernel when the actual API is called at runtime.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 06 -->
+  <div class="section" id="ntcontinue">
+    <h2>06 // NtContinue &mdash; THE DOCUMENTED GAP</h2>
+
+    <p>Praetorian Security documented that <code>NtContinue</code> updates thread context &mdash; including debug registers &mdash; WITHOUT traversing the kernel code path that emits <code>EtwTiLogSetContextThread</code>.</p>
+
+    <div class="finding">
+      <div class="label">CRITICAL RESEARCH FINDING</div>
+      <pre><code>NtSetContextThread  &rarr;  fires ETW-TI  &rarr;  Defender sees DR manipulation  &rarr;  DETECTED
+NtContinue          &rarr;  NO ETW-TI     &rarr;  kernel telemetry BLIND          &rarr;  ???</code></pre>
+      <p>This is the most significant documented gap in the detection chain for hardware breakpoint placement. <code>NtContinue</code> is normally used by the exception dispatcher to restore context after an exception is handled, but it can be called directly to set arbitrary thread context including debug registers.</p>
+    </div>
+
+    <h3>How NtContinue Works</h3>
+    <p><code>NtContinue</code> takes a <code>CONTEXT</code> structure and a boolean <code>RaiseAlert</code>. It restores the thread's context from the structure &mdash; including RIP, RSP, and debug registers. Because it's designed for the exception dispatcher path (which fires millions of times in normal operation), the kernel does NOT instrument it with ETW-TI telemetry the way it instruments <code>NtSetThreadContext</code>.</p>
+
+    <h3>Implications</h3>
+    <ul>
+      <li>A thread can set its OWN debug registers via <code>NtContinue</code> without generating kernel telemetry</li>
+      <li>Combined with APC injection, each target thread could call <code>NtContinue</code> to set its own DRs</li>
+      <li>This removes the cross-thread <code>SetThreadContext</code> pattern entirely</li>
+      <li>The thread enumeration + suspend/resume pattern is also eliminated</li>
+    </ul>
+
+    <p><a href="https://www.praetorian.com/blog/etw-threat-intelligence-and-hardware-breakpoints/" style="color: var(--cyan);">Source: Praetorian &mdash; ETW Threat Intelligence and Hardware Breakpoints</a></p>
+  </div>
+
+  <!-- SECTION 07 -->
+  <div class="section" id="dark-vs-inject">
+    <h2>07 // WHY dark_room PASSES BUT inject_dll FAILS</h2>
+
+    <p>Both components use the same VEH + HWBP technique. Both set DR0 on AmsiScanBuffer and DR1 on EtwEventWrite. Both use the same VEH handler logic. But dark_room passes Defender's scan and inject_dll does not.</p>
+
+    <div class="evidence-box">
+      <div class="label">STRUCTURAL COMPARISON</div>
+      <table>
+        <tr><th>Attribute</th><th>dark_room.exe</th><th>inject_dll.dll</th></tr>
+        <tr><td>PE type</td><td>EXE</td><td>DLL</td></tr>
+        <tr><td>Target</td><td>Own thread only</td><td>ALL threads in process</td></tr>
+        <tr><td>Thread context</td><td>GetCurrentThread() pseudo-handle</td><td>OpenThread() on remote TIDs</td></tr>
+        <tr><td>Suspend/Resume</td><td>NOT NEEDED (self)</td><td>SuspendThread/ResumeThread on each thread</td></tr>
+        <tr><td>Thread enumeration</td><td>NONE</td><td>CreateToolhelp32Snapshot full enum</td></tr>
+        <tr><td>ETW-TI event</td><td>Task 5 only (local)</td><td>Task 5 + Task 10 (local + remote)</td></tr>
+        <tr><td>Import table</td><td>Minimal</td><td>Thread manipulation APIs</td></tr>
+        <tr><td>Entry point work</td><td>main() &mdash; sequential</td><td>DllMain &mdash; under loader lock</td></tr>
+        <tr><td>Scan result</td><td class="status-clean">CLEAN</td><td class="status-detected">DETECTED</td></tr>
+      </table>
+    </div>
+
+    <p>The difference is the cross-thread manipulation. Setting your own debug registers via <code>GetCurrentThread()</code> is a benign-looking operation &mdash; debuggers do this constantly. Enumerating every thread in a process, suspending each one, setting debug registers, and resuming is an injection pattern that Defender specifically recognizes.</p>
+  </div>
+
+  <!-- SECTION 08 -->
+  <div class="section" id="pipeline-fixes">
+    <h2>08 // PIPELINE FIXES &mdash; DEFENDER QUARANTINE HANDLING</h2>
+
+    <p>During mutation testing, a secondary problem emerged: when Defender detects and quarantines <code>vader_inject.dll</code>, it places an exclusive file lock. The mutation pipeline then fails because the compiler can't overwrite the locked binary.</p>
+
+    <h3>The Quarantine Lock Problem</h3>
+    <pre><code>Defender detects vader_inject.dll
+  &rarr; Places exclusive handle on file
+  &rarr; os.remove()   &rarr; PermissionError [WinError 5]
+  &rarr; os.rename()   &rarr; OSError [WinError 225]
+  &rarr; cl.exe /Fe:   &rarr; LNK1104 "cannot open file"
+  &rarr; Mutation pipeline CRASHES</code></pre>
+
+    <h3>The Fix &mdash; Temp-Dir Compile Fallback</h3>
+    <p>When the target binary is locked, the pipeline now:</p>
+    <ul>
+      <li>Detects the lock via <code>os.remove()</code> try/except</li>
+      <li>Creates a temporary build directory (<code>tempfile.mkdtemp()</code>)</li>
+      <li>Compiles to the temp directory instead</li>
+      <li>Attempts <code>os.replace()</code> to swap the new binary in</li>
+      <li>Falls back to <code>.new</code> suffix if replace fails</li>
+      <li>Scans whichever file exists (prefers <code>.new</code>)</li>
+      <li>On CLEAN result, promotes <code>.new</code> to expected filename</li>
+    </ul>
+
+    <p>This fix was applied to 4 files across both VADER and SKYWALKER repositories:</p>
+    <ul>
+      <li><code>vader-rootkit/mutate.py</code> &mdash; compile_component() + rotate_component()</li>
+      <li><code>vader-rootkit/deploy.py</code> &mdash; compile_component()</li>
+      <li><code>skywalker/mutate.py</code> &mdash; compile_component() + rotate_component()</li>
+      <li><code>skywalker/deploy.py</code> &mdash; compile_component()</li>
+    </ul>
+
+    <div class="finding">
+      <div class="label">PIPELINE STATUS</div>
+      <p>All compile/scan/mutate operations now handle Defender quarantine locks gracefully. The pipeline continues operating even when previous binaries are quarantined. 7/8 VADER components and 8/8 SKYWALKER components rotate successfully.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 09 -->
+  <div class="section" id="structural-diff">
+    <h2>09 // STRUCTURAL DIFF &mdash; VADER vs SKYWALKER</h2>
+
+    <p>Priority research direction #1: diff the two inject_dll source files. VADER fails 10/10 key rotations. SKYWALKER found a clean key after 8 attempts. What's different?</p>
+
+    <div class="critical">
+      <div class="label">FINDING: THE FILES ARE FUNCTIONALLY IDENTICAL</div>
+      <p>Every function signature, every API call, every logic branch, every control flow path, every variable declaration, every compile flag is the same. After stripping comments and blank lines, the diff produces <strong>zero logic changes</strong>.</p>
+      <p style="margin-top: 0.5rem;">The detection difference is caused by the XOR key choice and how it transforms the <code>.rdata</code> section of the compiled DLL.</p>
+    </div>
+
+    <h3>The Key Difference (Literally)</h3>
+
+    <div class="evidence-box">
+      <div class="label">XOR KEY COMPARISON</div>
+      <table>
+        <tr><th>Attribute</th><th>VADER</th><th>SKYWALKER</th></tr>
+        <tr><td>XOR Key</td><td><code>0x77</code></td><td><code>0xE3</code></td></tr>
+        <tr><td>Key high bit</td><td>0 (ASCII range)</td><td>1 (above ASCII)</td></tr>
+        <tr><td>Encoded byte range</td><td><code>0x00 - 0x59</code></td><td><code>0x80 - 0xD9</code></td></tr>
+        <tr><td>Bytes &ge; 0x80</td><td>0 of 77 (0%)</td><td>77 of 77 (100%)</td></tr>
+        <tr><td>Bytes &lt; 0x20</td><td>60 of 77 (78%)</td><td>0 of 77 (0%)</td></tr>
+        <tr><td>Null bytes (0x00)</td><td>2 (from 'w' ^ 0x77)</td><td>0</td></tr>
+        <tr><td>Scan result</td><td class="status-detected">DETECTED 10/10</td><td class="status-partial">CLEAN after 8 attempts</td></tr>
+      </table>
+    </div>
+
+    <h3>Why This Matters for Detection</h3>
+
+    <p><strong>VADER's byte distribution is a statistical fingerprint.</strong> Key <code>0x77</code> is itself an ASCII character (lowercase 'w'). XOR-encoding ASCII text with an ASCII-range key produces encoded values that cluster in the low half of the byte space (<code>0x00-0x59</code>). This narrow, low-range distribution screams "XOR-encoded ASCII strings" to entropy-based scanners.</p>
+
+    <p><strong>VADER produces null bytes.</strong> Where plaintext contains 'w' (two occurrences in "Windows" in the canary path), the encoding produces <code>0x00</code>. Null bytes in <code>.rdata</code> const arrays adjacent to non-null data is an unusual pattern that can serve as a heuristic anchor point.</p>
+
+    <p><strong>SKYWALKER's bytes look like normal binary data.</strong> Key <code>0xE3</code> has its high bit set, which flips the high bit of every ASCII character during encoding. All encoded values land in the <code>0x80-0xD9</code> range &mdash; overlapping with common binary data patterns like relocations, padding, and encoded resources. This looks unremarkable in a PE <code>.rdata</code> section.</p>
+
+    <div class="amber-box">
+      <div class="label">YARA-STYLE SIGNATURE POSSIBILITY</div>
+      <p>A rule matching "5+ consecutive bytes all below 0x60 in .rdata near GetProcAddress import" would hit VADER every time and miss SKYWALKER every time. This suggests Defender has a static signature anchored on the byte distribution produced by low-range keys.</p>
+    </div>
+
+    <h3>Detection Model</h3>
+    <p>The evidence suggests Defender uses BOTH detection layers against inject_dll:</p>
+
+    <pre><code>Layer A — Static byte pattern signature
+  Key 0x77 → low-range clustering → ALWAYS MATCHES → DETECTED
+  Key 0xE3 → high-range bytes     → MISSES          → passes static
+
+Layer B — Behavioral/heuristic rule (API call sequence)
+  Both keys → same code structure → SOMETIMES MATCHES → inconsistent
+
+VADER:   Layer A hits 100%  →  always DETECTED (Layer B irrelevant)
+SKYWALKER: Layer A misses    →  Layer B fires inconsistently → CLEAN after 8 tries</code></pre>
+
+    <h3>Implications for Mutation Pipeline</h3>
+    <ul>
+      <li>The <code>mutate.py</code> key selection should prefer keys with high bit set (<code>0x80-0xFF</code>)</li>
+      <li>Keys that produce null bytes when XOR'd with common ASCII ('a'-'z', 'A'-'Z', '.', '\') should be avoided</li>
+      <li>Key selection alone does not guarantee evasion &mdash; it only defeats Layer A (static). Layer B (behavioral) still fires based on the code structure</li>
+      <li>To defeat both layers, the code structure must change (see research directions below)</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 10 -->
+  <div class="section" id="research-directions">
+    <h2>10 // RESEARCH DIRECTIONS</h2>
+
+    <p>Prioritised by expected impact and feasibility. Each direction targets a specific layer of the detection chain.</p>
+
+    <div class="evidence-box">
+      <div class="label">PRIORITY 1 &mdash; DIFF VADER vs SKYWALKER</div>
+      <p>SKYWALKER's sw_thread_dll found a clean key after 8 attempts. VADER's inject_dll failed 10/10. Structural diff between the two source files will reveal which differences lower Defender's confidence score.</p>
+      <p style="color: var(--amber);">Cost: Zero. Time: 10 minutes. Intel value: HIGH.</p>
+    </div>
+
+    <div class="evidence-box">
+      <div class="label">PRIORITY 2 &mdash; NtContinue FOR HWBP PLACEMENT</div>
+      <p>Replace <code>NtSetContextThread</code> with <code>NtContinue</code> for debug register manipulation. Bypasses ETW-TI kernel telemetry entirely. Documented by Praetorian. Each thread sets its OWN DRs via NtContinue, eliminating the cross-thread SetThreadContext pattern.</p>
+      <p style="color: var(--amber);">Targets: Layer 3 (ETW-TI). Impact: Removes highest-fidelity detection signal.</p>
+    </div>
+
+    <div class="evidence-box">
+      <div class="label">PRIORITY 3 &mdash; DECOUPLE DllMain</div>
+      <p>Move VEH registration + thread blinding out of DllMain into a separate exported init function. DllMain becomes a no-op (<code>DisableThreadLibraryCalls</code> only). Injector calls init via second <code>CreateRemoteThread</code> after LoadLibrary returns.</p>
+      <p style="color: var(--amber);">Targets: Layer 2 (emulation). Impact: Code not reachable from DllMain entry point.</p>
+    </div>
+
+    <div class="evidence-box">
+      <div class="label">PRIORITY 4 &mdash; APC-BASED THREAD BLINDING</div>
+      <p>Replace Suspend/SetContext/Resume with <code>QueueUserAPC</code>. Each thread receives an APC that calls <code>NtContinue</code> to set its own debug registers. Eliminates thread enumeration + cross-thread context manipulation entirely.</p>
+      <p style="color: var(--amber);">Targets: All 3 layers. Impact: Completely different API surface.</p>
+    </div>
+
+    <div class="evidence-box">
+      <div class="label">PRIORITY 5 &mdash; DIRECT SYSCALLS</div>
+      <p>Replace Win32 API calls with direct NT syscall invocations (SysWhispers-style). Removes suspicious imports from IAT. Note: does NOT bypass ETW-TI kernel telemetry &mdash; syscalls still fire kernel callbacks.</p>
+      <p style="color: var(--amber);">Targets: Layer 1 (static) + Layer 2 (emulation). Impact: Clean IAT, harder to emulate.</p>
+    </div>
+
+    <div class="evidence-box">
+      <div class="label">PRIORITY 6 &mdash; STAGGER TIMING</div>
+      <p>Insert computation delays between VEH registration and thread enumeration. May exceed emulator's instruction budget. Use <code>CreateTimerQueueTimer</code> for deferred execution.</p>
+      <p style="color: var(--amber);">Targets: Layer 2 (emulation). Impact: Uncertain &mdash; cloud analysis has no time budget.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 11 -->
+  <div class="section" id="sources">
+    <h2>11 // SOURCES</h2>
+    <ul>
+      <li><a href="https://www.praetorian.com/blog/etw-threat-intelligence-and-hardware-breakpoints/" style="color: var(--cyan);">Praetorian: ETW Threat Intelligence and Hardware Breakpoints</a></li>
+      <li><a href="https://www.crowdstrike.com/en-us/blog/crowdstrike-investigates-threat-of-patchless-amsi-bypass-attacks/" style="color: var(--cyan);">CrowdStrike: Patchless AMSI Bypass Attacks</a></li>
+      <li><a href="https://fluxsec.red/detecting-vectored-exception-handling-malware-rust-edr-windows-kernel" style="color: var(--cyan);">FluxSec: Detecting VEH Abuse via Debug Registers</a></li>
+      <li><a href="https://i.blackhat.com/us-18/Thu-August-9/us-18-Bulazel-Windows-Offender-Reverse-Engineering-Windows-Defenders-Antivirus-Emulator.pdf" style="color: var(--cyan);">BlackHat 2018: Reverse Engineering Defender Emulator</a></li>
+      <li><a href="https://github.com/0xAlexei/WindowsDefenderTools" style="color: var(--cyan);">0xAlexei/WindowsDefenderTools (GitHub)</a></li>
+      <li><a href="https://www.outflank.nl/blog/2024/10/15/introducing-early-cascade-injection-from-windows-process-creation-to-stealthy-injection/" style="color: var(--cyan);">Outflank: Early Cascade Injection</a></li>
+      <li><a href="https://www.hackmosphere.fr/en/bypass-windows-defender-antivirus-in-2025-evasion-techniques-using-direct-syscalls-and-xor-encryption-part-2/" style="color: var(--cyan);">Hackmosphere: Bypass Defender 2025</a></li>
+      <li><a href="https://labs.infoguard.ch/posts/attacking_edr_part4_fuzzing_defender_scanning_and_emulation_engine/" style="color: var(--cyan);">InfoGuard Labs: Fuzzing mpengine.dll</a></li>
+      <li><a href="https://www.elastic.co/security-labs/blockchain-c2-phantompulse-rat-sinkhole" style="color: var(--cyan);">Elastic Security Labs: PHANTOMPULSE RAT</a></li>
+      <li><a href="https://www.cyberask.co.uk/posts/detecting-process-injection-via-etw-threat-intelligence.html" style="color: var(--cyan);">CyberAsk: Detecting Process Injection via ETW-TI</a></li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <div>george wu / 22DIV</div>
+  <div style="margin-top:0.3rem;">Responsible Disclosure via MSRC</div>
+</footer>
+
+</body>
+</html>
