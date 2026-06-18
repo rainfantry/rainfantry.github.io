@@ -330,7 +330,7 @@ footer {
 
   <div class="header">
     <h1>DEFENDER ENGAGEMENT // STRUCTURAL DETECTION RESEARCH</h1>
-    <div class="sub">22DIV / george wu // CSEC research on own hardware // June 2026</div>
+    <div class="sub">22DIV / george wu // CSEC research on own hardware // 18 June 2026</div>
   </div>
 
   <div class="toc">
@@ -360,18 +360,18 @@ footer {
       <div class="label">COMPONENT STATUS</div>
       <table>
         <tr><th>Component</th><th>Signature</th><th>Mutation</th><th>Status</th></tr>
-        <tr><td>dark_room</td><td>ALPHA</td><td>0xB0 &rarr; 0x38</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
-        <tr><td>inject_dll</td><td>HOTEL</td><td>10 keys tried</td><td class="status-detected">DETECTED (all 10)</td></tr>
-        <tr><td>inject_exe</td><td>ECHO</td><td>0x7F &rarr; 0x30</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
-        <tr><td>v4_svc_replace</td><td>V4</td><td>0x24 &rarr; 0xCA</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
-        <tr><td>v5_dll_proxy</td><td>V5</td><td>0x6A &rarr; 0xB1</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
-        <tr><td>v6_path_hijack</td><td>V6</td><td>0x14 &rarr; 0xF7</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
-        <tr><td>v7_phantom_dll</td><td>V7</td><td>0x13 &rarr; 0x93</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
-        <tr><td>shell</td><td>BRAVO</td><td>0x37 &rarr; 0xB9</td><td class="status-partial">CLEAN (attempt 2)</td></tr>
+        <tr><td>dark_room</td><td>ALPHA</td><td>0x38 &rarr; 0xBE</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>inject_dll</td><td>HOTEL</td><td>10 high-bit keys tried</td><td class="status-detected">DETECTED (all 10)</td></tr>
+        <tr><td>inject_exe</td><td>ECHO</td><td>0x30 &rarr; 0xB5</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v4_svc_replace</td><td>V4</td><td>0xCA &rarr; 0xDC</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v5_dll_proxy</td><td>V5</td><td>0xB1 &rarr; 0xC9</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v6_path_hijack</td><td>V6</td><td>0xF7 &rarr; 0xC6</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>v7_phantom_dll</td><td>V7</td><td>0x93 &rarr; 0xBD</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
+        <tr><td>shell</td><td>BRAVO</td><td>0xB9 &rarr; 0xF7</td><td class="status-clean">CLEAN (attempt 1)</td></tr>
       </table>
     </div>
 
-    <p>SKYWALKER (cold standby fork) has the same inject_dll pattern. It found a clean key after 8 attempts &mdash; suggesting Defender's confidence threshold is marginally lower on the SKYWALKER variant. Structural comparison between the two files is a priority research item.</p>
+    <p>SKYWALKER (cold standby fork) has the same inject_dll pattern. Previously found a clean key after 8 attempts, but as of 18 June 2026, SKYWALKER inject_dll also fails 10/10 with high-bit keys. Defender has updated its signatures &mdash; both variants are now equally detected. The detection is purely structural.</p>
   </div>
 
   <!-- SECTION 02 -->
@@ -568,7 +568,7 @@ NtContinue          &rarr;  NO ETW-TI     &rarr;  kernel telemetry BLIND        
 
     <div class="finding">
       <div class="label">PIPELINE STATUS</div>
-      <p>All compile/scan/mutate operations now handle Defender quarantine locks gracefully. The pipeline continues operating even when previous binaries are quarantined. 7/8 VADER components and 8/8 SKYWALKER components rotate successfully.</p>
+      <p>All compile/scan/mutate operations now handle Defender quarantine locks gracefully. The pipeline continues operating even when previous binaries are quarantined. 7/8 components rotate successfully on both VADER and SKYWALKER. inject_dll is the sole holdout &mdash; structural detection, not string matching. Updated 18 June 2026.</p>
     </div>
   </div>
 
@@ -576,7 +576,7 @@ NtContinue          &rarr;  NO ETW-TI     &rarr;  kernel telemetry BLIND        
   <div class="section" id="structural-diff">
     <h2>09 // STRUCTURAL DIFF &mdash; VADER vs SKYWALKER</h2>
 
-    <p>Priority research direction #1: diff the two inject_dll source files. VADER fails 10/10 key rotations. SKYWALKER found a clean key after 8 attempts. What's different?</p>
+    <p>Priority research direction #1: diff the two inject_dll source files. VADER fails 10/10 key rotations. SKYWALKER originally found a clean key after 8 attempts (now also fails 10/10 as of 18 June 2026 &mdash; Defender updated signatures). What's different?</p>
 
     <div class="critical">
       <div class="label">FINDING: THE FILES ARE FUNCTIONALLY IDENTICAL</div>
@@ -596,7 +596,8 @@ NtContinue          &rarr;  NO ETW-TI     &rarr;  kernel telemetry BLIND        
         <tr><td>Bytes &ge; 0x80</td><td>0 of 77 (0%)</td><td>77 of 77 (100%)</td></tr>
         <tr><td>Bytes &lt; 0x20</td><td>60 of 77 (78%)</td><td>0 of 77 (0%)</td></tr>
         <tr><td>Null bytes (0x00)</td><td>2 (from 'w' ^ 0x77)</td><td>0</td></tr>
-        <tr><td>Scan result</td><td class="status-detected">DETECTED 10/10</td><td class="status-partial">CLEAN after 8 attempts</td></tr>
+        <tr><td>Scan result (original)</td><td class="status-detected">DETECTED 10/10</td><td class="status-partial">CLEAN after 8 attempts</td></tr>
+        <tr><td>Scan result (18 Jun 2026)</td><td class="status-detected">DETECTED 10/10</td><td class="status-detected">DETECTED 10/10</td></tr>
       </table>
     </div>
 
@@ -642,9 +643,9 @@ SKYWALKER: Layer A misses    →  Layer B fires inconsistently → CLEAN after 8
     <p>Prioritised by expected impact and feasibility. Each direction targets a specific layer of the detection chain.</p>
 
     <div class="evidence-box">
-      <div class="label">PRIORITY 1 &mdash; DIFF VADER vs SKYWALKER</div>
-      <p>SKYWALKER's sw_thread_dll found a clean key after 8 attempts. VADER's inject_dll failed 10/10. Structural diff between the two source files will reveal which differences lower Defender's confidence score.</p>
-      <p style="color: var(--amber);">Cost: Zero. Time: 10 minutes. Intel value: HIGH.</p>
+      <div class="label">PRIORITY 1 &mdash; DIFF VADER vs SKYWALKER <span style="color: var(--green);">[COMPLETED]</span></div>
+      <p>Files are functionally identical. Zero logic differences. The detection gap was caused by XOR key byte distribution (Layer A), not code structure. High-bit key fix applied to mutate.py. As of 18 June 2026, Defender has updated &mdash; both variants now fail 10/10 regardless of key range. <strong>Layer A is no longer bypassable via key selection alone.</strong> The remaining detection is purely Layer B (structural/behavioral).</p>
+      <p style="color: var(--green);">COMPLETED. Finding: structural detection confirmed. Key selection exhausted as evasion vector.</p>
     </div>
 
     <div class="evidence-box">
