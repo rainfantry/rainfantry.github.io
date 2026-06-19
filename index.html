@@ -287,6 +287,46 @@ nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4
 nav a.nav-pink { color: #ff2d8a; }
 nav a.nav-pink:hover { color: #ff5ca8; text-shadow: 0 0 8px rgba(255,45,138,0.4); }
 nav .sep { color: var(--dim); font-size: 0.7rem; user-select: none; }
+nav a.nav-green { color: #00ff41; font-weight: 600; }
+nav a.nav-green:hover { color: #33ff66; text-shadow: 0 0 12px rgba(0,255,65,0.6); }
+nav a.nav-cyan { color: #00e5ff; }
+nav a.nav-cyan:hover { color: #33eeff; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
+nav a.nav-purple { color: #b366ff; }
+nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0.4); }
+
+.nav-links { display: flex; gap: 1.5rem; align-items: center; flex: 1; }
+
+.hamburger {
+  display: none; background: none; border: 1px solid var(--dim);
+  color: var(--green); font-size: 1.2rem; padding: 0.2rem 0.6rem;
+  cursor: pointer; border-radius: 3px; line-height: 1;
+}
+.hamburger:hover { background: rgba(0,255,65,0.1); }
+
+.theme-btn {
+  background: none; border: 1px solid var(--dim); color: var(--amber);
+  font-size: 0.85rem; padding: 0.15rem 0.4rem; cursor: pointer;
+  border-radius: 3px; margin-left: auto;
+}
+.theme-btn:hover { background: rgba(255,176,0,0.1); }
+
+[data-theme="light"] {
+  --bg: #f5f5f0; --bg2: #eaeae5; --bg3: #e0e0db;
+  --green: #006622; --green2: #008833; --green3: #00aa44;
+  --amber: #cc8800; --red: #cc2222; --cyan: #0099bb;
+  --blue: #2266cc; --dim: #aaa; --muted: #666; --text: #333; --bright: #111;
+}
+[data-theme="light"] body { background: var(--bg); color: var(--text); }
+[data-theme="light"] body::after { display: none; }
+[data-theme="light"] nav { background: rgba(245,245,240,0.95); border-bottom-color: #ccc; }
+[data-theme="light"] .term { background: #1a1a1a; color: #ccc; }
+
+@media (max-width: 768px) {
+  .hamburger { display: block; }
+  .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.5rem; align-items: flex-start; }
+  .nav-links.show { display: flex; }
+  nav .inner { flex-wrap: wrap; justify-content: space-between; }
+}
 
 /* ── FOOTER ── */
 footer {
@@ -315,15 +355,20 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <nav>
   <div class="inner">
     <a href="index.html" class="brand">22DIV</a>
-    <span class="sep">|</span>
-    <a href="index.html">home</a>
-    <a href="journal.html">journal</a>
-    <a href="books.html" class="nav-red">field manual</a>
-    <a href="csec.html" class="nav-red">kill chain</a>
-    <a href="rootkit.html" class="nav-blue">rootkit manual</a>
-    <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
-    <a href="report.html" class="nav-pink">book report</a>
-    <a href="defender.html" class="nav-cyan">DEFENDER</a>
+    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">home</a>
+      <a href="journal.html">journal</a>
+      <a href="books.html" class="nav-red">field manual</a>
+      <a href="csec.html" class="nav-red">kill chain</a>
+      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+      <a href="networking.html" class="nav-green">networking</a>
+      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+      <a href="report.html" class="nav-pink">book report</a>
+      <a href="defender.html" class="nav-cyan">DEFENDER</a>
+      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
+    </div>
   </div>
 </nav>
 
@@ -994,8 +1039,8 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
       <tr>
         <td style="color:var(--amber)">II</td>
         <td>SKYWALKER</td>
-        <td><span class="tag tag-system">COLD STANDBY</span></td>
-        <td style="color:var(--dim)">Complete fork — independent key set, own C2 (eclipse), own injection (thread). Survives VADER burn</td>
+        <td><span class="tag tag-confirmed">ARMED</span></td>
+        <td style="color:var(--dim)">Own gate engine (SDBM + ADD), 10/10 SSNs, CLEAN. Own C2 (eclipse), own injection (thread). Survives VADER burn</td>
       </tr>
       <tr>
         <td style="color:var(--dim)">-</td>
@@ -1140,9 +1185,9 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <span class="out-amber">  SYSTEM captured:  #47 Phantom DLL — osppc.dll via ClickToRunSvc (CWE-427)</span>
 <span class="out-amber">                    First-party MS service. User-writable PATH fills the void.</span>
 <span class="out"></span>
-<span class="out-cyan">  SKYWALKER — independent cold-standby fork</span>
+<span class="out-cyan">  SKYWALKER — ARMED. Own gate engine (SDBM + ADD offset).</span>
 <span class="out-cyan">    Own C2 (eclipse), own injection (thread hijack), own keys.</span>
-<span class="out-cyan">    Survives total VADER compromise. Different binary fingerprint.</span>
+<span class="out-cyan">    10/10 SSNs resolved, Defender CLEAN. Survives total VADER burn.</span>
 <span class="out"></span>
 <span class="out-amber">  Mutation pipeline: mutate.py auto-rotates all XOR keys + recompiles.</span>
 <span class="out-amber">    Every build = unique signature. Defender can't pattern-match.</span>
@@ -1172,7 +1217,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
     53 findings across 14 engagements. One MSRC case filed and rejected. 7-phase kill chain from C2 to
     anti-forensics — built, tested, Defender-invisible. Mutation pipeline rotates every signature automatically.
-    SKYWALKER stands cold — independent fork, independent keys, survives total VADER compromise.
+    Three gate engines — SithStalker (DJB2), VADER (FNV-1a), Skywalker (SDBM) — zero shared byte patterns, all CLEAN.
     Every technique built from scratch against live defenses. The wall held where it was supposed to.
     Now targeting AI security boundaries — same methodology, right category.
   </p>
@@ -1188,5 +1233,6 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <div style="margin-top: 0.5rem; opacity: 0.4;">CSEC // windows internals // ai exploitation // responsible disclosure</div>
 </footer>
 
+<script src="site.js"></script>
 </body>
 </html>

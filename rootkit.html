@@ -27,6 +27,8 @@
   --text-primary: #d4d4d4;
   --text-muted:   #777777;
   --text-dim:     #555555;
+  --dim:          #555555;
+  --green2:       #33cc33;
   --mono:         'Consolas', 'Cascadia Code', 'Source Code Pro', 'Courier New', monospace;
   --sans:         'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -61,10 +63,79 @@ body::after {
   z-index: 9999;
 }
 
-/* ── STICKY NAV ── */
-nav {
+/* ── SITE-WIDE NAV ── */
+.site-nav {
   position: sticky;
   top: 0;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  z-index: 1001;
+  padding: 0.6rem 0;
+}
+.site-nav .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.site-nav a {
+  color: var(--green2);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+.site-nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+.site-nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
+.site-nav a.nav-red { color: var(--red); }
+.site-nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
+.site-nav a.nav-blue { color: #4488ff; }
+.site-nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
+.site-nav a.nav-yellow { color: var(--amber); }
+.site-nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+.site-nav a.nav-pink { color: #ff2d8a; }
+.site-nav a.nav-pink:hover { color: #ff5ca8; text-shadow: 0 0 8px rgba(255,45,138,0.4); }
+.site-nav a.nav-green { color: #00ff41; font-weight: 600; }
+.site-nav a.nav-green:hover { color: #33ff66; text-shadow: 0 0 12px rgba(0,255,65,0.6); }
+.site-nav a.nav-cyan { color: #00e5ff; }
+.site-nav a.nav-cyan:hover { color: #33eeff; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
+.site-nav a.nav-purple { color: #b366ff; }
+.site-nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0.4); }
+.site-nav .nav-links { display: flex; gap: 1.5rem; align-items: center; flex: 1; }
+.site-nav .hamburger {
+  display: none; background: none; border: 1px solid var(--dim);
+  color: var(--green); font-size: 1.2rem; padding: 0.2rem 0.6rem;
+  cursor: pointer; border-radius: 3px; line-height: 1;
+}
+.site-nav .hamburger:hover { background: rgba(0,255,65,0.1); }
+.site-nav .theme-btn {
+  background: none; border: 1px solid var(--dim); color: var(--amber);
+  font-size: 0.85rem; padding: 0.15rem 0.4rem; cursor: pointer;
+  border-radius: 3px; margin-left: auto;
+}
+.site-nav .theme-btn:hover { background: rgba(255,176,0,0.1); }
+
+[data-theme="light"] {
+  --bg-primary: #f5f5f0; --bg-secondary: #eaeae5; --bg-card: #e0e0db;
+  --green: #006622; --green2: #008833;
+  --amber: #cc8800; --red: #cc2222; --cyan: #0099bb;
+  --dim: #aaa; --text-primary: #333; --text-muted: #666; --text-dim: #999;
+  --border: #ccc;
+}
+[data-theme="light"] body { background: var(--bg-primary); color: var(--text-primary); }
+[data-theme="light"] body::after { display: none; }
+[data-theme="light"] .site-nav { background: rgba(245,245,240,0.95); border-bottom-color: #ccc; }
+[data-theme="light"] .section-nav { background: rgba(240,240,235,0.95); border-bottom-color: #ccc; }
+[data-theme="light"] .term, [data-theme="light"] .code-block, [data-theme="light"] pre { background: #1a1a1a; color: #ccc; }
+
+/* ── SECTION NAV ── */
+.section-nav {
+  position: sticky;
+  top: 2.5rem;
   z-index: 1000;
   background: rgba(10, 10, 10, 0.95);
   backdrop-filter: blur(12px);
@@ -72,7 +143,7 @@ nav {
   padding: 0;
 }
 
-.nav-inner {
+.section-inner {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -82,9 +153,9 @@ nav {
   scrollbar-width: none;
 }
 
-.nav-inner::-webkit-scrollbar { display: none; }
+.section-inner::-webkit-scrollbar { display: none; }
 
-.nav-brand {
+.section-brand {
   font-family: var(--mono);
   font-weight: 700;
   color: var(--green);
@@ -96,14 +167,14 @@ nav {
   text-decoration: none;
 }
 
-.nav-links {
+.section-links {
   display: flex;
   gap: 0;
   list-style: none;
   overflow-x: auto;
 }
 
-.nav-links a {
+.section-links a {
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.75rem;
@@ -116,7 +187,7 @@ nav {
   text-transform: uppercase;
 }
 
-.nav-links a:hover {
+.section-links a:hover {
   color: var(--green);
   background: rgba(0, 255, 65, 0.05);
 }
@@ -611,9 +682,13 @@ code {
   .kc-phase { grid-template-columns: 60px 1fr auto; gap: 0.5rem; padding: 0.75rem 1rem; }
   .kc-phase::before { left: 72px; }
   .hero { padding: 3rem 1.5rem 2rem; }
-  nav { position: sticky; top: 0; }
-  .nav-brand { padding: 0.6rem 1rem; font-size: 0.75rem; }
-  .nav-links a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
+  .section-nav { position: sticky; top: 0; }
+  .section-brand { padding: 0.6rem 1rem; font-size: 0.75rem; }
+  .section-links a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
+  .site-nav .hamburger { display: block; }
+  .site-nav .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.5rem; align-items: flex-start; }
+  .site-nav .nav-links.show { display: flex; }
+  .site-nav .inner { flex-wrap: wrap; justify-content: space-between; }
 }
 
 /* ── FOOTER ── */
@@ -741,11 +816,32 @@ h3 code {
 </head>
 <body>
 
-<!-- ────────────── NAV ────────────── -->
-<nav>
-  <div class="nav-inner">
-    <a href="#top" class="nav-brand">VADER // EVC</a>
-    <ul class="nav-links">
+<!-- ────────────── SITE NAV ────────────── -->
+<nav class="site-nav">
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">home</a>
+      <a href="journal.html">journal</a>
+      <a href="books.html" class="nav-red">field manual</a>
+      <a href="csec.html" class="nav-red">kill chain</a>
+      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+      <a href="networking.html" class="nav-green">networking</a>
+      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+      <a href="report.html" class="nav-pink">book report</a>
+      <a href="defender.html" class="nav-cyan">DEFENDER</a>
+      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ────────────── SECTION NAV ────────────── -->
+<nav class="section-nav">
+  <div class="section-inner">
+    <a href="#top" class="section-brand">VADER // EVC</a>
+    <ul class="section-links">
       <li><a href="#overview">Overview</a></li>
       <li><a href="#killchain">Kill Chain</a></li>
       <li><a href="#cwe732">CWE-732</a></li>
@@ -759,9 +855,6 @@ h3 code {
       <li><a href="#stager">Stager</a></li>
       <li><a href="#forensics">Forensics</a></li>
       <li><a href="#session" style="color:#00ff41;">Live Session</a></li>
-      <li><a href="report.html" style="color:#ff2d8a;">Book Report</a></li>
-      <li><a href="defender.html" style="color:#00e5ff;">Defender</a></li>
-      <li><a href="index.html" style="color:#00ff41;">← 22DIV</a></li>
     </ul>
   </div>
 </nav>
@@ -2448,8 +2541,13 @@ PHASE 3: VERIFY
   ║  TECHNIQUE:        Hardware breakpoints — not a security        ║
   ║                    boundary per MSRC VULN-195458                ║
   ║                                                                 ║
-  ║  SKYWALKER:        Cold standby. Independent keys.              ║
-  ║                    Survives total VADER burn.                    ║
+  ║  SKYWALKER:        ARMED. Own gate engine (SDBM + ADD).         ║
+  ║                    10/10 SSNs, CLEAN. Survives VADER burn.      ║
+  ║                                                                 ║
+  ║  GATE ENGINES:     3 variants, zero shared byte patterns        ║
+  ║    SithStalker:    DJB2 + XOR       10/10  CLEAN                ║
+  ║    VADER:          FNV-1a + ROL/XOR 10/10  CLEAN                ║
+  ║    Skywalker:      SDBM + ADD       10/10  CLEAN                ║
   ║                                                                 ║
   ╠══════════════════════════════════════════════════════════════════╣
   ║  22DIV / george wu                                              ║
@@ -2473,7 +2571,7 @@ PHASE 3: VERIFY
 (function() {
   // Active nav link highlighting on scroll
   const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
+  const navLinks = document.querySelectorAll('.section-links a');
 
   function highlightNav() {
     let scrollPos = window.scrollY + 120;
@@ -2516,6 +2614,7 @@ PHASE 3: VERIFY
   setTimeout(typeChar, 400);
 })();
 </script>
+<script src="site.js"></script>
 
 </body>
 </html>

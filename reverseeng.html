@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>22DIV — Reverse Engineering</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a0a; --bg2: #111; --bg3: #1a1a1a;
+  --green: #00ff41; --green2: #33cc33; --green3: #00cc33;
+  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff;
+  --blue: #4488ff; --purple: #b366ff; --purple2: #9933ff; --purple3: #cc88ff;
+  --dim: #555; --muted: #888; --text: #ccc; --bright: #fff;
+}
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Courier New', monospace; line-height: 1.6; font-size: 0.9rem;
+}
+body::after {
+  content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none; z-index: 9999;
+}
+.container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,10,0.95); border-bottom: 1px solid #1a1a1a;
+  backdrop-filter: blur(10px); padding: 0.5rem 2rem;
+}
+nav .inner { display: flex; align-items: center; max-width: 900px; margin: 0 auto; gap: 1.5rem; }
+nav a {
+  color: var(--dim); text-decoration: none; font-size: 0.8rem; text-transform: lowercase;
+  letter-spacing: 0.08em; transition: color 0.2s;
+}
+nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
+nav a.nav-red { color: var(--red); }
+nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
+nav a.nav-blue { color: #4488ff; }
+nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
+nav a.nav-yellow { color: var(--amber); }
+nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
+nav a.nav-pink { color: #ff2d8a; }
+nav a.nav-pink:hover { color: #ff5ca8; text-shadow: 0 0 8px rgba(255,45,138,0.4); }
+nav a.nav-green { color: #00ff41; font-weight: 600; }
+nav a.nav-green:hover { color: #33ff66; text-shadow: 0 0 12px rgba(0,255,65,0.6); }
+nav a.nav-cyan { color: #00e5ff; }
+nav a.nav-cyan:hover { color: #33eeff; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
+nav a.nav-purple { color: #b366ff; }
+nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0.4); }
+.nav-links { display: flex; gap: 1.5rem; align-items: center; flex: 1; }
+.hamburger { display: none; background: none; border: 1px solid var(--dim); color: var(--green); font-size: 1.2rem; padding: 0.2rem 0.6rem; cursor: pointer; border-radius: 3px; line-height: 1; }
+.hamburger:hover { background: rgba(0,255,65,0.1); }
+.theme-btn { background: none; border: 1px solid var(--dim); color: var(--amber); font-size: 0.85rem; padding: 0.15rem 0.4rem; cursor: pointer; border-radius: 3px; margin-left: auto; }
+.theme-btn:hover { background: rgba(255,176,0,0.1); }
+[data-theme="light"] { --bg: #f5f5f0; --bg2: #eaeae5; --bg3: #e0e0db; --green: #006622; --green2: #008833; --green3: #00aa44; --amber: #cc8800; --red: #cc2222; --cyan: #0099bb; --blue: #2266cc; --purple: #7733cc; --purple2: #6622bb; --purple3: #9955dd; --dim: #aaa; --muted: #666; --text: #333; --bright: #111; }
+[data-theme="light"] body { background: var(--bg); color: var(--text); }
+[data-theme="light"] body::after { display: none; }
+[data-theme="light"] nav { background: rgba(245,245,240,0.95); border-bottom-color: #ccc; }
+[data-theme="light"] .term { background: #1a1a1a; color: #ccc; }
+@media (max-width: 768px) { .hamburger { display: block; } .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.5rem; align-items: flex-start; } .nav-links.show { display: flex; } nav .inner { flex-wrap: wrap; justify-content: space-between; } }
+
+/* ── HEADER ── */
+.header { padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--purple2); margin-bottom: 2rem; }
+.header h1 { color: var(--purple); font-size: 1.6rem; font-weight: 400; letter-spacing: 0.15em; }
+.header p { color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem; letter-spacing: 0.06em; }
+.header .subtitle { color: var(--purple3); font-size: 0.85rem; margin-top: 0.3rem; }
+
+/* ── SECTIONS ── */
+h2 {
+  color: var(--purple); font-size: 1.1rem; font-weight: 400;
+  letter-spacing: 0.1em; margin: 2.5rem 0 1rem;
+  padding-bottom: 0.3rem; border-bottom: 1px solid #1a1a1a;
+}
+h3 { color: var(--purple3); font-size: 0.95rem; font-weight: 400; margin: 1.5rem 0 0.8rem; letter-spacing: 0.06em; }
+p { margin-bottom: 1rem; }
+strong { color: var(--bright); }
+a { color: var(--purple); text-decoration: none; }
+a:hover { color: var(--purple3); text-shadow: 0 0 8px rgba(179,102,255,0.3); }
+
+/* ── TERMINAL BLOCKS ── */
+.term {
+  background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 4px;
+  padding: 1rem 1.2rem; margin: 1rem 0 1.5rem; overflow-x: auto;
+  font-size: 0.8rem; line-height: 1.5;
+}
+.term .prompt { color: var(--purple); }
+.term .cmd { color: var(--bright); }
+.term .out { color: var(--muted); }
+.term .ok { color: var(--green); }
+.term .fail { color: var(--red); }
+.term .warn { color: var(--amber); }
+.term .info { color: var(--cyan); }
+.term .hex { color: var(--purple3); }
+
+/* ── TABLES ── */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.8rem; }
+th { color: var(--purple); text-align: left; padding: 0.4rem 0.8rem; border-bottom: 1px solid var(--purple2); letter-spacing: 0.06em; }
+td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #1a1a1a; }
+tr:hover { background: rgba(179,102,255,0.05); }
+
+/* ── STATUS BADGES ── */
+.badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 3px; font-size: 0.7rem; letter-spacing: 0.08em; }
+.badge-patched { background: rgba(255,68,68,0.15); color: var(--red); border: 1px solid rgba(255,68,68,0.3); }
+.badge-live { background: rgba(0,255,65,0.1); color: var(--green); border: 1px solid rgba(0,255,65,0.3); }
+.badge-research { background: rgba(179,102,255,0.15); color: var(--purple); border: 1px solid rgba(179,102,255,0.3); }
+
+/* ── FINDINGS ── */
+.finding {
+  border-left: 3px solid var(--purple2); padding: 0.8rem 1.2rem;
+  margin: 1rem 0; background: rgba(179,102,255,0.03);
+}
+.finding-title { color: var(--purple); font-size: 0.85rem; margin-bottom: 0.5rem; letter-spacing: 0.06em; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid #1a1a1a; padding: 2rem 0; text-align: center;
+  color: var(--purple); font-size: 0.85rem; font-weight: 400; letter-spacing: 0.12em;
+}
+footer a { color: var(--purple); text-decoration: none; }
+footer a:hover { color: var(--purple3); text-shadow: 0 0 8px rgba(179,102,255,0.4); }
+
+@media (max-width: 640px) {
+  .container { padding: 1rem; }
+  .term { padding: 0.8rem 1rem; font-size: 0.75rem; }
+  .header h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">home</a>
+      <a href="journal.html">journal</a>
+      <a href="books.html" class="nav-red">field manual</a>
+      <a href="csec.html" class="nav-red">kill chain</a>
+      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+      <a href="networking.html" class="nav-green">networking</a>
+      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+      <a href="report.html" class="nav-pink">book report</a>
+      <a href="defender.html" class="nav-cyan">DEFENDER</a>
+      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<div class="header">
+  <h1>// REVERSE ENGINEERING</h1>
+  <p class="subtitle">kernel driver analysis &mdash; cldflt.sys patch diffing</p>
+  <p>binary analysis of Windows kernel drivers to understand silent patches and find alternative attack surfaces</p>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<h2>00 &mdash; OBJECTIVE</h2>
+
+<p>The <strong>CfAbortOperation TOCTOU race primitive</strong> (used by MiniPlasma for CVE-class EoP) was found to be <span class="badge badge-patched">PATCHED</span> on Windows 11 Build 26200 (25H2). CfAbortOperation returns S_OK but no longer triggers <code>HsmOsBlockPlaceholderAccess</code> to create or modify the <code>CloudFiles\BlockedApps</code> registry key.</p>
+
+<p>This section documents the reverse engineering process used to understand <strong>what Microsoft changed</strong> and whether alternative code paths in <code>cldflt.sys</code> remain exploitable.</p>
+
+<div class="finding">
+  <div class="finding-title">CORE FINDING &mdash; Primitive Dead on Build 26200</div>
+  <p><code>CfAbortOperation(pid, 0, BLOCK)</code> returns <code>0x00000000</code> (S_OK) but the <code>CloudFiles\BlockedApps</code> registry key is never created under <code>HKU\.DEFAULT\Software\Policies\Microsoft\</code>. Confirmed on both main machine and Radon laptop. The kernel code path that performed the registry write has been silently removed or gated.</p>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<h2>01 &mdash; DIAGNOSTIC EVIDENCE</h2>
+
+<h3>Build Verification</h3>
+<table>
+  <tr><th>Machine</th><th>OS Version</th><th>Build</th><th>CloudFiles Key</th><th>Primitive</th></tr>
+  <tr><td>Main (gwu07)</td><td>Win11 25H2</td><td>26200.8655</td><td>MISSING</td><td class="fail"><span class="badge badge-patched">DEAD</span></td></tr>
+  <tr><td>Radon (Ghaleb Jomma)</td><td>Win11 25H2</td><td>26200</td><td>MISSING</td><td class="fail"><span class="badge badge-patched">DEAD</span></td></tr>
+</table>
+
+<h3>CfAbortOperation Test (PowerShell Add-Type)</h3>
+<div class="term">
+<span class="prompt">PS&gt;</span> <span class="cmd"># Add-Type wrapper — calls cldapi.dll CfAbortOperation directly</span><br>
+<span class="prompt">PS&gt;</span> <span class="cmd"># Bypasses Defender EXE flagging by compiling in-memory</span><br>
+<br>
+<span class="out">CfGetPlatformInfo: 0x00000000 Build=26100 Rev=8655 Int=1576</span><br>
+<span class="out">PID: 55300</span><br>
+<br>
+<span class="warn">--- BEFORE CfAbortOperation ---</span><br>
+<span class="ok">  HKCU:\...\CloudFiles       EXISTS (current user hive)</span><br>
+<span class="fail">  HKU\.DEFAULT\...\CloudFiles  MISSING (SYSTEM hive)</span><br>
+<br>
+<span class="out">CfAbortOperation x1000: 0 errors, all returned S_OK</span><br>
+<br>
+<span class="warn">--- AFTER CfAbortOperation ---</span><br>
+<span class="fail">  HKU\.DEFAULT\...\CloudFiles  STILL MISSING</span><br>
+<br>
+<span class="info">Conclusion: CfAbortOperation succeeds but never creates the registry key.</span><br>
+<span class="info">The kernel code path (HsmOsBlockPlaceholderAccess) no longer writes to the registry.</span>
+</div>
+
+<h3>Registry Path Analysis</h3>
+<div class="term">
+<span class="prompt">PS&gt;</span> <span class="cmd">reg.exe query "HKU\.DEFAULT\Software\Policies\Microsoft"</span><br>
+<br>
+<span class="out">HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\SystemCertificates</span><br>
+<br>
+<span class="info"># Only SystemCertificates exists. No CloudFiles subtree.</span><br>
+<span class="info"># MiniPlasma targets: \Policies\Microsoft\CloudFiles\BlockedApps</span><br>
+<span class="info"># VaderPrime (bug #3 — FIXED): was targeting wrong path under \CurrentVersion\</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<h2>02 &mdash; VADEREPRIME RACE ENGINE &mdash; 3 BUGS FIXED</h2>
+
+<p>Before discovering the patch, three architectural bugs were identified and fixed in VaderPrime's race engine. These were <strong>real bugs</strong> that would have prevented the race even on an unpatched build.</p>
+
+<table>
+  <tr><th>#</th><th>Bug</th><th>Impact</th><th>Fix</th></tr>
+  <tr>
+    <td>1</td>
+    <td><strong>Thread A was a stub</strong></td>
+    <td>Race thread never called <code>CfAbortOperation</code> &mdash; just incremented a counter</td>
+    <td>Calling thread becomes Thread A, calls <code>CfAbortOperation(pid, 0, BLOCK)</code> in tight loop</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td><strong>Wrong thread handle</strong></td>
+    <td><code>GetCurrentThread()</code> returns pseudo-handle (-2) &mdash; Thread B toggled its OWN token</td>
+    <td><code>NtThread.OpenCurrent()</code> for real handle, passed to Thread B for cross-thread toggle</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td><strong>Wrong registry path</strong></td>
+    <td>Targeted <code>\CurrentVersion\CloudFiles</code> instead of <code>\Policies\Microsoft\CloudFiles</code></td>
+    <td>Path corrected to match MiniPlasma's proven target</td>
+  </tr>
+</table>
+
+<div class="finding">
+  <div class="finding-title">KEY LEARNING &mdash; GetCurrentThread() vs NtThread.OpenCurrent()</div>
+  <p><code>GetCurrentThread()</code> returns pseudo-handle <code>-2</code> which always refers to the <em>calling</em> thread. Passing it to another thread means that thread toggles <em>its own</em> impersonation. <code>NtThread.OpenCurrent()</code> returns a real kernel handle that can be passed between threads for cross-thread token manipulation. This distinction is critical for any confused deputy race condition.</p>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<h2>03 &mdash; TOOLCHAIN</h2>
+
+<table>
+  <tr><th>Tool</th><th>Version</th><th>Purpose</th></tr>
+  <tr><td>Ghidra</td><td>12.1.2 (2026-06-05)</td><td>Kernel driver disassembly and decompilation</td></tr>
+  <tr><td>Java (OpenJDK)</td><td>21.0.10 LTS</td><td>Ghidra runtime</td></tr>
+  <tr><td>dumpbin.exe</td><td>VS 2022 BuildTools</td><td>PE export/import analysis</td></tr>
+  <tr><td>PowerShell Add-Type</td><td>5.1 / 7+</td><td>In-memory C# compilation for testing (bypasses Defender)</td></tr>
+  <tr><td>NtApiDotNet</td><td>1.1.33</td><td>.NET NT API bindings for registry/thread/token operations</td></tr>
+</table>
+
+<h3>Installation</h3>
+<div class="term">
+<span class="prompt">PS&gt;</span> <span class="cmd">java -version</span><br>
+<span class="out">openjdk version "21.0.10" 2026-01-20 LTS</span><br>
+<br>
+<span class="prompt">PS&gt;</span> <span class="cmd">gh release download Ghidra_12.1.2_build --repo NationalSecurityAgency/ghidra -D "$HOME\Desktop"</span><br>
+<span class="ok"># Downloaded ghidra_12.1.2_PUBLIC_20260605.zip</span><br>
+<br>
+<span class="prompt">PS&gt;</span> <span class="cmd">Expand-Archive "$HOME\Desktop\ghidra_12.1.2_PUBLIC_20260605.zip" "$HOME\Desktop\ghidra"</span><br>
+<span class="ok"># Extracted to C:\Users\gwu07\Desktop\ghidra\ghidra_12.1.2_PUBLIC\</span><br>
+<br>
+<span class="prompt">PS&gt;</span> <span class="cmd">Copy-Item "C:\Windows\System32\drivers\cldflt.sys" "vader-prime\cldflt_26200.sys"</span><br>
+<span class="out"># 593,920 bytes — Build 26200 (25H2), last modified 2026-06-10</span>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<h2>04 &mdash; GHIDRA ANALYSIS <span class="badge badge-research">IN PROGRESS</span></h2>
+
+<p>Target: <code>cldflt_26200.sys</code> (593 KB). Primary function of interest: <code>HsmOsBlockPlaceholderAccess</code> &mdash; the function MiniPlasma's race triggered via CfAbortOperation.</p>
+
+<h3>Analysis Goals</h3>
+<ol style="margin-left: 1.5rem; margin-bottom: 1rem;">
+  <li>Locate <code>HsmOsBlockPlaceholderAccess</code> in the decompiled output</li>
+  <li>Identify what changed &mdash; was the registry write removed? Gated behind a check? Moved?</li>
+  <li>Map all Cloud Files API entry points that reach registry write code paths</li>
+  <li>Identify alternative functions that could trigger the same TOCTOU window</li>
+</ol>
+
+<h3>Project Setup</h3>
+<div class="term">
+<span class="prompt">Ghidra&gt;</span> <span class="cmd">File &rarr; New Project &rarr; Non-Shared Project</span><br>
+<span class="out">Directory: C:\Users\gwu07\Desktop\ghidra_projects</span><br>
+<span class="out">Name: cldflt_analysis</span><br>
+<br>
+<span class="prompt">Ghidra&gt;</span> <span class="cmd">File &rarr; Import File &rarr; cldflt_26200.sys</span><br>
+<span class="out">Format: PE (Portable Executable)</span><br>
+<span class="out">Language: x86:LE:64:default</span><br>
+<span class="ok"># Auto-detected &mdash; accept defaults</span><br>
+<br>
+<span class="prompt">Ghidra&gt;</span> <span class="cmd">Double-click cldflt_26200.sys &rarr; CodeBrowser opens</span><br>
+<span class="out">"Analyze now?" &rarr; Yes &rarr; all analyzers checked &rarr; Analyze</span><br>
+<span class="ok"># ~30-60 seconds for full analysis pass</span><br>
+<br>
+<span class="prompt">Ghidra&gt;</span> <span class="cmd">Symbol Tree &rarr; Functions &rarr; filter: "HsmOs"</span><br>
+<span class="out">Target: HsmOsBlockPlaceholderAccess</span><br>
+<span class="info"># Double-click &rarr; Decompile window shows C pseudocode</span>
+</div>
+
+<h3>What to Look For</h3>
+<table>
+  <tr><th>Pattern</th><th>Meaning</th></tr>
+  <tr><td>Calls to <code>ZwCreateKey</code> / <code>ZwSetValueKey</code> / <code>ZwOpenKey</code></td><td>Registry write path &mdash; the thing that stopped working</td></tr>
+  <tr><td>New conditional checks gating registry writes</td><td>Microsoft may have added a feature flag or version check</td></tr>
+  <tr><td>Early <code>return STATUS_SUCCESS</code> before registry code</td><td>Function still exists but bails out early &mdash; "soft patch"</td></tr>
+  <tr><td>Cross-references to <code>HsmOsBlockPlaceholderAccess</code></td><td>Other entry points that could reach the same code path</td></tr>
+  <tr><td>Token/impersonation checks (<code>SeAccessCheck</code>, <code>PsReferenceImpersonationToken</code>)</td><td>Where the TOCTOU window was &mdash; is the check still there?</td></tr>
+</table>
+
+<p><em>Decompiled findings will be added as the Ghidra session progresses.</em></p>
+
+<!-- ══════════════════════════════════════════ -->
+<h2>05 &mdash; ALTERNATIVE ATTACK SURFACES</h2>
+
+<h3>Path 1 &mdash; Other cldflt.sys Entry Points</h3>
+<p>CfAbortOperation was one function in <code>cldapi.dll</code>. The Cloud Files API exposes many others that may trigger registry writes through cldflt:</p>
+<table>
+  <tr><th>Function</th><th>Purpose</th><th>Status</th></tr>
+  <tr><td><code>CfConnectSyncRoot</code></td><td>Register a sync root with cldflt</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>CfRegisterSyncRoot</code></td><td>Register sync provider</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>CfHydratePlaceholder</code></td><td>Request file hydration</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>CfDehydratePlaceholder</code></td><td>Convert to placeholder</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>CfSetInSyncState</code></td><td>Mark file sync state</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>CfConvertToPlaceholder</code></td><td>Convert file to cloud placeholder</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+</table>
+
+<h3>Path 2 &mdash; Different Minifilter Driver</h3>
+<p>The confused deputy pattern (impersonation toggle TOCTOU) is not cldflt-specific. Any kernel minifilter that reads the calling thread's token and performs a privileged operation is vulnerable. Candidates:</p>
+<table>
+  <tr><th>Driver</th><th>Purpose</th><th>Default on Win11</th><th>Status</th></tr>
+  <tr><td><code>WdFilter.sys</code></td><td>Windows Defender minifilter</td><td>Yes</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>wcifs.sys</code></td><td>Windows Container Isolation</td><td>Yes</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>luafv.sys</code></td><td>LUA File Virtualization</td><td>Yes</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+  <tr><td><code>bindflt.sys</code></td><td>Bind filter driver</td><td>Yes</td><td><span class="badge badge-research">UNTESTED</span></td></tr>
+</table>
+
+</div>
+
+<footer>
+  <p>22DIV // VADER // reverse engineering lab</p>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>
