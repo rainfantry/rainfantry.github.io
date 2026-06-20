@@ -342,11 +342,185 @@ footer {
 footer a { color: var(--green); text-decoration: none; }
 footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
 
+/* ── PROJECT CARDS ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.project-card {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1.2rem;
+  transition: border-color 0.2s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card:hover {
+  border-color: var(--green3);
+  transform: translateY(-2px);
+}
+
+.project-card h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.project-card h3 a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.project-card h3 a:hover {
+  color: var(--bright);
+  text-shadow: 0 0 8px rgba(0,255,65,0.3);
+}
+
+.project-card .card-desc {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 0.8rem;
+}
+
+.project-card .card-meta {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.card-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--dim);
+}
+
+.card-lang::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green3);
+}
+
+.card-lang.lang-py::before { background: #3572A5; }
+.card-lang.lang-c::before { background: #555555; }
+.card-lang.lang-js::before { background: #f1e05a; }
+.card-lang.lang-cs::before { background: #178600; }
+.card-lang.lang-ps::before { background: #012456; }
+.card-lang.lang-ts::before { background: #3178c6; }
+.card-lang.lang-html::before { background: #e34c26; }
+.card-lang.lang-sh::before { background: #89e051; }
+.card-lang.lang-sql::before { background: #e38c00; }
+
+.card-tag {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+.card-tag-sec { background: #1a0000; color: var(--red); border: 1px solid #2a0000; }
+.card-tag-ai { background: #0a0a1a; color: var(--cyan); border: 1px solid #0a0a2a; }
+.card-tag-dev { background: #001a0a; color: #00ff88; border: 1px solid #002a1a; }
+.card-tag-ml { background: #1a1400; color: var(--amber); border: 1px solid #2a2000; }
+
+/* ── SKILLS GRID ── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.skill-block {
+  background: var(--bg2);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+}
+
+.skill-block h4 {
+  color: var(--green2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+}
+
+.skill-block ul {
+  list-style: none;
+  padding: 0;
+}
+
+.skill-block li {
+  color: var(--muted);
+  font-size: 0.75rem;
+  padding: 0.15rem 0;
+}
+
+.skill-block li::before {
+  content: '>';
+  color: var(--dim);
+  margin-right: 0.4rem;
+}
+
+/* ── SECTION DIVIDER ── */
+.section-divider {
+  border: none;
+  border-top: 1px solid #1a1a1a;
+  margin: 3rem 0;
+}
+
+.section-label {
+  color: var(--dim);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat .num {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--green);
+  display: block;
+}
+
+.stat .label {
+  font-size: 0.7rem;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 640px) {
   .container { padding: 1rem; }
   .term { padding: 0.8rem 1rem; font-size: 0.75rem; }
   .header h1 { font-size: 1.4rem; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .skills-grid { grid-template-columns: 1fr 1fr; }
+  .stats-row { gap: 1rem; }
 }
 </style>
 </head>
@@ -358,6 +532,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
     <div class="nav-links" id="navLinks">
       <a href="index.html">home</a>
+      <a href="#projects">projects</a>
       <a href="journal.html">journal</a>
       <a href="books.html" class="nav-red">field manual</a>
       <a href="csec.html" class="nav-red">kill chain</a>
@@ -372,18 +547,6 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   </div>
 </nav>
 
-<div style="background: rgba(255,68,68,0.08); border-top: 2px solid var(--red); border-bottom: 2px solid var(--red); padding: 1rem 1.5rem; text-align: center;">
-  <p style="color: var(--dim); font-size: 0.7rem; margin: 0 0 0.5rem 0; letter-spacing: 0.08em;">building skynet with respect 🫡</p>
-  <p style="color: var(--red); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.1em; margin: 0;">
-    &#9888; THIS CONTENT WILL BE MADE PRIVATE SOON
-  </p>
-  <p style="color: var(--muted); font-size: 0.75rem; margin: 0.4rem 0 0 0;">
-    As development progresses and original research matures, this portfolio will transition
-    to private access for security reasons. Full exploit chains, bypass techniques, and attack
-    surface analysis will be restricted. Read and absorb everything while it's public &mdash;
-    this window is closing.
-  </p>
-</div>
 
 <div class="container" id="top">
 
@@ -391,15 +554,177 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <div class="header">
   <h1>22DIV // george wu</h1>
   <div class="sub">
-    security research <span>//</span> windows internals <span>//</span> responsible disclosure
+    security research <span>//</span> windows internals <span>//</span> exploit development <span>//</span> AI security
   </div>
   <br>
   <div class="sub">
-    CSEC student. 29. Sydney. Everything here was built from first principles against
-    live defenses on my own hardware. Not downloaded. Not forked. Not copied from a
-    blog post. If it works, I know why. If it doesn't, I know why that too.
+    Cybersecurity researcher. Cert IV IT Programming. Sydney.
+    Windows exploit development, AMSI/ETW bypass research, privilege escalation,
+    AI-augmented offensive tooling. MSRC case filed. Three CVE submissions ready.
+    Everything here was built from first principles against live defenses on my own hardware.
+  </div>
+  <div class="stats-row" style="margin-top:1.2rem;">
+    <div class="stat"><span class="num">53</span><span class="label">FINDINGS</span></div>
+    <div class="stat"><span class="num">14</span><span class="label">ENGAGEMENTS</span></div>
+    <div class="stat"><span class="num">3</span><span class="label">CVE READY</span></div>
+    <div class="stat"><span class="num">8</span><span class="label">TOOLS BUILT</span></div>
+    <div class="stat"><span class="num">0</span><span class="label">DETECTIONS</span></div>
   </div>
 </div>
+
+<!-- ═══════ PROJECTS ═══════ -->
+<section id="projects">
+  <div class="section-label">// REPOSITORIES</div>
+  <h2 style="color:var(--amber); font-size:1.1rem; font-weight:400; margin-bottom:1rem;">projects</h2>
+
+  <h3 style="color:var(--red); font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin-bottom:0.8rem;">OFFENSIVE SECURITY</h3>
+  <div class="projects-grid">
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-rootkit">vader-rootkit</a></h3>
+      <div class="card-desc">Full offensive security toolkit. AMSI/ETW bypass via hardware breakpoints, privilege escalation (CWE-732, CWE-427), XOR-obfuscated reverse shell, reflective PE loader, HTTP stager, multi-client C2, phantom DLL persistence, anti-forensics. 8 compiled tools, 0 Defender detections.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-c">C</span>
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-toctou">vader-toctou</a></h3>
+      <div class="card-desc">TOCTOU race condition research against Windows Defender's quarantine pipeline. 35 commits, 30 findings. Mapped WdFilter.sys architecture completely &mdash; cached FILE_OBJECT, NTFS File ID identity gate. The wall held. The research documented why.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-c">C</span>
+        <span class="card-lang lang-ps">PowerShell</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-prime">vader-prime</a></h3>
+      <div class="card-desc">cldflt.sys race exploitation framework. Two novel payload chains &mdash; Print Processor registration and IFEO debugger hijack &mdash; built on CfAbortHydration race primitive. Standard user to SYSTEM via arbitrary registry ACL write.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-c">C</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-fuzz">vader-fuzz</a></h3>
+      <div class="card-desc">Mutation-based fuzzer targeting mpengine.dll (Defender's scan engine). 20 mutation strategies, 4 parallel workers, 100K+ iterations. Differential mode compares engine versions for regression bugs.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/sith-stalker">sith-stalker</a></h3>
+      <div class="card-desc">Indirect syscall gate engine for Windows x64. Resolves NT function addresses via DJB2 hash walking of ntdll exports. v2 engine uses XOR-encrypted hashes with per-build key rotation. Evades IAT-based EDR detection.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-c">C</span>
+        <span class="card-lang" style="--dot-color:#6E5494;">ASM</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="color:var(--cyan); font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin:1.5rem 0 0.8rem;">AI &amp; AUTOMATION</h3>
+  <div class="projects-grid">
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/machine-spirit">machine-spirit</a></h3>
+      <div class="card-desc">AI assistant system with ElevenLabs voice cloning, TalkyTalk TTS engine, and multi-model support (Claude, Ollama, Grok). Originally built for Raspberry Pi 5 hardware &mdash; code preserved, hardware sacrificed.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-ai">AI</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/mrrobot">mrrobot</a></h3>
+      <div class="card-desc">SERVITOR &mdash; Discord bot with personality engine. System-prompted Ollama agent assumes any personality on demand. ElevenLabs voice clone integration with SAPI fallback. Speaks as the operator.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-ai">AI</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="color:#00ff88; font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin:1.5rem 0 0.8rem;">WEB &amp; DEVELOPMENT</h3>
+  <div class="projects-grid">
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/rainfantry.github.io">rainfantry.github.io</a></h3>
+      <div class="card-desc">This portfolio. Terminal-aesthetic security research documentation. Engagement writeups, MITRE ATT&CK mapping, MSRC case documentation, exploit chain architecture.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-html">HTML/CSS</span>
+        <span class="card-lang lang-js">JavaScript</span>
+        <span class="card-tag card-tag-dev">WEB</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/geodefend">geodefend</a></h3>
+      <div class="card-desc">GeoDefend &mdash; cybersecurity education integration project. CSEC curriculum tooling and tactical cyber operations study framework.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-dev">DEV</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ═══════ SKILLS ═══════ -->
+<section id="skills">
+  <div class="section-label">// CAPABILITIES</div>
+  <h2 style="color:var(--amber); font-size:1.1rem; font-weight:400; margin-bottom:1rem;">skills</h2>
+
+  <div class="skills-grid">
+    <div class="skill-block">
+      <h4>LANGUAGES</h4>
+      <ul>
+        <li>C (primary &mdash; systems/exploit dev)</li>
+        <li>Python (tooling, automation, AI)</li>
+        <li>x64 Assembly (MASM)</li>
+        <li>PowerShell</li>
+        <li>C# (.NET)</li>
+        <li>JavaScript / HTML / CSS</li>
+        <li>SQL</li>
+      </ul>
+    </div>
+    <div class="skill-block">
+      <h4>OFFENSIVE SECURITY</h4>
+      <ul>
+        <li>AMSI / ETW bypass</li>
+        <li>Privilege escalation (LPE)</li>
+        <li>DLL hijacking / phantom DLL</li>
+        <li>Process injection (HWBP)</li>
+        <li>TOCTOU race conditions</li>
+        <li>Indirect syscalls</li>
+        <li>Reflective PE loading</li>
+        <li>Anti-forensics</li>
+      </ul>
+    </div>
+    <div class="skill-block">
+      <h4>WINDOWS INTERNALS</h4>
+      <ul>
+        <li>Win32 / NT API</li>
+        <li>PE format / import tables</li>
+        <li>Service architecture (SCM)</li>
+        <li>Minifilter stack (WdFilter, cldflt)</li>
+        <li>Debug registers (DR0-DR7)</li>
+        <li>MSVC / cl.exe / ml64.exe</li>
+      </ul>
+    </div>
+    <div class="skill-block">
+      <h4>AI &amp; TOOLING</h4>
+      <ul>
+        <li>LLM integration (Claude, Ollama)</li>
+        <li>Prompt injection research</li>
+        <li>ElevenLabs voice cloning</li>
+        <li>SDXL LoRA training</li>
+        <li>AI-augmented exploit dev</li>
+        <li>Mutation-based fuzzing</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
 
 <!-- ═══════ ABOUT ═══════ -->
 <section class="entry" id="about">
@@ -1228,9 +1553,12 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <footer>
   <div>george wu / 22DIV</div>
   <div style="margin-top: 0.3rem;">
-    <a href="https://github.com/rainfantry">github</a>
+    <a href="https://github.com/rainfantry">github.com/rainfantry</a>
+    <span style="color:var(--dim); margin:0 0.4rem;">|</span>
+    <a href="mailto:gwu0738@gmail.com">gwu0738@gmail.com</a>
   </div>
-  <div style="margin-top: 0.5rem; opacity: 0.4;">CSEC // windows internals // ai exploitation // responsible disclosure</div>
+  <div style="margin-top: 0.5rem; opacity: 0.4;">exploit development // windows internals // AI security // responsible disclosure</div>
+  <div style="margin-top: 0.3rem; opacity: 0.25; font-size: 0.7rem;">Sydney, Australia</div>
 </footer>
 
 <script src="site.js"></script>
