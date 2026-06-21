@@ -761,6 +761,7 @@ h3 code {
       <li><a href="#cloak">Cloak</a></li>
       <li><a href="#byovd">BYOVD</a></li>
       <li><a href="#c2agent">C2 Agent</a></li>
+      <li><a href="#metamorph">Metamorph</a></li>
     </ul>
   </div>
 </nav>
@@ -926,6 +927,15 @@ h3 code {
         <div class="kc-detail">17-op agent &mdash; VNC, screenshot, mic, keylog, SFTP, multi-method persistence</div>
       </div>
       <span class="kc-status status-built">BUILT</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 10</div>
+      <div class="kc-content">
+        <div class="kc-name">Metamorphic Engine (NOVEMBER)</div>
+        <div class="kc-detail">Dead code injection, opaque predicates, junk API, constant splitting &mdash; unique binary identity per cycle</div>
+      </div>
+      <span class="kc-status status-confirmed">OPERATIONAL</span>
     </div>
 
     <div class="kc-phase">
@@ -2121,6 +2131,65 @@ C2 → Agent:
   <div class="card">
     <div class="card-title">Finding #63 &mdash; VNC Streaming</div>
     <p class="prose">GDI screen capture streamed as timed raw bitmap frames over file_chunk protocol. Configurable FPS and duration. Base64-encoded frames with width/height metadata enable dashboard reconstruction. No additional dependencies &mdash; pure ctypes GDI calls.</p>
+  </div>
+  </div>
+</section>
+
+<!-- ════════════ SECTION 16: METAMORPHIC ENGINE ════════════ -->
+<section id="metamorph" class="section">
+  <div class="section-number">Section 16</div>
+  <h2 class="section-title">Metamorphic Obfuscation Engine (Phase 10 &mdash; NOVEMBER)</h2>
+
+  <p class="prose">Source-to-source C transformer that changes the structural identity of every binary on each mutation cycle. Works on annotated source files before XOR rotation. Each transform is independent and stackable. Combined with the existing XOR mutation pipeline via <code>vader_evolve.py</code>, produces a unique binary identity per evolution cycle &mdash; no two runs produce the same output.</p>
+
+  <h3 class="subsection">Transform Types</h3>
+  <table class="data-table">
+    <thead><tr><th>Transform</th><th>Technique</th><th>What Changes</th></tr></thead>
+    <tbody>
+      <tr><td>Dead Code Injection</td><td>Unreachable blocks with realistic WinAPI calls (GetTickCount, VirtualAlloc, InterlockedIncrement)</td><td>Binary size, section layout, import table, control flow graph</td></tr>
+      <tr><td>Junk Variables</td><td>Unused locals with computed assignments inside block scopes</td><td>Stack frame layout, register allocation, instruction count</td></tr>
+      <tr><td>Junk API Calls</td><td>Harmless WinAPI calls (GetTickCount, GetCurrentThreadId, SetLastError) between real operations</td><td>Import table entries, call graph, API sequence patterns</td></tr>
+      <tr><td>Opaque Predicates</td><td>Always-true math wrapping real conditions: <code>(x*x &gt;= 0)</code>, <code>(x == x)</code>, <code>(x &amp; 0) == 0</code></td><td>Branch prediction hints, conditional jump patterns, control flow complexity</td></tr>
+      <tr><td>Constant Splitting</td><td>Decompose hex immediates: <code>0x41</code> &rarr; <code>(0x20 + 0x21)</code> or <code>(0x82 ^ 0xC3)</code></td><td>Immediate values in disassembly, instruction encoding</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection">Evolution Pipeline</h3>
+  <p class="prose"><code>vader_evolve.py</code> chains the full obfuscation stack in one command:</p>
+  <table class="data-table">
+    <thead><tr><th>Stage</th><th>Tool</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>metamorph.py</td><td>Structural source transforms (dead code, opaque predicates, junk API)</td></tr>
+      <tr><td>2</td><td>mutate.py</td><td>XOR key rotation on transformed source</td></tr>
+      <tr><td>3</td><td>cl.exe (MSVC)</td><td>Recompile all mutated binaries</td></tr>
+      <tr><td>4</td><td>MpCmdRun.exe</td><td>Defender verification on all outputs</td></tr>
+      <tr><td>5</td><td>SHA-256</td><td>Fingerprint every binary for change tracking</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection">Intensity Levels</h3>
+  <table class="data-table">
+    <thead><tr><th>Level</th><th>Dead Blocks</th><th>Junk Vars</th><th>Opaque %</th><th>Const Split %</th><th>Junk API</th></tr></thead>
+    <tbody>
+      <tr><td>low</td><td>2</td><td>3</td><td>15%</td><td>20%</td><td>2</td></tr>
+      <tr><td>med</td><td>5</td><td>6</td><td>30%</td><td>40%</td><td>4</td></tr>
+      <tr><td>high</td><td>10</td><td>12</td><td>50%</td><td>60%</td><td>8</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="subsection">Findings</h3>
+  <div class="findings-grid">
+  <div class="card">
+    <div class="card-title">Finding #64 &mdash; Unique Binary Identity Per Cycle</div>
+    <p class="prose">Each evolution cycle produces a unique binary fingerprint. dark_room.exe changed from baseline to <code>ebdc71b9</code> (141 KB) after single cycle. Dead code and junk API calls change import table, section sizes, and control flow graph &mdash; three of the main features static analysis relies on for signature matching and binary similarity detection.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #65 &mdash; Safe Injection Point Detection</div>
+    <p class="prose">Brace-depth tracking prevents file-scope injection errors. Initial regex-based approach caused MSVC compile errors (C2065, C2059, C2449) by injecting outside function bodies. Brace counter identifies only lines inside function bodies (depth &gt; 0) ending with semicolons. Zero compile errors across all subsequent test cycles.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #66 &mdash; Full Evolution Pipeline</div>
+    <p class="prose">Complete pipeline (metamorph + mutate + compile + scan) executes in single command. 17 transforms applied to dark_room.exe, first-attempt CLEAN against Defender 4.18.26050.15. Supports multi-cycle operation (<code>--cycles N</code>) for repeated identity changes. 13/13 built binaries CLEAN after pipeline run. Backup/restore system preserves originals via <code>.metamorph_backup</code> files.</p>
   </div>
   </div>
 </section>
