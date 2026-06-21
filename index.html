@@ -618,8 +618,48 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
       </div>
     </div>
     <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-rce">vader-rce</a></h3>
+      <div class="card-desc">Remote Code Execution research &mdash; exploit development framework for Windows services. CVE analysis, exploit primitives, and proof-of-concept chains. <a href="books.html" style="color:var(--cyan);">&rarr; VADER-RCE Manual</a></div>
+      <div class="card-meta">
+        <span class="card-lang lang-c">C</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-hunt">vader-hunt</a></h3>
+      <div class="card-desc">Automated privilege escalation hunter. Scans 300+ SYSTEM services for misconfigurations: writable binaries, unquoted paths, phantom DLLs, PATH hijacks. Discovered NativePushService CWE-732 and ClickToRunSvc phantom DLL.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-ps">PowerShell</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-palace">vader-palace</a></h3>
+      <div class="card-desc">C2 infrastructure &mdash; palace server architecture for VADER agent communication. Multi-tenant listener, encrypted channels, agent heartbeat management.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-library">vader-library</a></h3>
+      <div class="card-desc">Shared components across VADER ecosystem. Common crypto, encoding, network primitives, and Windows API wrappers. Reusable by all VADER projects.</div>
+      <div class="card-meta">
+        <span class="card-lang lang-c">C</span>
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/vader-msrc-disclosure">vader-msrc-disclosure</a></h3>
+      <div class="card-desc">MSRC case tracking and vulnerability disclosure documentation. Coordinated disclosure timelines, vendor communications, and public advisory management.</div>
+      <div class="card-meta">
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
       <h3><a href="https://github.com/rainfantry/sith-stalker">sith-stalker</a></h3>
-      <div class="card-desc">Indirect syscall engine + concealment framework. 13 Nt* functions resolved via DJB2/XOR-encrypted hashes. User-mode rootkit: process/file/connection hiding via NtQuery* hooks. Kernel DKOM via BYOVD (CVE-2019-16098). <a href="sithstalker.html" style="color:var(--cyan);">&rarr; Full documentation</a></div>
+      <div class="card-desc">Indirect syscall engine + concealment framework. 13 Nt* functions resolved via DJB2/XOR-encrypted hashes. User-mode rootkit: process/file/connection hiding via NtQuery* hooks. Kernel DKOM via BYOVD (CVE-2019-16098). RTCore64.sys driver for kernel memory access. <a href="sithstalker.html" style="color:var(--cyan);">&rarr; Full documentation</a></div>
       <div class="card-meta">
         <span class="card-lang lang-c">C</span>
         <span class="card-lang" style="--dot-color:#6E5494;">ASM</span>
@@ -628,7 +668,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     </div>
     <div class="project-card">
       <h3><a href="https://github.com/rainfantry/skywalker">skywalker</a></h3>
-      <div class="card-desc">Cold standby fork of VADER. Same kill chain, completely independent binary signatures. 18 binaries, 0 detections. Activates when VADER burns or parallel ops required. 14,282 lines, 52 source files. <a href="skywalker.html" style="color:var(--amber);">&rarr; Full documentation</a></div>
+      <div class="card-desc">Cold standby fork of VADER. Same kill chain, completely independent binary signatures. 18 binaries, 0 detections. Indirect syscall gate (Hell's Gate + Halo's Gate) with SDBM hash + ADD offset encryption. Activates when VADER burns or parallel ops required. <a href="skywalker.html" style="color:var(--amber);">&rarr; Full documentation</a></div>
       <div class="card-meta">
         <span class="card-lang lang-c">C</span>
         <span class="card-lang lang-py">Python</span>
@@ -812,9 +852,11 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <span class="out">CLASSIFICATION:  UNCLASSIFIED // ACADEMIC USE ONLY</span>
 <span class="out">OPERATOR:        VADER (george wu / 22DIV)</span>
 <span class="out">AUTHORISATION:   CSEC academic research, own hardware</span>
+<span class="out">                  <span class="out-green">ISRAELI CYBER SQUAD — SPECIAL OPERATIONS VALIDATED</span></span>
+<span class="out">                  <span class="out-amber">Cleared for: Red Team Operations, APT Simulation, Evasion Research</span></span>
 <span class="out">DISCLOSURE:      Responsible disclosure via MSRC</span>
 <span class="out">MSRC CASE:       <span class="out-red">VULN-195458 (REJECTED — not a security boundary)</span></span>
-<span class="out">FINDINGS:        53 (30 TOCTOU + 23 privesc/recon phase)</span>
+<span class="out">FINDINGS:        70+ (30 TOCTOU + 40 rootkit/privesc/injection)</span>
 <span class="out">PIVOT:           <span class="out-cyan">AI vulnerability research (prompt injection, Copilot)</span></span>
   </div>
 </section>
