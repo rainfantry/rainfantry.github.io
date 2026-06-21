@@ -804,9 +804,9 @@ h3 code {
     <div class="card-title">Engagement Summary</div>
     <div class="lv-grid">
       <span class="lv-label">Total Engagements</span>
-      <span class="lv-value">14</span>
+      <span class="lv-value">19</span>
       <span class="lv-label">Total Findings</span>
-      <span class="lv-value">53 (#1&ndash;#30 vader-toctou, #31&ndash;#53 rootkit phase)</span>
+      <span class="lv-value">70 (#1&ndash;#30 vader-toctou, #31&ndash;#70 rootkit phase)</span>
       <span class="lv-label">Confirmed Bypasses</span>
       <span class="lv-value">AMSI, ETW, Defender Static, Defender Behavioral, Process Injection</span>
       <span class="lv-label">Privilege Escalation</span>
@@ -2190,6 +2190,25 @@ C2 → Agent:
   <div class="card">
     <div class="card-title">Finding #66 &mdash; Full Evolution Pipeline</div>
     <p class="prose">Complete pipeline (metamorph + mutate + compile + scan) executes in single command. 17 transforms applied to dark_room.exe, first-attempt CLEAN against Defender 4.18.26050.15. Supports multi-cycle operation (<code>--cycles N</code>) for repeated identity changes. 13/13 built binaries CLEAN after pipeline run. Backup/restore system preserves originals via <code>.metamorph_backup</code> files.</p>
+  </div>
+
+  <h3 style="margin-top: 2rem; color: var(--accent);">Engagement 19 &mdash; End-to-End Pentest (Radon Scenario)</h3>
+
+  <div class="card">
+    <div class="card-title">Finding #67 &mdash; RTCore64.sys On-Disk Availability</div>
+    <p class="prose">RTCore64.sys (CVE-2019-16098) confirmed on disk at MSI Afterburner install directory &mdash; 40,688 bytes, validly signed. Both primary and Legacy versions present. BYOVD kernel persistence is viable without downloading external files. The vulnerable signed driver ships with MSI Afterburner and persists after installation.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #68 &mdash; Cross-User ACL Blocks CWE-732</div>
+    <p class="prose">NativePushService (Wondershare) runs under user profile <code>apacw</code>, not the attacker's profile <code>gwu07</code>. NTFS ACLs deny access to the service binary directory from a different standard user. On multi-user machines, per-user service binary paths are protected &mdash; CWE-732 requires the binary to be under the attacker's own profile or a world-writable location.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #69 &mdash; Full C2 Chain from Standard User</div>
+    <p class="prose">Complete operational chain confirmed: 80/80 binaries CLEAN against Defender 4.18.26050.15. Agent auto-registered via TCP :8667, 10 operations tested through web dashboard &mdash; command execution, screen capture (1536&times;864 GDI), file exfiltration, keystroke capture (23 keystrokes in 3s), registry persistence, system reconnaissance. All from standard user context, zero detections, sub-3-second latency per operation.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #70 &mdash; V7 Phantom DLL Standard-User Plant</div>
+    <p class="prose">osppc.dll (104 KB) planted in <code>%USERPROFILE%\.local\bin\</code> from standard user &mdash; no elevation required. ClickToRunSvc (Office, LocalSystem, Auto start) walks user PATH during DLL search, loading the planted DLL with SYSTEM privileges on next service restart. Combined with C2 persistence: standard user &rarr; SYSTEM escalation &rarr; persistent remote access &rarr; full target control.</p>
   </div>
   </div>
 </section>
