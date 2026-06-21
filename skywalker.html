@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKYWALKER — Cold Standby Fork | 22DIV</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary:   #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card:      #141414;
+  --bg-table-row: #0f0f0f;
+  --border:       #1e1e1e;
+  --border-glow:  #2a2a1a;
+  --green:        #00ff41;
+  --green-dim:    #00cc33;
+  --green-dark:   #004d14;
+  --amber:        #ffb000;
+  --amber-dim:    #cc8c00;
+  --red:          #ff3333;
+  --red-dim:      #cc2929;
+  --cyan:         #00e5ff;
+  --text-primary: #d4d4d4;
+  --text-muted:   #777777;
+  --text-dim:     #555555;
+  --mono:         'Consolas', 'Cascadia Code', 'Source Code Pro', 'Courier New', monospace;
+  --sans:         'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 176, 0, 0.01) 2px, rgba(255, 176, 0, 0.01) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-inner::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--green);
+  padding: 0.75rem 1.25rem;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.nav-links { display: flex; gap: 0; list-style: none; overflow-x: auto; }
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: var(--mono);
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+  display: block;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover { color: var(--amber); background: rgba(255, 176, 0, 0.05); }
+.nav-links a.nav-amber { color: var(--amber); }
+.nav-links a.nav-amber:hover { color: #ffc040; background: rgba(255, 176, 0, 0.08); }
+
+.hero {
+  background: linear-gradient(180deg, #141008 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-glow);
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 176, 0, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-classification {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: var(--mono);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 0 30px rgba(255, 176, 0, 0.15);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 30px rgba(255, 176, 0, 0.15); }
+  50%      { text-shadow: 0 0 50px rgba(255, 176, 0, 0.25); }
+}
+
+.hero-subtitle { font-family: var(--mono); font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+
+.hero-quote {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+.hero-meta .label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.hero-meta .value { color: var(--text-primary); }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
+section:last-of-type { border-bottom: none; }
+
+.section-header { margin-bottom: 2rem; }
+
+.section-number {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--amber-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.section-title { font-size: 1.5rem; font-weight: 700; color: #f0f0f0; letter-spacing: 0.02em; }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s;
+}
+
+.card:hover { border-color: var(--border-glow); }
+
+.card-title {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 1rem 0; }
+
+thead th {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-secondary);
+  white-space: nowrap;
+}
+
+tbody td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tbody tr { background: var(--bg-card); transition: background 0.2s; }
+tbody tr:nth-child(even) { background: var(--bg-table-row); }
+tbody tr:hover { background: #1a1a11; }
+
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+}
+
+.badge-green { background: rgba(0, 255, 65, 0.12); color: var(--green); }
+.badge-red { background: rgba(255, 51, 51, 0.12); color: var(--red); }
+.badge-amber { background: rgba(255, 176, 0, 0.12); color: var(--amber); }
+.badge-cyan { background: rgba(0, 229, 255, 0.1); color: var(--cyan); }
+
+.evidence-block {
+  background: #0c0c0c;
+  border: 1px solid var(--border);
+  border-left: 3px solid #3a3a00;
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--amber-dim);
+  margin: 1rem 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+.lv-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.4rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+
+.lv-label { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+.lv-value { color: var(--text-primary); }
+
+.prose { font-size: 0.9rem; line-height: 1.75; color: var(--text-primary); }
+.prose p { margin-bottom: 1rem; }
+.prose strong { color: #f0f0f0; font-weight: 600; }
+.highlight { color: var(--amber); font-weight: 600; }
+
+h3 { font-size: 1.05rem; font-weight: 600; color: #e0e0e0; margin: 1.75rem 0 0.75rem; }
+h3 code { color: var(--amber); }
+
+code {
+  font-family: var(--mono);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.82em;
+  color: var(--amber-dim);
+}
+
+.method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+
+.method-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem;
+  transition: border-color 0.3s;
+}
+
+.method-card:hover { border-color: var(--border-glow); }
+.method-card-title { font-family: var(--mono); font-size: 0.72rem; color: var(--amber-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+.method-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--amber);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.footer-brand { font-family: var(--mono); font-size: 0.85rem; color: var(--amber-dim); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.footer-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .hero { padding: 3rem 1.5rem 2rem; }
+  nav { position: relative; }
+  .nav-brand { padding: 0.6rem 1rem; font-size: 0.75rem; }
+  .nav-links a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
+  .lv-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">22DIV</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rootkit.html">VADER</a></li>
+      <li><a href="sithstalker.html">SithStalker</a></li>
+      <li><a href="starkiller.html">StarKiller</a></li>
+      <li><a href="#overview" class="nav-amber">Overview</a></li>
+      <li><a href="#doctrine">Doctrine</a></li>
+      <li><a href="#killchain">Kill Chain</a></li>
+      <li><a href="#isolation">Isolation</a></li>
+      <li><a href="#eclipse">Eclipse</a></li>
+      <li><a href="#mutation">Mutation</a></li>
+      <li><a href="#build">Build</a></li>
+      <li><a href="#status">Status</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-classification">UNCLASSIFIED // ACADEMIC USE ONLY</div>
+  <h1>SKYWALKER<span class="cursor"></span></h1>
+  <div class="hero-subtitle">Cold Standby Fork &mdash; Signature-Isolated Kill Chain</div>
+  <div class="hero-quote">"The backup that fights back."</div>
+  <div class="hero-meta">
+    <span><span class="label">Operator</span> <span class="value">george wu / 22DIV</span></span>
+    <span><span class="label">Target</span> <span class="value">Windows 11 x64 (24H2)</span></span>
+    <span><span class="label">Binaries</span> <span class="value" style="color: var(--green);">0/18 Detected</span></span>
+    <span><span class="label">Source</span> <span class="value">14,282 lines &mdash; 52 files</span></span>
+  </div>
+</header>
+
+<main class="container">
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="section-header">
+    <div class="section-number">Section 01</div>
+    <h2 class="section-title">Operation Overview</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      SkyWalker is a complete, independent fork of the VADER rootkit kill chain. Same architecture. Same phases. Completely different binary signatures. Every XOR key, every binary name, every compiled byte pattern is isolated from VADER. Zero shared static signatures between the two.
+    </p>
+    <p>
+      The purpose is operational redundancy. Defender signature databases eventually catch known static patterns. When VADER's XOR arrays are flagged and <code>mutate.py</code> exhausts 10 key-rotation attempts without a clean scan, SkyWalker deploys from cold standby with no shared forensic footprint. It's a second set of teeth behind a different face.
+    </p>
+    <p>
+      SkyWalker also serves as a parallel operations platform &mdash; two simultaneous targets, two independent toolsets, zero cross-contamination if one gets burned.
+    </p>
+  </div>
+
+  <div class="card" style="margin-top: 1.5rem;">
+    <div class="card-title">Project Summary</div>
+    <div class="lv-grid">
+      <span class="lv-label">Repository</span>
+      <span class="lv-value">Private (<code>rainfantry/skywalker</code>)</span>
+      <span class="lv-label">Source</span>
+      <span class="lv-value">52 files, 14,282 lines of C + Python</span>
+      <span class="lv-label">Kill Chain</span>
+      <span class="lv-value">7 phases (ALPHA through JULIET) + mutation meta-phase</span>
+      <span class="lv-label">Detection</span>
+      <span class="lv-value"><span class="badge badge-green">0/18 DETECTED</span> &mdash; Defender RTP enabled</span>
+      <span class="lv-label">Relationship</span>
+      <span class="lv-value">Cold standby fork of VADER &mdash; same architecture, zero shared bytes</span>
+      <span class="lv-label">Activation</span>
+      <span class="lv-value">When VADER burns (10 failed mutations) or parallel ops required</span>
+    </div>
+  </div>
+</section>
+
+<!-- DOCTRINE -->
+<section id="doctrine">
+  <div class="section-header">
+    <div class="section-number">Section 02</div>
+    <h2 class="section-title">Cold Standby Doctrine</h2>
+  </div>
+
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>
+      A single toolset is a single point of failure. If Defender develops a behavioural signature for VADER's compiled output &mdash; even after XOR mutation &mdash; the entire kill chain is burned. SkyWalker exists so that "burned" never means "disarmed."
+    </p>
+  </div>
+
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="method-card-title">Signature Isolation</div>
+      <p>Every XOR key differs from VADER. Every binary name differs. Every compiled .text section has unique byte patterns. Defender cannot cross-reference one to detect the other.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Cold Activation</div>
+      <p>SkyWalker sits dormant. No network traffic. No running processes. No filesystem artifacts. Activated only when VADER fails 10 consecutive mutation cycles or parallel ops are required.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Parallel Operations</div>
+      <p>Two targets, two toolsets, zero cross-contamination. If Target A's forensics team recovers VADER artifacts, Target B's SkyWalker deployment is unaffected.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Diff-Test Baseline</div>
+      <p>When VADER introduces experimental features, SkyWalker serves as a known-good baseline for regression testing. Same architecture, different implementation &mdash; the delta is always isolated.</p>
+    </div>
+  </div>
+</section>
+
+<!-- KILL CHAIN -->
+<section id="killchain">
+  <div class="section-header">
+    <div class="section-number">Section 03</div>
+    <h2 class="section-title">Kill Chain</h2>
+  </div>
+
+  <div class="evidence-block">  PHASE 0        PHASE 1+2      PHASE 3        PHASE 4
+  BEACON    --&gt;  ECLIPSE   --&gt;  PRIVESC   --&gt;  INJECTION
+  (ALPHA)        (DELTA+FOX)    (GOLF)         (HOTEL)
+  XOR reverse    DR0+DR1 HWBP   CWE-732       DLL inject
+  shell          AMSI+ETW blind svc replace    + HWBP prop
+     |              |              |              |
+     v              v              v              v
+  PHASE 5        PHASE 6        META
+  STAGER    --&gt;  SWEEP     --&gt;  MUTATION
+  (INDIA)        (JULIET)       (mutate.py)
+  WinHTTP        canary wipe    XOR key
+  download       log clear      rotation +
+  cradle         timestomp      recompile +
+                 self-delete    rescan loop</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Codename</th>
+        <th>Binary</th>
+        <th>Status</th>
+        <th>Technique</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0</td>
+        <td>ALPHA</td>
+        <td><code>sw_beacon.exe</code></td>
+        <td><span class="badge badge-green">BUILT</span></td>
+        <td>XOR-obfuscated reverse shell callback (key: 0xC7)</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>DELTA</td>
+        <td><code>eclipse.exe</code></td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+        <td>AMSI bypass &mdash; DR0 HWBP on AmsiScanBuffer</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>FOXTROT</td>
+        <td><code>eclipse.exe</code></td>
+        <td><span class="badge badge-green">CONFIRMED</span></td>
+        <td>ETW bypass &mdash; DR1 HWBP on EtwEventWrite</td>
+      </tr>
+      <tr>
+        <td>1+2</td>
+        <td>&mdash;</td>
+        <td><code>eclipse.exe</code></td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>Combined dual HWBP &mdash; zero memory modification</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>GOLF</td>
+        <td><code>WsNativePushService.exe</code></td>
+        <td><span class="badge badge-green">BUILT</span></td>
+        <td>CWE-732 service binary replacement &rarr; SYSTEM</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>HOTEL</td>
+        <td><code>sw_thread.exe/.dll</code></td>
+        <td><span class="badge badge-green">BUILT</span></td>
+        <td>DLL injection + HWBP propagation to all threads</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>INDIA</td>
+        <td><code>sw_fetch.exe</code></td>
+        <td><span class="badge badge-green">BUILT</span></td>
+        <td>WinHTTP download cradle</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>JULIET</td>
+        <td><code>sw_sweep.exe</code></td>
+        <td><span class="badge badge-green">BUILT</span></td>
+        <td>Canary wipe, log clear, timestomp, self-delete</td>
+      </tr>
+      <tr>
+        <td>Meta</td>
+        <td>&mdash;</td>
+        <td><code>mutate.py</code></td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>XOR key rotation + recompile + Defender rescan</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SIGNATURE ISOLATION -->
+<section id="isolation">
+  <div class="section-header">
+    <div class="section-number">Section 04</div>
+    <h2 class="section-title">Signature Isolation</h2>
+  </div>
+
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>
+      Every component carries an independent XOR key. No key is shared between SkyWalker and VADER. If Defender signatures any single binary from either toolset, the rest survive &mdash; and the other toolset is completely unaffected.
+    </p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>SkyWalker Key</th>
+        <th>VADER Key</th>
+        <th>SkyWalker Binary</th>
+        <th>VADER Binary</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Dark Room / Eclipse</td>
+        <td><code>0xBF</code></td>
+        <td><code>0x41</code></td>
+        <td>eclipse.exe</td>
+        <td>dark_room.exe</td>
+      </tr>
+      <tr>
+        <td>Beacon / Shell</td>
+        <td><code>0xC7</code></td>
+        <td><code>0x41</code></td>
+        <td>sw_beacon.exe</td>
+        <td>vader_shell.exe</td>
+      </tr>
+      <tr>
+        <td>Inject DLL</td>
+        <td><code>0x5A</code></td>
+        <td><code>0x77</code></td>
+        <td>sw_thread.dll</td>
+        <td>vader_inject.dll</td>
+      </tr>
+      <tr>
+        <td>Inject EXE</td>
+        <td><code>0x2E</code></td>
+        <td><code>0x77</code></td>
+        <td>sw_thread.exe</td>
+        <td>vader_inject.exe</td>
+      </tr>
+      <tr>
+        <td>V4 Svc Replace</td>
+        <td><code>0x91</code></td>
+        <td><code>0x52</code></td>
+        <td colspan="2">WsNativePushService.exe</td>
+      </tr>
+      <tr>
+        <td>V5 DLL Proxy</td>
+        <td><code>0xD4</code></td>
+        <td><code>0x37</code></td>
+        <td colspan="2">VERSION.dll</td>
+      </tr>
+      <tr>
+        <td>V6 Path Hijack</td>
+        <td><code>0xA8</code></td>
+        <td><code>0x63</code></td>
+        <td colspan="2">targetname.dll</td>
+      </tr>
+      <tr>
+        <td>V7 Phantom DLL</td>
+        <td><code>0x6F</code></td>
+        <td><code>0x19</code></td>
+        <td colspan="2">osppc.dll</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="evidence-block">Cross-contamination test:
+  VADER XOR key 0x41 applied to sw_beacon.c  → different ciphertext
+  SkyWalker key 0xC7 applied to vader_shell.c → different ciphertext
+  Compiled .text sections share ZERO byte sequences > 8 bytes
+  Defender cannot cross-reference: separate signature families required</div>
+</section>
+
+<!-- ECLIPSE -->
+<section id="eclipse">
+  <div class="section-header">
+    <div class="section-number">Section 05</div>
+    <h2 class="section-title">Eclipse &mdash; AMSI + ETW Bypass</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      Eclipse is SkyWalker's combined AMSI + ETW bypass &mdash; equivalent to VADER's <code>dark_room.exe</code> but with different XOR keys and binary identity. The technique is identical: hardware breakpoints via <code>SetThreadContext</code> on DR0 (AmsiScanBuffer) and DR1 (EtwEventWrite), combined with a Vectored Exception Handler that intercepts the breakpoint and neuters the function.
+    </p>
+  </div>
+
+  <div class="grid-2" style="margin-top: 1.5rem;">
+    <div class="card">
+      <div class="card-title">DR0 &mdash; AMSI Blind</div>
+      <div class="lv-grid" style="grid-template-columns: 100px 1fr;">
+        <span class="lv-label">Target</span>
+        <span class="lv-value"><code>AmsiScanBuffer</code> in <code>amsi.dll</code></span>
+        <span class="lv-label">Register</span>
+        <span class="lv-value">DR0 &mdash; hardware breakpoint</span>
+        <span class="lv-label">Handler</span>
+        <span class="lv-value">VEH sets return value to <code>E_INVALIDARG</code> (0x80070057)</span>
+        <span class="lv-label">Result</span>
+        <span class="lv-value">AMSI returns "invalid" &mdash; script scanning disabled</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">DR1 &mdash; ETW Blind</div>
+      <div class="lv-grid" style="grid-template-columns: 100px 1fr;">
+        <span class="lv-label">Target</span>
+        <span class="lv-value"><code>EtwEventWrite</code> in <code>ntdll.dll</code></span>
+        <span class="lv-label">Register</span>
+        <span class="lv-value">DR1 &mdash; hardware breakpoint</span>
+        <span class="lv-label">Handler</span>
+        <span class="lv-value">VEH sets return value to <code>STATUS_SUCCESS</code> (0x0)</span>
+        <span class="lv-label">Result</span>
+        <span class="lv-value">ETW reports success but sends nothing &mdash; telemetry silenced</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="evidence-block">[+] AmsiScanBuffer at 0x00007FF9________
+[+] EtwEventWrite  at 0x00007FF9________
+[+] DR0 = AmsiScanBuffer, DR1 = EtwEventWrite
+[+] DR7 = 0x405
+
+[+] ECLIPSE ACTIVE
+[+] Script scanning: BLIND (AMSI)
+[+] Process telemetry: BLIND (ETW)
+[+] Memory integrity: CLEAN (zero modifications)
+
+[*] Testing AMSI bypass...
+[+] AMSI: returned 0x80070057 (E_INVALIDARG) — BLIND
+[*] Testing ETW bypass...
+[+] ETW:  returned 0 (STATUS_SUCCESS) — BLIND</div>
+
+  <div class="prose">
+    <p>
+      All string targets &mdash; <code>amsi.dll</code>, <code>AmsiScanBuffer</code>, <code>ntdll.dll</code>, <code>EtwEventWrite</code>, <code>powershell.exe</code> &mdash; are stored as XOR-encoded byte arrays in the source. Zero plaintext in the compiled binary. The XOR key (0xBF) differs from VADER's (0x41), producing entirely different ciphertext for identical plaintext strings.
+    </p>
+  </div>
+</section>
+
+<!-- MUTATION -->
+<section id="mutation">
+  <div class="section-header">
+    <div class="section-number">Section 06</div>
+    <h2 class="section-title">Mutation Pipeline</h2>
+  </div>
+
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>
+      <code>mutate.py</code> manages 8 registered components. Each has its own source path, XOR key define, compile flags, and link libraries. Key rotation uses the <code>secrets</code> module (cryptographic random). Recompiles via MSVC <code>cl.exe</code>, rescans with <code>MpCmdRun.exe</code>.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Registered Components</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Source</th>
+          <th>Key Define</th>
+          <th>Link Libs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>eclipse</td><td>eclipse/eclipse_annotated.c</td><td><code>XOR_KEY</code></td><td>ntdll, advapi32, user32</td></tr>
+        <tr><td>beacon</td><td>beacon/sw_beacon_annotated.c</td><td><code>XOR_KEY</code></td><td>ws2_32</td></tr>
+        <tr><td>thread_dll</td><td>injection/sw_thread_dll.c</td><td><code>XOR_KEY</code></td><td>ntdll, advapi32, user32</td></tr>
+        <tr><td>thread_exe</td><td>injection/sw_thread.c</td><td><code>XOR_KEY</code></td><td>ntdll, advapi32</td></tr>
+        <tr><td>v4_svc</td><td>sideload/v4_annotated.c</td><td><code>XOR_KEY</code></td><td>advapi32</td></tr>
+        <tr><td>v5_proxy</td><td>vectors/v5_annotated.c</td><td><code>XOR_KEY</code></td><td>advapi32, user32</td></tr>
+        <tr><td>v6_hijack</td><td>vectors/v6_annotated.c</td><td><code>XOR_KEY</code></td><td>advapi32</td></tr>
+        <tr><td>v7_phantom</td><td>vectors/v7_annotated.c</td><td><code>XOR_KEY</code></td><td>advapi32, user32</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Pipeline</div>
+    <div class="evidence-block">$ python mutate.py
+
+[1/8] eclipse     — new key: 0xBF → 0x3E — compile OK — scan CLEAN
+[2/8] beacon      — new key: 0xC7 → 0x8A — compile OK — scan CLEAN
+[3/8] thread_dll  — new key: 0x5A → 0xF1 — compile OK — scan CLEAN
+...
+[8/8] v7_phantom  — new key: 0x6F → 0xD2 — compile OK — scan CLEAN
+
+ALL 8 COMPONENTS: CLEAN
+New binary identity generated. Zero shared bytes with previous build.
+
+$ python mutate.py --status    # Show current keys
+$ python mutate.py --dry-run   # Preview without modifying
+$ python mutate.py --target eclipse  # Rotate single component</div>
+  </div>
+</section>
+
+<!-- BUILD -->
+<section id="build">
+  <div class="section-header">
+    <div class="section-number">Section 07</div>
+    <h2 class="section-title">Build Guide</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Requirements</div>
+    <div class="lv-grid">
+      <span class="lv-label">OS</span>
+      <span class="lv-value">Windows 10/11 x64</span>
+      <span class="lv-label">Compiler</span>
+      <span class="lv-value">cl.exe (MSVC via Visual Studio 18 Community)</span>
+      <span class="lv-label">vcvars</span>
+      <span class="lv-value"><code>C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat</code></span>
+      <span class="lv-label">Python</span>
+      <span class="lv-value">3.x (mutate.py, deploy.py)</span>
+      <span class="lv-label">Flags</span>
+      <span class="lv-value"><code>/O1 /GS- /utf-8</code> &mdash; size optimise, no stack cookies</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Manual Build</div>
+    <div class="evidence-block">:: Initialise MSVC environment
+call "C:\...\vcvars64.bat"
+
+:: Build eclipse (Phase 1+2)
+cl.exe /O1 /GS- /utf-8 eclipse\eclipse_annotated.c /Fe:eclipse.exe /link ntdll.lib advapi32.lib user32.lib
+
+:: Build beacon (Phase 0)
+cl.exe /O1 /GS- /utf-8 beacon\sw_beacon_annotated.c /Fe:sw_beacon.exe /link ws2_32.lib
+
+:: Build all + scan
+python deploy.py --compile
+python deploy.py --scan</div>
+  </div>
+</section>
+
+<!-- STATUS -->
+<section id="status">
+  <div class="section-header">
+    <div class="section-number">Section 08</div>
+    <h2 class="section-title">Stealth Profile &amp; Status</h2>
+  </div>
+
+  <div class="evidence-block">TEST                           RESULT
+──────────────────────────────────────────
+Static scan (18 binaries)      0 DETECTED
+Runtime behavioural            0 DETECTED
+Memory integrity               ZERO bytes modified
+VirtualProtect calls           NONE
+AMSI scan result               E_INVALIDARG (blind)
+ETW telemetry                  STATUS_SUCCESS (silenced)
+Privilege required             Standard user
+Target OS                      Windows 11 Home 24H2 Build 26200</div>
+
+  <div class="prose" style="margin-top: 1.5rem;">
+    <p>
+      <strong>18 clean binaries. Zero detections.</strong> Same kill chain as VADER &mdash; independent binary identity. Dormant until needed. When VADER burns, SkyWalker is already compiled, scanned, and ready to deploy.
+    </p>
+    <p>
+      Three gate engines across the ecosystem &mdash; SithStalker (DJB2), VADER (FNV-1a), SkyWalker (SDBM) &mdash; zero shared byte patterns, all CLEAN. A signature that catches one cannot catch the others.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-brand">22DIV // SKYWALKER</div>
+  <div class="footer-sub">george wu &mdash; rainfantry.github.io</div>
+  <div class="footer-sub" style="margin-top: 0.5rem; color: var(--text-dim);">
+    CSEC academic research &mdash; own hardware only &mdash; responsible disclosure via MSRC
+  </div>
+</footer>
+
+</body>
+</html>

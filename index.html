@@ -534,15 +534,18 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
       <a href="index.html">home</a>
       <a href="#projects">projects</a>
       <a href="journal.html">journal</a>
-      <a href="books.html" class="nav-red">field manual</a>
-      <a href="csec.html" class="nav-red">kill chain</a>
-      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+      <a href="rootkit.html" class="nav-blue">VADER</a>
+      <a href="sithstalker.html" class="nav-cyan">sith stalker</a>
+      <a href="skywalker.html" class="nav-yellow">skywalker</a>
+      <a href="starkiller.html" class="nav-red">starkiller</a>
+      <span class="sep">|</span>
       <a href="networking.html" class="nav-green">networking</a>
       <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
-      <a href="report.html" class="nav-pink">book report</a>
+      <a href="books.html" class="nav-red">field manual</a>
+      <a href="csec.html" class="nav-red">kill chain</a>
       <a href="defender.html" class="nav-cyan">DEFENDER</a>
       <a href="reverseeng.html" class="nav-purple">reverse eng</a>
-      <a href="starkiller.html" class="nav-red">starkiller</a>
+      <a href="report.html" class="nav-pink">book report</a>
       <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
     </div>
   </div>
@@ -582,7 +585,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <div class="projects-grid">
     <div class="project-card">
       <h3><a href="https://github.com/rainfantry/vader-rootkit">vader-rootkit</a></h3>
-      <div class="card-desc">Full offensive security toolkit. AMSI/ETW bypass via hardware breakpoints, privilege escalation (CWE-732, CWE-427), XOR-obfuscated reverse shell, reflective PE loader, HTTP stager, multi-client C2, phantom DLL persistence, anti-forensics. 8 compiled tools, 0 Defender detections.</div>
+      <div class="card-desc">Full rootkit kill chain &mdash; 11 phases, 19 engagements, 70 findings. AMSI/ETW bypass via hardware breakpoints, CWE-732/CWE-427 privesc, DLL injection, HTTP stager, 17-op C2 agent, BYOVD kernel persistence, metamorphic engine. 80 binaries, 0 Defender detections. <a href="rootkit.html" style="color:var(--green);">&rarr; Full documentation</a></div>
       <div class="card-meta">
         <span class="card-lang lang-c">C</span>
         <span class="card-lang lang-py">Python</span>
@@ -616,10 +619,28 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     </div>
     <div class="project-card">
       <h3><a href="https://github.com/rainfantry/sith-stalker">sith-stalker</a></h3>
-      <div class="card-desc">Indirect syscall gate engine for Windows x64. Resolves NT function addresses via DJB2 hash walking of ntdll exports. v2 engine uses XOR-encrypted hashes with per-build key rotation. Evades IAT-based EDR detection.</div>
+      <div class="card-desc">Indirect syscall engine + concealment framework. 13 Nt* functions resolved via DJB2/XOR-encrypted hashes. User-mode rootkit: process/file/connection hiding via NtQuery* hooks. Kernel DKOM via BYOVD (CVE-2019-16098). <a href="sithstalker.html" style="color:var(--cyan);">&rarr; Full documentation</a></div>
       <div class="card-meta">
         <span class="card-lang lang-c">C</span>
         <span class="card-lang" style="--dot-color:#6E5494;">ASM</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/skywalker">skywalker</a></h3>
+      <div class="card-desc">Cold standby fork of VADER. Same kill chain, completely independent binary signatures. 18 binaries, 0 detections. Activates when VADER burns or parallel ops required. 14,282 lines, 52 source files. <a href="skywalker.html" style="color:var(--amber);">&rarr; Full documentation</a></div>
+      <div class="card-meta">
+        <span class="card-lang lang-c">C</span>
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-tag card-tag-sec">SECURITY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <h3><a href="https://github.com/rainfantry/starkiller">starkiller</a></h3>
+      <div class="card-desc">Android RAT &mdash; Python C2 + Kotlin client. 17 ops: camera, GPS, SMS, contacts, keylogger, mic, shell. XOR+Base64 obfuscation, ProGuard, APK binder. VADER protocol compatible. Phase 1 complete. <a href="starkiller.html" style="color:var(--red);">&rarr; Full documentation</a></div>
+      <div class="card-meta">
+        <span class="card-lang lang-py">Python</span>
+        <span class="card-lang" style="--dot-color:#A97BFF;">Kotlin</span>
         <span class="card-tag card-tag-sec">SECURITY</span>
       </div>
     </div>

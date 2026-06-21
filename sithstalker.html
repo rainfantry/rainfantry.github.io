@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SITH STALKER — Indirect Syscall Engine | 22DIV</title>
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── ROOT VARIABLES ── */
+:root {
+  --bg-primary:   #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card:      #141414;
+  --bg-table-row: #0f0f0f;
+  --border:       #1e1e1e;
+  --border-glow:  #1a2a3a;
+  --green:        #00ff41;
+  --green-dim:    #00cc33;
+  --green-dark:   #004d14;
+  --amber:        #ffb000;
+  --amber-dim:    #cc8c00;
+  --red:          #ff3333;
+  --red-dim:      #cc2929;
+  --cyan:         #00e5ff;
+  --cyan-dim:     #00b8cc;
+  --text-primary: #d4d4d4;
+  --text-muted:   #777777;
+  --text-dim:     #555555;
+  --mono:         'Consolas', 'Cascadia Code', 'Source Code Pro', 'Courier New', monospace;
+  --sans:         'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 229, 255, 0.012) 2px, rgba(0, 229, 255, 0.012) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── STICKY NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-inner::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--green);
+  padding: 0.75rem 1.25rem;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: var(--mono);
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+  display: block;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover {
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.nav-links a.nav-cyan { color: var(--cyan); }
+.nav-links a.nav-cyan:hover { color: #33eeff; background: rgba(0, 229, 255, 0.08); }
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(180deg, #0d0d14 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-glow);
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-classification {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: var(--mono);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 30px rgba(0, 229, 255, 0.15); }
+  50%      { text-shadow: 0 0 50px rgba(0, 229, 255, 0.25); }
+}
+
+.hero-subtitle {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.hero-quote {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+.hero-meta .label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.hero-meta .value { color: var(--text-primary); }
+
+/* ── SECTIONS ── */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+section {
+  padding: 4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+section:last-of-type { border-bottom: none; }
+
+.section-header { margin-bottom: 2rem; }
+
+.section-number {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f0f0f0;
+  letter-spacing: 0.02em;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s;
+}
+
+.card:hover { border-color: var(--border-glow); }
+
+.card-title {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+/* ── TABLES ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+
+thead th {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-secondary);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+tbody tr { background: var(--bg-card); transition: background 0.2s; }
+tbody tr:nth-child(even) { background: var(--bg-table-row); }
+tbody tr:hover { background: #111922; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+}
+
+.badge-green { background: rgba(0, 255, 65, 0.12); color: var(--green); }
+.badge-red { background: rgba(255, 51, 51, 0.12); color: var(--red); }
+.badge-amber { background: rgba(255, 176, 0, 0.12); color: var(--amber); }
+.badge-cyan { background: rgba(0, 229, 255, 0.1); color: var(--cyan); }
+.badge-dim { background: rgba(255, 255, 255, 0.05); color: var(--text-dim); }
+
+/* ── EVIDENCE BLOCK ── */
+.evidence-block {
+  background: #0c0c0c;
+  border: 1px solid var(--border);
+  border-left: 3px solid #003344;
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--cyan-dim);
+  margin: 1rem 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ── METHOD GRID ── */
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.method-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem;
+  transition: border-color 0.3s;
+}
+
+.method-card:hover { border-color: var(--border-glow); }
+
+.method-card-title {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--cyan-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.6rem;
+}
+
+.method-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+/* ── LV GRID ── */
+.lv-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.4rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+
+.lv-label {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lv-value { color: var(--text-primary); }
+
+/* ── PROSE ── */
+.prose { font-size: 0.9rem; line-height: 1.75; color: var(--text-primary); }
+.prose p { margin-bottom: 1rem; }
+.prose strong { color: #f0f0f0; font-weight: 600; }
+.highlight { color: var(--cyan); font-weight: 600; }
+.highlight-amber { color: var(--amber); font-weight: 600; }
+.highlight-red { color: var(--red); font-weight: 600; }
+
+h3 { font-size: 1.05rem; font-weight: 600; color: #e0e0e0; margin: 1.75rem 0 0.75rem; }
+h3 code { color: var(--amber); }
+
+code {
+  font-family: var(--mono);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.82em;
+  color: var(--cyan-dim);
+}
+
+/* ── ATTACK CHAIN ── */
+.attack-steps { counter-reset: step; list-style: none; margin: 1.25rem 0; }
+
+.attack-steps li {
+  counter-increment: step;
+  padding: 0.6rem 0 0.6rem 3rem;
+  position: relative;
+  font-size: 0.88rem;
+  border-left: 2px solid var(--border);
+  margin-left: 0.75rem;
+}
+
+.attack-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: -0.85rem;
+  top: 0.55rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: var(--bg-primary);
+  border: 2px solid #003344;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--cyan-dim);
+}
+
+.attack-steps li:last-child { border-left-color: transparent; }
+
+/* ── CURSOR ── */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--cyan);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.footer-brand { font-family: var(--mono); font-size: 0.85rem; color: var(--cyan-dim); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.footer-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .hero { padding: 3rem 1.5rem 2rem; }
+  nav { position: relative; }
+  .nav-brand { padding: 0.6rem 1rem; font-size: 0.75rem; }
+  .nav-links a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
+  .lv-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">22DIV</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rootkit.html">VADER</a></li>
+      <li><a href="skywalker.html">SkyWalker</a></li>
+      <li><a href="starkiller.html">StarKiller</a></li>
+      <li><a href="#overview" class="nav-cyan">Overview</a></li>
+      <li><a href="#theory">Theory</a></li>
+      <li><a href="#engines">Engines</a></li>
+      <li><a href="#concealment">Concealment</a></li>
+      <li><a href="#kernel">Kernel</a></li>
+      <li><a href="#mutation">Mutation</a></li>
+      <li><a href="#build">Build</a></li>
+      <li><a href="#status">Status</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-classification">UNCLASSIFIED // ACADEMIC USE ONLY</div>
+  <h1>SITH STALKER<span class="cursor"></span></h1>
+  <div class="hero-subtitle">Indirect Syscall Engine &amp; Concealment Framework</div>
+  <div class="hero-quote">"Your eyes can deceive you. Don't trust them."</div>
+  <div class="hero-meta">
+    <span><span class="label">Operator</span> <span class="value">george wu / 22DIV</span></span>
+    <span><span class="label">Target</span> <span class="value">Windows 11 x64</span></span>
+    <span><span class="label">Functions</span> <span class="value" style="color: var(--cyan);">13/13 Resolved</span></span>
+    <span><span class="label">Course</span> <span class="value">CSEC &mdash; Tactical Cyber Operations</span></span>
+  </div>
+</header>
+
+<main class="container">
+
+<!-- SECTION 1: OVERVIEW -->
+<section id="overview">
+  <div class="section-header">
+    <div class="section-number">Section 01</div>
+    <h2 class="section-title">Operation Overview</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      SithStalker is a complete indirect syscall engine and user-mode/kernel-mode concealment framework built from first principles. Two gate engines &mdash; v1 (clean-room DJB2) and v2 (XOR-encrypted, gadget pool, obfuscated stubs) &mdash; resolve 13 NT functions at runtime without touching <code>GetProcAddress</code>, <code>LoadLibrary</code>, or any Win32 API that EDR products hook.
+    </p>
+    <p>
+      The concealment layer uses those resolved syscalls to hide processes, files, and network connections from the operating system itself. Not from security products. From <code>tasklist</code>, from <code>dir</code>, from <code>netstat</code>. The kernel DKOM module extends this via BYOVD &mdash; a signed vulnerable driver (RTCore64.sys, CVE-2019-16098) provides arbitrary physical memory R/W for EPROCESS linked-list unlinking.
+    </p>
+    <p>
+      SithStalker is VADER's stealth backbone. VADER delivers the payload. SithStalker makes it invisible.
+    </p>
+  </div>
+
+  <div class="card" style="margin-top: 1.5rem;">
+    <div class="card-title">Project Summary</div>
+    <div class="lv-grid">
+      <span class="lv-label">Repository</span>
+      <span class="lv-value">Private (<code>rainfantry/sith-stalker</code>)</span>
+      <span class="lv-label">Source</span>
+      <span class="lv-value">25 files, 5,175 lines of C + ASM</span>
+      <span class="lv-label">Gate v1</span>
+      <span class="lv-value">DJB2 hash, direct stub resolution, 13/13 clean</span>
+      <span class="lv-label">Gate v2</span>
+      <span class="lv-value">XOR-encrypted DJB2, gadget pool, obfuscated stubs, 13/13 clean</span>
+      <span class="lv-label">Concealment</span>
+      <span class="lv-value">Process + File + Connection hiding via NtQuery* inline hooks</span>
+      <span class="lv-label">Kernel</span>
+      <span class="lv-value">BYOVD EPROCESS DKOM via RTCore64.sys (CVE-2019-16098)</span>
+      <span class="lv-label">Delivery</span>
+      <span class="lv-value">System-wide CBT hook &mdash; one command cloaks every GUI process</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: THEORY -->
+<section id="theory">
+  <div class="section-header">
+    <div class="section-number">Section 02</div>
+    <h2 class="section-title">Theory &mdash; Why Indirect Syscalls</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      Every Windows API call eventually reaches an <code>Nt*</code> function in <code>ntdll.dll</code>. That function loads a System Service Number (SSN) into <code>EAX</code>, transfers to <code>R10</code>, and executes <code>syscall</code>. EDR products intercept this by hooking the first bytes of those stubs &mdash; replacing the clean <code>mov r10, rcx; mov eax, SSN</code> sequence with a <code>JMP</code> into their analysis engine.
+    </p>
+    <p>
+      <strong>Direct syscall</strong> skips ntdll entirely &mdash; you issue <code>syscall</code> from your own <code>.text</code> section. But the return address on the stack points outside ntdll. Modern EDR checks this via <code>InstrumentationCallback</code>. Your binary lights up like a flare.
+    </p>
+    <p>
+      <strong>Indirect syscall</strong> resolves the SSN at runtime, then jumps to a legitimate <code>syscall; ret</code> gadget <em>inside ntdll</em>. The return address looks like a normal ntdll call. No hooks triggered. No stack anomaly. The OS itself doesn't know the call didn't originate from ntdll.
+    </p>
+  </div>
+
+  <div class="grid-2" style="margin-top: 1.5rem;">
+    <div class="card">
+      <div class="card-title">Hell's Gate (am0nsec + smelly__vx, 2020)</div>
+      <div class="prose">
+        <p>Walk the PEB (<code>__readgsqword(0x60)</code>) &rarr; <code>InMemoryOrderModuleList</code> &rarr; second entry = ntdll &rarr; parse PE export table &rarr; hash each function name with DJB2 (seed 5381) &rarr; match target hash &rarr; extract SSN from bytes 4-5 of the stub pattern <code>4C 8B D1 B8 XX XX 00 00</code> &rarr; scan forward for <code>0F 05 C3</code> (syscall;ret gadget).</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Halo's Gate (sektor7)</div>
+      <div class="prose">
+        <p>When EDR has overwritten the stub (first bytes are a JMP, not <code>4C 8B D1</code>), look at neighboring exports &plusmn;20 positions. Find a clean stub, read its SSN, apply arithmetic offset (neighbor_ssn &plusmn; delta). Recovers up to 20 consecutively hooked functions.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Detection Layer Model</h3>
+  <div class="evidence-block">LAYER A — Static / Signature    → XOR key rotation defeats it
+LAYER B — Emulator / Heuristic  → DllMain decoupling defeats it
+LAYER C — Runtime / Behavioral  → Indirect syscalls defeat it  ← SithStalker's domain
+LAYER D — Kernel / ETW          → Separate ETW bypass (VADER dark_room)
+LAYER E — Memory Scanning       → JIT decryption, zero persistent cleartext</div>
+</section>
+
+<!-- SECTION 3: ENGINES -->
+<section id="engines">
+  <div class="section-header">
+    <div class="section-number">Section 03</div>
+    <h2 class="section-title">Gate Engines</h2>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">v1 &mdash; Clean Room</div>
+      <div class="lv-grid" style="grid-template-columns: 120px 1fr;">
+        <span class="lv-label">Hash</span>
+        <span class="lv-value">DJB2 (seed 5381), plaintext</span>
+        <span class="lv-label">Stub</span>
+        <span class="lv-value">Standard indirect: <code>mov r10, rcx; mov eax, SSN; jmp [gadget]</code></span>
+        <span class="lv-label">Gadget</span>
+        <span class="lv-value">Single syscall;ret address per function</span>
+        <span class="lv-label">Result</span>
+        <span class="lv-value"><span class="badge badge-green">13/13 RESOLVED</span></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">v2 &mdash; Obfuscated</div>
+      <div class="lv-grid" style="grid-template-columns: 120px 1fr;">
+        <span class="lv-label">Hash</span>
+        <span class="lv-value">DJB2 XOR-encrypted (rotating key via <code>mutate.py</code>)</span>
+        <span class="lv-label">Stub</span>
+        <span class="lv-value">Obfuscated: <code>push rcx; pop r10; mov r11,[addr]; push r11; ret</code></span>
+        <span class="lv-label">Gadget</span>
+        <span class="lv-value">Pool of 8 per function, rotated via <code>call_count % pool_count</code></span>
+        <span class="lv-label">Result</span>
+        <span class="lv-value"><span class="badge badge-green">13/13 RESOLVED</span></span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Resolved Functions (13)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Function</th>
+        <th>Layer</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>NtOpenThread</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Open handle to target thread</td></tr>
+      <tr><td><code>NtSuspendThread</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Freeze target for context manipulation</td></tr>
+      <tr><td><code>NtGetContextThread</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Read thread register state</td></tr>
+      <tr><td><code>NtSetContextThread</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Write debug registers (HWBP)</td></tr>
+      <tr><td><code>NtResumeThread</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Resume after context modification</td></tr>
+      <tr><td><code>NtClose</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Handle cleanup</td></tr>
+      <tr><td><code>NtAllocateVirtualMemory</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Remote memory allocation</td></tr>
+      <tr><td><code>NtWriteVirtualMemory</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Write payload into target</td></tr>
+      <tr><td><code>NtProtectVirtualMemory</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Set memory permissions (RWX)</td></tr>
+      <tr><td><code>NtCreateThreadEx</code></td><td><span class="badge badge-cyan">Injection</span></td><td>Execute payload in target context</td></tr>
+      <tr><td><code>NtQuerySystemInformation</code></td><td><span class="badge badge-amber">Concealment</span></td><td>Process enumeration &mdash; hide from tasklist</td></tr>
+      <tr><td><code>NtQueryDirectoryFile</code></td><td><span class="badge badge-amber">Concealment</span></td><td>Directory listing &mdash; hide from dir/Explorer</td></tr>
+      <tr><td><code>NtDeviceIoControlFile</code></td><td><span class="badge badge-amber">Concealment</span></td><td>TCP/UDP table &mdash; hide from netstat</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SECTION 4: CONCEALMENT -->
+<section id="concealment">
+  <div class="section-header">
+    <div class="section-number">Section 04</div>
+    <h2 class="section-title">User-Mode Concealment</h2>
+  </div>
+
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>
+      Three inline hooks on <code>ntdll.dll</code> intercept OS queries at the syscall boundary. The hooks are installed via <code>cloak.dll</code>, delivered system-wide through <code>SetWindowsHookEx(WH_CBT, ..., 0)</code>. One command and every GUI process on the desktop is cloaked. Config strings are XOR-encrypted in the binary &mdash; zero plaintext in <code>.rdata</code>.
+    </p>
+  </div>
+
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="method-card-title">Process Hiding</div>
+      <p>Hooks <code>NtQuerySystemInformation</code>. Intercepts <code>SystemProcessInformation</code> (class 5) queries. Walks the <code>SYSTEM_PROCESS_INFORMATION</code> linked list and unlinks entries matching hidden process names by adjusting <code>NextEntryOffset</code>. Task Manager, tasklist, Process Explorer &mdash; all blind.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">File Hiding</div>
+      <p>Hooks <code>NtQueryDirectoryFile</code>. Handles 5 information classes: <code>FileBothDirectoryInformation</code>, <code>FileDirectoryInformation</code>, <code>FileFullDirectoryInformation</code>, <code>FileNamesInformation</code>, <code>FileIdBothDirectoryInformation</code>. Unlinks matching entries from the directory buffer. <code>dir</code>, Explorer, everything built on <code>FindFirstFile</code> &mdash; blind.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">Connection Hiding</div>
+      <p>Hooks <code>NtDeviceIoControlFile</code>. Filters <code>MIB_TCPROW</code> entries from TCP/UDP table IOCTLs by matching <code>dwRemotePort</code> against hidden port list. <code>netstat -ano</code>, TCPView, CurrPorts &mdash; C2 connection invisible.</p>
+    </div>
+    <div class="method-card">
+      <div class="method-card-title">System-Wide Delivery</div>
+      <p><code>cloak_loader.exe</code> installs a global <code>WH_CBT</code> hook. Windows loads <code>cloak.dll</code> into every GUI process. <code>DllMain(DLL_PROCESS_ATTACH)</code> installs the 3 inline hooks per-process. The CBT proc is a passthrough &mdash; it exists only to trigger DLL injection.</p>
+    </div>
+  </div>
+
+  <h3>Hook Engineering &mdash; The 16-Byte Fix</h3>
+  <div class="prose">
+    <p>
+      Initial hook patch size was 12 bytes. Nt* stubs on 24H2 include an 8-byte <code>test byte ptr [SharedUserData+0x308], 1</code> instruction at offset 8. A 12-byte patch split this instruction &mdash; the remaining 4 bytes were interpreted as JMP displacement &rarr; ACCESS VIOLATION &rarr; Explorer crash. Fix: <code>HOOK_PATCH_SIZE 12 &rarr; 16</code>. Save and restore 16 bytes minimum. Confirmed stable across all GUI processes including Explorer.
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 5: KERNEL -->
+<section id="kernel">
+  <div class="section-header">
+    <div class="section-number">Section 05</div>
+    <h2 class="section-title">Kernel DKOM via BYOVD</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      User-mode concealment hides from applications. Kernel DKOM hides from the <em>kernel itself</em>. <code>kernel_cloak.exe</code> loads RTCore64.sys (CVE-2019-16098, signed by Micro-Star International) via SCM, obtains a device handle, and uses the driver's arbitrary physical memory read/write IOCTLs to walk and modify kernel structures directly.
+    </p>
+  </div>
+
+  <div class="card" style="margin-top: 1.5rem;">
+    <div class="card-title">Kernel Operations</div>
+    <ol class="attack-steps">
+      <li>Load RTCore64.sys via <code>sc create</code> + <code>sc start</code> &mdash; signed driver, no DSE bypass needed</li>
+      <li>Walk x64 4-level page tables (PML4 &rarr; PDPT &rarr; PD &rarr; PT) for VA-to-physical translation</li>
+      <li>Locate EPROCESS for PID 4 (System) by scanning physical memory for known PID=4 pattern</li>
+      <li>Auto-detect <code>ActiveProcessLinks</code> and <code>UniqueProcessId</code> offsets from System EPROCESS</li>
+      <li>Walk <code>ActiveProcessLinks</code> doubly-linked list to find target process EPROCESS</li>
+      <li>Unlink target: <code>prev-&gt;Flink = target-&gt;Flink; next-&gt;Blink = target-&gt;Blink</code></li>
+      <li>Target process vanishes from ALL kernel-level queries &mdash; Process Explorer, kernel debugger, everything</li>
+    </ol>
+  </div>
+
+  <div class="evidence-block">Driver:    RTCore64.sys (40,688 bytes, Micro-Star International signed)
+CVE:       CVE-2019-16098 — arbitrary read/write via IOCTLs
+Location:  C:\Program Files (x86)\MSI Afterburner\RTCore64.sys
+Technique: EPROCESS ActiveProcessLinks unlink via physical memory R/W
+Result:    Process invisible at kernel level — survives all user-mode enumeration</div>
+</section>
+
+<!-- SECTION 6: MUTATION -->
+<section id="mutation">
+  <div class="section-header">
+    <div class="section-number">Section 06</div>
+    <h2 class="section-title">Mutation Pipeline</h2>
+  </div>
+
+  <div class="prose">
+    <p>
+      <code>mutate.py</code> rotates the XOR encryption key across all 13 hash arrays in <code>gate_v2.h</code>, rebuilds both engines, runs the 13/13 resolution test, and scans against Defender. If any step fails, it rolls back automatically. Every mutation produces a unique binary &mdash; no two compiled copies share static byte patterns.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Pipeline Steps</div>
+    <div class="evidence-block">1. Generate new random XOR key (cryptographic — secrets module)
+2. Re-encrypt all 13 DJB2 hash arrays in gate_v2.h
+3. Assemble gate stubs (ml64.exe)
+4. Compile v1 + v2 test harnesses (cl.exe)
+5. Run test_gate.exe  → verify 10/10
+6. Run test_gate_v2.exe → verify 13/13
+7. Scan both binaries with MpCmdRun.exe
+8. Pass → commit new key. Fail → rollback to previous key.
+9. Build cloak.dll + kernel_cloak.exe with new engine</div>
+  </div>
+</section>
+
+<!-- SECTION 7: BUILD -->
+<section id="build">
+  <div class="section-header">
+    <div class="section-number">Section 07</div>
+    <h2 class="section-title">Build Guide</h2>
+  </div>
+
+  <div class="prose" style="margin-bottom: 1.5rem;">
+    <p>Requires Windows 10/11 x64, Visual Studio Build Tools 2022 with Desktop Development C++ workload (<code>cl.exe</code> + <code>ml64.exe</code>).</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Manual Build</div>
+    <div class="evidence-block">:: Assemble gate stubs
+ml64.exe /c src\gate_stub.asm /Fo:gate_stub.obj
+
+:: Build v1 (clean room)
+cl.exe /O1 /GS- /utf-8 src\gate.c src\test_gate.c gate_stub.obj /Fe:test_gate.exe
+
+:: Build v2 (obfuscated)
+cl.exe /O1 /GS- /utf-8 src\gate_v2.c src\test_gate_v2.c gate_stub_v2.obj /Fe:test_gate_v2.exe
+
+:: Automated build + test + scan
+python build.py</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Expected Output</div>
+    <div class="evidence-block">[v1] 10/10 SSNs resolved — CLEAN
+[v2] 13/13 SSNs resolved — CLEAN
+  XOR key:     0xDC
+  Gadget pool: 32 unique syscall;ret addresses
+  Rotation:    verified across sequential calls
+
+Binary sizes:
+  test_gate.exe    — 15-20 KB
+  test_gate_v2.exe — 18-25 KB
+  cloak.dll        — ~150 KB
+  kernel_cloak.exe — ~30 KB</div>
+  </div>
+</section>
+
+<!-- SECTION 8: STATUS -->
+<section id="status">
+  <div class="section-header">
+    <div class="section-number">Section 08</div>
+    <h2 class="section-title">Kill Chain &amp; Status</h2>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Step</th>
+        <th>Phase</th>
+        <th>Status</th>
+        <th>Detail</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Recon</td>
+        <td>RECON</td>
+        <td><span class="badge badge-green">READY</span></td>
+        <td>VADER's vader_recon.ps1 handles target enumeration</td>
+      </tr>
+      <tr>
+        <td>2. Delivery</td>
+        <td>DELIVERY</td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>HTTP stager, phantom DLL plant, service binary replace</td>
+      </tr>
+      <tr>
+        <td>3. Injection</td>
+        <td>INJECTION</td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>10 Nt* functions for remote memory + thread creation</td>
+      </tr>
+      <tr>
+        <td>4. Evasion</td>
+        <td>EVASION</td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>VADER dark_room (HWBP AMSI+ETW bypass)</td>
+      </tr>
+      <tr>
+        <td>5. Persistence</td>
+        <td>PERSISTENCE</td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>VADER agent: schtask, registry, WMI, IFEO</td>
+      </tr>
+      <tr>
+        <td>6. C2</td>
+        <td>C2</td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>VADER C2 protocol over TCP 8667</td>
+      </tr>
+      <tr>
+        <td>7. User Cloak</td>
+        <td>CLOAK</td>
+        <td><span class="badge badge-green">OPERATIONAL</span></td>
+        <td>Process + file + connection hiding via system-wide CBT hook</td>
+      </tr>
+      <tr>
+        <td>8. Kernel DKOM</td>
+        <td>KERNEL</td>
+        <td><span class="badge badge-green">BUILT</span></td>
+        <td>EPROCESS unlink via RTCore64.sys BYOVD</td>
+      </tr>
+      <tr>
+        <td>9. Cleanup</td>
+        <td>CLEANUP</td>
+        <td><span class="badge badge-green">READY</span></td>
+        <td>VADER anti-forensics (canary, logs, timestamps, self-delete)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-brand">22DIV // SITH STALKER</div>
+  <div class="footer-sub">george wu &mdash; rainfantry.github.io</div>
+  <div class="footer-sub" style="margin-top: 0.5rem; color: var(--text-dim);">
+    CSEC academic research &mdash; own hardware only &mdash; responsible disclosure via MSRC
+  </div>
+</footer>
+
+</body>
+</html>
