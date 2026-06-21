@@ -579,6 +579,161 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   </div>
 </div>
 
+<!-- ═══════ LEARNING PATH ═══════ -->
+<section id="learning-path" style="margin-bottom:3rem;">
+  <div class="section-label">// OPERATIONS ORDER</div>
+  <h2 style="color:var(--green); font-size:1.1rem; font-weight:400; margin-bottom:0.5rem;">learning path</h2>
+  <p style="font-size:0.8rem; color:var(--muted); margin-bottom:1.5rem;">Structured daily progression. Read the theory, then run the tool, then read the source. Each phase builds on the last. Don't skip ahead.</p>
+
+  <div style="display:grid; gap:1rem;">
+
+    <!-- PHASE 0 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--dim); border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:var(--dim); font-size:0.7rem; letter-spacing:0.1em;">PHASE 0 // DAYS 1&ndash;2</span>
+        <span class="tag tag-system">FOUNDATION</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Know Your Enemy</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="defender.html" style="color:var(--cyan);">defender.html</a> &mdash; How Windows Defender works internally. AMSI, ETW, WdFilter.sys, scan pipeline, what it watches.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="csec.html" style="color:var(--red);">csec.html</a> &mdash; Kill chain theory. MITRE ATT&CK framework. What each phase means.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="books.html" style="color:var(--red);">books.html</a> &mdash; Field manual. Core concepts, reference material, foundations.<br>
+        <span style="color:var(--dim);">WHY: You can't bypass what you don't understand. Defender's architecture dictates every tool in this arsenal.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 1 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--cyan); border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:var(--cyan); font-size:0.7rem; letter-spacing:0.1em;">PHASE 1 // DAYS 3&ndash;4</span>
+        <span class="tag tag-built">RECON</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Find What's Broken</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Overview + CWE-732 sections &mdash; How real vulns were found on your own machine.<br>
+        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">vader_recon.ps1</code> &mdash; Scan Defender version, RTP status, exclusions, tamper protection state.<br>
+        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">vader-hunt</code> &mdash; Automated scanner: writable service binaries, unquoted paths, phantom DLLs, PATH hijacks.<br>
+        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/vader-hunt" style="color:var(--green);">vader-hunt</a> &mdash; Read the source. Understand how it enumerates 300+ services.<br>
+        <span style="color:var(--dim);">WHY: Recon tells you what's exploitable. Every attack starts here.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--red); border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:var(--red); font-size:0.7rem; letter-spacing:0.1em;">PHASE 2 // DAYS 5&ndash;7</span>
+        <span class="tag tag-detected">WEAPONIZE</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Build the Blindfold</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Dark Room section &mdash; AMSI/ETW bypass theory. Hardware breakpoints. Why memory patching dies and HWBP survives.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="sithstalker.html" style="color:var(--cyan);">sithstalker.html</a> &rarr; Gate Engines &mdash; Indirect syscalls. DJB2 hashing. XOR encryption. How to call NT functions without the API.<br>
+        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">dark_room.exe</code> &mdash; Compile the AMSI+ETW bypass. Read every line of dark_room.c.<br>
+        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">gate_v2</code> &mdash; Compile the indirect syscall engine. Read gate_v2.c + gate_stub_v2.asm.<br>
+        <strong style="color:var(--amber);">REPOS:</strong> <a href="https://github.com/rainfantry/vader-rootkit" style="color:var(--green);">vader-rootkit</a>, <a href="https://github.com/rainfantry/sith-stalker" style="color:var(--green);">sith-stalker</a><br>
+        <span style="color:var(--dim);">WHY: AMSI and ETW are the two eyes. Dark Room blinds both. Indirect syscalls hide HOW you call the OS.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #00e5ff; border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:#00e5ff; font-size:0.7rem; letter-spacing:0.1em;">PHASE 3 // DAYS 8&ndash;9</span>
+        <span class="tag" style="background:#0a1a1a; color:#00e5ff; border:1px solid #003a3a;">DELIVER</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Steganographic Delivery</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="ghost.html" style="color:#00e5ff;">ghost.html</a> &mdash; Unicode zero-width steganography. 16 invisible characters as a hex alphabet. Not obfuscation &mdash; invisible.<br>
+        <strong style="color:var(--amber);">READ:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">ghost_encode.py</code> source &mdash; Understand the encoder, decoder stub, PowerShell compatibility layer.<br>
+        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">ghost_encode.py --test</code> &mdash; Generate a test payload. Open the .ps1 in Notepad. See nothing. Run it. See output.<br>
+        <strong style="color:var(--amber);">UNDERSTAND:</strong> Ghost hides the FILE from static scanners. Dark Room hides the RUNTIME from AMSI. Together = full chain. Ghost alone is not enough.<br>
+        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/ghost-encoder" style="color:var(--green);">ghost-encoder</a><br>
+        <span style="color:var(--dim);">WHY: The payload must survive on disk AND in memory. Ghost handles disk. Dark Room handles memory.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--amber); border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:var(--amber); font-size:0.7rem; letter-spacing:0.1em;">PHASE 4 // DAYS 10&ndash;12</span>
+        <span class="tag tag-msrc">EXPLOIT + PERSIST</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Execute the Kill Chain</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="dossier.html" style="color:var(--red);">dossier.html</a> &mdash; Operation Sandstorm. Full kill chain mapped to every tool. This is the attack plan.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Injection + Persistence sections &mdash; DLL injection via HWBP, CREATE_SUSPENDED, persistence x3.<br>
+        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">ghost_selftest.py</code> &mdash; Automated 21-test kill chain validation. Generates payload, starts C2, verifies shell+screencap+persistence, cleans up.<br>
+        <strong style="color:var(--amber);">RUN:</strong> Full manual chain: dark_room.exe &rarr; ghost .ps1 &rarr; C2 connection &rarr; screen capture &rarr; persistence verified.<br>
+        <strong style="color:var(--amber);">REPOS:</strong> <a href="https://github.com/rainfantry/vader-rootkit" style="color:var(--green);">vader-rootkit</a>, <a href="https://github.com/rainfantry/ghost-encoder" style="color:var(--green);">ghost-encoder</a><br>
+        <span style="color:var(--dim);">WHY: Proof. The chain either works or it doesn't. Self-test proves it. 21/21 PASS, 0 detections.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 5 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #ff2d8a; border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:#ff2d8a; font-size:0.7rem; letter-spacing:0.1em;">PHASE 5 // DAYS 13&ndash;15</span>
+        <span class="tag" style="background:#1a0a12; color:#ff2d8a; border:1px solid #2a0a1a;">CONCEAL</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Hide Everything</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="sithstalker.html" style="color:var(--cyan);">sithstalker.html</a> &rarr; Cloak sections &mdash; User-mode rootkit. NtQuery* hooks hide processes, files, connections from Task Manager, dir, netstat.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Anti-forensics &mdash; Timestamp manipulation, log clearing, artifact removal.<br>
+        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">cloak.dll</code> &mdash; Inline hooks on NtQuerySystemInformation, NtQueryDirectoryFile, NtDeviceIoControlFile.<br>
+        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">sw_sweep.exe</code> &mdash; Anti-forensics cleanup.<br>
+        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/sith-stalker" style="color:var(--green);">sith-stalker</a><br>
+        <span style="color:var(--dim);">WHY: Persistence means nothing if they can see you. Concealment is the difference between a rootkit and malware.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 6 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #b366ff; border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:#b366ff; font-size:0.7rem; letter-spacing:0.1em;">PHASE 6 // DAYS 16&ndash;18</span>
+        <span class="tag" style="background:#1a0a2a; color:#b366ff; border:1px solid #2a1a3a;">ADVANCED</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Go Deeper</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="reverseeng.html" style="color:#b366ff;">reverseeng.html</a> &mdash; Reverse engineering. Disassembly, debugging, understanding binaries you didn't write.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="fuzzer.html" style="color:var(--amber);">fuzzer.html</a> &mdash; Mutation-based fuzzing. How to find bugs in Defender's scan engine (mpengine.dll).<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="networking.html" style="color:var(--green);">networking.html</a> &mdash; Network fundamentals. TCP/IP, sockets, C2 communication architecture.<br>
+        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">vader-fuzz</code> &mdash; Run a 10K+ iteration fuzzing campaign against mpengine.dll. Watch it find crashes.<br>
+        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/vader-fuzz" style="color:var(--green);">vader-fuzz</a><br>
+        <span style="color:var(--dim);">WHY: Finding vulns in the defender's own engine is the endgame. Fuzzing is how you scale from manual to automated discovery.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 7 -->
+    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--red); border-radius:4px; padding:1rem 1.2rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <span style="color:var(--red); font-size:0.7rem; letter-spacing:0.1em;">PHASE 7 // DAYS 19&ndash;21</span>
+        <span class="tag tag-detected">MULTI-PLATFORM</span>
+      </div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Expand the Battlefield</div>
+      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
+        <strong style="color:var(--amber);">READ:</strong> <a href="starkiller.html" style="color:var(--red);">starkiller.html</a> &mdash; Android RAT. C2 server (Python) + client (Kotlin). 17 ops: camera, GPS, SMS, contacts, keylogger, mic, shell.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="skywalker.html" style="color:var(--amber);">skywalker.html</a> &mdash; Cold standby. Independent binary signatures. Activates when VADER burns.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="report.html" style="color:#ff2d8a;">report.html</a> &mdash; Book analysis. Academic framing of offensive research.<br>
+        <strong style="color:var(--amber);">RUN:</strong> Full RADON simulation &mdash; <a href="dossier.html" style="color:var(--red);">dossier.html</a> kill chain end-to-end on your own hardware.<br>
+        <span style="color:var(--dim);">WHY: Real operators don't stay on one platform. Windows + Android + backup kit = complete capability.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:1.5rem; padding:1rem; border:1px solid #1e1e1e; border-radius:4px; background:rgba(0,255,65,0.02);">
+    <p style="color:var(--muted); font-size:0.78rem; margin:0;">
+      <strong style="color:var(--green2);">Every repo link is live.</strong> Click into a repo, read the source, trace how the code works.
+      The portfolio pages explain the WHY. The source code shows the HOW. Read both.
+      Ghost encoding is in <a href="ghost.html" style="color:#00e5ff;">ghost.html</a> (Phase 3).
+      The full attack simulation is in <a href="dossier.html" style="color:var(--red);">dossier.html</a> (Phase 4).
+      Start at Phase 0. Don't skip.
+    </p>
+  </div>
+</section>
+
+<hr class="section-divider">
+
 <!-- ═══════ PROJECTS ═══════ -->
 <section id="projects">
   <div class="section-label">// REPOSITORIES</div>
