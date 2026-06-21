@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Wu | OPERATION SANDSTORM — RADON Engagement Dossier</title>
+<meta name="description" content="Operation Sandstorm — authorized penetration test dossier targeting RADON survey services. Full kill chain mapped to 22DIV offensive tools. CSEC research by George Wu.">
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rainfantry.github.io/dossier.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OPERATION SANDSTORM — RADON Engagement Dossier">
+<meta property="og:description" content="Authorized penetration test scenario — full kill chain mapped to 22DIV offensive security tools. CSEC cybersecurity research portfolio.">
+<meta property="og:url" content="https://rainfantry.github.io/dossier.html">
+<meta property="og:site_name" content="22DIV — George Wu">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a; --bg2: #111; --bg3: #1a1a1a;
+  --green: #00ff41; --green2: #33cc33; --green3: #00cc33;
+  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff;
+  --blue: #4488ff; --pink: #ff66aa;
+  --dim: #444; --muted: #888; --text: #ccc; --bright: #eee;
+  --mono: 'Cascadia Code','Consolas','Source Code Pro','Courier New',monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
+  pointer-events: none; z-index: 999;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* NAV */
+nav { border-bottom: 1px solid #1a1a1a; padding: 0.5rem 0; position: sticky; top: 0; z-index: 100; background: var(--bg); }
+nav .inner { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+nav .brand { color: var(--green); font-weight: 700; text-decoration: none; font-size: 0.9rem; letter-spacing: 0.1em; }
+nav a { color: var(--muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.06em; transition: color 0.2s; }
+nav a:hover { color: var(--green); }
+nav a.nav-active { color: var(--green); }
+.nav-links { display: flex; gap: 1.2rem; align-items: center; flex: 1; flex-wrap: wrap; }
+.hamburger { display: none; background: none; border: 1px solid var(--dim); color: var(--green); font-size: 1.2rem; padding: 0.2rem 0.6rem; cursor: pointer; border-radius: 3px; }
+@media (max-width: 700px) {
+  .hamburger { display: block; }
+  .nav-links { display: none; flex-direction: column; width: 100%; gap: 0.5rem; }
+  .nav-links.show { display: flex; }
+}
+
+/* HEADER */
+.hero {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 2rem;
+}
+.hero h1 { color: var(--green); font-size: 1.6rem; font-weight: 400; letter-spacing: 0.15em; margin-bottom: 0.3rem; }
+.hero .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.8rem; }
+.classification {
+  display: inline-block;
+  background: var(--bg3);
+  border: 1px solid var(--amber);
+  color: var(--amber);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* SECTION */
+.section { margin-bottom: 2.5rem; }
+.section h2 { color: var(--green); font-size: 1rem; font-weight: 400; letter-spacing: 0.12em; margin-bottom: 1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.4rem; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+th { text-align: left; color: var(--green2); font-weight: 400; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--bg3); letter-spacing: 0.05em; }
+td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #111; vertical-align: top; }
+td a { color: var(--cyan); text-decoration: none; }
+td a:hover { color: var(--green); }
+tr:hover td { background: rgba(0,255,65,0.02); }
+
+/* KILL CHAIN FLOW */
+.killchain { margin: 1rem 0; }
+.phase {
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-left: 3px solid var(--green);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.4rem;
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.phase:hover { border-left-color: var(--green); box-shadow: 0 0 15px rgba(0,255,65,0.04); }
+.phase.recon { border-left-color: var(--cyan); }
+.phase.weapon { border-left-color: var(--amber); }
+.phase.deliver { border-left-color: var(--pink); }
+.phase.exploit { border-left-color: var(--red); }
+.phase.install { border-left-color: var(--green); }
+.phase.c2 { border-left-color: var(--blue); }
+.phase.action { border-left-color: var(--amber); }
+.phase.cover { border-left-color: var(--dim); }
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+.phase-num {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.phase.recon .phase-num { background: rgba(0,229,255,0.1); color: var(--cyan); }
+.phase.weapon .phase-num { background: rgba(255,176,0,0.1); color: var(--amber); }
+.phase.deliver .phase-num { background: rgba(255,102,170,0.1); color: var(--pink); }
+.phase.exploit .phase-num { background: rgba(255,68,68,0.1); color: var(--red); }
+.phase.install .phase-num { background: rgba(0,255,65,0.1); color: var(--green); }
+.phase.c2 .phase-num { background: rgba(68,136,255,0.1); color: var(--blue); }
+.phase.action .phase-num { background: rgba(255,176,0,0.1); color: var(--amber); }
+.phase.cover .phase-num { background: rgba(68,68,68,0.15); color: var(--muted); }
+
+.phase-title { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; }
+.phase.recon .phase-title { color: var(--cyan); }
+.phase.weapon .phase-title { color: var(--amber); }
+.phase.deliver .phase-title { color: var(--pink); }
+.phase.exploit .phase-title { color: var(--red); }
+.phase.install .phase-title { color: var(--green); }
+.phase.c2 .phase-title { color: var(--blue); }
+.phase.action .phase-title { color: var(--amber); }
+.phase.cover .phase-title { color: var(--muted); }
+
+.phase-body { font-size: 0.78rem; color: var(--text); line-height: 1.5; }
+.phase-body .tool { color: var(--green2); font-weight: 700; }
+.phase-body .detail { color: var(--muted); margin-top: 0.3rem; }
+.phase-body ul { margin: 0.3rem 0 0 1.2rem; }
+.phase-body li { margin-bottom: 0.15rem; }
+
+.connector {
+  width: 2px;
+  height: 18px;
+  background: var(--bg3);
+  margin-left: 1.8rem;
+}
+
+/* STATUS BADGES */
+.badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  padding: 0.1rem 0.45rem;
+  border-radius: 2px;
+  font-weight: 700;
+}
+.badge-clean { background: rgba(0,255,65,0.12); color: var(--green); }
+.badge-bypass { background: rgba(255,176,0,0.12); color: var(--amber); }
+.badge-hidden { background: rgba(0,229,255,0.12); color: var(--cyan); }
+.badge-minimal { background: rgba(136,136,136,0.15); color: var(--muted); }
+.badge-egress { background: rgba(255,68,68,0.12); color: var(--red); }
+.badge-pass { background: rgba(0,255,65,0.12); color: var(--green); }
+.badge-filed { background: rgba(68,136,255,0.12); color: var(--blue); }
+
+/* EVIDENCE GRID */
+.evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+@media (max-width: 650px) { .evidence-grid { grid-template-columns: 1fr; } }
+.evidence-card {
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+}
+.evidence-card .label { color: var(--muted); font-size: 0.7rem; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+.evidence-card .value { color: var(--green); font-size: 1rem; font-weight: 700; }
+.evidence-card .note { color: var(--dim); font-size: 0.7rem; margin-top: 0.2rem; }
+
+/* FOOTER */
+footer { border-top: 1px solid #1a1a1a; padding: 2rem 0; text-align: center; color: var(--muted); font-size: 0.8rem; }
+footer a { color: var(--green3); text-decoration: none; }
+footer a:hover { color: var(--green); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <button class="hamburger" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">home</a>
+      <a href="rootkit.html">VADER</a>
+      <a href="sithstalker.html">sith stalker</a>
+      <a href="skywalker.html">skywalker</a>
+      <a href="starkiller.html">starkiller</a>
+      <a href="ghost.html">ghost</a>
+      <a href="dossier.html" class="nav-active">dossier</a>
+      <a href="journal.html">journal</a>
+      <a href="books.html">field manual</a>
+      <a href="csec.html">kill chain</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ═══════ HEADER ═══════ -->
+<div class="hero">
+  <h1>// OPERATION SANDSTORM</h1>
+  <div class="sub">RADON Engagement Dossier &mdash; authorized penetration test scenario &mdash; CSEC research</div>
+  <div class="classification">22DIV // OFFICIAL &mdash; AUTHORIZED ASSESSMENT ONLY</div>
+</div>
+
+<!-- ═══════ TARGET PROFILE ═══════ -->
+<div class="section">
+  <h2>// TARGET PROFILE</h2>
+  <table>
+    <tr><th style="width:30%;">Field</th><th>Value</th></tr>
+    <tr><td style="color:var(--muted);">Target</td><td>Radon Survey Services (surveying company)</td></tr>
+    <tr><td style="color:var(--muted);">Primary OS</td><td>Windows 11 Home Build 26200.8655</td></tr>
+    <tr><td style="color:var(--muted);">User Account</td><td>Standard (no admin privileges)</td></tr>
+    <tr><td style="color:var(--muted);">Antivirus</td><td>Windows Defender &mdash; RTP <span style="color:var(--green);">ON</span>, Tamper Protection <span style="color:var(--red);">OFF</span>, HVCI <span style="color:var(--green);">ACTIVE</span></td></tr>
+    <tr><td style="color:var(--muted);">Access Vector</td><td>Physical proximity (USB delivery) or social engineering (email/download)</td></tr>
+    <tr><td style="color:var(--muted);">Objective</td><td style="color:var(--amber);">Establish persistent C2 with screen capture capability</td></tr>
+  </table>
+</div>
+
+<!-- ═══════ KILL CHAIN ═══════ -->
+<div class="section">
+  <h2>// KILL CHAIN &mdash; MAPPED TO TOOLS</h2>
+
+  <div class="killchain">
+
+    <!-- PHASE 1: RECON -->
+    <div class="phase recon">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 1</span>
+        <span class="phase-title">RECON</span>
+      </div>
+      <div class="phase-body">
+        <div><span class="tool">vader_recon.ps1</span></div>
+        <div class="detail">Map Defender version, RTP status, exclusions, scheduled scans. Output: target profile for tailored payload generation.</div>
+      </div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- PHASE 2: WEAPONIZE -->
+    <div class="phase weapon">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 2</span>
+        <span class="phase-title">WEAPONIZE</span>
+      </div>
+      <div class="phase-body">
+        <div><span class="tool">ghost_encode.py --vader</span></div>
+        <div class="detail">Generate ghost-encoded VADER payload via zero-width Unicode steganography. Payload appears as blank file, renders as ??????? in PowerShell cat. Invisible to static analysis.</div>
+        <div style="margin-top:0.4rem;"><span class="tool">dark_room.exe</span> &mdash; secondary AMSI/ETW bypass layer for runtime protection.</div>
+      </div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- PHASE 3: DELIVER -->
+    <div class="phase deliver">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 3</span>
+        <span class="phase-title">DELIVER</span>
+      </div>
+      <div class="phase-body">
+        <div>Four delivery vectors available:</div>
+        <ul>
+          <li><span class="tool">dropper.exe</span> &mdash; USB drop. C binary, runs ghost .ps1 hidden.</li>
+          <li><span class="tool">.hta wrapper</span> &mdash; Email. HTML Application, auto-executes PowerShell.</li>
+          <li><span class="tool">.lnk shortcut</span> &mdash; Disguised as PDF/document. Double-click triggers chain.</li>
+          <li><span class="tool">.bat wrapper</span> &mdash; Chains dark_room + ghost decode + iex.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- PHASE 4: EXPLOIT -->
+    <div class="phase exploit">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 4</span>
+        <span class="phase-title">EXPLOIT</span>
+      </div>
+      <div class="phase-body">
+        <div><span class="tool">dark_room.exe</span> blinds two critical defenses:</div>
+        <ul>
+          <li>AMSI &mdash; DR0 hardware breakpoint on <code style="color:var(--red);">AmsiScanBuffer</code></li>
+          <li>ETW &mdash; DR1 hardware breakpoint on <code style="color:var(--red);">EtwEventWrite</code></li>
+        </ul>
+        <div class="detail">Ghost .ps1 decodes invisible payload in memory via <code style="color:var(--amber);">iex</code>. No file written to disk.</div>
+      </div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- PHASE 5: INSTALL -->
+    <div class="phase install">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 5</span>
+        <span class="phase-title">INSTALL (PERSISTENCE x3)</span>
+      </div>
+      <div class="phase-body">
+        <div>Three independent persistence mechanisms:</div>
+        <ul>
+          <li><code style="color:var(--green);">HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code> &rarr; SecurityHealthSystray</li>
+          <li>Startup folder &rarr; <code style="color:var(--green);">WindowsSecurityHealth.lnk</code></li>
+          <li>AppData ghost.ps1 copy &mdash; auto-reconnect on reboot</li>
+        </ul>
+      </div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- PHASE 6: C2 -->
+    <div class="phase c2">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 6</span>
+        <span class="phase-title">C2</span>
+      </div>
+      <div class="phase-body">
+        <div><span class="tool">vader_listener.py</span> &mdash; reverse TCP shell</div>
+        <ul>
+          <li>Auto-reconnect with 5&ndash;30s jitter</li>
+          <li>Shell commands: full PowerShell access</li>
+          <li>Screen capture: GDI CopyFromScreen &rarr; JPEG &rarr; base64 over TCP</li>
+        </ul>
+      </div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- PHASE 7: ACTIONS ON OBJECTIVE -->
+    <div class="phase action">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 7</span>
+        <span class="phase-title">ACTIONS ON OBJECTIVE</span>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>Screen surveillance (<code style="color:var(--amber);">screen</code> command)</li>
+          <li>File exfiltration (<code style="color:var(--amber);">type</code>/<code style="color:var(--amber);">copy</code> commands)</li>
+          <li>Credential harvesting (registry, browser stores)</li>
+          <li>Lateral movement (if network access available)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="connector"></div>
+
+    <!-- PHASE 8: COVER -->
+    <div class="phase cover">
+      <div class="phase-header">
+        <span class="phase-num">PHASE 8</span>
+        <span class="phase-title">COVER</span>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li><span class="tool">vader_clean.exe</span> &mdash; 5-phase wipe + self-delete (anti-forensics)</li>
+          <li><span class="tool">cloak.dll</span> &mdash; hide process, files, connections from Task Manager / dir / netstat</li>
+          <li><span class="tool">mutate.py</span> &mdash; rotate XOR keys, recompile unique children (signature mutation)</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ ARSENAL INVENTORY ═══════ -->
+<div class="section">
+  <h2>// ARSENAL INVENTORY</h2>
+  <table>
+    <tr><th>Tool</th><th>Repo</th><th>Purpose</th><th>Defender</th></tr>
+    <tr>
+      <td style="color:var(--green);">vader_shell.exe</td>
+      <td>vader-rootkit</td>
+      <td>Reverse TCP shell &mdash; C2 agent</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_listener.py</td>
+      <td>vader-rootkit</td>
+      <td>C2 listener &mdash; shell + screen capture</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_recon.ps1</td>
+      <td>vader-rootkit</td>
+      <td>Defender reconnaissance scanner</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--red);">dark_room.exe</td>
+      <td>vader-rootkit</td>
+      <td>AMSI/ETW bypass (HWBP on AmsiScanBuffer + EtwEventWrite)</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_inject.exe</td>
+      <td>vader-rootkit</td>
+      <td>Process injection (HWBP all threads)</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_inject.dll</td>
+      <td>vader-rootkit</td>
+      <td>Injection payload DLL</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_stager.exe</td>
+      <td>vader-rootkit</td>
+      <td>HTTP payload stager</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_serve.py</td>
+      <td>vader-rootkit</td>
+      <td>HTTP payload delivery server</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_clean.exe</td>
+      <td>vader-rootkit</td>
+      <td>Anti-forensics &mdash; 5-phase wipe + self-delete</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_persist.exe</td>
+      <td>vader-rootkit</td>
+      <td>Kernel persistence via DKOM</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">dropper.exe</td>
+      <td>vader-rootkit</td>
+      <td>USB delivery &mdash; silent ghost .ps1 execution</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">cloak.dll</td>
+      <td>vader-rootkit</td>
+      <td>User-mode concealment (process/file/connection hiding)</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">byovd.exe</td>
+      <td>vader-rootkit</td>
+      <td>BYOVD driver loader (RTCore64 exploit)</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--cyan);">sith_stalker.exe</td>
+      <td>sith-stalker</td>
+      <td>Indirect syscall engine &mdash; Hell's Gate / Halo's Gate</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--cyan);">sith_stalker.dll</td>
+      <td>sith-stalker</td>
+      <td>Syscall stub library (MASM)</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--cyan);">conceal.dll</td>
+      <td>sith-stalker</td>
+      <td>Process/file/connection hiding via syscall-level hooks</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">skywalker_shell.exe</td>
+      <td>skywalker</td>
+      <td>Cold standby C2 agent &mdash; independent signatures</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--amber);">skywalker_listener.py</td>
+      <td>skywalker</td>
+      <td>Cold standby C2 listener</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--red);">starkiller_c2.py</td>
+      <td>starkiller</td>
+      <td>Android RAT C2 server + web dashboard</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--red);">starkiller.apk</td>
+      <td>starkiller</td>
+      <td>Android RAT client (Kotlin)</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--pink);">ghost_encode.py</td>
+      <td>ghost-encoder</td>
+      <td>Zero-width Unicode steganographic encoder</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--pink);">ghost_decode.py</td>
+      <td>ghost-encoder</td>
+      <td>Ghost payload decoder</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">mutate.py</td>
+      <td>vader-rootkit</td>
+      <td>Polymorphic mutation &mdash; XOR key rotation + recompile</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">metamorph.py</td>
+      <td>vader-rootkit</td>
+      <td>Metamorphic engine &mdash; instruction substitution</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+    <tr>
+      <td style="color:var(--green);">vader_evolve.py</td>
+      <td>vader-rootkit</td>
+      <td>Evolutionary pipeline &mdash; auto-mutate + test + select</td>
+      <td><span class="badge badge-clean">CLEAN</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════ DETECTION PROFILE ═══════ -->
+<div class="section">
+  <h2>// DETECTION PROFILE</h2>
+  <table>
+    <tr><th>Detection Layer</th><th>Status</th><th>Technique</th></tr>
+    <tr>
+      <td>Static signature scan</td>
+      <td><span class="badge badge-clean">ALL CLEAN</span></td>
+      <td>XOR obfuscation, no known signatures, polymorphic mutation</td>
+    </tr>
+    <tr>
+      <td>AMSI runtime</td>
+      <td><span class="badge badge-bypass">BYPASSED</span></td>
+      <td>Hardware breakpoint (DR0) on AmsiScanBuffer &mdash; MSRC VULN-195458</td>
+    </tr>
+    <tr>
+      <td>ETW telemetry</td>
+      <td><span class="badge badge-bypass">BYPASSED</span></td>
+      <td>Hardware breakpoint (DR1) on EtwEventWrite &mdash; same HWBP blind spot</td>
+    </tr>
+    <tr>
+      <td>Behavioral detection</td>
+      <td><span class="badge badge-minimal">MINIMAL</span></td>
+      <td>All API calls are legitimate (CreateToolhelp32Snapshot, SetThreadContext). No suspicious patterns.</td>
+    </tr>
+    <tr>
+      <td>Network</td>
+      <td><span class="badge badge-egress">TCP EGRESS</span></td>
+      <td>Reverse TCP shell on configurable port. Jittered reconnect (5&ndash;30s).</td>
+    </tr>
+    <tr>
+      <td>User-mode hooks</td>
+      <td><span class="badge badge-bypass">BYPASSED</span></td>
+      <td>Indirect syscalls via SithStalker (Hell's Gate / Halo's Gate)</td>
+    </tr>
+    <tr>
+      <td>Kernel visibility</td>
+      <td><span class="badge badge-hidden">HIDDEN</span></td>
+      <td>BYOVD (RTCore64) + DKOM &mdash; process unlisted from kernel structures</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══════ TESTED EVIDENCE ═══════ -->
+<div class="section">
+  <h2>// TESTED EVIDENCE</h2>
+  <div class="evidence-grid">
+    <div class="evidence-card">
+      <div class="label">GHOST SELF-TEST</div>
+      <div class="value">21/21 <span class="badge badge-pass">PASS</span></div>
+      <div class="note">all encode/decode/inject cycles verified</div>
+    </div>
+    <div class="evidence-card">
+      <div class="label">DEFENDER SCAN</div>
+      <div class="value" style="color:var(--green);">0 DETECTIONS</div>
+      <div class="note">all components scanned &mdash; zero flagged</div>
+    </div>
+    <div class="evidence-card">
+      <div class="label">C2 CONNECTION</div>
+      <div class="value" style="color:var(--blue);">VERIFIED</div>
+      <div class="note">reverse TCP shell confirmed on localhost</div>
+    </div>
+    <div class="evidence-card">
+      <div class="label">SCREEN CAPTURE</div>
+      <div class="value" style="color:var(--amber);">227 KB</div>
+      <div class="note">JPEG captured via GDI CopyFromScreen</div>
+    </div>
+    <div class="evidence-card">
+      <div class="label">PERSISTENCE</div>
+      <div class="value">3 METHODS</div>
+      <div class="note">registry + startup folder + AppData &mdash; all verified and cleaned</div>
+    </div>
+    <div class="evidence-card">
+      <div class="label">MSRC DISCLOSURE</div>
+      <div class="value" style="color:var(--blue);"><span class="badge badge-filed">FILED</span> VULN-195458</div>
+      <div class="note">HWBP blind spot &mdash; acknowledged, won't fix</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <div>george wu / 22DIV &mdash; VADER</div>
+  <div style="margin-top:0.5rem; font-size:0.75rem;">
+    <a href="https://github.com/rainfantry/vader-rootkit" style="color:#33cc33;">vader-rootkit</a> &middot;
+    <a href="https://github.com/rainfantry/sith-stalker" style="color:#00e5ff;">sith-stalker</a> &middot;
+    <a href="https://github.com/rainfantry/skywalker" style="color:#ffb000;">skywalker</a> &middot;
+    <a href="https://github.com/rainfantry/starkiller" style="color:#ff4444;">starkiller</a> &middot;
+    <a href="https://github.com/rainfantry/rainfantry.github.io" style="color:#666;">site source</a>
+  </div>
+  <div style="margin-top:0.4rem; font-size:0.7rem;">MSRC disclosure: VULN-195458 (HWBP blind spot &mdash; acknowledged, won't fix)</div>
+  <div style="margin-top:0.4rem; opacity:0.4;">Authorized assessment on own hardware only. Responsible disclosure via MSRC.</div>
+</footer>
+
+<script>
+document.getElementById('navToggle')?.addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('show');
+});
+</script>
+</body>
+</html>

@@ -123,6 +123,8 @@ footer a:hover { color: var(--green); }
       <a href="sithstalker.html">sith stalker</a>
       <a href="skywalker.html">skywalker</a>
       <a href="starkiller.html">starkiller</a>
+      <a href="ghost.html" class="nav-green">ghost</a>
+      <a href="dossier.html">dossier</a>
       <a href="journal.html">journal</a>
       <a href="books.html">field manual</a>
       <a href="csec.html">kill chain</a>
@@ -165,6 +167,18 @@ footer a:hover { color: var(--green); }
       <div class="card-desc">Android RAT &mdash; Python C2 server + Kotlin client. 15 operations: camera, mic, GPS, SMS, keylogger, file exfil, shell exec. Obfuscation pipeline + APK binder.</div>
       <div class="card-meta">3,255+ LOC &middot; Python &middot; Kotlin</div>
     </a>
+    <a href="ghost.html" class="card" style="border-color:#0a3a3a;">
+      <div class="card-title" style="color:var(--cyan);">GHOST ENCODER</div>
+      <div class="card-sub">rainfantry/ghost-encoder</div>
+      <div class="card-desc">Unicode steganographic payload encoder &mdash; 16 zero-width characters as hex alphabet. Files appear blank in editors, ??????? in PowerShell. Invisible to AV static analysis. Decoder reconstructs payload in memory.</div>
+      <div class="card-meta">490+ LOC &middot; Python &middot; Defender: 0/0 &middot; VirusTotal: 0/72</div>
+    </a>
+    <a href="dossier.html" class="card" style="border-color:#1a0a0a;">
+      <div class="card-title" style="color:var(--red);">ATTACK DOSSIER</div>
+      <div class="card-sub">Operation Sandstorm &mdash; RADON engagement</div>
+      <div class="card-desc">Complete attack scenario mapping all 22DIV tools to a real target profile. Kill chain phases, delivery methods, persistence, C2, evasion. Self-tested 21/21 on own hardware.</div>
+      <div class="card-meta">CSEC Research &middot; Authorized Assessment Only</div>
+    </a>
   </div>
 </div>
 
@@ -185,6 +199,8 @@ footer a:hover { color: var(--green); }
     <tr><td><a href="books.html">books.html</a></td><td>Field manual &mdash; 22 chapters, heap to post-exploitation</td></tr>
     <tr><td><a href="report.html">report.html</a></td><td>Book report &mdash; ASF social engineering &times; rootkit kill chain</td></tr>
     <tr><td><a href="journal.html">journal.html</a></td><td>OFFSEC journal &mdash; engagement logs, research notes</td></tr>
+    <tr><td><a href="ghost.html">ghost.html</a></td><td>Ghost encoder &mdash; Unicode steganographic payload delivery</td></tr>
+    <tr><td><a href="dossier.html">dossier.html</a></td><td>Attack dossier &mdash; RADON engagement scenario with full kill chain</td></tr>
     <tr><td><a href="arsenal.html">arsenal.html</a></td><td>This page &mdash; master navigation map</td></tr>
   </table>
 </div>
@@ -204,6 +220,8 @@ footer a:hover { color: var(--green); }
     <tr><td>CODE_WALKTHROUGH.md</td><td>each repo</td><td>Annotated source code tours</td></tr>
     <tr><td>HANDOFF.md</td><td>vader-rootkit</td><td>Radon engagement intelligence &mdash; 7 vectors tested</td></tr>
     <tr><td>OPERATIONS_MANUAL.md</td><td>vader-rootkit</td><td>Operational procedures and protocols</td></tr>
+    <tr><td>GHOST_RESEARCH.md</td><td>ghost-encoder</td><td>Unicode steganography research &mdash; Israeli technique analysis</td></tr>
+    <tr><td>ghost_selftest.py</td><td>ghost-encoder</td><td>Automated dropper chain self-test &mdash; 21/21 verified</td></tr>
   </table>
 </div>
 
@@ -228,6 +246,8 @@ footer a:hover { color: var(--green); }
     <span class="file">|</span>
 <span class="dir">PHASE 8</span>  Kernel Persist     <span class="tag">byovd.exe + vader_persist.exe (DKOM via RTCore64)</span>
     <span class="file">|</span>
+<span class="dir">PHASE 9</span>  Ghost Encoding     <span class="tag">ghost_encode.py (zero-width Unicode steganography)</span>
+    <span class="file">|</span>
 <span class="dir">META  </span>  Mutation Pipeline   <span class="tag">mutate.py + metamorph.py + vader_evolve.py</span></div>
 </div>
 
@@ -240,6 +260,8 @@ footer a:hover { color: var(--green); }
     <tr><td style="color:var(--amber);">8080</td><td>HTTP payload server</td><td>vader_serve.py</td></tr>
     <tr><td style="color:var(--red);">8666</td><td>StarKiller C2 dashboard</td><td>starkiller_c2.py</td></tr>
     <tr><td style="color:var(--red);">8667</td><td>StarKiller agent listener</td><td>starkiller_c2.py</td></tr>
+    <tr><td style="color:var(--cyan);">8666</td><td>VADER web dashboard</td><td>vader_ui.py</td></tr>
+    <tr><td style="color:var(--cyan);">44444</td><td>Ghost self-test listener</td><td>ghost_selftest.py</td></tr>
   </table>
 </div>
 
@@ -252,6 +274,7 @@ footer a:hover { color: var(--green); }
     <tr><td><a href="https://github.com/rainfantry/sith-stalker">sith-stalker</a></td><td>PRIVATE</td><td style="color:var(--green);">ACTIVE</td></tr>
     <tr><td><a href="https://github.com/rainfantry/skywalker">skywalker</a></td><td>PRIVATE</td><td style="color:var(--amber);">STANDBY</td></tr>
     <tr><td><a href="https://github.com/rainfantry/starkiller">starkiller</a></td><td>PRIVATE</td><td style="color:var(--amber);">PHASE 1</td></tr>
+    <tr><td><a href="https://github.com/rainfantry/ghost-encoder">ghost-encoder</a></td><td>PRIVATE</td><td style="color:var(--green);">ACTIVE</td></tr>
     <tr><td><a href="https://github.com/rainfantry/22div-arsenal">22div-arsenal</a></td><td>PRIVATE</td><td style="color:var(--green);">INDEX</td></tr>
     <tr><td><a href="https://github.com/rainfantry/rainfantry.github.io">rainfantry.github.io</a></td><td>PUBLIC</td><td style="color:var(--green);">LIVE</td></tr>
   </table>
