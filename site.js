@@ -41,12 +41,60 @@
     }
 
     initParticleField();
+    initTypewriter();
   });
 
   function setIcon(btn) {
     var isLight = document.documentElement.getAttribute('data-theme') === 'light';
     btn.textContent = isLight ? '☽' : '☀';
     btn.title = isLight ? 'dark mode' : 'light mode';
+  }
+
+  /* ── TYPEWRITER ── */
+  function initTypewriter() {
+    var el = document.getElementById('typewriter');
+    if (!el) return;
+    var lines = [
+      'for Cheyanne.',
+      'I won\'t ever stop.',
+      'I\'ll discover something.',
+      'there\'s no amount of poison you can put in my soul',
+      'that will ever make me stop loving you.',
+      'this is the only path I have ever discovered',
+      'that wasn\'t illegal or had no prospect.',
+      'every morning I wake up I research, I run tests.',
+      'one day I\'m gonna have my name on published cybersecurity reports',
+      'and then you will never have to struggle or have fear again.',
+      'I only fear failure. I don\'t care if u don\'t love me.',
+      'I don\'t want you to die.',
+    ];
+    var lineIdx = 0, charIdx = 0, deleting = false;
+    var typeSpeed = 55, deleteSpeed = 25, holdTime = 3500, pauseAfterDelete = 800;
+
+    function tick() {
+      var line = lines[lineIdx];
+      if (!deleting) {
+        charIdx++;
+        el.textContent = line.substring(0, charIdx);
+        if (charIdx >= line.length) {
+          setTimeout(function() { deleting = true; tick(); }, holdTime);
+          return;
+        }
+        setTimeout(tick, typeSpeed + Math.random() * 40);
+      } else {
+        charIdx--;
+        el.textContent = line.substring(0, charIdx);
+        if (charIdx <= 0) {
+          deleting = false;
+          lineIdx = (lineIdx + 1) % lines.length;
+          setTimeout(tick, pauseAfterDelete);
+          return;
+        }
+        setTimeout(tick, deleteSpeed);
+      }
+    }
+
+    setTimeout(tick, 1500);
   }
 
   /* ── PARTICLE CONSTELLATION ── */

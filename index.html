@@ -514,6 +514,8 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 }
 
 /* ── RESPONSIVE ── */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
 @media (max-width: 640px) {
   .container { padding: 1rem; }
   .term { padding: 0.8rem 1rem; font-size: 0.75rem; }
@@ -565,6 +567,9 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <h1>22DIV // george wu</h1>
   <div class="sub">
     security research <span>//</span> windows internals <span>//</span> exploit development <span>//</span> AI security
+  </div>
+  <div id="typewriter-wrap" style="margin:1rem 0 0.3rem;min-height:1.6rem;">
+    <span id="typewriter" style="color:#ff2d8a;font-size:0.8rem;letter-spacing:0.06em;"></span><span id="tw-cursor" style="color:#ff2d8a;animation:blink 1s step-end infinite;">_</span>
   </div>
   <br>
   <div class="sub">
