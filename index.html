@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>George Wu | Exploit Research &amp; Cybersecurity Portfolio — 22DIV</title>
-<meta name="description" content="George Wu — hobbyist security researcher and exploit developer. TOCTOU vulnerability research, Windows Defender exploitation, AMSI bypass, red team tooling. Sydney, Australia.">
-<meta name="keywords" content="George Wu, cybersecurity, exploit development, TOCTOU, Windows Defender, vulnerability research, red team, offensive security, penetration testing, Sydney, GeoDefend, 22DIV">
+<title>George Wu | Security Research &amp; Vulnerability Disclosure — 22DIV</title>
+<meta name="description" content="George Wu — cybersecurity researcher. Windows privilege escalation research, responsible disclosure via MSRC/MITRE, defensive tooling. Sydney, Australia.">
+<meta name="keywords" content="George Wu, cybersecurity, security research, TOCTOU, Windows Defender, vulnerability research, privilege escalation, responsible disclosure, Sydney, GeoDefend, 22DIV">
 <meta name="author" content="George Wu">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://rainfantry.github.io/">
@@ -26,8 +26,8 @@
     "name": "George Wu",
     "alternateName": "VADER",
     "url": "https://rainfantry.github.io",
-    "jobTitle": "Hobbyist Security Researcher",
-    "knowsAbout": ["Exploit Development", "Windows Internals", "TOCTOU Vulnerabilities", "Reverse Engineering", "Penetration Testing", "Red Team Operations", "AMSI Bypass", "Process Injection"],
+    "jobTitle": "Security Researcher",
+    "knowsAbout": ["Windows Internals", "TOCTOU Vulnerabilities", "Reverse Engineering", "Privilege Escalation Research", "Vulnerability Disclosure", "Defensive Tooling", "AI Security Research"],
     "sameAs": ["https://github.com/rainfantry"],
     "address": {
       "@type": "PostalAddress",
@@ -538,22 +538,15 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
       <a href="index.html">home</a>
       <a href="#projects">projects</a>
       <a href="journal.html">journal</a>
-      <a href="rootkit.html" class="nav-blue">VADER</a>
-      <a href="sithstalker.html" class="nav-cyan">sith stalker</a>
-      <a href="skywalker.html" class="nav-yellow">skywalker</a>
-      <a href="starkiller.html" class="nav-red">starkiller</a>
-      <a href="ghost.html" class="nav-green">ghost</a>
       <a href="dossier.html">dossier</a>
       <a href="guide.html">guide</a>
       <span class="sep">|</span>
       <a href="networking.html" class="nav-green">networking</a>
-      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
       <a href="books.html" class="nav-red">field manual</a>
-      <a href="csec.html" class="nav-red">kill chain</a>
+      <a href="csec.html" class="nav-cyan">csec</a>
       <a href="defender.html" class="nav-cyan">DEFENDER</a>
       <a href="reverseeng.html" class="nav-purple">reverse eng</a>
       <a href="report.html" class="nav-pink">book report</a>
-      <a href="arsenal.html" class="nav-green">arsenal</a>
       <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
     </div>
   </div>
@@ -566,7 +559,7 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
 <div class="header">
   <h1>22DIV // george wu</h1>
   <div class="sub">
-    security research <span>//</span> windows internals <span>//</span> exploit development <span>//</span> AI security
+    security research <span>//</span> windows internals <span>//</span> responsible disclosure <span>//</span> AI security
   </div>
   <div id="typewriter-wrap" style="margin:1rem 0 0.3rem;min-height:1.6rem;">
     <span id="typewriter" style="color:#ff2d8a;font-size:0.8rem;letter-spacing:0.06em;"></span><span id="tw-cursor" style="color:#ff2d8a;animation:blink 1s step-end infinite;">_</span>
@@ -574,16 +567,15 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <br>
   <div class="sub">
     Cybersecurity researcher. Cert IV IT Programming. Sydney.
-    Windows exploit development, AMSI/ETW bypass research, privilege escalation,
-    AI-augmented offensive tooling. MSRC case filed. Three CVE submissions ready.
-    Everything here was built from first principles against live defenses on my own hardware.
+    Windows security research, privilege escalation analysis, responsible disclosure via MSRC and MITRE.
+    MSRC case filed. CVE submissions in progress.
+    All research conducted on personally-owned hardware.
   </div>
   <div class="stats-row" style="margin-top:1.2rem;">
-    <div class="stat"><span class="num">53</span><span class="label">FINDINGS</span></div>
-    <div class="stat"><span class="num">14</span><span class="label">ENGAGEMENTS</span></div>
-    <div class="stat"><span class="num">3</span><span class="label">CVE READY</span></div>
-    <div class="stat"><span class="num">8</span><span class="label">TOOLS BUILT</span></div>
-    <div class="stat"><span class="num">0</span><span class="label">DETECTIONS</span></div>
+    <div class="stat"><span class="num">50+</span><span class="label">FINDINGS</span></div>
+    <div class="stat"><span class="num">3</span><span class="label">CVE SUBMISSIONS</span></div>
+    <div class="stat"><span class="num">1</span><span class="label">MSRC CASE</span></div>
+    <div class="stat"><span class="num">TAFE</span><span class="label">CERT IV IT</span></div>
   </div>
 </div>
 
@@ -629,101 +621,64 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     <!-- PHASE 2 -->
     <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--red); border-radius:4px; padding:1rem 1.2rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:var(--red); font-size:0.7rem; letter-spacing:0.1em;">PHASE 2 // DAYS 5&ndash;7</span>
-        <span class="tag tag-detected">WEAPONIZE</span>
+        <span style="color:var(--red); font-size:0.7rem; letter-spacing:0.1em;">PHASE 2 // DAYS 5&ndash;8</span>
+        <span class="tag tag-msrc">DOCUMENT</span>
       </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Build the Blindfold</div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Write the Report</div>
       <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Dark Room section &mdash; AMSI/ETW bypass theory. Hardware breakpoints. Why memory patching dies and HWBP survives.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="sithstalker.html" style="color:var(--cyan);">sithstalker.html</a> &rarr; Gate Engines &mdash; Indirect syscalls. DJB2 hashing. XOR encryption. How to call NT functions without the API.<br>
-        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">dark_room.exe</code> &mdash; Compile the AMSI+ETW bypass. Read every line of dark_room.c.<br>
-        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">gate_v2</code> &mdash; Compile the indirect syscall engine. Read gate_v2.c + gate_stub_v2.asm.<br>
-        <strong style="color:var(--amber);">REPOS:</strong> <a href="https://github.com/rainfantry/vader-rootkit" style="color:var(--green);">vader-rootkit</a>, <a href="https://github.com/rainfantry/sith-stalker" style="color:var(--green);">sith-stalker</a><br>
-        <span style="color:var(--dim);">WHY: AMSI and ETW are the two eyes. Dark Room blinds both. Indirect syscalls hide HOW you call the OS.</span>
+        <strong style="color:var(--amber);">READ:</strong> <a href="reverseeng.html" style="color:#b366ff;">reverseeng.html</a> &mdash; Reverse engineering. Understand binaries you didn't write. Essential for root-cause analysis.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="networking.html" style="color:var(--green);">networking.html</a> &mdash; Network fundamentals. Required for understanding impact scope of service vulnerabilities.<br>
+        <strong style="color:var(--amber);">DO:</strong> Write a vulnerability report for every confirmed finding. CWE classification, reproduction steps, CVSS score, impact analysis.<br>
+        <strong style="color:var(--amber);">FORMAT:</strong> Each report needs: summary, affected component, reproduction steps, evidence (screenshots/logs), recommended fix.<br>
+        <span style="color:var(--dim);">WHY: An unwritten finding doesn't exist. MSRC and MITRE need evidence-grade documentation. If you can't write it clearly, you don't understand it yet.</span>
       </div>
     </div>
 
     <!-- PHASE 3 -->
     <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #00e5ff; border-radius:4px; padding:1rem 1.2rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:#00e5ff; font-size:0.7rem; letter-spacing:0.1em;">PHASE 3 // DAYS 8&ndash;9</span>
-        <span class="tag" style="background:#0a1a1a; color:#00e5ff; border:1px solid #003a3a;">DELIVER</span>
+        <span style="color:#00e5ff; font-size:0.7rem; letter-spacing:0.1em;">PHASE 3 // DAYS 9&ndash;12</span>
+        <span class="tag" style="background:#0a1a1a; color:#00e5ff; border:1px solid #003a3a;">DISCLOSE</span>
       </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Steganographic Delivery</div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Submit and Disclose</div>
       <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="ghost.html" style="color:#00e5ff;">ghost.html</a> &mdash; Unicode zero-width steganography. 16 invisible characters as a hex alphabet. Not obfuscation &mdash; invisible.<br>
-        <strong style="color:var(--amber);">READ:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">ghost_encode.py</code> source &mdash; Understand the encoder, decoder stub, PowerShell compatibility layer.<br>
-        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">ghost_encode.py --test</code> &mdash; Generate a test payload. Open the .ps1 in Notepad. See nothing. Run it. See output.<br>
-        <strong style="color:var(--amber);">UNDERSTAND:</strong> Ghost hides the FILE from static scanners. Dark Room hides the RUNTIME from AMSI. Together = full chain. Ghost alone is not enough.<br>
-        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/ghost-encoder" style="color:var(--green);">ghost-encoder</a><br>
-        <span style="color:var(--dim);">WHY: The payload must survive on disk AND in memory. Ghost handles disk. Dark Room handles memory.</span>
+        <strong style="color:var(--amber);">READ:</strong> Microsoft's <a href="https://www.microsoft.com/msrc/windows-security-servicing-criteria" style="color:var(--cyan);">security servicing criteria</a> &mdash; know what they classify as a vulnerability before you submit.<br>
+        <strong style="color:var(--amber);">READ:</strong> <a href="https://www.microsoft.com/en-us/msrc/aibugbar" style="color:var(--cyan);">MSRC AI Bug Bar</a> &mdash; AI security boundaries, what qualifies as CRITICAL vs. informational.<br>
+        <strong style="color:var(--amber);">DO:</strong> Submit third-party vendor findings to MITRE CVE. Submit first-party Microsoft findings to MSRC.<br>
+        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/vader-msrc-disclosure" style="color:var(--green);">vader-msrc-disclosure</a> &mdash; disclosure tracking and coordinated timeline management.<br>
+        <span style="color:var(--dim);">WHY: Research has no value until it reaches the vendor. The disclosure process is where the work becomes real.</span>
       </div>
     </div>
 
     <!-- PHASE 4 -->
     <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--amber); border-radius:4px; padding:1rem 1.2rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:var(--amber); font-size:0.7rem; letter-spacing:0.1em;">PHASE 4 // DAYS 10&ndash;12</span>
-        <span class="tag tag-msrc">EXPLOIT + PERSIST</span>
+        <span style="color:var(--amber); font-size:0.7rem; letter-spacing:0.1em;">PHASE 4 // DAYS 13&ndash;16</span>
+        <span class="tag tag-built">BUILD DEFENSIVE</span>
       </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Execute the Kill Chain</div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Build the Detector</div>
       <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="dossier.html" style="color:var(--red);">dossier.html</a> &mdash; Operation Sandstorm. Full kill chain mapped to every tool. This is the attack plan.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Injection + Persistence sections &mdash; DLL injection via HWBP, CREATE_SUSPENDED, persistence x3.<br>
-        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">ghost_selftest.py</code> &mdash; Automated 21-test kill chain validation. Generates payload, starts C2, verifies shell+screencap+persistence, cleans up.<br>
-        <strong style="color:var(--amber);">RUN:</strong> Full manual chain: dark_room.exe &rarr; ghost .ps1 &rarr; C2 connection &rarr; screen capture &rarr; persistence verified.<br>
-        <strong style="color:var(--amber);">REPOS:</strong> <a href="https://github.com/rainfantry/vader-rootkit" style="color:var(--green);">vader-rootkit</a>, <a href="https://github.com/rainfantry/ghost-encoder" style="color:var(--green);">ghost-encoder</a><br>
-        <span style="color:var(--dim);">WHY: Proof. The chain either works or it doesn't. Self-test proves it. 21/21 PASS, 0 detections.</span>
+        <strong style="color:var(--amber);">READ:</strong> <a href="guide.html" style="color:var(--green);">guide.html</a> &mdash; Detection logic. How to translate an attack vector into a scanner rule.<br>
+        <strong style="color:var(--amber);">BUILD:</strong> <a href="https://github.com/rainfantry/geodefend" style="color:var(--cyan);">GeoDefend</a> &mdash; mobile dashboard that surfaces Defender detections and privilege escalation indicators.<br>
+        <strong style="color:var(--amber);">BUILD:</strong> <a href="https://github.com/rainfantry/vader-hunt" style="color:var(--green);">vader-hunt</a> &mdash; audit scanner: writable service binaries, phantom DLLs, PATH hijacks. Turns attack vectors into detection rules.<br>
+        <strong style="color:var(--amber);">PRINCIPLE:</strong> Every attack vector you understand becomes a detector you can build. Offense informs defense.<br>
+        <span style="color:var(--dim);">WHY: GeoDefend cannot detect a privilege escalation vector you don't understand mechanically. Build the detector to prove you understand the attack.</span>
       </div>
     </div>
 
     <!-- PHASE 5 -->
     <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #ff2d8a; border-radius:4px; padding:1rem 1.2rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:#ff2d8a; font-size:0.7rem; letter-spacing:0.1em;">PHASE 5 // DAYS 13&ndash;15</span>
-        <span class="tag" style="background:#1a0a12; color:#ff2d8a; border:1px solid #2a0a1a;">CONCEAL</span>
+        <span style="color:#ff2d8a; font-size:0.7rem; letter-spacing:0.1em;">PHASE 5 // DAYS 17&ndash;21</span>
+        <span class="tag" style="background:#1a0a12; color:#ff2d8a; border:1px solid #2a0a1a;">AI SECURITY</span>
       </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Hide Everything</div>
+      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">AI Attack Surfaces</div>
       <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="sithstalker.html" style="color:var(--cyan);">sithstalker.html</a> &rarr; Cloak sections &mdash; User-mode rootkit. NtQuery* hooks hide processes, files, connections from Task Manager, dir, netstat.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Anti-forensics &mdash; Timestamp manipulation, log clearing, artifact removal.<br>
-        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">cloak.dll</code> &mdash; Inline hooks on NtQuerySystemInformation, NtQueryDirectoryFile, NtDeviceIoControlFile.<br>
-        <strong style="color:var(--amber);">BUILD:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">sw_sweep.exe</code> &mdash; Anti-forensics cleanup.<br>
-        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/sith-stalker" style="color:var(--green);">sith-stalker</a><br>
-        <span style="color:var(--dim);">WHY: Persistence means nothing if they can see you. Concealment is the difference between a rootkit and malware.</span>
-      </div>
-    </div>
-
-    <!-- PHASE 6 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #b366ff; border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:#b366ff; font-size:0.7rem; letter-spacing:0.1em;">PHASE 6 // DAYS 16&ndash;18</span>
-        <span class="tag" style="background:#1a0a2a; color:#b366ff; border:1px solid #2a1a3a;">ADVANCED</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Go Deeper</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="reverseeng.html" style="color:#b366ff;">reverseeng.html</a> &mdash; Reverse engineering. Disassembly, debugging, understanding binaries you didn't write.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="fuzzer.html" style="color:var(--amber);">fuzzer.html</a> &mdash; Mutation-based fuzzing. How to find bugs in Defender's scan engine (mpengine.dll).<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="networking.html" style="color:var(--green);">networking.html</a> &mdash; Network fundamentals. TCP/IP, sockets, C2 communication architecture.<br>
-        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">vader-fuzz</code> &mdash; Run a 10K+ iteration fuzzing campaign against mpengine.dll. Watch it find crashes.<br>
-        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/vader-fuzz" style="color:var(--green);">vader-fuzz</a><br>
-        <span style="color:var(--dim);">WHY: Finding vulns in the defender's own engine is the endgame. Fuzzing is how you scale from manual to automated discovery.</span>
-      </div>
-    </div>
-
-    <!-- PHASE 7 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--red); border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:var(--red); font-size:0.7rem; letter-spacing:0.1em;">PHASE 7 // DAYS 19&ndash;21</span>
-        <span class="tag tag-detected">MULTI-PLATFORM</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Expand the Battlefield</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="starkiller.html" style="color:var(--red);">starkiller.html</a> &mdash; Android RAT. C2 server (Python) + client (Kotlin). 17 ops: camera, GPS, SMS, contacts, keylogger, mic, shell.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="skywalker.html" style="color:var(--amber);">skywalker.html</a> &mdash; Cold standby. Independent binary signatures. Activates when VADER burns.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="report.html" style="color:#ff2d8a;">report.html</a> &mdash; Book analysis. Academic framing of offensive research.<br>
-        <strong style="color:var(--amber);">RUN:</strong> Full RADON simulation &mdash; <a href="dossier.html" style="color:var(--red);">dossier.html</a> kill chain end-to-end on your own hardware.<br>
-        <span style="color:var(--dim);">WHY: Real operators don't stay on one platform. Windows + Android + backup kit = complete capability.</span>
+        <strong style="color:var(--amber);">READ:</strong> <a href="report.html" style="color:#ff2d8a;">report.html</a> &mdash; Academic framing of security research methodology.<br>
+        <strong style="color:var(--amber);">READ:</strong> MSRC's AI Bug Bar &mdash; prompt injection, cross-user data exfiltration, model theft classifications.<br>
+        <strong style="color:var(--amber);">RESEARCH:</strong> Microsoft Copilot indirect prompt injection vectors &mdash; document injection, email injection, web injection.<br>
+        <strong style="color:var(--amber);">TARGET:</strong> Cross-user data exfiltration via injected instructions = CRITICAL severity under Microsoft's AI bug classification.<br>
+        <span style="color:var(--dim);">WHY: The same methodology that maps Windows attack surfaces applies to AI systems. Different primitives, same thinking.</span>
       </div>
     </div>
 
@@ -733,8 +688,8 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     <p style="color:var(--muted); font-size:0.78rem; margin:0;">
       <strong style="color:var(--green2);">Every repo link is live.</strong> Click into a repo, read the source, trace how the code works.
       The portfolio pages explain the WHY. The source code shows the HOW. Read both.
-      Ghost encoding is in <a href="ghost.html" style="color:#00e5ff;">ghost.html</a> (Phase 3).
-      The full attack simulation is in <a href="dossier.html" style="color:var(--red);">dossier.html</a> (Phase 4).
+      Defender architecture is in <a href="defender.html" style="color:var(--cyan);">defender.html</a> (Phase 0).
+      Disclosure documentation is in <a href="dossier.html" style="color:var(--amber);">dossier.html</a> (Phase 3).
       Start at Phase 0. Don't skip.
     </p>
   </div>
@@ -747,107 +702,38 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <div class="section-label">// REPOSITORIES</div>
   <h2 style="color:var(--amber); font-size:1.1rem; font-weight:400; margin-bottom:1rem;">projects</h2>
 
-  <h3 style="color:var(--red); font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin-bottom:0.8rem;">OFFENSIVE SECURITY</h3>
+  <h3 style="color:var(--cyan); font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin-bottom:0.8rem;">SECURITY RESEARCH</h3>
   <div class="projects-grid">
     <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-rootkit">vader-rootkit</a></h3>
-      <div class="card-desc">Full rootkit kill chain &mdash; 11 phases, 19 engagements, 70 findings. AMSI/ETW bypass via hardware breakpoints, CWE-732/CWE-427 privesc, DLL injection, HTTP stager, 17-op C2 agent, BYOVD kernel persistence, metamorphic engine. 80 binaries, 0 Defender detections. <a href="rootkit.html" style="color:var(--green);">&rarr; Full documentation</a></div>
+      <h3><a href="https://github.com/rainfantry/vader-hunt">vader-hunt</a></h3>
+      <div class="card-desc">Automated privilege escalation audit scanner. Enumerates 300+ SYSTEM services for misconfigurations: writable service binaries, unquoted paths, phantom DLLs, PATH hijacks. Discovered NativePushService CWE-732 and ClickToRunSvc phantom DLL during research.</div>
       <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
+        <span class="card-lang lang-ps">PowerShell</span>
+        <span class="card-tag card-tag-sec">AUDIT</span>
       </div>
     </div>
     <div class="project-card">
       <h3><a href="https://github.com/rainfantry/vader-toctou">vader-toctou</a></h3>
-      <div class="card-desc">TOCTOU race condition research against Windows Defender's quarantine pipeline. 35 commits, 30 findings. Mapped WdFilter.sys architecture completely &mdash; cached FILE_OBJECT, NTFS File ID identity gate. The wall held. The research documented why.</div>
+      <div class="card-desc">TOCTOU race condition research against Windows Defender's quarantine pipeline. 35 commits, 30 findings. Fully mapped WdFilter.sys architecture &mdash; cached FILE_OBJECT model, NTFS File ID identity gate. Documented why the architecture is robust.</div>
       <div class="card-meta">
         <span class="card-lang lang-c">C</span>
         <span class="card-lang lang-ps">PowerShell</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-prime">vader-prime</a></h3>
-      <div class="card-desc">cldflt.sys race exploitation framework. Two novel payload chains &mdash; Print Processor registration and IFEO debugger hijack &mdash; built on CfAbortHydration race primitive. Standard user to SYSTEM via arbitrary registry ACL write.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
+        <span class="card-tag card-tag-sec">RESEARCH</span>
       </div>
     </div>
     <div class="project-card">
       <h3><a href="https://github.com/rainfantry/vader-fuzz">vader-fuzz</a></h3>
-      <div class="card-desc">Mutation-based fuzzer targeting mpengine.dll (Defender's scan engine). 20 mutation strategies, 4 parallel workers, 100K+ iterations. Differential mode compares engine versions for regression bugs.</div>
+      <div class="card-desc">Mutation-based fuzzer targeting mpengine.dll (Defender's scan engine) for memory corruption bugs suitable for MSRC submission. 20 mutation strategies, 4 parallel workers, 100K+ iterations. Differential mode compares engine versions.</div>
       <div class="card-meta">
         <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-rce">vader-rce</a></h3>
-      <div class="card-desc">Remote Code Execution research &mdash; exploit development framework for Windows services. CVE analysis, exploit primitives, and proof-of-concept chains. <a href="books.html" style="color:var(--cyan);">&rarr; VADER-RCE Manual</a></div>
-      <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-hunt">vader-hunt</a></h3>
-      <div class="card-desc">Automated privilege escalation hunter. Scans 300+ SYSTEM services for misconfigurations: writable binaries, unquoted paths, phantom DLLs, PATH hijacks. Discovered NativePushService CWE-732 and ClickToRunSvc phantom DLL.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-ps">PowerShell</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-palace">vader-palace</a></h3>
-      <div class="card-desc">C2 infrastructure &mdash; palace server architecture for VADER agent communication. Multi-tenant listener, encrypted channels, agent heartbeat management.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-library">vader-library</a></h3>
-      <div class="card-desc">Shared components across VADER ecosystem. Common crypto, encoding, network primitives, and Windows API wrappers. Reusable by all VADER projects.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
+        <span class="card-tag card-tag-sec">RESEARCH</span>
       </div>
     </div>
     <div class="project-card">
       <h3><a href="https://github.com/rainfantry/vader-msrc-disclosure">vader-msrc-disclosure</a></h3>
-      <div class="card-desc">MSRC case tracking and vulnerability disclosure documentation. Coordinated disclosure timelines, vendor communications, and public advisory management.</div>
+      <div class="card-desc">MSRC and MITRE CVE case tracking. Coordinated disclosure timelines, vendor communications, embargo management, and public advisory documentation. Houses all submission evidence and correspondence.</div>
       <div class="card-meta">
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/sith-stalker">sith-stalker</a></h3>
-      <div class="card-desc">Indirect syscall engine + concealment framework. 13 Nt* functions resolved via DJB2/XOR-encrypted hashes. User-mode rootkit: process/file/connection hiding via NtQuery* hooks. Kernel DKOM via BYOVD (CVE-2019-16098). RTCore64.sys driver for kernel memory access. <a href="sithstalker.html" style="color:var(--cyan);">&rarr; Full documentation</a></div>
-      <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-lang" style="--dot-color:#6E5494;">ASM</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/skywalker">skywalker</a></h3>
-      <div class="card-desc">Cold standby fork of VADER. Same kill chain, completely independent binary signatures. 18 binaries, 0 detections. Indirect syscall gate (Hell's Gate + Halo's Gate) with SDBM hash + ADD offset encryption. Activates when VADER burns or parallel ops required. <a href="skywalker.html" style="color:var(--amber);">&rarr; Full documentation</a></div>
-      <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/starkiller">starkiller</a></h3>
-      <div class="card-desc">Android RAT &mdash; Python C2 + Kotlin client. 17 ops: camera, GPS, SMS, contacts, keylogger, mic, shell. XOR+Base64 obfuscation, ProGuard, APK binder. VADER protocol compatible. Phase 1 complete. <a href="starkiller.html" style="color:var(--red);">&rarr; Full documentation</a></div>
-      <div class="card-meta">
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-lang" style="--dot-color:#A97BFF;">Kotlin</span>
-        <span class="card-tag card-tag-sec">SECURITY</span>
+        <span class="card-tag card-tag-sec">DISCLOSURE</span>
       </div>
     </div>
   </div>
@@ -915,16 +801,16 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
       </ul>
     </div>
     <div class="skill-block">
-      <h4>OFFENSIVE SECURITY</h4>
+      <h4>WINDOWS SECURITY</h4>
       <ul>
-        <li>AMSI / ETW bypass</li>
         <li>Privilege escalation (LPE)</li>
         <li>DLL hijacking / phantom DLL</li>
-        <li>Process injection (HWBP)</li>
         <li>TOCTOU race conditions</li>
-        <li>Indirect syscalls</li>
-        <li>Reflective PE loading</li>
-        <li>Anti-forensics</li>
+        <li>Service misconfiguration (CWE-732)</li>
+        <li>PATH injection (CWE-426/427)</li>
+        <li>Vulnerability disclosure (MSRC/MITRE)</li>
+        <li>CVSS scoring</li>
+        <li>Responsible disclosure</li>
       </ul>
     </div>
     <div class="skill-block">
@@ -1014,16 +900,14 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     </p>
   </div>
 
-  <div class="term" data-title="classification">
+  <div class="term" data-title="research status">
 <span class="out">CLASSIFICATION:  UNCLASSIFIED // ACADEMIC USE ONLY</span>
-<span class="out">OPERATOR:        VADER (george wu / 22DIV)</span>
-<span class="out">AUTHORISATION:   CSEC academic research, own hardware</span>
-<span class="out">                  <span class="out-green">ISRAELI CYBER SQUAD — SPECIAL OPERATIONS VALIDATED</span></span>
-<span class="out">                  <span class="out-amber">Cleared for: Red Team Operations, APT Simulation, Evasion Research</span></span>
-<span class="out">DISCLOSURE:      Responsible disclosure via MSRC</span>
-<span class="out">MSRC CASE:       <span class="out-red">VULN-195458 (REJECTED — not a security boundary)</span></span>
-<span class="out">FINDINGS:        70+ (30 TOCTOU + 40 rootkit/privesc/injection)</span>
-<span class="out">PIVOT:           <span class="out-cyan">AI vulnerability research (prompt injection, Copilot)</span></span>
+<span class="out">RESEARCHER:      George Wu / 22DIV — Sydney, Australia</span>
+<span class="out">AUTHORISATION:   TAFE Cert IV IT — CSEC coursework, own hardware</span>
+<span class="out">DISCLOSURE:      Responsible disclosure via MSRC / MITRE CVE</span>
+<span class="out">MSRC CASE:       <span class="out-amber">VULN-195458 (reviewed — not a security boundary per MS criteria)</span></span>
+<span class="out">FINDINGS:        50+ across Windows privilege escalation research</span>
+<span class="out">CURRENT PIVOT:   <span class="out-cyan">AI vulnerability research (prompt injection, Copilot)</span></span>
   </div>
 </section>
 
@@ -1506,195 +1390,103 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   <table class="status-table">
     <thead>
       <tr>
-        <th>phase</th>
-        <th>component</th>
+        <th>finding</th>
+        <th>vulnerability</th>
         <th>status</th>
         <th>notes</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td style="color:var(--dim)">0</td>
-        <td>C2 infrastructure</td>
-        <td><span class="tag tag-built">BUILT</span></td>
-        <td style="color:var(--dim)">XOR-obfuscated reverse shell, automated listener</td>
+        <td style="color:var(--dim)">#36</td>
+        <td>HWBP tamper protection bypass (AMSI+ETW via DR0/DR1)</td>
+        <td><span class="tag tag-detected">REVIEWED</span></td>
+        <td style="color:var(--dim)">MSRC VULN-195458 — not a security boundary per servicing criteria. Embargo void. Technique documented.</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">1</td>
-        <td>AMSI bypass</td>
-        <td><span class="tag tag-confirmed">PUBLIC</span></td>
-        <td style="color:var(--dim)">HWBP on AmsiScanBuffer — MSRC rejected, technique published</td>
+        <td style="color:var(--dim)">#42</td>
+        <td>CWE-732 — service binary replacement (Wondershare NativePushService)</td>
+        <td><span class="tag tag-msrc">CVE SUBMISSION</span></td>
+        <td style="color:var(--dim)">Standard user to SYSTEM. CVSS 7.8. MITRE submission in progress.</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">2</td>
-        <td>ETW bypass</td>
-        <td><span class="tag tag-confirmed">PUBLIC</span></td>
-        <td style="color:var(--dim)">HWBP on NtTraceEvent — MSRC rejected, technique published</td>
+        <td style="color:var(--dim)">#47</td>
+        <td>CWE-427 — phantom DLL via ClickToRunSvc (osppc.dll)</td>
+        <td><span class="tag tag-msrc">MSRC SUBMISSION</span></td>
+        <td style="color:var(--dim)">First-party Microsoft service. User-writable PATH fills missing DLL. SYSTEM privilege. Highest-value finding.</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">1+2</td>
-        <td>Dark room</td>
-        <td><span class="tag tag-confirmed">PUBLIC</span></td>
-        <td style="color:var(--dim)">Combined AMSI+ETW HWBP bypass — not a security boundary</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">3a</td>
-        <td>Privesc: service binary</td>
-        <td><span class="tag tag-system">SYSTEM</span></td>
-        <td style="color:var(--dim)">CWE-732, binary replacement, SYSTEM canary fired</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">3b</td>
-        <td>Privesc: PATH injection</td>
+        <td style="color:var(--dim)">#49</td>
+        <td>CWE-426 — user-writable directories in machine-level SYSTEM PATH</td>
         <td><span class="tag tag-msrc">CVE PENDING</span></td>
-        <td style="color:var(--dim)">CWE-426, canaries planted, awaiting reboot proof</td>
+        <td style="color:var(--dim)">Third-party installers created systemic privesc vector. Canary-tested. Vendor disclosure in progress.</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">3d</td>
-        <td>Privesc: phantom DLL</td>
-        <td><span class="tag tag-system">SYSTEM</span></td>
-        <td style="color:var(--dim)">CWE-427, osppc.dll via ClickToRunSvc. First-party MS service. Highest-value finding.</td>
+        <td style="color:var(--dim)">TOCTOU</td>
+        <td>Defender quarantine pipeline race condition research</td>
+        <td><span class="tag tag-confirmed">DOCUMENTED</span></td>
+        <td style="color:var(--dim)">35 commits, 30 findings. WdFilter.sys architecture fully mapped. Identity gate architecturally sound.</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">3c</td>
-        <td>Privesc: VADER-PRIME</td>
-        <td><span class="tag tag-built">COMPILED</span></td>
-        <td style="color:var(--dim)">cldflt race + print processor / IFEO chains</td>
+        <td style="color:var(--dim)">FUZZ</td>
+        <td>mpengine.dll mutation fuzzing campaign</td>
+        <td><span class="tag tag-built">ACTIVE</span></td>
+        <td style="color:var(--dim)">100K+ iterations, 20 mutation strategies, 4 workers. Targeting memory corruption for MSRC submission.</td>
       </tr>
       <tr>
-        <td style="color:var(--dim)">3+0</td>
-        <td>SYSTEM reverse shell</td>
-        <td><span class="tag tag-built">BUILT</span></td>
-        <td style="color:var(--dim)">Service replacement + C2 callback integrated</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">4</td>
-        <td>Process injection (HOTEL)</td>
-        <td><span class="tag tag-built">TESTED</span></td>
-        <td style="color:var(--dim)">DLL injection — PID attach + CREATE_SUSPENDED spawn. AMSI/ETW blind in target</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">5</td>
-        <td>HTTP stager (INDIA)</td>
-        <td><span class="tag tag-built">TESTED</span></td>
-        <td style="color:var(--dim)">WinHTTP dropper — fetch, decrypt, execute in memory. XOR 0x88</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">6</td>
-        <td>Anti-forensics (JULIET)</td>
-        <td><span class="tag tag-built">TESTED</span></td>
-        <td style="color:var(--dim)">Canary wipe, prefetch purge, USN journal flush, timestomp. XOR 0x93</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">&#8734;</td>
-        <td>Mutation pipeline</td>
-        <td><span class="tag tag-confirmed">ACTIVE</span></td>
-        <td style="color:var(--dim)">mutate.py — auto-rotate XOR keys, recompile all vectors. Signature-proof rebuild</td>
-      </tr>
-      <tr>
-        <td style="color:var(--amber)">II</td>
-        <td>SKYWALKER</td>
-        <td><span class="tag tag-confirmed">ARMED</span></td>
-        <td style="color:var(--dim)">Own gate engine (SDBM + ADD), 10/10 SSNs, CLEAN. Own C2 (eclipse), own injection (thread). Survives VADER burn</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">-</td>
-        <td>Recon package</td>
-        <td><span class="tag tag-built">TESTED</span></td>
-        <td style="color:var(--dim)">17-section USB-droppable reconnaissance</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">-</td>
-        <td>Detection scanner</td>
-        <td><span class="tag tag-confirmed">28/28 CLEAN</span></td>
-        <td style="color:var(--dim)">Automated MpCmdRun scan of all binaries — full evasion confirmed</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">-</td>
-        <td>Deploy automation</td>
-        <td><span class="tag tag-built">BUILT</span></td>
-        <td style="color:var(--dim)">Kill chain orchestrator: recon → dark room → privesc → C2</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">-</td>
-        <td>Quarantine architecture</td>
-        <td><span class="tag tag-confirmed">MAPPED</span></td>
-        <td style="color:var(--dim)">18 findings, dual-layer model, 9 defense layers documented</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">-</td>
-        <td>mpengine.dll fuzzing</td>
-        <td><span class="tag tag-msrc">ACTIVE</span></td>
-        <td style="color:var(--dim)">100K campaign, 4 parallel workers, 20 mutation strategies, 0 crashes</td>
+        <td style="color:var(--dim)">AI</td>
+        <td>Microsoft Copilot prompt injection research</td>
+        <td><span class="tag tag-built">IN PROGRESS</span></td>
+        <td style="color:var(--dim)">Cross-user data exfiltration vectors. M365 Developer sandbox setup pending.</td>
       </tr>
     </tbody>
   </table>
 
-  <h2 style="margin-top: 2.5rem;">defense analysis</h2>
+  <h2 style="margin-top: 2.5rem;">defender architecture findings</h2>
 
   <table class="status-table">
     <thead>
       <tr>
-        <th>defense layer</th>
-        <th>status</th>
+        <th>component</th>
         <th>finding</th>
+        <th>implication</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>AMSI tamper protection</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
-        <td style="color:var(--dim)">HWBP on AmsiScanBuffer — VULN-195458 rejected by MSRC</td>
+        <td>WdFilter quarantine pipeline</td>
+        <td style="color:var(--green)">ROBUST</td>
+        <td style="color:var(--dim)">Cached FILE_OBJECT + NTFS File ID identity gate. TOCTOU junction redirect architecturally blocked.</td>
       </tr>
       <tr>
-        <td>ETW process telemetry</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
-        <td style="color:var(--dim)">HWBP on NtTraceEvent — not a security boundary</td>
+        <td>Service binary ACLs (third-party)</td>
+        <td><span class="tag tag-detected">MISCONFIGURED</span></td>
+        <td style="color:var(--dim)">#42 CWE-732 — vendors installing services with user-writable binaries. Vendor disclosure pending.</td>
       </tr>
       <tr>
-        <td>Defender static analysis</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
-        <td style="color:var(--dim)">XOR string encoding</td>
+        <td>Machine-level SYSTEM PATH</td>
+        <td><span class="tag tag-detected">MISCONFIGURED</span></td>
+        <td style="color:var(--dim)">#49 CWE-426 — third-party installers adding user-owned directories to SYSTEM PATH.</td>
       </tr>
       <tr>
-        <td>Defender behavioral analysis</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">DEFEATED</span></td>
-        <td style="color:var(--dim)">HWBP avoids all known behavioral signatures</td>
+        <td>DLL search order (phantom DLL)</td>
+        <td><span class="tag tag-detected">MISCONFIGURED</span></td>
+        <td style="color:var(--dim)">#47 CWE-427 — Microsoft Office service loads non-existent DLL from user-writable PATH location.</td>
       </tr>
       <tr>
-        <td>Service binary ACLs</td>
-        <td><span class="tag tag-detected">BROKEN</span></td>
-        <td style="color:var(--dim)">#42 (CWE-732)</td>
+        <td>Debug register monitoring (DR0-DR7)</td>
+        <td style="color:var(--amber)">GAP DOCUMENTED</td>
+        <td style="color:var(--dim)">MSRC reviewed VULN-195458 — detection bypasses not a servicing boundary. Documented for enterprise awareness.</td>
       </tr>
       <tr>
-        <td>Manifest DLL hardening</td>
-        <td><span class="tag tag-confirmed" style="background:#002200">BYPASSED</span></td>
-        <td style="color:var(--dim)">#42 (binary replace)</td>
-      </tr>
-      <tr>
-        <td>UAC elevation prompt</td>
-        <td style="color:var(--dim)">NOT TRIGGERED</td>
-        <td style="color:var(--dim)">#42 (AppData path)</td>
-      </tr>
-      <tr>
-        <td>Code signing (SCM)</td>
-        <td style="color:var(--dim)">NOT ENFORCED</td>
-        <td style="color:var(--dim)">#42</td>
-      </tr>
-      <tr>
-        <td>SYSTEM PATH integrity</td>
-        <td><span class="tag tag-detected">BROKEN</span></td>
-        <td style="color:var(--dim)">#49 (CWE-426 — vendor disclosure pending)</td>
+        <td>Code signing enforcement (SCM)</td>
+        <td style="color:var(--amber)">NOT ENFORCED</td>
+        <td style="color:var(--dim)">Service Control Manager does not verify binary signatures on start. Relevant to #42.</td>
       </tr>
       <tr>
         <td>cldflt.sys race window</td>
-        <td><span class="tag tag-built">ARMED</span></td>
-        <td style="color:var(--dim)">VADER-PRIME (untested on Build 26200)</td>
-      </tr>
-      <tr>
-        <td>WdFilter quarantine</td>
-        <td style="color:var(--green)">HELD</td>
-        <td style="color:var(--dim)">30 findings, identity gate unbypassable</td>
+        <td style="color:var(--dim)">UNDER RESEARCH</td>
+        <td style="color:var(--dim)">CfAbortHydration race primitive documented by MiniPlasma. Novel payload chains under academic study.</td>
       </tr>
     </tbody>
   </table>
@@ -1721,63 +1513,104 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     </div>
   </div>
 
-  <div class="term" data-title="the flag" style="margin-top: 2rem;">
+  <div class="term" data-title="research summary" style="margin-top: 2rem;">
 <span class="out-amber">  OBJECTIVE:</span>
 <span class="out">  CVE with george wu's name on it. Security boundary crossing.</span>
 <span class="out">  Reported via MSRC/MITRE -> assigned -> credited.</span>
 <span class="out"></span>
-<span class="out-green">  KILL CHAIN COMPLETE — 7 PHASES OPERATIONAL</span>
-<span class="out-green">    Phase 0: C2 reverse shell (XOR-obfuscated)</span>
-<span class="out-green">    Phase 1: AMSI bypass (HWBP DR0)</span>
-<span class="out-green">    Phase 2: ETW bypass (HWBP DR1)</span>
-<span class="out-green">    Phase 3: Privilege escalation (4 vectors, 2 confirmed SYSTEM)</span>
-<span class="out-green">    Phase 4: Process injection (DLL inject, PID + SUSPENDED)</span>
-<span class="out-green">    Phase 5: HTTP stager (WinHTTP fetch/decrypt/execute)</span>
-<span class="out-green">    Phase 6: Anti-forensics (canary/prefetch/USN/timestomp)</span>
+<span class="out-green">  CONFIRMED FINDINGS:</span>
+<span class="out-green">    #42  CWE-732  NativePushService binary replacement -> SYSTEM</span>
+<span class="out-green">         CVSS 7.8 (High). MITRE CVE submission written.</span>
+<span class="out-green">    #47  CWE-427  Phantom DLL via ClickToRunSvc (osppc.dll) -> SYSTEM</span>
+<span class="out-green">         First-party MS service. MSRC HIGH. Submission in progress.</span>
+<span class="out-green">    #49  CWE-426  User-writable dirs in machine SYSTEM PATH</span>
+<span class="out-green">         Third-party installers. Canary-tested. Vendor disclosure pending.</span>
 <span class="out"></span>
-<span class="out-amber">  SYSTEM captured:  #42 Wondershare binary replacement (CWE-732)</span>
-<span class="out-amber">                    Canary fired. SYSTEM token. Elevated. Confirmed.</span>
-<span class="out-amber">  SYSTEM captured:  #47 Phantom DLL — osppc.dll via ClickToRunSvc (CWE-427)</span>
-<span class="out-amber">                    First-party MS service. User-writable PATH fills the void.</span>
+<span class="out-amber">  MSRC CASE:</span>
+<span class="out">    #36 -> VULN-195458  HWBP tamper bypass (AMSI+ETW via DR0/DR1)</span>
+<span class="out">    Reviewed. Not a security boundary per MS servicing criteria.</span>
+<span class="out">    Lesson: detection bypass != vulnerability. Technique documented.</span>
 <span class="out"></span>
-<span class="out-cyan">  SKYWALKER — ARMED. Own gate engine (SDBM + ADD offset).</span>
-<span class="out-cyan">    Own C2 (eclipse), own injection (thread hijack), own keys.</span>
-<span class="out-cyan">    10/10 SSNs resolved, Defender CLEAN. Survives total VADER burn.</span>
-<span class="out"></span>
-<span class="out-amber">  Mutation pipeline: mutate.py auto-rotates all XOR keys + recompiles.</span>
-<span class="out-amber">    Every build = unique signature. Defender can't pattern-match.</span>
-<span class="out"></span>
-<span class="out-red">  MSRC rejected:</span>
-<span class="out-red">    #36 -> VULN-195458  HWBP tamper bypass — "not a security boundary"</span>
-<span class="out-red">    Lesson: detection bypass ≠ vulnerability. Category was wrong.</span>
-<span class="out"></span>
-<span class="out-amber">  CVE submissions ready:</span>
-<span class="out-amber">    #42 -> MITRE  NativePushService LPE, CWE-732 — report written</span>
-<span class="out-amber">    #47 -> MSRC   Phantom DLL in ClickToRunSvc, CWE-427 — MSRC HIGH</span>
-<span class="out-amber">    #49 -> MITRE  PATH injection, CWE-426 — canary-tested, pending</span>
-<span class="out"></span>
-<span class="out-cyan">  New direction: AI vulnerability research</span>
+<span class="out-cyan">  RESEARCH PIVOT: AI vulnerability research</span>
 <span class="out-cyan">    Target: Microsoft Copilot indirect prompt injection</span>
 <span class="out-cyan">    Goal: cross-user data exfiltration = CRITICAL severity</span>
 <span class="out-cyan">    Surface: M365 Copilot, Azure AI, Copilot in Edge</span>
-<span class="out-cyan">    Same methodology. Right target category this time.</span>
+<span class="out-cyan">    Same methodology. Right target category.</span>
 <span class="out"></span>
-<span class="out-red">  Defeats acknowledged:</span>
-<span class="out">    vader-toctou: 35 commits, 30 findings, 0 shells.</span>
-<span class="out">    WdFilter identity gate: architecturally unbypassable.</span>
-<span class="out">    IKEEXT: uniformly hardened (LOAD_LIBRARY_SEARCH_SYSTEM32).</span>
-<span class="out">    VULN-195458: valid technique, wrong category. No CVE.</span>
+<span class="out">  Documented defeats:</span>
+<span class="out">    vader-toctou: 35 commits, 30 findings. WdFilter identity gate held.</span>
+<span class="out">    VULN-195458: technique valid, wrong category. Research documented.</span>
   </div>
 
   <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
-    53 findings across 14 engagements. One MSRC case filed and rejected. 7-phase kill chain from C2 to
-    anti-forensics — built, tested, Defender-invisible. Mutation pipeline rotates every signature automatically.
-    Three gate engines — SithStalker (DJB2), VADER (FNV-1a), Skywalker (SDBM) — zero shared byte patterns, all CLEAN.
-    Every technique built from scratch against live defenses. The wall held where it was supposed to.
-    Now targeting AI security boundaries — same methodology, right category.
+    50+ findings across Windows privilege escalation research. One MSRC case filed and reviewed.
+    Three CVE submissions in progress across CWE-732, CWE-427, and CWE-426.
+    Every technique built from scratch on personally-owned hardware.
+    The wall held where it was supposed to. Now targeting AI security boundaries.
   </p>
 </section>
 
+</div>
+
+<!-- ═══════ DEFENSIVE RECOMMENDATIONS ═══════ -->
+<div class="container">
+<section class="entry" id="defensive-recommendations">
+  <div class="entry-date">BASED ON RESEARCH FINDINGS // 2026</div>
+  <h2>protective recommendations</h2>
+
+  <p>These recommendations come directly from findings documented above. Not generic advice — specific mitigations for the exact attack surfaces this research mapped.</p>
+
+  <h3 style="color:var(--cyan); font-size:0.85rem; font-weight:600; margin:1.5rem 0 0.8rem;">For home users</h3>
+  <ul style="font-size:0.82rem; color:var(--muted); line-height:2; padding-left:1.2rem;">
+    <li>Audit third-party software you've installed. Many silently register services running as SYSTEM with weak binary permissions (CWE-732). Check with: <code style="color:var(--green); background:#001a00; padding:0.1rem 0.3rem; border-radius:2px;">icacls "C:\Program Files\[AppName]"</code></li>
+    <li>Review your system PATH for user-writable directories. Run <code style="color:var(--green); background:#001a00; padding:0.1rem 0.3rem; border-radius:2px;">$env:PATH -split ";"</code> and check each entry with <code style="color:var(--green); background:#001a00; padding:0.1rem 0.3rem; border-radius:2px;">icacls</code>. (CWE-426)</li>
+    <li>Keep Windows Defender's tamper protection enabled. It specifically exists to prevent runtime bypass of the scan engine.</li>
+    <li>Uninstall software you no longer use. Abandoned services with weak ACLs stay exploitable indefinitely.</li>
+  </ul>
+
+  <h3 style="color:var(--amber); font-size:0.85rem; font-weight:600; margin:1.5rem 0 0.8rem;">For companies</h3>
+  <ul style="font-size:0.82rem; color:var(--muted); line-height:2; padding-left:1.2rem;">
+    <li>Enforce application allowlisting (WDAC or AppLocker). This defeats most DLL hijacking and binary replacement vectors at the policy level, regardless of ACL misconfiguration.</li>
+    <li>Audit machine-level SYSTEM PATH entries after any software installation. Third-party installers frequently add user-writable paths without disclosure.</li>
+    <li>Enable Credential Guard on Windows 11 endpoints. Significantly raises the bar against in-memory credential attacks.</li>
+    <li>Monitor for debug register (DR0–DR7) modifications via ETW or EDR telemetry. Hardware breakpoint abuse is a documented bypass vector against AMSI/ETW hooks (see VULN-195458).</li>
+    <li>Enforce code signing for services via WDAC policy. The Service Control Manager does not verify binary signatures by default — this is the gap exploited by CWE-732 findings.</li>
+  </ul>
+</section>
+
+<!-- ═══════ ANTHROPIC CREDIT ═══════ -->
+<section class="entry" id="acknowledgements">
+  <div class="entry-date">RESEARCH METHODOLOGY</div>
+  <h2>acknowledgements</h2>
+
+  <div style="margin: 1.2rem 0; padding: 1rem; border-left: 2px solid var(--green3); background: rgba(0,255,65,0.02);">
+    <p style="color: var(--muted); font-size: 0.82rem; margin: 0 0 0.8rem;">
+      <strong style="color: var(--green2);">Claude (Anthropic)</strong> was the primary research tool throughout this program — not as a shortcut, but as a teacher.
+    </p>
+    <p style="color: var(--muted); font-size: 0.82rem; margin: 0 0 0.8rem;">
+      Windows internals documentation is sparse and often inaccessible to independent researchers without lab access or a university supervisor. When I needed to understand how WdFilter.sys caches FILE_OBJECTs, why the NTFS File ID identity gate is architecturally unbypassable, or what debug registers actually do at the CPU level — Claude explained the mechanism, corrected my misunderstandings, and helped me verify my reasoning before I wrote a single line.
+    </p>
+    <p style="color: var(--muted); font-size: 0.82rem; margin: 0 0 0.8rem;">
+      The rule throughout: <strong style="color:var(--bright);">no code ships that I can't explain line by line.</strong> Claude accelerates learning — it doesn't replace it. Everything here was built from first principles. The AI teaches. I build.
+    </p>
+    <p style="color: var(--muted); font-size: 0.82rem; margin: 0;">
+      Anthropic's willingness to engage seriously with technical security questions — treating me as a researcher rather than a risk — is what made this level of independent learning possible for a self-funded student. That matters, and it deserves to be said plainly.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════ CHEYANNE ═══════ -->
+<section class="entry" id="cheyanne">
+  <div class="entry-date">PERSONAL</div>
+  <h2>for cheyanne</h2>
+  <p style="color:var(--muted); font-size:0.85rem; max-width:60ch;">
+    You watched me disappear into this for months. Late nights, weird hours, a screen full of things you didn't ask about and I couldn't always explain. You never made me feel like it wasn't worth it.
+  </p>
+  <p style="color:var(--muted); font-size:0.85rem; max-width:60ch;">
+    It is worth it. And you're part of why.
+  </p>
+  <p style="color:var(--dim); font-size:0.78rem;">— George</p>
+</section>
 </div>
 
 <footer>
@@ -1788,13 +1621,12 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     <a href="mailto:gwu0738@gmail.com">gwu0738@gmail.com</a>
   </div>
   <div style="margin-top: 0.4rem; font-size: 0.75rem;">
-    <a href="https://github.com/rainfantry/vader-rootkit" style="color:#00cc33;">vader-rootkit</a> &middot;
-    <a href="https://github.com/rainfantry/sith-stalker" style="color:#00e5ff;">sith-stalker</a> &middot;
-    <a href="https://github.com/rainfantry/skywalker" style="color:#ffb000;">skywalker</a> &middot;
-    <a href="https://github.com/rainfantry/starkiller" style="color:#ff4444;">starkiller</a> &middot;
-    <a href="https://github.com/rainfantry/22div-arsenal" style="color:#888;">arsenal index</a>
+    <a href="https://github.com/rainfantry/geodefend" style="color:#00cc33;">geodefend</a> &middot;
+    <a href="https://github.com/rainfantry/vader-hunt" style="color:#00e5ff;">vader-hunt</a> &middot;
+    <a href="https://github.com/rainfantry/vader-toctou" style="color:#ffb000;">vader-toctou</a> &middot;
+    <a href="https://github.com/rainfantry/vader-msrc-disclosure" style="color:#888;">msrc disclosure</a>
   </div>
-  <div style="margin-top: 0.5rem; opacity: 0.4;">exploit development // windows internals // AI security // responsible disclosure</div>
+  <div style="margin-top: 0.5rem; opacity: 0.4;">windows internals // responsible disclosure // AI security // TAFE cert IV</div>
   <div style="margin-top: 0.3rem; opacity: 0.25; font-size: 0.7rem;">Sydney, Australia</div>
 </footer>
 
