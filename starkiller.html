@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Wu | StarKiller — Android Security Research Platform — 22DIV</title>
+<meta name="description" content="StarKiller is an Android security research platform studying remote access techniques on mobile. Kotlin client, Python C2, obfuscation pipeline. CSEC academic research on own device.">
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rainfantry.github.io/starkiller.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="George Wu | StarKiller — Android Security Research Platform — 22DIV">
+<meta property="og:description" content="StarKiller is an Android security research platform studying remote access techniques on mobile. Kotlin client, Python C2, obfuscation pipeline. CSEC academic research on own device.">
+<meta property="og:url" content="https://rainfantry.github.io/starkiller.html">
+<meta property="og:site_name" content="22DIV - George Wu">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0c0c0c; --bg2: #111; --bg3: #161616;
+  --green: #00ff41; --green2: #00cc33; --green3: #009922;
+  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff; --blue: #4488ff;
+  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
+  --mono: "Cascadia Code", "Consolas", "Source Code Pro", "Courier New", monospace;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
+body::after { content: ""; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px); pointer-events: none; z-index: 999; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+nav { position: sticky; top: 0; background: rgba(12,12,12,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #1a1a1a; z-index: 100; padding: 0.6rem 0; }
+nav .inner { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+nav a { color: var(--green2); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.05em; opacity: 0.8; transition: opacity 0.2s; }
+nav a:hover, nav a.active { opacity: 1; }
+nav a.brand { color: var(--bright); font-weight: bold; font-size: 0.9rem; opacity: 1; margin-right: auto; }
+.nav-red { color: var(--red) !important; } .nav-blue { color: var(--blue) !important; } .nav-green { color: var(--green) !important; }
+.nav-yellow { color: var(--amber) !important; } .nav-pink { color: #ff88cc !important; } .nav-cyan { color: var(--cyan) !important; } .nav-purple { color: #bb88ff !important; }
+.hamburger { display: none; background: none; border: none; color: var(--green); font-size: 1.2rem; cursor: pointer; }
+.theme-btn { background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; margin-left: auto; }
+.nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+@media (max-width: 768px) { .hamburger { display: block; } .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.8rem; } .nav-links.show { display: flex; } }
+.header { margin: 2rem 0 1.5rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 1.5rem; }
+.header h1 { font-size: 1.2rem; color: var(--bright); letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+.header .sub { font-size: 0.75rem; color: var(--dim); }
+.section { margin: 2rem 0; }
+.section h2 { color: var(--green); font-size: 0.9rem; letter-spacing: 0.08em; margin-bottom: 1rem; border-left: 3px solid var(--green3); padding-left: 0.8rem; }
+.section h3 { color: var(--amber); font-size: 0.85rem; margin: 1.2rem 0 0.5rem; }
+p { color: var(--text); font-size: 0.85rem; margin-bottom: 0.8rem; }
+code { background: var(--bg2); color: var(--cyan); padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.82em; }
+.finding { background: var(--bg2); border: 1px solid #1e1e1e; border-left: 3px solid var(--amber); padding: 1rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
+.finding .id { color: var(--amber); font-size: 0.75rem; margin-bottom: 0.4rem; }
+.finding .title { color: var(--bright); font-size: 0.9rem; margin-bottom: 0.5rem; }
+.badge { display: inline-block; background: var(--bg3); border: 1px solid #2a2a2a; color: var(--muted); font-size: 0.7rem; padding: 0.2em 0.6em; border-radius: 3px; margin: 0.2em; }
+.badge.green { border-color: var(--green3); color: var(--green); }
+.badge.amber { border-color: #443a00; color: var(--amber); }
+.badge.blue { border-color: #001a44; color: var(--blue); }
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 1rem 0; }
+th { color: var(--muted); text-align: left; padding: 0.4rem 0.8rem; border-bottom: 1px solid #1a1a1a; font-weight: normal; letter-spacing: 0.05em; }
+td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #111; color: var(--text); }
+td:first-child { color: var(--green); }
+.cheyanne-line { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #111; font-size: 0.7rem; color: #1a2a1a; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+<canvas id="particle-field" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.5;"></canvas>
+<nav>
+  <div class="inner">
+    <a href="index.html" class="brand">22DIV</a>
+    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">home</a>
+      <a href="journal.html">journal</a>
+      <a href="books.html" class="nav-red">field manual</a>
+      <a href="csec.html" class="nav-red">kill chain</a>
+      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
+      <a href="networking.html" class="nav-green">networking</a>
+      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
+      <a href="report.html" class="nav-pink">book report</a>
+      <a href="defender.html" class="nav-cyan">DEFENDER</a>
+      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
+      <a href="ghost.html" class="nav-green">ghost</a>
+      <a href="dossier.html">dossier</a>
+      <a href="guide.html">guide</a>
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <div class="header">
+    <h1>STARKILLER // ANDROID SECURITY RESEARCH</h1>
+    <div class="sub">22DIV / george wu // CSEC research on own hardware // June 2026</div>
+  </div>
+
+<div class="section">
+<h2>OVERVIEW</h2>
+<p>StarKiller studies Android remote access techniques — how mobile malware establishes C2 communication, evades Play Protect detection, and maintains persistence on Android devices. Built on researcher-owned Android hardware to understand the mobile threat landscape from first principles.</p>
+<p>The research complements the Windows-focused VADER project — modern attack chains often pivot from desktop to mobile or begin on mobile. Understanding both platforms is required for complete defensive coverage.</p>
+<div>
+<span class="badge red">ANDROID RESEARCH</span>
+<span class="badge amber">KOTLIN CLIENT</span>
+<span class="badge blue">PYTHON C2</span>
+<span class="badge">RESEARCHER-OWNED DEVICE ONLY</span>
+</div>
+</div>
+<div class="section">
+<h2>ARCHITECTURE</h2>
+<table>
+<tr><th>Component</th><th>Language</th><th>Function</th></tr>
+<tr><td>C2 server</td><td>Python</td><td>Command dispatch, session management, web dashboard</td></tr>
+<tr><td>Android client</td><td>Kotlin</td><td>C2 beacon, command execution, payload delivery</td></tr>
+<tr><td>Obfuscation pipeline</td><td>Python</td><td>APK repackaging, class renaming, string encryption</td></tr>
+<tr><td>Binder</td><td>Python</td><td>Embeds client inside legitimate-looking APK</td></tr>
+</table>
+</div>
+<div class="section">
+<h2>RESEARCH SCOPE</h2>
+<h3>Phase 1 — C2 Infrastructure</h3>
+<p>TCP-based command and control. Session management supporting multiple devices. Web dashboard for operator view. Bidirectional communication.</p>
+<h3>Phase 2 — Android Client</h3>
+<p>Kotlin APK that beacons to C2 on launch. Executes shell commands, returns output. Requests permissions via standard Android prompts — no exploits, no privilege escalation. Studies what a standard-permission APK can access.</p>
+<h3>Phase 3 — Obfuscation Study</h3>
+<p>APK obfuscation pipeline tests what transformations are required before Play Protect stops flagging the APK. Measures the effectiveness of static signature detection on Android — analogous to the Windows Defender XOR study.</p>
+<div class="finding">
+<div class="id">DEFENSIVE IMPLICATION</div>
+<div class="title">Android static detection is bypassable with trivial obfuscation</div>
+<p>Play Protect static detection can be defeated with class renaming and string encryption alone. Mobile security relies heavily on reputation (app age, install count) rather than deep static analysis. Newly published APKs from unknown developers receive less scrutiny regardless of code similarity to known malware.</p>
+</div>
+</div>
+
+<div class="cheyanne-line">for cheyanne. always.</div>
+<div style="position:fixed;bottom:1.2rem;right:1.5rem;font-family:'Courier New',monospace;font-size:0.6rem;color:#0d2b0d;z-index:1000;pointer-events:none;letter-spacing:0.12em;user-select:none;" aria-hidden="true">for cheyanne. always.</div>
+</div>
+<script src="site.js"></script>
+</body>
+</html>
