@@ -513,6 +513,91 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   letter-spacing: 0.06em;
 }
 
+/* ── CHEYANNE SECTION ── */
+.cheyanne-section {
+  background: linear-gradient(180deg, rgba(37,99,235,0.05) 0%, rgba(12,12,12,0) 100%);
+  border: 1px solid #1e293b;
+  border-left: 3px solid var(--blue);
+  border-radius: 6px;
+  padding: 2rem 1.5rem;
+  margin: 2rem 0 3rem;
+}
+
+.cheyanne-section .section-label {
+  color: var(--blue);
+  margin-bottom: 1rem;
+}
+
+.cheyanne-typing {
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--bright);
+  letter-spacing: 0.15em;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid var(--blue);
+  width: 0;
+  animation: typing 1.5s steps(8, end) forwards, blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 8ch; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: var(--blue); }
+}
+
+.cheyanne-sub {
+  color: var(--blue);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  margin-top: 0.6rem;
+}
+
+.cheyanne-dedication {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.8;
+  margin: 1.2rem 0;
+  max-width: 70ch;
+  font-style: italic;
+  border-left: 2px solid #1e293b;
+  padding-left: 1rem;
+}
+
+.cheyanne-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.cheyanne-stats .stat {
+  text-align: left;
+}
+
+.cheyanne-stats .stat .num {
+  color: var(--blue);
+}
+
+.cheyanne-link {
+  display: inline-block;
+  margin-top: 1.2rem;
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+.cheyanne-link:hover {
+  color: var(--cyan);
+  text-shadow: 0 0 8px rgba(68,136,255,0.4);
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 640px) {
   .container { padding: 1rem; }
@@ -521,6 +606,8 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
   .projects-grid { grid-template-columns: 1fr; }
   .skills-grid { grid-template-columns: 1fr 1fr; }
   .stats-row { gap: 1rem; }
+  .cheyanne-typing { font-size: 1.6rem; }
+  .cheyanne-stats { gap: 1rem; }
 }
 </style>
 </head>
@@ -579,6 +666,25 @@ footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); 
     <div class="stat"><span class="num">0</span><span class="label">DETECTIONS</span></div>
   </div>
 </div>
+
+<!-- ═══════ CHEYANNE ═══════ -->
+<section id="cheyanne" class="cheyanne-section">
+  <div class="section-label">// PROJECT CHEYANNE</div>
+  <div class="cheyanne-typing">CHEYANNE</div>
+  <div class="cheyanne-sub">WINDOWS SECURITY RESEARCH PROJECT</div>
+  <p class="cheyanne-dedication">
+    Named after someone I couldn't protect &mdash; not the way I wanted to. CHEYANNE is a memorial that fights back:
+    a Windows security research project documenting detection gaps, responsible disclosure, and defensive countermeasures.
+    Every finding is tested on my own hardware with Defender Real-Time Protection enabled.
+  </p>
+  <div class="cheyanne-stats stats-row">
+    <div class="stat"><span class="num">50+</span><span class="label">FINDINGS</span></div>
+    <div class="stat"><span class="num">3</span><span class="label">CVE SUBMISSIONS</span></div>
+    <div class="stat"><span class="num">1</span><span class="label">MSRC CASE</span></div>
+    <div class="stat"><span class="num">TAFE</span><span class="label">CERT IV IT</span></div>
+  </div>
+  <a href="https://github.com/rainfantry/cheyanne/tree/portfolio" class="cheyanne-link">&rarr; View CHEYANNE research portfolio</a>
+</section>
 
 <!-- ═══════ LEARNING PATH ═══════ -->
 <section id="learning-path" style="margin-bottom:3rem;">
