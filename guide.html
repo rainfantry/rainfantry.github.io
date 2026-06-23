@@ -132,6 +132,7 @@ footer a:hover { color: var(--green); }
 </style>
 </head>
 <body>
+<canvas id="particle-field" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.5;"></canvas>
 
 <nav>
   <div class="inner">
@@ -546,5 +547,6 @@ document.getElementById('navToggle')?.addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('show');
 });
 </script>
+<div style="position:fixed;bottom:1.2rem;right:1.5rem;font-family:'Courier New',monospace;font-size:0.6rem;color:#0d2b0d;z-index:1000;pointer-events:none;letter-spacing:0.12em;user-select:none;" aria-hidden="true">for cheyanne. always.</div>
 </body>
 </html>
