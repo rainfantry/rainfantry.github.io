@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>22DIV LABS — Interactive Security Courses</title>
+<meta name="author" content="George Wu">
+<meta name="robots" content="index, follow">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0c0c0c; --bg2: #111; --bg3: #161616;
+  --green: #00ff41; --green2: #00cc33; --green3: #009922;
+  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff; --blue: #4488ff;
+  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
+  --mono: "Cascadia Code", "Consolas", "Source Code Pro", "Courier New", monospace;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
+body::after { content: ""; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px); pointer-events: none; z-index: 999; }
+nav { position: sticky; top: 0; background: rgba(12,12,12,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #1a1a1a; z-index: 100; padding: 0.6rem 0; }
+nav .inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+nav a { color: var(--green2); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.05em; opacity: 0.8; transition: opacity 0.2s; }
+nav a:hover { opacity: 1; }
+nav a.brand { color: var(--bright); font-weight: bold; font-size: 0.9rem; opacity: 1; margin-right: auto; }
+.container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+.hero { margin: 3rem 0 2rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 2rem; }
+.hero pre { color: var(--green); font-size: 0.55rem; line-height: 1.2; margin-bottom: 1.5rem; }
+.hero h1 { font-size: 1.4rem; color: var(--bright); letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+.hero p { font-size: 0.85rem; color: var(--muted); max-width: 600px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+.card { background: var(--bg2); border: 1px solid #222; padding: 1.5rem; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.1s; }
+.card:hover { border-color: #333; transform: translateY(-2px); }
+.card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.card.green::before { background: var(--green3); }
+.card.amber::before { background: var(--amber); }
+.card.red::before { background: var(--red); }
+.card.cyan::before { background: var(--cyan); }
+.card.blue::before { background: var(--blue); }
+.card-tag { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.5rem; }
+.card h2 { font-size: 0.95rem; color: var(--bright); margin-bottom: 0.3rem; letter-spacing: 0.05em; }
+.card .subtitle { font-size: 0.75rem; color: var(--muted); margin-bottom: 1rem; }
+.card .lessons { font-size: 0.75rem; color: var(--dim); margin-bottom: 1rem; }
+.card .topics { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.2rem; }
+.topic { font-size: 0.65rem; padding: 0.15rem 0.5rem; border: 1px solid #333; color: var(--muted); }
+.card a.start-btn { display: inline-block; padding: 0.5rem 1.2rem; font-size: 0.75rem; font-family: var(--mono); text-decoration: none; letter-spacing: 0.08em; transition: background 0.2s; }
+.card.green a.start-btn { background: var(--green3); color: #000; }
+.card.green a.start-btn:hover { background: var(--green2); }
+.card.amber a.start-btn { background: var(--amber); color: #000; }
+.card.amber a.start-btn:hover { background: #ffc333; }
+.card.red a.start-btn { background: #aa2222; color: var(--bright); }
+.card.red a.start-btn:hover { background: var(--red); }
+.card.cyan a.start-btn { background: #007799; color: var(--bright); }
+.card.cyan a.start-btn:hover { background: var(--cyan); color: #000; }
+.card.blue a.start-btn { background: #223388; color: var(--bright); }
+.card.blue a.start-btn:hover { background: var(--blue); }
+.progress-bar { height: 3px; background: #1a1a1a; margin: 0.8rem 0; }
+.progress-fill { height: 100%; background: var(--green3); transition: width 0.3s; }
+.progress-label { font-size: 0.65rem; color: var(--dim); }
+.disclaimer { margin: 3rem 0 1rem; padding: 1rem; border: 1px solid #1a1a1a; font-size: 0.75rem; color: var(--dim); }
+.disclaimer strong { color: var(--amber); }
+footer { border-top: 1px solid #1a1a1a; padding: 1rem 0; margin-top: 3rem; font-size: 0.7rem; color: var(--dim); text-align: center; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="inner">
+    <a href="../index.html" class="brand">VADER // 22DIV</a>
+    <a href="../index.html">HOME</a>
+    <a href="index.html" style="color:var(--green)">LABS</a>
+    <a href="../rootkit.html" style="color:var(--red)">ROOTKIT</a>
+    <a href="../starkiller.html" style="color:var(--cyan)">STARKILLER</a>
+    <a href="../csec.html">CSEC</a>
+  </div>
+</nav>
+<div class="container">
+  <div class="hero">
+    <pre>
+  ██████╗ ██████╗     ██╗      █████╗ ██████╗ ███████╗
+  ╚════██╗╚════██╗    ██║     ██╔══██╗██╔══██╗██╔════╝
+   █████╔╝ █████╔╝    ██║     ███████║██████╔╝███████╗
+  ██╔═══╝ ██╔═══╝     ██║     ██╔══██║██╔══██╗╚════██║
+  ███████╗███████╗    ███████╗██║  ██║██████╔╝███████║
+  ╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝</pre>
+    <h1>INTERACTIVE SECURITY LABS</h1>
+    <p>Learn offensive security by writing the actual code. No theory-first bullshit. You build the tool, lesson by lesson, line by line. Each course walks through a real piece of research I built and shipped.</p>
+  </div>
+
+  <div class="grid" id="course-grid">
+
+    <div class="card green">
+      <div class="card-tag">// COURSE 01 — C2 FRAMEWORK</div>
+      <h2>CHEYANNE C2</h2>
+      <div class="subtitle">Dual-channel command &amp; control — TCP shell + Discord beacon</div>
+      <div class="lessons">6 LESSONS · ~90 min</div>
+      <div class="topics">
+        <span class="topic">TCP REVERSE SHELL</span>
+        <span class="topic">AMSI BYPASS</span>
+        <span class="topic">ZERO-WIDTH STEG</span>
+        <span class="topic">PROCESS SPOOF</span>
+        <span class="topic">VNC STREAM</span>
+        <span class="topic">KILL CHAIN</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-cheyanne" style="width:0%"></div></div>
+      <div class="progress-label" id="prog-label-cheyanne">0 / 6 lessons complete</div>
+      <br>
+      <a href="cheyanne.html" class="start-btn">▶ START COURSE</a>
+    </div>
+
+    <div class="card amber">
+      <div class="card-tag">// COURSE 02 — STEGANOGRAPHY</div>
+      <h2>GHOST ENCODER</h2>
+      <div class="subtitle">Zero-width Unicode steganographic payload encoding</div>
+      <div class="lessons">4 LESSONS · ~40 min</div>
+      <div class="topics">
+        <span class="topic">UNICODE INTERNALS</span>
+        <span class="topic">BIT MANIPULATION</span>
+        <span class="topic">INVISIBLE ENCODING</span>
+        <span class="topic">PS1 BOOTSTRAP</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-ghost" style="width:0%"></div></div>
+      <div class="progress-label" id="prog-label-ghost">0 / 4 lessons complete</div>
+      <br>
+      <a href="ghost.html" class="start-btn">▶ START COURSE</a>
+    </div>
+
+    <div class="card red">
+      <div class="card-tag">// COURSE 03 — ROOTKIT RESEARCH</div>
+      <h2>VADER ROOTKIT</h2>
+      <div class="subtitle">Windows internals kill chain — AMSI/ETW/injection/persistence</div>
+      <div class="lessons">5 LESSONS · ~75 min</div>
+      <div class="topics">
+        <span class="topic">DLL HIJACK</span>
+        <span class="topic">HWBP BYPASS</span>
+        <span class="topic">ETW BLINDING</span>
+        <span class="topic">PROCESS INJECT</span>
+        <span class="topic">REGISTRY PERSIST</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-rootkit" style="width:0%"></div></div>
+      <div class="progress-label" id="prog-label-rootkit">0 / 5 lessons complete</div>
+      <br>
+      <a href="rootkit.html" class="start-btn">▶ START COURSE</a>
+    </div>
+
+    <div class="card cyan">
+      <div class="card-tag">// COURSE 04 — ANDROID RAT</div>
+      <h2>STARKILLER</h2>
+      <div class="subtitle">Android remote access tool — Kotlin client + C2 + binder</div>
+      <div class="lessons">4 LESSONS · ~60 min</div>
+      <div class="topics">
+        <span class="topic">ANDROID MANIFEST</span>
+        <span class="topic">KOTLIN SOCKET</span>
+        <span class="topic">HTTP C2 PROTOCOL</span>
+        <span class="topic">APK BINDER</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-starkiller" style="width:0%"></div></div>
+      <div class="progress-label" id="prog-label-starkiller">0 / 4 lessons complete</div>
+      <br>
+      <a href="starkiller.html" class="start-btn">▶ START COURSE</a>
+    </div>
+
+    <div class="card blue">
+      <div class="card-tag">// COURSE 05 — AI AGENT</div>
+      <h2>VADER AGENT</h2>
+      <div class="subtitle">AI-powered C2 agent — Discord bot + persona engine + voice clone</div>
+      <div class="lessons">3 LESSONS · ~35 min</div>
+      <div class="topics">
+        <span class="topic">DISCORD BOT</span>
+        <span class="topic">PERSONA INJECTION</span>
+        <span class="topic">VOICE CLONE</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-vader" style="width:0%"></div></div>
+      <div class="progress-label" id="prog-label-vader">0 / 3 lessons complete</div>
+      <br>
+      <a href="vader.html" class="start-btn">▶ START COURSE</a>
+    </div>
+
+  </div>
+
+  <div class="disclaimer">
+    <strong>⚠ AUTHORIZED USE ONLY.</strong> All tools documented here were built and tested on own hardware. Deploying these techniques against systems you don't own or have explicit written authorization for is illegal. This is academic research content for cybersecurity students.
+  </div>
+</div>
+<footer>George Wu // 22DIV // rainfantry.github.io/labs</footer>
+
+<script>
+const COURSES = ['cheyanne', 'ghost', 'rootkit', 'starkiller', 'vader'];
+const TOTALS = { cheyanne: 6, ghost: 4, rootkit: 5, starkiller: 4, vader: 3 };
+
+function loadProgress() {
+  COURSES.forEach(c => {
+    const data = JSON.parse(localStorage.getItem(`22div_course_${c}`) || '{}');
+    const done = Object.values(data).filter(Boolean).length;
+    const total = TOTALS[c];
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    const el = document.getElementById(`prog-${c}`);
+    const lbl = document.getElementById(`prog-label-${c}`);
+    if (el) el.style.width = pct + '%';
+    if (lbl) lbl.textContent = `${done} / ${total} lessons complete`;
+  });
+}
+loadProgress();
+</script>
+</body>
+</html>

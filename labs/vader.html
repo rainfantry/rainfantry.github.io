@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>22LABS — VADER AGENT</title>
+<meta name="author" content="George Wu">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0c0c0c; --bg2: #111; --bg3: #161616; --bg4: #1a1a1a;
+  --green: #00ff41; --green2: #00cc33; --green3: #009922;
+  --accent: #4488ff; --accent2: #2266dd; --accent3: #1144bb;
+  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
+  --mono: "Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; display: flex; flex-direction: column; }
+body::after { content: ""; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(68,136,255,0.006) 3px, rgba(68,136,255,0.006) 4px); pointer-events: none; z-index: 999; }
+
+nav { position: sticky; top: 0; background: rgba(12,12,12,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #1a1a1a; z-index: 100; padding: 0.6rem 0; }
+nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+nav a { color: var(--accent2); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.05em; opacity: 0.8; transition: opacity 0.2s; }
+nav a:hover { opacity: 1; }
+nav a.brand { color: var(--bright); font-weight: bold; font-size: 0.9rem; opacity: 1; margin-right: auto; }
+
+.layout { display: flex; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 1.5rem; gap: 1.5rem; }
+
+/* sidebar */
+.sidebar { width: 220px; flex-shrink: 0; }
+.sidebar-sticky { position: sticky; top: 4rem; }
+.sidebar h3 { font-size: 0.7rem; letter-spacing: 0.12em; color: var(--dim); margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid #1a1a1a; }
+.lesson-link { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.6rem; margin-bottom: 0.2rem; font-size: 0.75rem; color: var(--muted); cursor: pointer; border: 1px solid transparent; transition: all 0.15s; user-select: none; }
+.lesson-link:hover { color: var(--accent); border-color: #222; }
+.lesson-link.active { color: var(--accent); border-color: var(--accent3); background: rgba(68,136,255,0.05); }
+.lesson-link.done { color: var(--green3); }
+.lesson-link.done .ll-num { background: var(--green3); color: #000; }
+.ll-num { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; border: 1px solid #333; flex-shrink: 0; }
+.lesson-link.active .ll-num { border-color: var(--accent3); background: var(--accent3); color: #fff; }
+.sidebar-progress { margin-top: 1.5rem; }
+.sp-label { font-size: 0.65rem; color: var(--dim); margin-bottom: 0.4rem; }
+.sp-bar { height: 3px; background: #1a1a1a; }
+.sp-fill { height: 100%; background: var(--accent3); transition: width 0.3s; }
+
+/* main */
+.main { flex: 1; min-width: 0; }
+.lesson { display: none; }
+.lesson.active { display: block; }
+
+.lesson-header { margin-bottom: 1.5rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 1rem; }
+.lesson-tag { font-size: 0.65rem; letter-spacing: 0.12em; color: var(--dim); margin-bottom: 0.4rem; }
+.lesson-header h2 { font-size: 1.2rem; color: var(--bright); letter-spacing: 0.04em; margin-bottom: 0.4rem; }
+.lesson-header p { font-size: 0.82rem; color: var(--muted); }
+
+.concept-box { background: var(--bg2); border: 1px solid #1e2e1e; padding: 1rem 1.2rem; margin-bottom: 1.2rem; font-size: 0.82rem; }
+.concept-box h4 { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--accent2); margin-bottom: 0.6rem; }
+.concept-box ul { padding-left: 1.2rem; color: var(--muted); }
+.concept-box li { margin-bottom: 0.3rem; }
+
+.code-ref { background: #080808; border: 1px solid #1a2a1a; padding: 1rem; margin-bottom: 1.2rem; overflow-x: auto; }
+.code-ref pre { font-size: 0.78rem; color: #b0d0ff; line-height: 1.6; white-space: pre; }
+.code-ref-label { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.6rem; }
+
+.task-label { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--accent2); margin-bottom: 0.5rem; margin-top: 0.5rem; }
+.editor-wrap { position: relative; margin-bottom: 0.8rem; }
+.editor-wrap textarea { width: 100%; background: #060606; border: 1px solid #222; color: var(--text); font-family: var(--mono); font-size: 0.78rem; padding: 0.8rem; resize: vertical; min-height: 200px; line-height: 1.6; outline: none; transition: border-color 0.2s; }
+.editor-wrap textarea:focus { border-color: #333; }
+.editor-wrap textarea.pass { border-color: var(--green3); }
+.editor-wrap textarea.fail { border-color: #882222; }
+
+.btn-row { display: flex; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.btn { padding: 0.45rem 1.2rem; font-size: 0.75rem; font-family: var(--mono); letter-spacing: 0.06em; cursor: pointer; border: 1px solid; background: transparent; transition: all 0.15s; }
+.btn-check { border-color: var(--accent3); color: var(--accent); }
+.btn-check:hover { background: var(--accent3); color: #fff; }
+.btn-skip { border-color: #333; color: var(--dim); }
+.btn-skip:hover { border-color: #555; color: var(--muted); }
+
+.result-panel { padding: 0.8rem 1rem; font-size: 0.78rem; border: 1px solid; display: none; margin-bottom: 1rem; }
+.result-panel.pass { border-color: var(--green3); background: rgba(0,153,34,0.06); color: var(--green); }
+.result-panel.fail { border-color: #882222; background: rgba(136,34,34,0.06); color: #ff8888; }
+.diff-line { margin: 0.2rem 0; font-size: 0.73rem; }
+.diff-line.del { color: #ff6666; }
+.diff-line.ins { color: #66ff66; }
+
+.complete-banner { background: var(--bg2); border: 1px solid var(--accent3); padding: 1.5rem; text-align: center; display: none; }
+.complete-banner h3 { color: var(--accent); font-size: 1rem; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+.complete-banner p { font-size: 0.8rem; color: var(--muted); }
+.complete-banner a { color: var(--accent); text-decoration: none; }
+.complete-banner a:hover { text-decoration: underline; }
+
+.nav-row { display: flex; gap: 1rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #1a1a1a; }
+.nav-row .btn { padding: 0.4rem 1rem; font-size: 0.72rem; }
+.btn-prev { border-color: #222; color: var(--dim); }
+.btn-prev:hover { border-color: #444; color: var(--muted); }
+.btn-next { border-color: var(--accent3); color: var(--accent); }
+.btn-next:hover { background: var(--accent3); color: #fff; }
+.btn-next:disabled { border-color: #1a1a1a; color: #333; cursor: default; }
+.btn-next:disabled:hover { background: transparent; }
+
+code { background: #1a1a1a; padding: 0.1em 0.3em; color: #88bbff; font-size: 0.88em; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="inner">
+    <a href="../index.html" class="brand">VADER // 22DIV</a>
+    <a href="index.html" style="color:var(--green2)">← LABS</a>
+    <span style="color:var(--dim);font-size:0.75rem">// COURSE 05 — VADER AGENT</span>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-sticky">
+      <h3>// LESSONS</h3>
+      <div class="lesson-link active" onclick="goLesson(1)" id="ll-1">
+        <span class="ll-num">1</span><span>Discord Bot Setup</span>
+      </div>
+      <div class="lesson-link" onclick="goLesson(2)" id="ll-2">
+        <span class="ll-num">2</span><span>Persona Injection</span>
+      </div>
+      <div class="lesson-link" onclick="goLesson(3)" id="ll-3">
+        <span class="ll-num">3</span><span>Voice Clone + TTS</span>
+      </div>
+      <div class="sidebar-progress">
+        <div class="sp-label" id="sp-label">0 / 3 complete</div>
+        <div class="sp-bar"><div class="sp-fill" id="sp-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ═══════════════════════════════════════════════════════════ LESSON 1 -->
+    <div class="lesson active" id="lesson-1">
+      <div class="lesson-header">
+        <div class="lesson-tag">// LESSON 01 — DISCORD BOT SETUP</div>
+        <h2>Intents, Bot, and the Message Loop</h2>
+        <p>Build the foundation: Discord gateway connection, privileged intents, and the <code>on_message</code> handler that routes incoming messages to your LLM backend.</p>
+      </div>
+
+      <div class="concept-box">
+        <h4>// CONCEPTS</h4>
+        <ul>
+          <li><strong>Intents</strong> — Discord's permission system for what events your bot receives. <code>message_content</code> is privileged — must be enabled in the Discord Developer Portal.</li>
+          <li><strong>commands.Bot</strong> — subclass of <code>discord.Client</code> that adds the command prefix system and extension loader.</li>
+          <li><strong>on_message</strong> — raw event hook. Fires on EVERY message. You filter by trigger name, role, or channel before forwarding to the LLM.</li>
+          <li><strong>asyncio event loop</strong> — Discord.py is fully async. Your LLM calls must be <code>await</code>-able or run in a thread executor.</li>
+          <li><strong>dotenv</strong> — store the bot token in <code>.env</code>, never in source. <code>load_dotenv(override=True)</code> means .env wins over shell env vars.</li>
+        </ul>
+      </div>
+
+      <div class="code-ref">
+        <div class="code-ref-label">// REFERENCE — mrrobot.py, intents + bot init</div>
+        <pre>import discord
+from discord.ext import commands
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+BOT_TRIGGER_NAMES = ["robot", "mrrobot", "mr robot"]
+
+intents = discord.Intents.default()
+intents.message_content = True        # privileged — enable in dev portal
+intents.members = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"[+] logged in as {bot.user}")
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    content = message.content.lower()
+    triggered = any(name in content for name in BOT_TRIGGER_NAMES)
+    if not triggered:
+        await bot.process_commands(message)
+        return
+    # hand off to LLM handler
+    await handle_llm(message)
+    await bot.process_commands(message)
+
+bot.run(BOT_TOKEN)</pre>
+      </div>
+
+      <div class="task-label">// TASK — type the bot skeleton</div>
+      <div class="editor-wrap">
+        <textarea id="ed-1" spellcheck="false" placeholder="Type your code here..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
+        <button class="btn btn-skip" onclick="skipLesson(1)">SKIP →</button>
+      </div>
+      <div class="result-panel" id="res-1"></div>
+      <div class="nav-row">
+        <button class="btn btn-next" id="next-1" onclick="goLesson(2)" disabled>NEXT LESSON →</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ LESSON 2 -->
+    <div class="lesson" id="lesson-2">
+      <div class="lesson-header">
+        <div class="lesson-tag">// LESSON 02 — PERSONA INJECTION</div>
+        <h2>System Prompt as Personality Engine</h2>
+        <p>The bot becomes whoever you tell it to be via a SYSTEM prompt prepended to every conversation. This is the core mechanism: inject a persona, maintain per-channel message history, forward to Ollama.</p>
+      </div>
+
+      <div class="concept-box">
+        <h4>// CONCEPTS</h4>
+        <ul>
+          <li><strong>SYSTEM_PROMPT</strong> — loaded from <code>.env</code>, defines the bot's personality, doctrine, constraints, and voice. The whole character lives here.</li>
+          <li><strong>Per-channel history</strong> — <code>collections.deque(maxlen=N)</code> keeps the last N messages per channel ID. Sliding window keeps RAM bounded.</li>
+          <li><strong>build_messages()</strong> — prepends the system prompt, appends history, then the current user message. Outputs the array Ollama's API expects.</li>
+          <li><strong>Ollama /api/chat</strong> — POST to <code>http://localhost:11434/api/chat</code> with <code>{"model": name, "messages": [...], "stream": false}</code>. Returns <code>response.message.content</code>.</li>
+          <li><strong>aiohttp</strong> — async HTTP client for non-blocking Ollama calls inside the Discord event loop.</li>
+        </ul>
+      </div>
+
+      <div class="code-ref">
+        <div class="code-ref-label">// REFERENCE — persona injection + Ollama call</div>
+        <pre>import os
+import aiohttp
+from collections import defaultdict, deque
+
+SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT",
+    "You are VADER, a machine-spirit serving the 22nd Survey Division. "
+    "Respond with military precision. No corporate fluff.")
+
+OLLAMA_URL  = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")
+MODEL_NAME  = os.getenv("MODEL_NAME", "huihui_ai/qwen2.5-coder-abliterate:7b")
+HISTORY_DEPTH = int(os.getenv("HISTORY_DEPTH", "12"))
+
+# per-channel sliding window
+_history = defaultdict(lambda: deque(maxlen=HISTORY_DEPTH))
+
+def build_messages(channel_id, user_content):
+    msgs = [{"role": "system", "content": SYSTEM_PROMPT}]
+    msgs.extend(_history[channel_id])
+    msgs.append({"role": "user", "content": user_content})
+    return msgs
+
+async def query_ollama(channel_id, user_content):
+    payload = {
+        "model": MODEL_NAME,
+        "messages": build_messages(channel_id, user_content),
+        "stream": False,
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(OLLAMA_URL, json=payload) as resp:
+            data = await resp.json()
+    reply = data["message"]["content"]
+    _history[channel_id].append({"role": "user",    "content": user_content})
+    _history[channel_id].append({"role": "assistant","content": reply})
+    return reply</pre>
+      </div>
+
+      <div class="task-label">// TASK — write the persona + Ollama function</div>
+      <div class="editor-wrap">
+        <textarea id="ed-2" spellcheck="false" placeholder="Type your code here..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
+        <button class="btn btn-skip" onclick="skipLesson(2)">SKIP →</button>
+      </div>
+      <div class="result-panel" id="res-2"></div>
+      <div class="nav-row">
+        <button class="btn btn-prev" onclick="goLesson(1)">← PREV</button>
+        <button class="btn btn-next" id="next-2" onclick="goLesson(3)" disabled>NEXT LESSON →</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ LESSON 3 -->
+    <div class="lesson" id="lesson-3">
+      <div class="lesson-header">
+        <div class="lesson-tag">// LESSON 03 — VOICE CLONE + TTS</div>
+        <h2>ElevenLabs PCM → WAV → Discord</h2>
+        <p>Feed the bot's response text to your cloned ElevenLabs voice. Build a WAV in memory with stdlib <code>wave</code>, play it locally with <code>winsound</code>, and upload it to Discord simultaneously — all from a background thread.</p>
+      </div>
+
+      <div class="concept-box">
+        <h4>// CONCEPTS</h4>
+        <ul>
+          <li><strong>ElevenLabs PCM endpoint</strong> — <code>/v1/text-to-speech/{voice_id}?output_format=pcm_22050</code>. Returns raw signed 16-bit PCM at 22050 Hz. No ffmpeg needed.</li>
+          <li><strong>stdlib wave</strong> — build a valid WAV container in memory: <code>wave.open(buf, 'wb')</code> → set channels/sampwidth/framerate → writeframes(pcm). No external audio lib required.</li>
+          <li><strong>winsound.PlaySound</strong> — blocks until the WAV finishes playing. Use only inside a background thread or it freezes the event loop.</li>
+          <li><strong>asyncio.run_coroutine_threadsafe</strong> — the only safe way to schedule a coroutine (like <code>channel.send()</code>) from a non-async thread. Takes the coro and the running event loop.</li>
+          <li><strong>threading.Thread(daemon=True)</strong> — daemon threads die when the main process exits. Use for TTS so bot shutdown doesn't hang on audio playback.</li>
+        </ul>
+      </div>
+
+      <div class="code-ref">
+        <div class="code-ref-label">// REFERENCE — mrrobot.py, ElevenLabs PCM fetch + speak()</div>
+        <pre>import os, io, wave, threading, tempfile, asyncio
+import httpx
+import discord
+
+_EL_API_KEY  = os.environ.get("EL_API_KEY", "")
+_EL_VOICE_ID = os.environ.get("EL_VOICE_ID", "")
+_EL_RATE     = 22050
+
+def _fetch_el_pcm(text):
+    """Call ElevenLabs, return raw PCM bytes or None on failure."""
+    if not _EL_API_KEY or not _EL_VOICE_ID:
+        return None
+    try:
+        url  = f"https://api.elevenlabs.io/v1/text-to-speech/{_EL_VOICE_ID}"
+        hdrs = {"xi-api-key": _EL_API_KEY, "Content-Type": "application/json"}
+        body = {
+            "text": text[:5000],
+            "model_id": "eleven_multilingual_v2",
+            "voice_settings": {
+                "stability":         0.30,
+                "similarity_boost":  0.80,
+                "style":             0.55,
+                "use_speaker_boost": True,
+            },
+        }
+        r = httpx.post(url, json=body, headers=hdrs,
+                       params={"output_format": "pcm_22050"}, timeout=30)
+        return r.content if r.status_code == 200 else None
+    except Exception:
+        return None
+
+def speak(text, channel=None, loop=None):
+    def _run():
+        pcm = _fetch_el_pcm(text)
+        if pcm is None:
+            return
+        buf = io.BytesIO()
+        with wave.open(buf, 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(_EL_RATE)
+            wf.writeframes(pcm)
+        tmp = tempfile.NamedTemporaryFile(
+            prefix='vader_tts_', suffix='.wav', delete=False)
+        tmp.write(buf.getvalue()); tmp.close()
+        try:
+            import winsound
+            upload_fut = None
+            if channel is not None and loop is not None:
+                async def _upload():
+                    await channel.send(
+                        file=discord.File(tmp.name, filename="voice.wav"))
+                upload_fut = asyncio.run_coroutine_threadsafe(_upload(), loop)
+            winsound.PlaySound(tmp.name, winsound.SND_FILENAME)
+            if upload_fut is not None:
+                try: upload_fut.result(timeout=15)
+                except Exception: pass
+        finally:
+            try: os.unlink(tmp.name)
+            except Exception: pass
+    threading.Thread(target=_run, daemon=True).start()</pre>
+      </div>
+
+      <div class="task-label">// TASK — write _fetch_el_pcm() and speak()</div>
+      <div class="editor-wrap">
+        <textarea id="ed-3" spellcheck="false" placeholder="Type your code here..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
+        <button class="btn btn-skip" onclick="skipLesson(3)">SKIP →</button>
+      </div>
+      <div class="result-panel" id="res-3"></div>
+      <div class="nav-row">
+        <button class="btn btn-prev" onclick="goLesson(2)">← PREV</button>
+      </div>
+    </div>
+
+    <!-- complete banner -->
+    <div class="complete-banner" id="complete-banner">
+      <h3>// COURSE COMPLETE</h3>
+      <p>You built it. Discord gateway + privileged intents. Persona injection via system prompt. ElevenLabs PCM piped through stdlib wave, played locally, uploaded to Discord from a background thread.</p>
+      <p style="margin-top:0.8rem"><a href="index.html">← BACK TO ALL COURSES</a></p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const STORAGE_KEY = '22div_course_vader';
+const TOTAL = 3;
+
+const SOLUTIONS = {
+  1: `import discord
+from discord.ext import commands
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+BOT_TRIGGER_NAMES = ["robot", "mrrobot", "mr robot"]
+
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"[+] logged in as {bot.user}")
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    content = message.content.lower()
+    triggered = any(name in content for name in BOT_TRIGGER_NAMES)
+    if not triggered:
+        await bot.process_commands(message)
+        return
+    await handle_llm(message)
+    await bot.process_commands(message)
+
+bot.run(BOT_TOKEN)`,
+
+  2: `import os
+import aiohttp
+from collections import defaultdict, deque
+
+SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT",
+    "You are VADER, a machine-spirit serving the 22nd Survey Division. "
+    "Respond with military precision. No corporate fluff.")
+
+OLLAMA_URL  = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")
+MODEL_NAME  = os.getenv("MODEL_NAME", "huihui_ai/qwen2.5-coder-abliterate:7b")
+HISTORY_DEPTH = int(os.getenv("HISTORY_DEPTH", "12"))
+
+_history = defaultdict(lambda: deque(maxlen=HISTORY_DEPTH))
+
+def build_messages(channel_id, user_content):
+    msgs = [{"role": "system", "content": SYSTEM_PROMPT}]
+    msgs.extend(_history[channel_id])
+    msgs.append({"role": "user", "content": user_content})
+    return msgs
+
+async def query_ollama(channel_id, user_content):
+    payload = {
+        "model": MODEL_NAME,
+        "messages": build_messages(channel_id, user_content),
+        "stream": False,
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(OLLAMA_URL, json=payload) as resp:
+            data = await resp.json()
+    reply = data["message"]["content"]
+    _history[channel_id].append({"role": "user",    "content": user_content})
+    _history[channel_id].append({"role": "assistant","content": reply})
+    return reply`,
+
+  3: `import os, io, wave, threading, tempfile, asyncio
+import httpx
+import discord
+
+_EL_API_KEY  = os.environ.get("EL_API_KEY", "")
+_EL_VOICE_ID = os.environ.get("EL_VOICE_ID", "")
+_EL_RATE     = 22050
+
+def _fetch_el_pcm(text):
+    if not _EL_API_KEY or not _EL_VOICE_ID:
+        return None
+    try:
+        url  = f"https://api.elevenlabs.io/v1/text-to-speech/{_EL_VOICE_ID}"
+        hdrs = {"xi-api-key": _EL_API_KEY, "Content-Type": "application/json"}
+        body = {
+            "text": text[:5000],
+            "model_id": "eleven_multilingual_v2",
+            "voice_settings": {
+                "stability":         0.30,
+                "similarity_boost":  0.80,
+                "style":             0.55,
+                "use_speaker_boost": True,
+            },
+        }
+        r = httpx.post(url, json=body, headers=hdrs,
+                       params={"output_format": "pcm_22050"}, timeout=30)
+        return r.content if r.status_code == 200 else None
+    except Exception:
+        return None
+
+def speak(text, channel=None, loop=None):
+    def _run():
+        pcm = _fetch_el_pcm(text)
+        if pcm is None:
+            return
+        buf = io.BytesIO()
+        with wave.open(buf, 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(_EL_RATE)
+            wf.writeframes(pcm)
+        tmp = tempfile.NamedTemporaryFile(
+            prefix='vader_tts_', suffix='.wav', delete=False)
+        tmp.write(buf.getvalue()); tmp.close()
+        try:
+            import winsound
+            upload_fut = None
+            if channel is not None and loop is not None:
+                async def _upload():
+                    await channel.send(
+                        file=discord.File(tmp.name, filename="voice.wav"))
+                upload_fut = asyncio.run_coroutine_threadsafe(_upload(), loop)
+            winsound.PlaySound(tmp.name, winsound.SND_FILENAME)
+            if upload_fut is not None:
+                try: upload_fut.result(timeout=15)
+                except Exception: pass
+        finally:
+            try: os.unlink(tmp.name)
+            except Exception: pass
+    threading.Thread(target=_run, daemon=True).start()`
+};
+
+let progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+let currentLesson = 1;
+
+function normalize(code) {
+  return code.split('\n')
+    .map(l => l.replace(/#.*$/, '').trimEnd())
+    .filter(l => l.trim().length > 0)
+    .join('\n');
+}
+
+function diffLines(expected, got) {
+  const eLines = expected.split('\n');
+  const gLines = got.split('\n');
+  const maxLen = Math.max(eLines.length, gLines.length);
+  const diffs = [];
+  for (let i = 0; i < maxLen; i++) {
+    const e = eLines[i] !== undefined ? eLines[i] : null;
+    const g = gLines[i] !== undefined ? gLines[i] : null;
+    if (e !== g) {
+      if (e !== null) diffs.push({ type: 'del', line: i + 1, text: e });
+      if (g !== null) diffs.push({ type: 'ins', line: i + 1, text: g });
+    }
+  }
+  return diffs;
+}
+
+function checkCode(n) {
+  const ta = document.getElementById(`ed-${n}`);
+  const panel = document.getElementById(`res-${n}`);
+  const sol = normalize(SOLUTIONS[n]);
+  const got = normalize(ta.value);
+
+  if (sol === got) {
+    ta.className = 'pass';
+    panel.className = 'result-panel pass';
+    panel.style.display = 'block';
+    panel.innerHTML = '✓ CORRECT — lesson complete.';
+    markDone(n);
+  } else {
+    ta.className = 'fail';
+    panel.className = 'result-panel fail';
+    panel.style.display = 'block';
+    const diffs = diffLines(sol, got);
+    let html = '✗ NOT QUITE — diff:<br>';
+    const shown = diffs.slice(0, 12);
+    shown.forEach(d => {
+      const esc = d.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      html += `<div class="diff-line ${d.type}">${d.type === 'del' ? '- ' : '+ '}L${d.line}: ${esc}</div>`;
+    });
+    if (diffs.length > 12) html += `<div class="diff-line" style="color:var(--dim)">... ${diffs.length - 12} more differences</div>`;
+    panel.innerHTML = html;
+  }
+}
+
+function markDone(n) {
+  progress[n] = true;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  document.getElementById(`ll-${n}`).classList.add('done');
+  const nextBtn = document.getElementById(`next-${n}`);
+  if (nextBtn) nextBtn.disabled = false;
+  updateProgress();
+  const done = Object.values(progress).filter(Boolean).length;
+  if (done >= TOTAL) {
+    setTimeout(() => {
+      document.getElementById('complete-banner').style.display = 'block';
+      document.getElementById('complete-banner').scrollIntoView({ behavior: 'smooth' });
+    }, 600);
+  }
+}
+
+function skipLesson(n) {
+  document.getElementById(`ed-${n}`).value = SOLUTIONS[n];
+  markDone(n);
+  const panel = document.getElementById(`res-${n}`);
+  panel.className = 'result-panel pass';
+  panel.style.display = 'block';
+  panel.innerHTML = '↷ skipped — solution loaded.';
+  document.getElementById(`ed-${n}`).className = 'pass';
+}
+
+function goLesson(n) {
+  document.querySelectorAll('.lesson').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.lesson-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(`lesson-${n}`).classList.add('active');
+  document.getElementById(`ll-${n}`).classList.add('active');
+  currentLesson = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const done = Object.values(progress).filter(Boolean).length;
+  const pct = Math.round((done / TOTAL) * 100);
+  document.getElementById('sp-fill').style.width = pct + '%';
+  document.getElementById('sp-label').textContent = `${done} / ${TOTAL} complete`;
+}
+
+// Tab key → 4 spaces in all editors
+document.querySelectorAll('textarea').forEach(ta => {
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = ta.selectionStart, end = ta.selectionEnd;
+      ta.value = ta.value.substring(0, s) + '    ' + ta.value.substring(end);
+      ta.selectionStart = ta.selectionEnd = s + 4;
+    }
+  });
+});
+
+// Restore progress
+(function init() {
+  updateProgress();
+  for (const k in progress) {
+    if (progress[k]) {
+      const ll = document.getElementById(`ll-${k}`);
+      if (ll) ll.classList.add('done');
+      const nb = document.getElementById(`next-${k}`);
+      if (nb) nb.disabled = false;
+    }
+  }
+  if (Object.values(progress).filter(Boolean).length >= TOTAL) {
+    document.getElementById('complete-banner').style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>
