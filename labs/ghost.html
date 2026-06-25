@@ -458,5 +458,6 @@ document.querySelectorAll('.code-editor').forEach(ta=>{
   ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+4;}});
 });
 </script>
+<script src="kwlinks.js"></script>
 </body>
 </html>

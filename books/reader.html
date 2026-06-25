@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>// FIELD MANUAL — 22DIV</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0c0c0c;--bg2:#111;--bg3:#161616;
+  --green:#00ff41;--green2:#00cc33;--green3:#009922;
+  --amber:#ffb000;--red:#ff4444;--cyan:#00e5ff;--blue:#4488ff;
+  --dim:#555;--muted:#888;--text:#ccc;--bright:#eee;
+  --mono:"Cascadia Code","Consolas","Source Code Pro","Courier New",monospace;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.75;min-height:100vh;}
+body::after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.006) 3px,rgba(0,255,65,0.006) 4px);pointer-events:none;z-index:999;}
+nav{position:sticky;top:0;background:rgba(12,12,12,0.96);backdrop-filter:blur(8px);border-bottom:1px solid #1a1a1a;z-index:100;padding:.6rem 0;}
+nav .inner{max-width:920px;margin:0 auto;padding:0 1.5rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;}
+nav a{color:var(--green2);text-decoration:none;font-size:.75rem;letter-spacing:.06em;opacity:.8;transition:opacity .15s;}
+nav a:hover{opacity:1;}
+nav .brand{color:var(--green);font-weight:bold;font-size:.85rem;opacity:1;margin-right:auto;}
+nav .ch-label{color:var(--dim);font-size:.7rem;letter-spacing:.08em;flex:1;text-align:center;}
+.loader{max-width:920px;margin:4rem auto;padding:0 1.5rem;font-size:.82rem;letter-spacing:.12em;}
+.loader-text{color:var(--dim);}
+.cursor{display:inline-block;width:.6rem;height:1rem;background:var(--green3);animation:blink .9s step-end infinite;vertical-align:text-bottom;margin-left:.2rem;}
+@keyframes blink{50%{opacity:0;}}
+.err{color:var(--red);font-size:.8rem;padding:2rem 1.5rem;}
+.doc{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 4rem;display:none;}
+.doc-header{margin-bottom:1.8rem;padding-bottom:1rem;border-bottom:1px solid #1a1a1a;}
+.doc-tag{font-size:.62rem;letter-spacing:.14em;color:var(--dim);margin-bottom:.3rem;}
+.doc-title{font-size:1.15rem;color:var(--green);font-weight:400;letter-spacing:.06em;margin-bottom:.3rem;}
+.doc-sub{font-size:.75rem;color:var(--dim);}
+
+/* ── markdown rendering ── */
+.md{font-size:.84rem;line-height:1.85;}
+.md h1{color:var(--green);font-size:1.1rem;font-weight:400;letter-spacing:.06em;margin:2rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid #1a1a1a;}
+.md h1:first-child{margin-top:0;}
+.md h2{color:var(--amber);font-size:.98rem;font-weight:400;margin:1.8rem 0 .5rem;padding-bottom:.2rem;border-bottom:1px solid #1a1a1a;}
+.md h3{color:var(--bright);font-size:.88rem;font-weight:400;margin:1.4rem 0 .4rem;}
+.md h4{color:var(--green2);font-size:.82rem;font-weight:400;margin:1.2rem 0 .3rem;letter-spacing:.04em;}
+.md p{color:var(--text);margin-bottom:.9rem;}
+.md ul,.md ol{padding-left:1.4rem;margin-bottom:.9rem;}
+.md li{margin-bottom:.25rem;color:var(--text);}
+.md strong{color:var(--bright);}
+.md em{color:var(--muted);font-style:italic;}
+.md hr{border:none;border-top:1px solid #1a1a1a;margin:2rem 0;}
+.md a{color:var(--cyan);text-decoration:none;border-bottom:1px dashed #2a6677;}
+.md a:hover{opacity:.75;}
+.md blockquote{border-left:3px solid var(--green3);padding:.5rem 1rem;margin:1rem 0;color:var(--muted);background:#040d04;}
+.md blockquote p{margin-bottom:0;}
+.md table{width:100%;border-collapse:collapse;font-size:.78rem;margin:1rem 0 1.5rem;}
+.md th{text-align:left;color:var(--green2);padding:.4rem .8rem;border-bottom:1px solid var(--green3);font-weight:400;}
+.md td{padding:.35rem .8rem;border-bottom:1px solid #161616;vertical-align:top;}
+.md tr:hover td{background:#0a0a0a;}
+.md code{background:#161616;color:#55ccff;padding:.1em .3em;font-size:.84em;border-radius:2px;}
+.md pre{background:#090909;border:1px solid #1a1a1a;padding:1rem 1.2rem;margin:.8rem 0 1.4rem;overflow-x:auto;}
+.md pre code{background:transparent;color:#abb2bf;padding:0;font-size:.77rem;line-height:1.65;}
+
+/* ── hljs overrides ── */
+.hljs{background:#090909 !important;}
+.hljs-keyword{color:#c678dd;}
+.hljs-string{color:#98c379;}
+.hljs-number{color:#d19a66;}
+.hljs-comment{color:#4a4a5a;font-style:italic;}
+.hljs-function .hljs-title,.hljs-title.function_{color:#61afef;}
+.hljs-title{color:#61afef;}
+.hljs-attr,.hljs-attribute{color:#d19a66;}
+.hljs-built_in{color:#56b6c2;}
+.hljs-params{color:#abb2bf;}
+.hljs-operator,.hljs-punctuation{color:#888;}
+.hljs-variable{color:#e06c75;}
+.hljs-literal{color:#d19a66;}
+.hljs-type{color:#e5c07b;}
+.hljs-meta{color:#61afef;}
+
+/* ── progress bar ── */
+.read-progress{position:fixed;top:0;left:0;height:2px;background:var(--green3);z-index:200;width:0%;transition:width .1s;}
+
+/* ── nav buttons ── */
+.ch-nav{display:flex;gap:.6rem;}
+.ch-nav button{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;padding:.25rem .7rem;border:1px solid #2a2a2a;background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;}
+.ch-nav button:hover{border-color:var(--green3);color:var(--green2);}
+.ch-nav button:disabled{opacity:.2;cursor:default;}
+</style>
+</head>
+<body>
+<div class="read-progress" id="read-progress"></div>
+<nav>
+  <div class="inner">
+    <a class="brand" href="../index.html">22DIV</a>
+    <a href="javascript:history.back()">← BACK TO COURSE</a>
+    <span class="ch-label" id="ch-label"></span>
+    <div class="ch-nav">
+      <button id="btn-prev" onclick="navChapter(-1)" disabled>◀ PREV</button>
+      <button id="btn-next" onclick="navChapter(+1)" disabled>NEXT ▶</button>
+    </div>
+    <a href="../books.html" style="color:var(--dim);font-size:.7rem">all chapters →</a>
+  </div>
+</nav>
+
+<div class="loader" id="loader">
+  <div class="loader-text">// FETCHING FIELD MANUAL<span class="cursor"></span></div>
+</div>
+<div class="err" id="err" style="display:none"></div>
+
+<div class="doc" id="doc">
+  <div class="doc-header">
+    <div class="doc-tag" id="doc-tag">// VADER-RCE FIELD MANUAL</div>
+    <div class="doc-title" id="doc-title"></div>
+    <div class="doc-sub" id="doc-sub"></div>
+  </div>
+  <div class="md" id="md-content"></div>
+  <div style="margin-top:2.5rem;padding-top:1rem;border-top:1px solid #1a1a1a;display:flex;gap:1rem;">
+    <button class="ch-nav" onclick="navChapter(-1)" id="btn-prev2" disabled style="font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;padding:.3rem .9rem;border:1px solid #2a2a2a;background:transparent;color:var(--dim);cursor:pointer;">◀ PREV CHAPTER</button>
+    <button class="ch-nav" onclick="navChapter(+1)" id="btn-next2" disabled style="font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;padding:.3rem .9rem;border:1px solid #2a2a2a;background:transparent;color:var(--dim);cursor:pointer;">NEXT CHAPTER ▶</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+const CHAPTERS = {
+  1:'01_HEAP_INTERNALS',2:'02_OVERFLOW_PATTERNS',3:'03_UAF_TYPE_CONFUSION',
+  4:'04_MITIGATIONS',5:'05_FUZZING_THEORY',6:'06_CRASH_TRIAGE',
+  7:'07_EXPLOIT_PRIMITIVES',8:'08_TARGET_REVERSING',9:'09_HARNESS_ENGINEERING',
+  10:'10_CORPUS_DICTIONARY',11:'11_CAMPAIGN_MANAGEMENT',12:'12_EXPLOIT_DEVELOPMENT',
+  13:'13_0X1SECURITY_DOCTRINE',14:'14_CASE_STUDIES',15:'15_POST_EXPLOITATION',
+  16:'16_RESPONSIBLE_DISCLOSURE',17:'17_NETWORK_WARFARE',18:'18_CRYPTOGRAPHY_EVASION',
+  20:'20_ACTIVE_DIRECTORY',21:'21_WEB_APPLICATION_WARFARE',22:'22_OSINT_SOCIAL_ENGINEERING'
+};
+const CHAPTER_TITLES = {
+  1:'Heap Internals',2:'Overflow Patterns',3:'UAF & Type Confusion',
+  4:'Mitigations',5:'Fuzzing Theory',6:'Crash Triage',
+  7:'Exploit Primitives',8:'Target Reversing',9:'Harness Engineering',
+  10:'Corpus & Dictionary',11:'Campaign Management',12:'Exploit Development',
+  13:'0x1security Doctrine',14:'Case Studies',15:'Post-Exploitation',
+  16:'Responsible Disclosure',17:'Network Warfare',18:'Cryptography & Evasion',
+  20:'Active Directory Warfare',21:'Web Application Warfare',22:'OSINT & Social Engineering'
+};
+const BOOK_TO_NUM = Object.fromEntries(Object.entries(CHAPTERS).map(([n,b])=>[b,+n]));
+const NUM_ORDER = Object.keys(CHAPTERS).map(Number).sort((a,b)=>a-b);
+
+let currentSlug = '';
+let currentNum = 0;
+
+function slugToTitle(slug){
+  return slug.replace(/^\d+_/,'').replace(/_/g,' ');
+}
+
+function updateNav(num){
+  const idx = NUM_ORDER.indexOf(num);
+  const hasPrev = idx > 0;
+  const hasNext = idx < NUM_ORDER.length - 1;
+  ['btn-prev','btn-prev2'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b){ b.disabled=!hasPrev; b.style.opacity=hasPrev?'1':'.2'; b.style.cursor=hasPrev?'pointer':'default'; }
+  });
+  ['btn-next','btn-next2'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b){ b.disabled=!hasNext; b.style.opacity=hasNext?'1':'.2'; b.style.cursor=hasNext?'pointer':'default'; }
+  });
+}
+
+function navChapter(dir){
+  const idx = NUM_ORDER.indexOf(currentNum);
+  const newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= NUM_ORDER.length) return;
+  const newNum = NUM_ORDER[newIdx];
+  loadBook(CHAPTERS[newNum]);
+}
+
+function loadBook(slug){
+  document.getElementById('loader').style.display='block';
+  document.getElementById('doc').style.display='none';
+  document.getElementById('err').style.display='none';
+  window.scrollTo(0,0);
+
+  currentSlug = slug;
+  currentNum = BOOK_TO_NUM[slug] || 0;
+  const title = slugToTitle(slug);
+  document.title = `// ${title} — 22DIV FIELD MANUAL`;
+
+  const chNum = currentNum;
+  document.getElementById('ch-label').textContent = chNum ? `Ch ${String(chNum).padStart(2,'0')} / 22` : '';
+  if(chNum) updateNav(chNum);
+
+  history.replaceState(null,'','reader.html?b='+slug);
+
+  fetch('./' + slug + '.md')
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status+' — chapter not found'); return r.text(); })
+    .then(md=>{
+      document.getElementById('loader').style.display='none';
+
+      document.getElementById('doc-tag').textContent = chNum ? `// FIELD MANUAL — CHAPTER ${String(chNum).padStart(2,'0')}` : '// FIELD MANUAL';
+      document.getElementById('doc-title').textContent = title.replace(/_/g,' ');
+      document.getElementById('doc-sub').textContent = chNum && CHAPTER_TITLES[chNum] ? CHAPTER_TITLES[chNum] : '';
+
+      const contentEl = document.getElementById('md-content');
+      contentEl.innerHTML = typeof marked === 'function'
+        ? marked(md)
+        : marked.parse(md, {gfm:true, breaks:true});
+
+      // strip the first h1 (already in the doc-header)
+      const firstH1 = contentEl.querySelector('h1');
+      if(firstH1) firstH1.remove();
+
+      // syntax highlight all code blocks
+      contentEl.querySelectorAll('pre code').forEach(block=>{
+        try{ hljs.highlightElement(block); }catch(e){}
+      });
+
+      document.getElementById('doc').style.display='block';
+      if(chNum) updateNav(chNum);
+    })
+    .catch(e=>{
+      document.getElementById('loader').style.display='none';
+      document.getElementById('err').style.display='block';
+      document.getElementById('err').textContent = '// ERROR: ' + e.message;
+    });
+}
+
+// read scroll progress
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('read-progress').style.width = Math.min(pct,100) + '%';
+});
+
+// init
+const params = new URLSearchParams(location.search);
+const b = params.get('b') || '';
+if(b){
+  loadBook(b);
+} else {
+  document.getElementById('loader').style.display='none';
+  document.getElementById('err').style.display='block';
+  document.getElementById('err').textContent = '// ERROR: no chapter specified. use ?b=18_CRYPTOGRAPHY_EVASION';
+}
+</script>
+</body>
+</html>
