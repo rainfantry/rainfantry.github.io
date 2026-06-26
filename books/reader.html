@@ -85,6 +85,22 @@ nav .ch-label{color:var(--dim);font-size:.7rem;letter-spacing:.08em;flex:1;text-
 .ch-nav button:hover{border-color:var(--green3);color:var(--green2);}
 .ch-nav button:disabled{opacity:.2;cursor:default;}
 
+/* ── language primer ── */
+.primer{border:1px solid #0d1a2a;background:#04070a;margin:0 0 1.4rem;overflow:hidden;}
+.primer-header{background:#080f18;padding:.4rem .9rem;font-size:.58rem;letter-spacing:.18em;color:#2a5a8e;border-bottom:1px solid #0d1a2a;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
+.primer-header span:first-child{color:#2a5a8e;}
+.primer-langs{font-size:.55rem;letter-spacing:.1em;color:#3a7aae;}
+.primer-toggle{font-size:.65rem;color:#2a5a8e;transition:transform .2s;}
+.primer.open .primer-toggle{transform:rotate(90deg);}
+.primer-body{display:none;padding:.6rem .9rem .8rem;}
+.primer.open .primer-body{display:block;}
+.primer-table{width:100%;border-collapse:collapse;font-size:.7rem;}
+.primer-table tr+tr td{border-top:1px solid #0a1520;}
+.primer-table td{padding:.35rem .5rem;vertical-align:top;line-height:1.55;}
+.primer-table td:first-child{color:#5a9ad4;font-family:monospace;font-size:.68rem;white-space:nowrap;padding-right:1.2rem;min-width:160px;}
+.primer-table td:nth-child(2){font-size:.6rem;letter-spacing:.1em;color:#2a5a8e;width:38px;padding-right:.8rem;white-space:nowrap;}
+.primer-table td:last-child{color:#8aa8c4;}
+
 /* ── mission briefing ── */
 .sitrep{border:1px solid #001a00;background:#04090400;margin:0 0 2rem;overflow:hidden;}
 .sitrep-header{background:#0a140a;padding:.4rem .9rem;font-size:.58rem;letter-spacing:.18em;color:#2a6e2a;border-bottom:1px solid #001a00;}
@@ -283,8 +299,9 @@ function loadBook(slug){
       document.getElementById('doc').style.display='block';
       if(chNum) updateNav(chNum);
 
-      // load mission briefing + exercises
+      // load mission briefing, language primer, exercises
       loadSitrep(slug, contentEl);
+      loadPrimer(slug, contentEl);
       loadExercises(slug, contentEl);
     })
     .catch(e=>{
@@ -302,6 +319,45 @@ window.addEventListener('scroll', ()=>{
 });
 
 // ── Exercise Engine ──────────────────────────────────────────────────────────
+
+var _primers = null;
+function loadPrimer(slug, container) {
+  function inject(data) {
+    var p = data[slug];
+    if (!p || !p.entries || !p.entries.length) return;
+    var langs = p.languages ? p.languages.join(' &nbsp;•&nbsp; ') : '';
+    var rows = p.entries.map(function(e) {
+      return '<tr><td>' + e.term + '</td><td>' + (e.lang || '') + '</td><td>' + e.meaning + '</td></tr>';
+    }).join('');
+    var el = document.createElement('div');
+    el.className = 'primer';
+    el.innerHTML =
+      '<div class="primer-header">' +
+        '<span>// LANGUAGE PRIMER</span>' +
+        '<span class="primer-langs">' + langs + '</span>' +
+        '<span class="primer-toggle">&#9658;</span>' +
+      '</div>' +
+      '<div class="primer-body">' +
+        '<table class="primer-table">' + rows + '</table>' +
+      '</div>';
+    el.querySelector('.primer-header').addEventListener('click', function() {
+      el.classList.toggle('open');
+    });
+    var sitrep = container.querySelector('.sitrep');
+    if (sitrep && sitrep.nextSibling) {
+      container.insertBefore(el, sitrep.nextSibling);
+    } else if (sitrep) {
+      container.appendChild(el);
+    } else {
+      container.insertBefore(el, container.firstChild);
+    }
+  }
+  if (_primers) { inject(_primers); return; }
+  fetch('./primers.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ _primers = data; inject(data); })
+    .catch(function(){});
+}
 
 var _sitreps = null;
 function loadSitrep(slug, container) {
