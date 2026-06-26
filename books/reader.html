@@ -84,6 +84,53 @@ nav .ch-label{color:var(--dim);font-size:.7rem;letter-spacing:.08em;flex:1;text-
 .ch-nav button{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;padding:.25rem .7rem;border:1px solid #2a2a2a;background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;}
 .ch-nav button:hover{border-color:var(--green3);color:var(--green2);}
 .ch-nav button:disabled{opacity:.2;cursor:default;}
+
+/* ── exercise engine ── */
+.ex-section-label{font-size:.6rem;letter-spacing:.16em;color:var(--dim);margin:2.5rem 0 .8rem;padding-top:1.2rem;border-top:1px solid #1a1a1a;}
+.ex-block{margin:1.2rem 0;font-size:.8rem;}
+
+/* terminal replay */
+.ex-terminal{border:1px solid #003311;background:#060d06;overflow:hidden;}
+.ex-terminal .ex-bar{background:#0a150a;padding:.35rem .9rem;font-size:.62rem;color:var(--dim);letter-spacing:.1em;display:flex;gap:.8rem;align-items:center;}
+.ex-terminal .ex-bar span{color:var(--green3);}
+.term-screen{padding:.9rem 1rem;min-height:72px;font-size:.75rem;line-height:1.7;font-family:var(--mono);}
+.term-line{color:#00ff41;display:block;opacity:0;transition:opacity .08s;}
+.term-line.show{opacity:1;}
+.term-line.dim{color:var(--dim);}
+.term-line.ok{color:var(--green);}
+.term-line.err{color:var(--red);}
+.ex-terminal .ex-controls{border-top:1px solid #0a1a0a;padding:.4rem .9rem;display:flex;gap:.6rem;}
+.term-btn{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;padding:.2rem .65rem;border:1px solid #1a3a1a;background:transparent;color:var(--green3);cursor:pointer;transition:all .15s;}
+.term-btn:hover{border-color:var(--green);color:var(--green);}
+.term-btn:disabled{opacity:.3;cursor:default;}
+
+/* MCQ */
+.ex-mcq{border:1px solid #1e1e1e;background:#0d0d0d;padding:1rem 1.1rem;}
+.ex-mcq .ex-tag{font-size:.6rem;letter-spacing:.12em;color:var(--amber);margin-bottom:.5rem;}
+.ex-question{color:var(--bright);font-size:.82rem;line-height:1.6;margin-bottom:.9rem;}
+.ex-choices{display:flex;flex-direction:column;gap:.4rem;}
+.ex-choice{background:#111;border:1px solid #222;color:var(--text);padding:.45rem .8rem;cursor:pointer;text-align:left;font-family:var(--mono);font-size:.76rem;transition:all .12s;width:100%;}
+.ex-choice:hover:not(:disabled){border-color:#004d18;color:var(--bright);}
+.ex-choice.correct{border-color:var(--green)!important;color:var(--green)!important;background:#020d02;}
+.ex-choice.wrong{border-color:var(--red)!important;color:var(--red)!important;background:#0d0202;}
+.ex-feedback{font-size:.74rem;margin-top:.7rem;padding:.55rem .8rem;display:none;border-left:3px solid;}
+.ex-feedback.show{display:block;}
+.ex-feedback.fb-ok{color:var(--green2);border-color:var(--green3);background:#020d02;}
+.ex-feedback.fb-err{color:#ff8888;border-color:var(--red);background:#0d0202;}
+
+/* fill-in-blank */
+.ex-fillin{border:1px solid #1e1e1e;background:#0d0d0d;padding:1rem 1.1rem;}
+.ex-fillin .ex-tag{font-size:.6rem;letter-spacing:.12em;color:var(--cyan);margin-bottom:.5rem;}
+.ex-prompt{color:var(--bright);font-size:.82rem;margin-bottom:.8rem;}
+.ex-fillin pre{background:#090909;border:1px solid #141414;padding:.8rem 1rem;margin:.6rem 0 .8rem;overflow-x:auto;font-size:.74rem;line-height:1.7;}
+.code-blank{background:#001200;border:none;border-bottom:1px solid var(--green3);color:var(--green);font-family:var(--mono);font-size:.74rem;padding:.05em .3em;min-width:10ch;width:auto;outline:none;transition:border-color .15s;}
+.code-blank:focus{border-bottom-color:var(--green);}
+.code-blank.fb-ok{border-color:var(--green);color:var(--green);}
+.code-blank.fb-err{border-color:var(--red);color:var(--red);background:#0d0000;}
+.ex-submit{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;padding:.25rem .75rem;border:1px solid #2a2a2a;background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;margin-top:.3rem;}
+.ex-submit:hover{border-color:var(--green3);color:var(--green2);}
+.ex-hint{font-size:.7rem;color:var(--dim);cursor:pointer;margin-left:.8rem;text-decoration:underline dashed;}
+.ex-hint:hover{color:var(--muted);}
 </style>
 </head>
 <body>
@@ -226,6 +273,9 @@ function loadBook(slug){
 
       document.getElementById('doc').style.display='block';
       if(chNum) updateNav(chNum);
+
+      // load exercises sidecar
+      loadExercises(slug, contentEl);
     })
     .catch(e=>{
       document.getElementById('loader').style.display='none';
@@ -240,6 +290,138 @@ window.addEventListener('scroll', ()=>{
   const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
   document.getElementById('read-progress').style.width = Math.min(pct,100) + '%';
 });
+
+// ── Exercise Engine ──────────────────────────────────────────────────────────
+
+function loadExercises(slug, container) {
+  fetch('./exercises/' + slug + '.json')
+    .then(r => { if (!r.ok) return null; return r.json(); })
+    .then(data => { if (data && data.length) ExEngine.render(data, container); })
+    .catch(() => {});
+}
+
+const ExEngine = {
+  render(exercises, container) {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = '<div class="ex-section-label">// DRILL — INTERACTIVE EXERCISES</div>';
+    exercises.forEach((ex, i) => {
+      const el = document.createElement('div');
+      el.className = 'ex-block';
+      if (ex.type === 'terminal')  el.appendChild(ExEngine.buildTerminal(ex, i));
+      else if (ex.type === 'mcq')  el.appendChild(ExEngine.buildMCQ(ex, i));
+      else if (ex.type === 'fillin') el.appendChild(ExEngine.buildFillIn(ex, i));
+      wrap.appendChild(el);
+    });
+    container.appendChild(wrap);
+  },
+
+  buildTerminal(ex, idx) {
+    const d = document.createElement('div');
+    d.className = 'ex-terminal';
+    d.innerHTML = `<div class="ex-bar"><span>▶ TERMINAL</span> ${ex.title || ''}</div>
+      <div class="term-screen" id="ts-${idx}"></div>
+      <div class="ex-controls">
+        <button class="term-btn" id="tb-${idx}">▶ PLAY</button>
+        <button class="term-btn" id="tr-${idx}" disabled>↺ REPLAY</button>
+      </div>`;
+    const screen = d.querySelector('#ts-' + idx);
+    const playBtn = d.querySelector('#tb-' + idx);
+    const replayBtn = d.querySelector('#tr-' + idx);
+    let timer = null;
+
+    function run() {
+      screen.innerHTML = '';
+      playBtn.disabled = true;
+      replayBtn.disabled = true;
+      let delay = 0;
+      (ex.frames || []).forEach(f => {
+        delay += (f.delay || 300);
+        timer = setTimeout(() => {
+          const line = document.createElement('span');
+          line.className = 'term-line ' + (f.cls || '');
+          line.textContent = f.text;
+          screen.appendChild(line);
+          setTimeout(() => line.classList.add('show'), 20);
+          screen.scrollTop = screen.scrollHeight;
+        }, delay);
+      });
+      setTimeout(() => { replayBtn.disabled = false; }, delay + 400);
+    }
+
+    playBtn.addEventListener('click', () => { run(); playBtn.style.display = 'none'; });
+    replayBtn.addEventListener('click', () => { run(); });
+    return d;
+  },
+
+  buildMCQ(ex, idx) {
+    const d = document.createElement('div');
+    d.className = 'ex-mcq';
+    const choicesHtml = (ex.choices || []).map((c, i) =>
+      `<button class="ex-choice" data-idx="${i}">${c}</button>`).join('');
+    d.innerHTML = `<div class="ex-tag">// MCQ</div>
+      <div class="ex-question">${ex.question}</div>
+      <div class="ex-choices">${choicesHtml}</div>
+      <div class="ex-feedback" id="ef-${idx}"></div>`;
+    const fb = d.querySelector('#ef-' + idx);
+    d.querySelectorAll('.ex-choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = +btn.dataset.idx;
+        const correct = ex.answer;
+        d.querySelectorAll('.ex-choice').forEach(b => b.disabled = true);
+        if (chosen === correct) {
+          btn.classList.add('correct');
+          fb.textContent = '✓ CORRECT — ' + (ex.explanation || '');
+          fb.className = 'ex-feedback show fb-ok';
+        } else {
+          btn.classList.add('wrong');
+          d.querySelectorAll('.ex-choice')[correct].classList.add('correct');
+          fb.textContent = '✗ WRONG — ' + (ex.explanation || '');
+          fb.className = 'ex-feedback show fb-err';
+        }
+      });
+    });
+    return d;
+  },
+
+  buildFillIn(ex, idx) {
+    const d = document.createElement('div');
+    d.className = 'ex-fillin';
+    const code = (ex.code || '').replace(/\[BLANK\]/g,
+      `<input class="code-blank" id="fb-input-${idx}" placeholder="${ex.hint || '?'}" autocomplete="off" spellcheck="false">`);
+    d.innerHTML = `<div class="ex-tag">// FILL IN THE BLANK</div>
+      <div class="ex-prompt">${ex.prompt}</div>
+      <pre>${code}</pre>
+      <button class="ex-submit" id="fb-btn-${idx}">CHECK →</button>
+      <span class="ex-hint" id="fb-hint-${idx}">hint</span>
+      <div class="ex-feedback" id="fb-fb-${idx}"></div>`;
+    const input = d.querySelector('#fb-input-' + idx);
+    const btn   = d.querySelector('#fb-btn-' + idx);
+    const hintEl = d.querySelector('#fb-hint-' + idx);
+    const fb    = d.querySelector('#fb-fb-' + idx);
+    const answers = Array.isArray(ex.answers) ? ex.answers : [ex.answer];
+
+    function check() {
+      const val = (input.value || '').trim();
+      const ok = answers.some(a => val.toLowerCase() === String(a).toLowerCase());
+      input.className = 'code-blank ' + (ok ? 'fb-ok' : 'fb-err');
+      fb.textContent = ok
+        ? '✓ CORRECT — ' + (ex.explanation || 'Exactly right.')
+        : '✗ Try again. ' + (ex.wrong_hint || '');
+      fb.className = 'ex-feedback show ' + (ok ? 'fb-ok' : 'fb-err');
+      if (ok) { btn.disabled = true; input.disabled = true; }
+    }
+
+    btn.addEventListener('click', check);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+    hintEl.addEventListener('click', () => {
+      fb.textContent = '// HINT: ' + (ex.hint || ex.answer);
+      fb.className = 'ex-feedback show fb-err';
+    });
+    return d;
+  }
+};
+
+// ── End Exercise Engine ───────────────────────────────────────────────────────
 
 // init
 const params = new URLSearchParams(location.search);

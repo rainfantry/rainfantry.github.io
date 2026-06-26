@@ -1,0 +1,50 @@
+[
+  {
+    "type": "terminal",
+    "title": "static signature scan → encode → evade",
+    "frames": [
+      {"delay": 0,    "text": "C:\\lab> defender_scan.exe payload.exe", "cls": "dim"},
+      {"delay": 600,  "text": "[!] THREAT DETECTED: Trojan.GenericKD.47291", "cls": "err"},
+      {"delay": 1200, "text": "C:\\lab> xor_encode.exe payload.exe --key 0x4D", "cls": "dim"},
+      {"delay": 900,  "text": "[*] XOR encoding with per-vector key isolation...", "cls": ""},
+      {"delay": 800,  "text": "[+] payload_encoded.exe written (11,264 bytes)", "cls": "ok"},
+      {"delay": 600,  "text": "C:\\lab> defender_scan.exe payload_encoded.exe", "cls": "dim"},
+      {"delay": 900,  "text": "[+] No threats found.", "cls": "ok"},
+      {"delay": 400,  "text": "// static signature engine: DEFEATED", "cls": "ok"}
+    ]
+  },
+  {
+    "type": "mcq",
+    "question": "XOR encoding defeats static signature detection because:",
+    "choices": [
+      "It compresses the file below the scanner's minimum size threshold",
+      "The encoded bytes no longer match the byte pattern the AV engine has stored as a signature",
+      "XOR operations are too slow for real-time scanning to complete",
+      "It changes the PE header magic bytes so Windows refuses to scan it"
+    ],
+    "answer": 1,
+    "explanation": "Static AV looks for specific byte sequences (signatures). XOR scrambles every byte — the original signature is gone. The engine never sees the original payload until runtime, after the stub decodes it in memory."
+  },
+  {
+    "type": "mcq",
+    "question": "Why does 22DIV use per-vector key isolation instead of a single XOR key across the whole payload?",
+    "choices": [
+      "A single key produces a known-plaintext weakness — frequency analysis can recover it from the ciphertext",
+      "Windows Defender blocks executables with identical XOR keys",
+      "Single-key XOR is illegal under Australian cybercrime law",
+      "It reduces file size by 40%"
+    ],
+    "answer": 0,
+    "explanation": "Single-key XOR is trivially broken by frequency analysis — if 0x00 bytes are common in the PE, the key leaks from the output. Per-vector key isolation breaks the statistical pattern."
+  },
+  {
+    "type": "fillin",
+    "prompt": "Complete the XOR decode stub — this runs in memory before the payload executes:",
+    "code": "void xor_decode(unsigned char *buf, size_t len, unsigned char key) {\n    for (size_t i = 0; i < len; i++) {\n        buf[i] [BLANK] key;\n    }\n}",
+    "answer": "^=",
+    "answers": ["^=", "= buf[i] ^ key"],
+    "hint": "XOR assignment operator in C",
+    "explanation": "^= applies XOR in-place. The same key decodes what was encoded — XOR is its own inverse.",
+    "wrong_hint": "It's a compound assignment using the XOR bitwise operator."
+  }
+]
