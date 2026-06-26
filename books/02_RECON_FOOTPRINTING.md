@@ -33,6 +33,200 @@ stay invisible while doing it.
 
 ---
 
+## WINDOWS SETUP
+
+Every tool in this chapter. Exact install commands. No excuses.
+
+### Tools List and Install Commands
+
+**1. nmap** — port scanner, service version detection, NSE scripts
+```powershell
+# Download installer from https://nmap.org/download.html#windows
+# Direct link: https://nmap.org/dist/nmap-7.95-setup.exe
+# Run installer as Administrator (requires admin rights)
+# Verification:
+nmap --version
+# Expected: Nmap 7.95 ( https://nmap.org )
+```
+
+**2. Npcap** — packet capture driver required by nmap (bundled in nmap installer)
+```powershell
+# Installed automatically with nmap. If you need it separately:
+# https://npcap.com/#download
+# MUST install as Administrator
+# Verification: check Add/Remove Programs for "Npcap"
+```
+
+**3. theHarvester** — email/subdomain/host enumeration
+```powershell
+# Requires Python 3.8+ (you already have this)
+pip install theHarvester
+# OR clone from GitHub for latest version:
+git clone https://github.com/laramies/theHarvester.git
+cd theHarvester
+pip install -r requirements/base.txt
+# Verification:
+python theHarvester.py --help
+# Expected: usage: theHarvester.py [-h] -d DOMAIN ...
+```
+
+**4. Shodan CLI** — command-line interface to Shodan API
+```powershell
+pip install shodan
+# After install, configure with your API key (free account at shodan.io):
+shodan init YOUR_API_KEY_HERE
+# Verification:
+shodan info
+# Expected: Query credits available: 100 ...
+```
+
+**5. subfinder** — passive subdomain discovery
+```powershell
+# Download Windows binary from GitHub releases:
+# https://github.com/projectdiscovery/subfinder/releases
+# Download subfinder_windows_amd64.zip, extract subfinder.exe to C:\Tools\
+# Add C:\Tools\ to your PATH in System Environment Variables
+# Verification:
+subfinder -version
+# Expected: subfinder v2.x.x
+```
+
+**6. amass** — aggressive subdomain discovery
+```powershell
+# Download Windows binary:
+# https://github.com/owasp-amass/amass/releases
+# Download amass_windows_amd64.zip, extract to C:\Tools\
+# Verification:
+amass -version
+# Expected: v3.x.x
+```
+
+**7. gobuster** — DNS/directory brute force
+```powershell
+# Download Windows binary:
+# https://github.com/OJ/gobuster/releases
+# Extract gobuster.exe to C:\Tools\
+# Verification:
+gobuster version
+# Expected: gobuster v3.x.x
+```
+
+**8. masscan** — high-speed port scanner (WSL2 REQUIRED — see below)
+```powershell
+# masscan does NOT have a working Windows native build.
+# Install WSL2 first (requires admin rights, Windows 10 2004+):
+wsl --install
+# Reboot when prompted, then open Ubuntu from Start Menu:
+sudo apt update && sudo apt install masscan -y
+# Verification (inside WSL2):
+masscan --version
+# Expected: Masscan version 1.x.x
+```
+
+**9. truffleHog** — git history secret scanner
+```powershell
+pip install trufflehog
+# Verification:
+trufflehog --help
+# Expected: usage: trufflehog [-h] ...
+```
+
+**10. gitleaks** — fast secret scanner for git repos
+```powershell
+# Download Windows binary:
+# https://github.com/gitleaks/gitleaks/releases
+# Download gitleaks_windows_x64.zip, extract to C:\Tools\
+# Verification:
+gitleaks version
+# Expected: v8.x.x
+```
+
+**11. whatweb** — web technology fingerprinting (WSL2 REQUIRED)
+```powershell
+# No working Windows native build. Use WSL2:
+wsl --install   # if not already installed
+# Inside WSL2 Ubuntu:
+sudo apt install whatweb -y
+# Verification (inside WSL2):
+whatweb --version
+# Expected: WhatWeb version 0.5.x
+```
+
+**12. wafw00f** — WAF detection
+```powershell
+pip install wafw00f
+# Verification:
+wafw00f --help
+# Expected: Usage: wafw00f url1 [url2 [url3 ...]]
+```
+
+**13. Wappalyzer** — browser extension for passive tech fingerprinting
+```
+# Chrome: https://chrome.google.com/webstore/detail/wappalyzer/gppongmhjkpfnbhagpmjfkannfbllamg
+# Firefox: https://addons.mozilla.org/en-US/firefox/addon/wappalyzer/
+# No install command — add to browser from the link above.
+# Verification: browse any website and click the Wappalyzer icon in toolbar.
+```
+
+**14. ExifTool** — metadata extraction from files
+```powershell
+# Download Windows executable:
+# https://exiftool.org/  → download "Windows Executable"
+# Extract exiftool(-k).exe, rename to exiftool.exe, place in C:\Tools\
+# Verification:
+exiftool -ver
+# Expected: 12.xx
+```
+
+**15. dig / nslookup** — DNS query tools
+```powershell
+# nslookup: already built into Windows, no install needed
+nslookup -type=MX google.com
+# Expected: Non-authoritative answer: google.com MX preference = ...
+
+# dig: NOT built into Windows natively. Options:
+# Option A — install BIND tools for Windows:
+# https://www.isc.org/download/ → BIND → Windows installer
+# Option B — use nslookup instead (same results, different syntax)
+# Option C — WSL2: sudo apt install dnsutils -y
+```
+
+**16. curl** — HTTP requests, banner grabbing
+```powershell
+# Built into Windows 10/11. No install needed.
+curl --version
+# Expected: curl 7.x.x (Windows) ...
+```
+
+**17. gitrob — DEPRECATED. Do not install.**
+```
+# gitrob is no longer maintained and its GitHub repo is archived.
+# Replacement: use truffleHog + gitleaks + manual GitHub dorking.
+# truffleHog covers everything gitrob did and is actively maintained.
+```
+
+### WSL2 Setup (Required for masscan and whatweb)
+
+```powershell
+# Run PowerShell as Administrator:
+wsl --install
+# This installs WSL2 + Ubuntu 22.04 by default.
+# Reboot when prompted.
+# After reboot, Ubuntu opens and asks you to set a username/password.
+# That's your Linux username — remember it.
+
+# Verify WSL2 is working:
+wsl --list --verbose
+# Expected:
+#   NAME      STATE           VERSION
+# * Ubuntu    Running         2
+```
+
+**Admin rights required for**: nmap install, Npcap install, WSL2 install.
+All other tools run as a normal user after install.
+
+---
+
 ## Section 1 — Passive Recon: OSINT
 
 OSINT (Open Source Intelligence) is intelligence gathered from
@@ -77,6 +271,50 @@ dig NS targetcompany.com
 # https://www.whois.com/
 # https://centralops.net/co/
 ```
+
+**Windows alternative — use nslookup (built-in) instead of dig:**
+
+```powershell
+# Get nameservers — equivalent to: dig NS targetcompany.com
+nslookup -type=NS targetcompany.com
+
+# Get A record (hostname to IP)
+nslookup targetcompany.com
+
+# WHOIS on Windows — use the web interfaces above, or PowerShell:
+# (No native whois command on Windows — web is your best bet)
+```
+
+#### Expected Output
+
+**WHOIS lookup success looks like:**
+```
+Domain Name: TARGETCOMPANY.COM
+Registry Domain ID: 12345678_DOMAIN_COM-VRSN
+Registrar WHOIS Server: whois.godaddy.com
+Registrar URL: http://www.godaddy.com
+Updated Date: 2023-01-15T10:22:00Z
+Creation Date: 2010-03-22T18:00:00Z
+Expiry Date: 2025-03-22T18:00:00Z
+Registrar: GoDaddy.com, LLC
+Registrant Organization: Target Company Pty Ltd
+Admin Email: admin@targetcompany.com
+Name Server: NS1.TARGETCOMPANY.COM
+Name Server: NS2.TARGETCOMPANY.COM
+```
+
+**Failure looks like:**
+```
+No match for "TARGETCOMPANY.COM".
+```
+Means: domain doesn't exist, or you typo'd it.
+
+```
+>>> Last update of WHOIS database: 2024-01-15T00:00:00Z <<<
+[...redacted by privacy service...]
+```
+Means: domain has WHOIS privacy protection. You'll still see registrar
+and nameservers — just not registrant contact info. That's fine, still useful.
 
 From a WHOIS lookup you can often extract:
 - Registered domain names (hunt for adjacent domains)
@@ -123,6 +361,47 @@ org:"Target Company" port:22
 shodan search "org:Target Company"
 shodan host 203.0.113.50
 ```
+
+**Windows — Shodan CLI commands:**
+
+```powershell
+# Install Shodan CLI (already covered in Windows Setup above)
+# Run these in PowerShell or CMD after install:
+
+shodan search "org:Target Company"    # search by org
+shodan host 203.0.113.50              # detail on a specific IP
+shodan count "org:Target Company"     # how many results before you use credits
+shodan download results.json.gz "org:Target Company"  # save results to file
+```
+
+#### Expected Output
+
+**`shodan host 203.0.113.50` success looks like:**
+```
+203.0.113.50
+City:                   Sydney
+Country:                Australia
+Organisation:           Target Company Pty Ltd
+Updated:                2024-01-10T08:22:11.414Z
+Number of open ports:   3
+
+Ports:
+     22/tcp
+    443/tcp
+   8443/tcp
+```
+
+**Failure looks like:**
+```
+ERROR: No information available for that IP.
+```
+Means: Shodan hasn't scanned that IP recently, or it's in a range
+Shodan can't reach (RFC1918 private IPs won't appear).
+
+```
+ERROR: Access denied. Please use a valid API key.
+```
+Means: run `shodan init YOUR_KEY` first.
 
 What Shodan tells you per result:
 - IP address, port, protocol
@@ -230,19 +509,60 @@ org:targetcompany
 
 **Automated tools for GitHub secret hunting:**
 
-```bash
-# truffleHog — scans git history for secrets
+```powershell
+# truffleHog — scans git history for secrets (Windows, runs natively)
+# Scan a GitHub org:
 trufflehog github --org=targetcompany
 
-# gitleaks — fast secret scanner
-gitleaks detect --source=. --verbose
+# Scan a specific repo:
+trufflehog git https://github.com/targetcompany/someproject
 
-# gitrob — organisation-wide secret hunting
-gitrob analyze targetcompany
-
-# GitDorker — automated GitHub dorking
-python3 gitdorker.py -tf tokens.txt -q targetcompany.com -d dorks.txt
+# Scan a local repo you've already cloned:
+trufflehog filesystem C:\path\to\cloned\repo
 ```
+
+```powershell
+# gitleaks — fast secret scanner (Windows, runs natively)
+# Scan a local repo:
+gitleaks detect --source=C:\path\to\repo --verbose
+
+# Scan and output results to JSON:
+gitleaks detect --source=C:\path\to\repo --report-path=C:\leaks.json
+```
+
+**gitrob is deprecated and must not be used.** The project is archived
+and unmaintained. truffleHog v3 + gitleaks together cover everything
+gitrob did, with active maintenance and better detection rates.
+
+#### Expected Output
+
+**`trufflehog github --org=targetcompany` success looks like:**
+```
+Found verified result 🐷🔑
+Detector Type: AWS
+Decoder Type: PLAIN
+Raw result: AKIAIOSFODNN7EXAMPLE
+File: config/deploy.rb
+Line: 14
+Commit: a3f2b1c...
+Repository: targetcompany/infrastructure
+```
+
+**Failure looks like:**
+```
+Error: HTTP 403 - Forbidden
+```
+Means: you're rate-limited or need a GitHub token. Set one:
+```powershell
+$env:GITHUB_TOKEN = "ghp_yourtokenhere"
+trufflehog github --org=targetcompany
+```
+
+```
+No results found.
+```
+Means: either no secrets in that org's public repos, or the org name is wrong.
+Check with: `https://github.com/targetcompany` in browser first.
 
 GitHub history matters. Code gets committed, developers realise
 it contains a secret, and they remove it in the next commit. But
@@ -301,31 +621,48 @@ TOOL                PURPOSE
 ────────────────────────────────────────────────────────
 theHarvester        Email, subdomain, host enumeration
                     python theHarvester.py -d targetcompany.com -b all
+                    WINDOWS: pip install theHarvester (runs natively)
 
 Maltego             Visual link analysis, entity mapping (paid/free CE)
+                    WINDOWS: native Windows installer at maltego.com
 
 SpiderFoot          Automated OSINT, covers 100+ sources
                     spiderfoot -s targetcompany.com -m all
+                    WINDOWS: pip install spiderfoot
 
 Recon-ng            Modular recon framework (like Metasploit for recon)
                     recon-ng -w targetcompany
+                    WINDOWS: pip install recon-ng (or use WSL2)
 
 FOCA                Document metadata extraction — find author names,
                     internal paths, software versions from PDFs/DOCX
+                    WINDOWS: FOCA is Windows-native! Download from
+                    https://github.com/ElevenPaths/FOCA/releases
 
 Metagoofil          Extracts metadata from public documents
                     metagoofil -d targetcompany.com -t pdf,docx
+                    WINDOWS: pip install metagoofil
 
 Exiftool            Reads metadata from images/documents (GPS coords,
                     camera models, software versions, author names)
                     exiftool document.pdf
+                    WINDOWS: native Windows exe at exiftool.org
 
 Intelx.io           Historical WHOIS, leaked database search, pastes
+                    WEB ONLY — use in browser
+
 SecurityTrails      DNS history, WHOIS history, subdomain intelligence
+                    WEB ONLY — use in browser (securitytrails.com)
+
 Censys              Internet scan data (alternative to Shodan)
+                    WEB ONLY — use at censys.io
+
 BuiltWith           Technology fingerprint from web scraping
+                    WEB ONLY — use at builtwith.com
+
 Wappalyzer          Browser extension — identifies tech stack passively
                     while browsing target website
+                    WINDOWS: Chrome/Firefox extension — see Windows Setup
 ```
 
 ---
@@ -361,6 +698,54 @@ dig -x 203.0.113.50
 nslookup -type=MX targetcompany.com
 ```
 
+**Windows equivalents using nslookup (no install needed):**
+
+```powershell
+# A record
+nslookup targetcompany.com
+
+# MX records (mail servers)
+nslookup -type=MX targetcompany.com
+
+# NS records (nameservers)
+nslookup -type=NS targetcompany.com
+
+# TXT records (SPF, DKIM, verification tokens)
+nslookup -type=TXT targetcompany.com
+
+# Zone transfer attempt
+nslookup
+  server ns1.targetcompany.com
+  set type=AXFR
+  targetcompany.com
+
+# Reverse DNS (PTR record)
+nslookup 203.0.113.50
+```
+
+#### Expected Output
+
+**`nslookup -type=MX targetcompany.com` success looks like:**
+```
+Server:  UnKnown
+Address:  192.168.1.1
+
+Non-authoritative answer:
+targetcompany.com       MX preference = 10, mail exchanger = mail.targetcompany.com
+targetcompany.com       MX preference = 20, mail exchanger = mail2.targetcompany.com
+```
+
+**Failure looks like:**
+```
+*** UnKnown can't find targetcompany.com: Non-existent domain
+```
+Means: domain doesn't exist. Check spelling.
+
+```
+*** UnKnown can't find targetcompany.com: No response from server
+```
+Means: DNS server timeout. Try specifying a public DNS: `nslookup -type=MX targetcompany.com 8.8.8.8`
+
 ### Zone Transfer
 
 A DNS zone transfer is a mechanism for DNS servers to replicate
@@ -378,6 +763,41 @@ dig @ns2.targetcompany.com targetcompany.com AXFR
 # This is essentially the full infrastructure map in one query
 ```
 
+**Windows zone transfer attempt:**
+
+```powershell
+# In PowerShell, use nslookup interactive mode:
+nslookup
+  server ns1.targetcompany.com
+  set type=AXFR
+  targetcompany.com
+  exit
+
+# Or use Resolve-DnsName (PowerShell built-in):
+Resolve-DnsName -Name targetcompany.com -Type AXFR -Server ns1.targetcompany.com
+```
+
+#### Expected Output
+
+**Zone transfer success (misconfigured server) looks like:**
+```
+; <<>> DiG 9.11.x <<>> @ns1.targetcompany.com targetcompany.com AXFR
+targetcompany.com.         3600  IN  SOA   ns1.targetcompany.com. ...
+targetcompany.com.         3600  IN  NS    ns1.targetcompany.com.
+mail.targetcompany.com.    3600  IN  A     203.0.113.51
+vpn.targetcompany.com.     3600  IN  A     203.0.113.52
+dev.targetcompany.com.     3600  IN  A     203.0.113.55
+```
+That's gold — entire infrastructure in one query.
+
+**Failure looks like (correctly configured server):**
+```
+; Transfer failed.
+targetcompany.com: Transfer not allowed
+```
+Means: zone transfer is blocked (correct behaviour on their end).
+Still worth trying every nameserver — misconfigurations happen.
+
 Most organisations block zone transfers. But "most" is not "all".
 Always try. The information is worth the 2 seconds it takes.
 
@@ -392,20 +812,72 @@ posture.
 
 ```bash
 # dnsenum — combines DNS brute force and zone transfer attempts
+# WINDOWS: use WSL2
 dnsenum targetcompany.com
 
 # dnsrecon — comprehensive DNS recon
+# WINDOWS: pip install dnsrecon
 dnsrecon -d targetcompany.com -t brt -D /usr/share/wordlists/dnsmap.txt
 
 # gobuster DNS mode
-gobuster dns -d targetcompany.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+# WINDOWS: download gobuster.exe (see Windows Setup)
+gobuster dns -d targetcompany.com -w subdomains-top1million-5000.txt
 
 # amass — aggressive subdomain discovery
+# WINDOWS: download amass.exe (see Windows Setup)
 amass enum -d targetcompany.com
 
 # subfinder — passive subdomain discovery from certificate logs
+# WINDOWS: download subfinder.exe (see Windows Setup)
 subfinder -d targetcompany.com -all
 ```
+
+**Windows wordlists** — gobuster and dnsrecon need a wordlist.
+SecLists is the go-to collection:
+```powershell
+# Clone SecLists to your machine (it's large — pick what you need)
+git clone https://github.com/danielmiessler/SecLists.git C:\Tools\SecLists
+
+# The subdomain wordlist you'll use most:
+# C:\Tools\SecLists\Discovery\DNS\subdomains-top1million-5000.txt
+
+# gobuster with Windows paths:
+gobuster dns -d targetcompany.com -w C:\Tools\SecLists\Discovery\DNS\subdomains-top1million-5000.txt
+```
+
+#### Expected Output
+
+**`subfinder -d targetcompany.com` success looks like:**
+```
+               __    _____           __
+   _______  __/ /_  / __(_)___  ____/ /__  _____
+  / ___/ / / / __ \/ /_/ / __ \/ __  / _ \/ ___/
+ (__  ) /_/ / /_/ / __/ / / / / /_/ /  __/ /
+/____/\__,_/_.___/_/ /_/_/ /_/\__,_/\___/_/
+
+                projectdiscovery.io
+
+[INF] Loading provider config from /home/user/.config/subfinder/provider-config.yaml
+[INF] Enumerating subdomains for targetcompany.com
+
+www.targetcompany.com
+mail.targetcompany.com
+vpn.targetcompany.com
+dev.targetcompany.com
+api.targetcompany.com
+staging.targetcompany.com
+
+[INF] Found 6 subdomains for targetcompany.com in 12 seconds 3 milliseconds
+```
+
+**Failure looks like:**
+```
+[INF] Found 0 subdomains for targetcompany.com in 5 seconds
+```
+Means: either no passive data exists for that domain, or you
+haven't configured API keys for the passive sources. Add keys
+to `C:\Users\YourUser\.config\subfinder\provider-config.yaml`
+for Shodan, SecurityTrails, etc. to get more results.
 
 **Certificate Transparency logs:**
 
@@ -418,13 +890,40 @@ internal subdomains accidentally issued public certs.
 # crt.sh — search CT logs
 https://crt.sh/?q=%.targetcompany.com
 
-# From command line
-curl -s "https://crt.sh/?q=%.targetcompany.com&output=json" | jq '.[].name_value'
+# From command line (Windows PowerShell)
+# curl is built into Windows 11 but no jq — use this instead:
+```
 
-# This often reveals subdomains you can't find by brute force
-# staging.targetcompany.com, dev.internal.targetcompany.com,
+```powershell
+# Query crt.sh from PowerShell and parse results
+$domain = "targetcompany.com"
+$results = Invoke-RestMethod -Uri "https://crt.sh/?q=%25.$domain&output=json"
+$results | Select-Object -ExpandProperty name_value | Sort-Object -Unique
+
+# This often reveals subdomains you can't find by brute force:
+# staging.targetcompany.com
+# dev.internal.targetcompany.com
 # vpn.targetcompany.com
 ```
+
+#### Expected Output
+
+**crt.sh PowerShell query success looks like:**
+```
+api.targetcompany.com
+dev.targetcompany.com
+mail.targetcompany.com
+staging.targetcompany.com
+vpn.targetcompany.com
+www.targetcompany.com
+```
+
+**Failure looks like:**
+```
+Invoke-RestMethod : The remote name could not be resolved: 'crt.sh'
+```
+Means: DNS issue on your end. Try `nslookup crt.sh` — if that fails,
+check your internet connection.
 
 ---
 
@@ -439,6 +938,7 @@ CVE is a target.
 
 ```bash
 # Wappalyzer — browser extension, passive fingerprinting
+# WINDOWS: Add to Chrome/Firefox (see Windows Setup)
 # Just browse the site while installed and it identifies:
 # CMS, frameworks, CDN, analytics, server software
 
@@ -446,15 +946,55 @@ CVE is a target.
 curl "https://api.builtwith.com/free1/api.json?KEY=free&LOOKUP=targetcompany.com"
 
 # whatweb — active web fingerprinting from CLI
+# WINDOWS: WSL2 required
 whatweb targetcompany.com
 whatweb -a 3 targetcompany.com  # aggressive mode
 
 # wafw00f — WAF detection
+# WINDOWS: pip install wafw00f (runs natively)
 wafw00f targetcompany.com
 
 # Manually check response headers
+# WINDOWS: curl is built into Windows 11
 curl -I https://targetcompany.com
 # Look for: Server:, X-Powered-By:, X-Generator:, X-CMS:
+```
+
+**Windows native header inspection:**
+
+```powershell
+# PowerShell — fetch headers only (equivalent to curl -I)
+$response = Invoke-WebRequest -Uri "https://targetcompany.com" -Method HEAD
+$response.Headers
+
+# Or more targeted — just the interesting ones:
+$response = Invoke-WebRequest -Uri "https://targetcompany.com" -Method HEAD
+$response.Headers["Server"]
+$response.Headers["X-Powered-By"]
+$response.Headers["X-Generator"]
+```
+
+#### Expected Output
+
+**`curl -I https://targetcompany.com` success looks like:**
+```
+HTTP/2 200
+server: Apache/2.4.41 (Ubuntu)
+x-powered-by: PHP/7.4.21
+content-type: text/html; charset=UTF-8
+x-frame-options: SAMEORIGIN
+```
+Read those headers: Apache 2.4.41 on Ubuntu, PHP 7.4.21.
+Now search NVD: `https://nvd.nist.gov/vuln/search/results?query=Apache+2.4.41`
+
+**`wafw00f targetcompany.com` success looks like:**
+```
+[*] Checking https://targetcompany.com
+[+] The site https://targetcompany.com is behind Cloudflare (Cloudflare Inc.) WAF.
+```
+Or if no WAF:
+```
+[~] No WAF detected by the generic detection
 ```
 
 Response headers give you away for free. A header of
@@ -512,6 +1052,58 @@ nmap -oA target_scan 203.0.113.50
 # Creates .nmap (human-readable), .xml, .gnmap
 ```
 
+**Windows notes for nmap:**
+
+```powershell
+# On Windows, SYN scan (-sS) requires admin rights (Npcap needs it).
+# Run PowerShell as Administrator, then:
+nmap -sS 203.0.113.50
+
+# If you can't run as admin, use TCP connect scan instead (-sT):
+# Slightly louder (completes full TCP handshake), but no admin needed.
+nmap -sT 203.0.113.50
+
+# Windows path for nmap output files — use a known directory:
+nmap -oA C:\Tools\scans\target_scan 203.0.113.50
+
+# View .nmap file after:
+Get-Content C:\Tools\scans\target_scan.nmap
+```
+
+#### Expected Output
+
+**`nmap -sV 203.0.113.50` success looks like:**
+```
+Starting Nmap 7.95 ( https://nmap.org ) at 2024-01-15 14:22 AEST
+Nmap scan report for targetcompany.com (203.0.113.50)
+Host is up (0.042s latency).
+Not shown: 997 filtered tcp ports (no-response)
+PORT    STATE SERVICE  VERSION
+22/tcp  open  ssh      OpenSSH 8.2p1 Ubuntu 4ubuntu0.5 (Ubuntu Linux; protocol 2.0)
+80/tcp  open  http     Apache httpd 2.4.41 ((Ubuntu))
+443/tcp open  ssl/http Apache httpd 2.4.41 ((Ubuntu))
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 12.34 seconds
+```
+
+**Failure looks like:**
+```
+Nmap scan report for 203.0.113.50
+Host is up (0.042s latency).
+All 1000 scanned ports on 203.0.113.50 are in ignored states.
+Not shown: 1000 filtered tcp ports (no-response)
+```
+Means: firewall is eating your probes. Try `-Pn` to skip host
+discovery: `nmap -sV -Pn 203.0.113.50`
+
+```
+Failed to open device eth0
+```
+Means: SYN scan without admin rights. Either run PowerShell as
+Administrator, or switch to TCP connect scan with `-sT`.
+
 ### Reading Nmap Output
 
 ```
@@ -559,6 +1151,44 @@ masscan 203.0.113.0/24 -p- --rate=10000 -oL live_hosts.txt
 nmap -sV -sC -p <ports_found> <ip>
 ```
 
+**Windows: masscan requires WSL2.** Run these inside WSL2 Ubuntu:
+
+```bash
+# Open WSL2 (search "Ubuntu" in Start Menu or run: wsl)
+# Inside WSL2, masscan needs sudo:
+sudo masscan 203.0.113.0/24 -p80,443,22,3389 --rate=10000
+
+# Save output to a Windows-accessible path (WSL2 mounts Windows drives at /mnt/):
+sudo masscan 203.0.113.0/24 -p80,443 -oX /mnt/c/Tools/scans/masscan_out.xml
+
+# The file will then be at C:\Tools\scans\masscan_out.xml on Windows
+```
+
+#### Expected Output
+
+**`masscan 203.0.113.0/24 -p80,443 --rate=1000` success looks like:**
+```
+Starting masscan 1.3.2 (http://bit.ly/14GZzcT) at 2024-01-15 05:22:13 GMT
+Initiating SYN Stealth Scan
+Scanning 256 hosts [2 ports/host]
+Discovered open port 443/tcp on 203.0.113.50
+Discovered open port 80/tcp on 203.0.113.50
+Discovered open port 443/tcp on 203.0.113.51
+```
+
+**Failure looks like:**
+```
+FAIL: failed to detect a network interface
+```
+Means: masscan can't find a network interface in WSL2. Add
+`--interface eth0` or run `ip link` inside WSL2 to find
+the correct interface name, then specify it.
+
+```
+FAIL: socket(AF_INET, SOCK_RAW, 6): Operation not permitted
+```
+Means: forgot `sudo`. Masscan needs raw socket access.
+
 ### Banner Grabbing
 
 Banner grabbing is connecting to a service and reading what it
@@ -586,6 +1216,56 @@ nc targetcompany.com 25
 # Response: "220 mail.targetcompany.com ESMTP Postfix (Ubuntu)"
 # → Reveals mail server software, version, and hostname
 ```
+
+**Windows banner grabbing — netcat alternatives:**
+
+```powershell
+# Windows doesn't ship with nc (netcat). Options:
+
+# Option A: Use ncat (installed with nmap on Windows):
+ncat targetcompany.com 22
+ncat targetcompany.com 25
+
+# Option B: PowerShell TCP client for raw banner grab:
+$tcp = New-Object System.Net.Sockets.TcpClient("targetcompany.com", 22)
+$stream = $tcp.GetStream()
+$buffer = New-Object byte[] 1024
+$read = $stream.Read($buffer, 0, 1024)
+[System.Text.Encoding]::ASCII.GetString($buffer, 0, $read)
+$tcp.Close()
+# Expected: "SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5"
+
+# Option C: curl for HTTP banners (built into Windows 11):
+curl -I https://targetcompany.com
+
+# Option D: masscan via WSL2 with banner grabbing:
+sudo masscan 203.0.113.50 -p22,25,80 --banners --rate=100
+```
+
+#### Expected Output
+
+**`ncat targetcompany.com 22` success looks like:**
+```
+SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5
+```
+That's the SSH version string. Now look up CVEs for `OpenSSH 8.2p1`.
+
+**`ncat targetcompany.com 25` success looks like:**
+```
+220 mail.targetcompany.com ESMTP Postfix (Ubuntu)
+```
+Mail server, software (Postfix), and hostname revealed in one line.
+
+**Failure looks like:**
+```
+Ncat: Connection refused.
+```
+Means: nothing listening on that port, or firewall is blocking.
+
+```
+Ncat: Connection timed out.
+```
+Means: firewall is silently dropping your packets (filtered state).
 
 ---
 
@@ -733,9 +1413,9 @@ masscan --rate 5 203.0.113.0/24          # 5 packets per second
 
 ```bash
 # Make scan appear to come from multiple sources
+# -D flag: list decoy IPs separated by commas, ME = your real IP
 nmap -D 198.51.100.1,198.51.100.2,ME targetcompany.com
-# ME = your real IP mixed in with decoys
-# IDS sees packets from 3 sources simultaneously — harder to isolate
+# IDS sees packets from 3 sources simultaneously — harder to isolate real attacker
 ```
 
 **Timing your scans:**
@@ -806,6 +1486,65 @@ PHASE 4: ATTACK SURFACE MAP
 
 ---
 
+## DEFENDER TAKEAWAY
+
+You just learned how attackers map your organisation before touching a single
+system. Here's what to do on Monday morning to make that map harder to build
+and faster to detect.
+
+- **Audit your public DNS records.** Run `nslookup -type=ANY yourdomain.com`
+  and crt.sh against your own domain. Every subdomain an attacker finds,
+  you should have found first. Dev, staging, and internal subdomains with
+  public certs are the ones that get orgs compromised — get them off public
+  DNS or behind a VPN.
+
+- **Block zone transfers from unauthorised hosts.** Check your DNS server
+  config (Windows DNS Server: DNS Manager → right-click zone → Properties
+  → Zone Transfers → allow only to specific secondary DNS IPs).
+  Misconfigured zone transfers hand attackers your full infrastructure map
+  for free. Event ID 6009 in DNS Server logs indicates a zone transfer.
+
+- **Search your own org on Shodan.** Log into shodan.io, search
+  `org:"Your Company Name"` and `hostname:yourdomain.com`. Everything
+  it returns is publicly visible to any attacker. Exposed RDP (port 3389),
+  management interfaces, and dev boxes with no auth are immediate priorities
+  to firewall or shut down.
+
+- **Hunt your own GitHub.** Run truffleHog against every public repo your
+  org owns: `trufflehog github --org=yourcompany`. Also search GitHub for
+  `"yourcompany.com" extension:env` and `"yourcompany.com" filename:.env`.
+  If anything comes back with credentials, rotate those secrets immediately
+  and assume compromise. Then set up GitHub secret scanning alerts in your
+  org settings (free for public repos).
+
+- **Suppress version banners on internet-facing services.** Web servers
+  advertising `Server: Apache/2.4.41` or `X-Powered-By: PHP/7.4.21` hand
+  attackers their CVE shortlist. On Apache: `ServerTokens Prod` and
+  `ServerSignature Off` in httpd.conf. On nginx: `server_tokens off` in
+  nginx.conf. On IIS (Windows): HTTP Response Headers → remove Server header
+  in IIS Manager, or use URLScan.
+
+- **Enable Windows DNS Debug Logging to catch recon.** In DNS Manager →
+  right-click server → Properties → Debug Logging tab → enable logging.
+  A sudden spike in PTR (reverse DNS) queries or ANY-type queries from a
+  single external IP is a recon indicator. Event ID 4 in DNS Debug log
+  captures zone transfer attempts.
+
+- **Check job postings before they go live.** Before posting a role that
+  names your tech stack ("CrowdStrike experience required", "Palo Alto
+  NGFW management"), strip specific product names. Replace with generic
+  descriptions ("enterprise EDR", "next-gen firewall"). Attackers read
+  your job board to build their tooling list.
+
+- **Monitor for port scan activity at your firewall.** Windows Firewall with
+  Advanced Security logs blocked inbound connections (enable via: `wf.msc`
+  → Properties → Domain/Private/Public Profile → Logging → Log dropped
+  packets). Event ID 5152 (firewall blocked packet) in bulk from a single
+  external IP over a short period is a scan. Correlate with Event ID 5156
+  (allowed connection) to see what got through.
+
+---
+
 ## Key Terms (Add to Glossary)
 
 | Term | Definition |
@@ -825,6 +1564,11 @@ PHASE 4: ATTACK SURFACE MAP
 | **Masscan** | Asynchronous port scanner capable of scanning large ranges rapidly |
 | **Fingerprinting** | Identifying the specific software and version running on a service |
 | **Nmap NSE** | Nmap Scripting Engine — Lua scripts that extend nmap's capability to include vulnerability detection and service-specific probing |
+| **truffleHog** | Tool that scans git repository history for secrets, credentials, and sensitive strings |
+| **gitleaks** | Fast secret scanner for git repositories; replacement for deprecated gitrob |
+| **WSL2** | Windows Subsystem for Linux v2 — runs a real Linux kernel inside Windows, required for Linux-native tools |
+| **Certificate SAN** | Subject Alternative Name — field in an SSL cert listing all hostnames the cert is valid for; reveals subdomains |
+| **wafw00f** | Web application firewall detection tool; identifies WAF vendor from HTTP responses |
 
 ---
 

