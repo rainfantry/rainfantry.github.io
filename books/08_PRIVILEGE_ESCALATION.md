@@ -737,6 +737,63 @@ WinPEAS found:
 
 ---
 
+## Defender's Takeaway — How to Detect and Stop This
+
+You just learned every standard privesc path on Windows. Here's how to close them.
+
+**CWE-732 — Service binary ACL hardening:**
+```powershell
+# Find every service binary writable by non-admin accounts
+Get-WmiObject Win32_Service | ForEach-Object {
+    $path = ($_.PathName -replace '"','') -split ' ' | Select-Object -First 1
+    if (Test-Path $path) {
+        $acl = Get-Acl $path -ErrorAction SilentlyContinue
+        $acl.Access | Where-Object {
+            $_.IdentityReference -match 'Users|Everyone|Authenticated' -and
+            $_.FileSystemRights -match 'Write|FullControl|Modify'
+        } | ForEach-Object { "$path - $($_.IdentityReference) - $($_.FileSystemRights)" }
+    }
+}
+# Fix: icacls "C:\path\to\service.exe" /inheritance:r /grant "SYSTEM:(F)" "Administrators:(F)"
+```
+
+**CWE-427 — DLL search order:**
+```powershell
+# Find services loading DLLs from user-writable directories
+# Use Process Monitor (Procmon) with filter: Operation=CreateFile, Path ends with .dll, Result=NAME NOT FOUND
+# Any NAME NOT FOUND .dll load from a user-writable path is a hijack candidate.
+# Fix: Use ALPC-protected directories. Prefer absolute DLL paths in manifests.
+```
+
+**Potato attacks — SeImpersonatePrivilege:**
+```powershell
+# Find all accounts with SeImpersonatePrivilege (should only be service accounts + SYSTEM)
+Get-LocalUser | ForEach-Object {
+    $rights = (secedit /export /cfg $env:TEMP\secpol.cfg /quiet; 
+               Select-String $_.Name $env:TEMP\secpol.cfg)
+    if ($rights -match "SeImpersonatePrivilege") { $_.Name }
+}
+# Fix: Remove SeImpersonatePrivilege from any account that doesn't need it.
+# Service accounts running web servers, SQL, etc. legitimately need it — audit those specifically.
+```
+
+**Detection — what logs to watch:**
+```
+Event ID 7045 — A new service was installed (service binary replacement)
+Event ID 4698 — Scheduled task created (task binary hijack)
+Event ID 4688 — Process creation with whoami.exe, net.exe, sc.exe run by low-priv accounts
+Sysmon Event ID 1 — JuicyPotato/RoguePotato process tree anomalies
+```
+
+**Hardening priority order:**
+1. Run `icacls` audit on all service binaries — fix any non-admin write access (10 min, no cost)
+2. Enable Protected Users security group for all privileged accounts
+3. Deploy LAPS (Local Admin Password Solution) — unique local admin passwords per machine
+4. Enable Credential Guard — prevents token impersonation from user space
+5. Keep Windows patched — most Potato variants are patched in current Windows 10/11
+
+---
+
 ## Drill 08 — Privilege Escalation Lab
 
 Go to `DRILLS/08_privesc/`. Three target VMs, each with a different
