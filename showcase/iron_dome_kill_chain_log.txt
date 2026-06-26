@@ -1,0 +1,47 @@
+﻿IRON-DOME FULL PROGRAM TEST — 2026-06-26
+Machine: LAPTOP-R32M8MLI / gwu07
+Operator: ORACLE (autonomous)
+
+══ BUILD ══════════════════════════════════════════════
+Target:  127.0.0.1:4443  |  XOR key: 0xFC  |  Variant: v1
+Compiler: MSVC cl.exe (VS2022 BuildTools x64)
+Source:  iron_dome_v1.c  (7-layer evasion stack baked in)
+
+[1/4] C source generated — XOR key 0xFC on 9 IP bytes + ISUN magic
+[2/4] Compiled — 140,288 bytes
+      SHA256: 05480ff1f8566e24bae0aa9c810be1d65a51d703c4b6f92360b86133f1c1d37a
+      Evasion layers:
+        [1] XOR string obfuscation
+        [2] Dynamic API resolution (Ws2_32 hash-loaded)
+        [3] Anti-sandbox (timing + screen + disk)
+        [4] PE header stomp (zeroes 0x400 post-load)
+        [5] ISUN magic auth gate
+        [6] Execution jitter (1-3s random sleep)
+        [7] MSVC PE (minimal fingerprint)
+[3/4] Ghost PS1 stager generated — zero-width Unicode steg (11,472 bytes)
+[4/4] Deployment doc written
+
+Output: C:\Users\gwu07\Desktop\cheyanne\builds\iron_dome\
+
+══ KILL CHAIN TEST ════════════════════════════════════
+Test harness: test_local_chain.py (loopback 127.0.0.1:4443)
+
+[1/8] ghost_fud.exe built            117,248 bytes    PASS
+[2/8] ghost_loader.exe built         117,248 bytes    PASS
+[3/8] ISUN magic gate                token ACK OK     PASS
+[4/8] PS1 stager delivered           zero-width steg  PASS
+[5/8] AMSI bypass                    type-name split  PASS
+[6/8] TCP callback received          127.0.0.1:49739  PASS
+[7/8] Recon validated                gwu07 / LAPTOP-R32M8MLI   PASS
+[8/8] Persistence HKCU               Run key set+verified+cleaned  PASS
+
+VERDICT: PASS (8/8) — IRON-DOME KILL CHAIN GREEN
+
+══ EVASION STATUS ═════════════════════════════════════
+Kaspersky Premium (avpui.exe + avp.exe LIVE):
+  iron_sun_v1.exe — EVADED (relay test)
+  iron_sun_v2.exe — EVADED (relay test)
+  iron_sun_v3.exe — EVADED (relay test)
+  iron_dome_v1.exe — COMPILED / NOT YET UPLOADED (own hardware policy)
+
+═══════════════════════════════════════════════════════
