@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <script>
 (function(){
-  if (localStorage.getItem('22div_gate_auth') !== '1') {
+  if (sessionStorage.getItem('22div_gate_auth') !== '1') {
     var ret = encodeURIComponent(location.href);
     location.replace('https://rainfantry.github.io/22nd-survey-division/?unlock=1&ret=' + ret);
   }
