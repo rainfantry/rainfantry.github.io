@@ -425,7 +425,9 @@ function loadRepo(slug, container) {
       '<div class="repo-unlock-body">' +
         '<div class="repo-unlock-repos">' + repoTags + '</div>' +
         '<div class="repo-unlock-price">$' + (r.price || '—') + ' AUD — ' + (r.label || '') + '</div>' +
-        '<div class="repo-unlock-cta">Purchase via <a href="mailto:gwu0738@gmail.com?subject=22DIV%20Module%20Purchase%20' + slug + '">gwu0738@gmail.com</a> → receive GitHub collaborator invite within 24h.</div>' +
+        '<div class="repo-unlock-cta">AU: PayID <strong>gwu0738@gmail.com</strong> — ref: ' + slug + ' → access PIN + GitHub invite within 24h. ' +
+        'INT: <a href="mailto:gwu0738@gmail.com?subject=22DIV%20Module%20Purchase%20' + slug + '&body=Hi%20George%2C%20I%27d%20like%20to%20purchase%20module%20' + slug + '">email for invoice</a>. ' +
+        '<span style="color:#443300;">PIN at <a href="https://rainfantry.github.io/22nd-survey-division/" style="color:#886600;">22nd-survey-division</a> → enter → course unlocks.</span></div>' +
       '</div>';
     var sitrep = container.querySelector('.sitrep');
     if (sitrep && sitrep.nextSibling) container.insertBefore(el, sitrep.nextSibling);

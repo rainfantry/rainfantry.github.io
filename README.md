@@ -8,6 +8,20 @@ Security research against live Windows 11 defenses. CSEC student. Sydney.
 
 ---
 
+### Payment — Australian Students
+
+| Method | Details |
+|--------|---------|
+| **PayID** | gwu0738@gmail.com |
+| **Reference** | Include module name (e.g. `09_MALWARE_DEVELOPMENT`) |
+| **Receipt** | Access PIN + GitHub collaborator invite within 24h via email |
+| **INT** | Email gwu0738@gmail.com — invoice available |
+
+> ABN 50 692 429 397 — OCCUPATION FORCE CALLSIGN GSW PTY. LTD. t/a 22ND SURVEY DIVISION  
+> GST not applicable (below $75k threshold). Educational content — not financial or legal advice.
+
+---
+
 ### Courses & Labs
 
 | Lab | Topic |
@@ -70,4 +84,21 @@ Security research against live Windows 11 defenses. CSEC student. Sydney.
 
 ---
 
-*Research ongoing. Disclosure pending confirmation of first-party vectors.*
+### Active CVE Queue (2026-06-27)
+
+| Target | CWE | Confidence | Status |
+|--------|-----|-----------|--------|
+| **Wondershare NativePushService** | CWE-732 | 95% | Vendor email ready — security@wondershare.com |
+| **MuseHub HKLM PATH injection** | CWE-426 | 80–85% | DLL triage pending on GIGABYTE machine |
+| **NVIDIA NvWksServiceDdisplayPipe** | CWE-732 | 70% structural / 40% LPE | Protocol reversal via procmon needed |
+| **FlexNet named pipe DoS** | CWE-400 | CVSS 5.5 confirmed | Single-instance pipe blocks all license checkouts |
+| **voidtools Everything Service** | CWE-200 | Structural | NULL DACL world-accessible pipe; write primitive accepted |
+| **HKClipSvc** | CWE-732/200 | Active research | CPRP protocol decoded, probe script built |
+
+Disclosed:
+- **MSRC VULN-195458** — Tamper Protection bypass via HWBP. Rejected; embargo void; published.
+- **GSWA-2026-013 through GSWA-2026-016** — active GSWA numbering sequence.
+
+---
+
+*Research ongoing. Responsible disclosure via MSRC and direct vendor contact.*
