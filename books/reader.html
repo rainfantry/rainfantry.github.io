@@ -85,6 +85,15 @@ nav .ch-label{color:var(--dim);font-size:.7rem;letter-spacing:.08em;flex:1;text-
 .ch-nav button:hover{border-color:var(--green3);color:var(--green2);}
 .ch-nav button:disabled{opacity:.2;cursor:default;}
 
+/* ── mission briefing ── */
+.sitrep{border:1px solid #001a00;background:#04090400;margin:0 0 2rem;overflow:hidden;}
+.sitrep-header{background:#0a140a;padding:.4rem .9rem;font-size:.58rem;letter-spacing:.18em;color:#2a6e2a;border-bottom:1px solid #001a00;}
+.sitrep-body{padding:.8rem .9rem;display:grid;grid-template-columns:5.5rem 1fr;row-gap:.45rem;font-size:.72rem;line-height:1.5;}
+.sitrep-key{color:#2a6e2a;font-size:.6rem;letter-spacing:.14em;padding-top:.08rem;}
+.sitrep-val{color:#aaa;}
+.sitrep-val em{color:#ccc;font-style:normal;}
+.sitrep-doctrine{border-top:1px solid #0d1a0d;margin-top:.4rem;padding-top:.4rem;grid-column:1/3;color:#3a7e3a;font-size:.65rem;letter-spacing:.08em;}
+
 /* ── exercise engine ── */
 .ex-section-label{font-size:.6rem;letter-spacing:.16em;color:var(--dim);margin:2.5rem 0 .8rem;padding-top:1.2rem;border-top:1px solid #1a1a1a;}
 .ex-block{margin:1.2rem 0;font-size:.8rem;}
@@ -274,7 +283,8 @@ function loadBook(slug){
       document.getElementById('doc').style.display='block';
       if(chNum) updateNav(chNum);
 
-      // load exercises sidecar
+      // load mission briefing + exercises
+      loadSitrep(slug, contentEl);
       loadExercises(slug, contentEl);
     })
     .catch(e=>{
@@ -292,6 +302,30 @@ window.addEventListener('scroll', ()=>{
 });
 
 // ── Exercise Engine ──────────────────────────────────────────────────────────
+
+var _sitreps = null;
+function loadSitrep(slug, container) {
+  function inject(data) {
+    var s = data[slug];
+    if (!s) return;
+    var el = document.createElement('div');
+    el.className = 'sitrep';
+    el.innerHTML =
+      '<div class="sitrep-header">// MISSION BRIEFING ─────────────────────────────────────────</div>' +
+      '<div class="sitrep-body">' +
+        '<span class="sitrep-key">ENEMY</span><span class="sitrep-val">' + s.enemy + '</span>' +
+        '<span class="sitrep-key">SITREP</span><span class="sitrep-val">' + s.situation + '</span>' +
+        '<span class="sitrep-key">WHY YOU</span><span class="sitrep-val">' + s.why_soldiers + '</span>' +
+        '<div class="sitrep-doctrine">DOCTRINE // ' + s.doctrine + '</div>' +
+      '</div>';
+    container.insertBefore(el, container.firstChild);
+  }
+  if (_sitreps) { inject(_sitreps); return; }
+  fetch('./sitrep.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ _sitreps = data; inject(data); })
+    .catch(function(){});
+}
 
 function loadExercises(slug, container) {
   fetch('./exercises/' + slug + '.json')
