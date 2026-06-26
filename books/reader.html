@@ -7,7 +7,9 @@
 <meta name="robots" content="noindex, nofollow">
 <script>
 (function(){
-  if (document.cookie.indexOf('22div_gate_auth=1') === -1) {
+  var c = document.cookie.indexOf('22div_gate_auth=1') > -1;
+  var l = (function(){ try { return localStorage.getItem('22div_gate_auth') === '1'; } catch(e){ return false; } })();
+  if (!c && !l) {
     var ret = encodeURIComponent(location.href);
     location.replace('https://rainfantry.github.io/22nd-survey-division/?unlock=1&ret=' + ret);
   }
