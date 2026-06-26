@@ -130,7 +130,12 @@ const CHAPTERS = {
   13:'13_0X1SECURITY_DOCTRINE',14:'14_CASE_STUDIES',15:'15_POST_EXPLOITATION',
   16:'16_RESPONSIBLE_DISCLOSURE',17:'17_NETWORK_WARFARE',18:'18_CRYPTOGRAPHY_EVASION',
   19:'19_LIVING_OFF_THE_LAND',
-  20:'20_ACTIVE_DIRECTORY',21:'21_WEB_APPLICATION_WARFARE',22:'22_OSINT_SOCIAL_ENGINEERING'
+  20:'20_ACTIVE_DIRECTORY',21:'21_WEB_APPLICATION_WARFARE',22:'22_OSINT_SOCIAL_ENGINEERING',
+  101:'01_OFFENSIVE_MINDSET',102:'02_RECON_FOOTPRINTING',103:'03_VULNERABILITY_RESEARCH',
+  105:'05_EXPLOIT_DEVELOPMENT',106:'06_WINDOWS_INTERNALS',
+  108:'08_PRIVILEGE_ESCALATION',109:'09_MALWARE_DEVELOPMENT',110:'10_CODE_INJECTION',
+  111:'11_ROOTKITS',112:'12_ANTIVIRUS_EVASION',113:'13_MEMORY_FORENSICS',
+  114:'14_REVERSE_ENGINEERING',116:'16_COMMAND_AND_CONTROL',121:'21_MOBILE_SECURITY'
 };
 const CHAPTER_TITLES = {
   1:'Heap Internals',2:'Overflow Patterns',3:'UAF & Type Confusion',
@@ -140,7 +145,12 @@ const CHAPTER_TITLES = {
   13:'0x1security Doctrine',14:'Case Studies',15:'Post-Exploitation',
   16:'Responsible Disclosure',17:'Network Warfare',18:'Cryptography & Evasion',
   19:'Living Off The Land',
-  20:'Active Directory Warfare',21:'Web Application Warfare',22:'OSINT & Social Engineering'
+  20:'Active Directory Warfare',21:'Web Application Warfare',22:'OSINT & Social Engineering',
+  101:'Offensive Mindset',102:'Recon & Footprinting',103:'Vulnerability Research',
+  105:'Exploit Development',106:'Windows Internals',
+  108:'Privilege Escalation',109:'Malware Development',110:'Code Injection',
+  111:'Rootkits',112:'AV Evasion',113:'Memory Forensics',
+  114:'Reverse Engineering',116:'Command & Control',121:'Mobile Security'
 };
 const BOOK_TO_NUM = Object.fromEntries(Object.entries(CHAPTERS).map(([n,b])=>[b,+n]));
 const NUM_ORDER = Object.keys(CHAPTERS).map(Number).sort((a,b)=>a-b);
