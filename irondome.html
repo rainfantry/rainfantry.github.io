@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRON-DOME — Unified Red Team Platform | 22DIV</title>
+<meta name="description" content="IRON-DOME: unified offensive security research platform integrating iron-sun TCP shell, CHEYANNE C2, and VADER rootkit evasion. 3/3 variants EVADED vs Kaspersky Premium. George Wu, 22DIV.">
+<meta name="keywords" content="iron-dome, cheyanne, iron-sun, red team, evasion, kaspersky bypass, AMSI bypass, C2 framework, security research, 22DIV">
+<meta name="author" content="George Wu">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--bg2:#111;--bg3:#161616;--bg4:#1a1a1a;
+  --green:#00ff41;--green2:#00cc33;--green3:#003a00;
+  --amber:#ffb000;--red:#ff4444;--cyan:#00e5ff;--blue:#4488ff;
+  --dim:#444;--muted:#777;--text:#ccc;--bright:#eee;
+  --mono:'Cascadia Code','Consolas','Courier New',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.7}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,.006) 3px,rgba(0,255,65,.006) 4px);pointer-events:none;z-index:999}
+.container{max-width:920px;margin:0 auto;padding:2rem 1.5rem}
+a{color:var(--green);text-decoration:none}a:hover{color:var(--bright)}
+nav{background:#090909;border-bottom:1px solid #1a1a1a;padding:.8rem 1.5rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:1.5rem;font-size:.8rem}
+.brand{color:var(--green);font-weight:700;letter-spacing:.15em}
+nav a{color:var(--muted)}nav a:hover{color:var(--bright)}
+.sep{color:var(--dim)}
+
+/* ── HERO ── */
+.hero{padding:3rem 0 2.5rem;border-bottom:1px solid #1a1a1a;margin-bottom:3rem}
+.hero-tag{font-size:.7rem;color:var(--amber);letter-spacing:.15em;margin-bottom:.6rem}
+.hero-title{font-size:2.8rem;font-weight:700;color:var(--green);letter-spacing:.08em;margin-bottom:.3rem;text-shadow:0 0 40px rgba(0,255,65,.3)}
+.hero-sub{font-size:.9rem;color:var(--muted);margin-bottom:1.5rem}
+.hero-desc{font-size:.85rem;color:var(--text);max-width:680px;line-height:1.9;margin-bottom:1.5rem}
+.hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap}
+.stat .num{font-size:1.6rem;color:var(--green);font-weight:700;display:block}
+.stat .label{font-size:.65rem;color:var(--muted);letter-spacing:.12em}
+
+/* ── SECTION ── */
+.section{margin-bottom:3rem}
+.section-label{font-size:.7rem;color:var(--amber);letter-spacing:.15em;margin-bottom:.4rem}
+.section-title{font-size:1.1rem;color:var(--bright);font-weight:600;margin-bottom:1rem}
+
+/* ── ARCHITECTURE ── */
+.arch-box{background:var(--bg3);border:1px solid #1e1e1e;border-left:3px solid var(--green);border-radius:4px;padding:1.4rem;font-size:.78rem;overflow-x:auto;white-space:pre;color:var(--green2);line-height:1.6}
+
+/* ── VERDICT TABLE ── */
+.verdict-table{width:100%;border-collapse:collapse;font-size:.8rem;margin:1rem 0}
+.verdict-table th{text-align:left;padding:.5rem .8rem;border-bottom:1px solid #222;color:var(--amber);font-size:.7rem;letter-spacing:.08em}
+.verdict-table td{padding:.55rem .8rem;border-bottom:1px solid #141414}
+.verdict-table tr:hover td{background:#111}
+.evaded{color:var(--green);font-weight:700}
+.tag{display:inline-block;padding:.1rem .5rem;border-radius:2px;font-size:.65rem;letter-spacing:.08em}
+.tag-evaded{background:#001a00;color:var(--green);border:1px solid var(--green3)}
+.tag-clean{background:#001010;color:var(--cyan);border:1px solid #003a3a}
+.tag-layer{background:#111;color:var(--amber);border:1px solid #333}
+
+/* ── EVASION STACK ── */
+.layer-row{display:flex;gap:1rem;align-items:center;padding:.65rem 0;border-bottom:1px solid #141414;font-size:.82rem}
+.layer-num{color:var(--green);font-weight:700;min-width:2rem}
+.layer-name{color:var(--bright);flex:1}
+.layer-desc{color:var(--muted);font-size:.75rem}
+
+/* ── KILL CHAIN ── */
+.kc-phase{background:var(--bg3);border:1px solid #1e1e1e;border-radius:4px;padding:1rem 1.2rem;margin-bottom:.6rem;display:flex;align-items:center;gap:1rem}
+.kc-num{font-size:1.2rem;color:var(--green);font-weight:700;min-width:2.5rem}
+.kc-label{color:var(--bright);font-size:.85rem;font-weight:600}
+.kc-detail{color:var(--muted);font-size:.75rem;margin-top:.2rem}
+.kc-pass{margin-left:auto;color:var(--green);font-size:.75rem;font-weight:700}
+
+/* ── SCREENSHOT STRIP ── */
+.ss-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1rem 0}
+.ss-card{background:var(--bg3);border:1px solid #1e1e1e;border-radius:4px;overflow:hidden}
+.ss-card img{width:100%;display:block;opacity:.9;transition:opacity .2s}
+.ss-card img:hover{opacity:1}
+.ss-caption{padding:.5rem .7rem;font-size:.7rem;color:var(--muted);border-top:1px solid #1a1a1a}
+
+/* ── CODE BLOCK ── */
+.code-block{background:#060606;border:1px solid #1a1a1a;border-left:3px solid var(--green3);border-radius:4px;padding:1rem 1.2rem;font-size:.78rem;color:var(--green2);overflow-x:auto;margin:.8rem 0}
+
+/* ── RELAY FLOW ── */
+.relay-flow{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0}
+.relay-step{display:flex;align-items:center;gap:.8rem;font-size:.8rem}
+.relay-machine{background:var(--bg3);border:1px solid #222;border-radius:3px;padding:.3rem .7rem;min-width:80px;text-align:center;font-size:.72rem}
+.relay-machine.gwu07{border-color:var(--green);color:var(--green)}
+.relay-machine.radon{border-color:var(--cyan);color:var(--cyan)}
+.relay-arrow{color:var(--dim);font-size:.8rem}
+.relay-action{color:var(--text);flex:1}
+.relay-verdict{color:var(--green);font-size:.72rem;font-weight:700}
+
+/* ── FOOTER ── */
+.footer{border-top:1px solid #1a1a1a;margin-top:4rem;padding:2rem 0;font-size:.75rem;color:var(--dim)}
+
+@media(max-width:600px){
+  .hero-title{font-size:1.8rem}
+  .hero-stats{gap:1.5rem}
+  .relay-flow{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="brand">22DIV</a>
+  <a href="index.html">home</a>
+  <a href="csec.html" style="color:var(--cyan)">csec</a>
+  <a href="rootkit.html" style="color:var(--blue)">rootkit</a>
+  <a href="ghost.html" style="color:var(--amber)">ghost</a>
+  <span class="sep">|</span>
+  <a href="https://github.com/rainfantry/iron-sun" style="color:var(--green)">iron-sun ↗</a>
+  <a href="https://github.com/rainfantry/cheyanne/tree/portfolio" style="color:var(--green)">cheyanne ↗</a>
+</nav>
+
+<div class="container">
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-tag">// 22DIV — UNIFIED RED TEAM PLATFORM</div>
+  <div class="hero-title">IRON-DOME</div>
+  <div class="hero-sub">iron-sun + CHEYANNE + VADER evasion stack — assembled</div>
+  <div class="hero-desc">
+    IRON-DOME is the integrated offensive security research platform combining three independently-verified
+    systems: the <strong style="color:var(--green)">iron-sun</strong> TCP reverse shell with 7-layer evasion,
+    the <strong style="color:var(--amber)">CHEYANNE</strong> C2 framework, and the
+    <strong style="color:var(--cyan)">VADER</strong> rootkit evasion chain (AMSI/ETW bypass, HWBP,
+    indirect syscalls, concealment). Tested live against Kaspersky Premium and Windows Defender.
+    All three payload variants EVADED. Kill chain 8/8 PASS.
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="num" style="color:var(--green)">3/3</span><span class="label">VARIANTS EVADED</span></div>
+    <div class="stat"><span class="num">8/8</span><span class="label">KILL CHAIN PASS</span></div>
+    <div class="stat"><span class="num" style="color:var(--cyan)">7</span><span class="label">EVASION LAYERS</span></div>
+    <div class="stat"><span class="num" style="color:var(--amber)">0</span><span class="label">DETECTIONS</span></div>
+  </div>
+</div>
+
+<!-- ═══ ARCHITECTURE ═══ -->
+<div class="section">
+  <div class="section-label">// PLATFORM ARCHITECTURE</div>
+  <div class="section-title">iron-dome unified stack</div>
+  <div class="arch-box">
+┌─────────────────────────────────────────────────────────────────────┐
+│                         IRON-DOME PLATFORM                         │
+├────────────────┬──────────────────────┬─────────────────────────────┤
+│  IRON-SUN      │  GHOST ENCODER       │  VADER EVASION CHAIN       │
+│  TCP shell     │  Zero-width Unicode  │  AMSI/ETW bypass (HWBP)    │
+│  7-layer PE    │  PS1 stager          │  Indirect syscalls          │
+│  XOR strings   │  Invisible payload   │  PE concealment            │
+│  Dynamic API   │  KAV-transparent     │  BYOVD kernel DKOM         │
+├────────────────┴──────────────────────┴─────────────────────────────┤
+│                        CHEYANNE C2                                  │
+│  Menu-driven red team platform  │  ISUN magic auth gate            │
+│  Listener: vader_listener.py    │  Sessions: multi-shell           │
+│  Ops: recon / persist / shell   │  Test: test_local_chain.py       │
+├──────────────────────────────────────────────────────────────────────┤
+│                   RELAY ARCHITECTURE                                 │
+│  RADON (192.168.1.145) ←──── iron-sun (GitHub) ────→ GWU07        │
+│  Builds payload variants      │  Comms via git commits             │
+│  Pushes PAYLOAD_vN.md         │  gwu07_relay.py auto-tests        │
+│  Reads RESULT_vN.md           │  RESULT_vN.md pushed back         │
+└──────────────────────────────────────────────────────────────────────┘</div>
+</div>
+
+<!-- ═══ 7-LAYER EVASION STACK ═══ -->
+<div class="section">
+  <div class="section-label">// EVASION STACK</div>
+  <div class="section-title">7-layer iron-sun evasion</div>
+  <div class="layer-row"><span class="layer-num">[1]</span><span class="layer-name">XOR String Obfuscation</span><span class="layer-desc">All C2 strings (IP, port, auth token) encrypted with per-build XOR key. No plaintext in binary.</span></div>
+  <div class="layer-row"><span class="layer-num">[2]</span><span class="layer-name">Dynamic API Resolution</span><span class="layer-desc">Ws2_32 loaded at runtime via hash. No direct IAT entries for WSASocketA, connect, send, recv.</span></div>
+  <div class="layer-row"><span class="layer-num">[3]</span><span class="layer-name">Anti-Sandbox Checks</span><span class="layer-desc">Timing delta (Sleep 500ms), screen resolution ≥1080p, disk space ≥30GB. Exits silently if sandbox detected.</span></div>
+  <div class="layer-row"><span class="layer-num">[4]</span><span class="layer-name">PE Header Stomp</span><span class="layer-desc">Zeroes first 0x400 bytes of own PE header post-load. Defeats memory scanners reading loaded module.</span></div>
+  <div class="layer-row"><span class="layer-num">[5]</span><span class="layer-name">ISUN Magic Auth Gate</span><span class="layer-desc">Payload sends "ISUN 4445" token on connect. Exits silently if ACK ≠ "ISUN_OK". Honeypots get nothing.</span></div>
+  <div class="layer-row"><span class="layer-num">[6]</span><span class="layer-name">Execution Jitter</span><span class="layer-desc">Random 1–3s sleep before connect. Defeats behavioral analysis tied to launch-time execution windows.</span></div>
+  <div class="layer-row" style="border-bottom:none"><span class="layer-num">[7]</span><span class="layer-name">MinGW/gcc PE</span><span class="layer-desc">No MSVC fingerprint. Stripped exports, low entropy header. Unsigned PE — no certificate chain to burn.</span></div>
+</div>
+
+<!-- ═══ RELAY RESULTS ═══ -->
+<div class="section">
+  <div class="section-label">// LIVE RELAY RESULTS — 2026-06-26</div>
+  <div class="section-title">kaspersky premium — all variants evaded</div>
+  <table class="verdict-table">
+    <thead>
+      <tr><th>Variant</th><th>XOR Key</th><th>SHA256 (first 16)</th><th>KAV Procs</th><th>Process</th><th>Verdict</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>iron_sun_v1</td>
+        <td><span class="tag tag-layer">0xFC</span></td>
+        <td style="font-size:.7rem;color:var(--dim)">d720a508ba244172...</td>
+        <td style="color:var(--muted);font-size:.75rem">avpui.exe, avp.exe</td>
+        <td>SURVIVED 18s</td>
+        <td><span class="tag tag-evaded">EVADED ✓</span></td>
+      </tr>
+      <tr>
+        <td>iron_sun_v2</td>
+        <td><span class="tag tag-layer">0xAB</span></td>
+        <td style="font-size:.7rem;color:var(--dim)">fde73d8c92c8b48a...</td>
+        <td style="color:var(--muted);font-size:.75rem">avpui.exe, avp.exe</td>
+        <td>SURVIVED 18s</td>
+        <td><span class="tag tag-evaded">EVADED ✓</span></td>
+      </tr>
+      <tr>
+        <td>iron_sun_v3</td>
+        <td><span class="tag tag-layer">0xDE</span></td>
+        <td style="font-size:.7rem;color:var(--dim)">a25bfc5adeb6c561...</td>
+        <td style="color:var(--muted);font-size:.75rem">avpui.exe, avp.exe</td>
+        <td>SURVIVED 18s</td>
+        <td><span class="tag tag-evaded">EVADED ✓</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:.75rem;color:var(--muted);margin-top:.5rem">
+    Tested on LAPTOP-R32M8MLI. Kaspersky Premium with cloud scanning enabled. avpui.exe and avp.exe confirmed running during each test.
+    TCP callback pending same-LAN test (192.168.1.x network required — cross-router shell confirmed silent exit).
+  </div>
+</div>
+
+<!-- ═══ KILL CHAIN ═══ -->
+<div class="section">
+  <div class="section-label">// KILL CHAIN — 2026-06-26</div>
+  <div class="section-title">local kill chain — 8/8 pass confirmed</div>
+  <div class="kc-phase"><span class="kc-num">1</span><div><div class="kc-label">ghost_fud.exe built</div><div class="kc-detail">gcc compile — 7-layer flags applied</div></div><span class="kc-pass">PASS</span></div>
+  <div class="kc-phase"><span class="kc-num">2</span><div><div class="kc-label">ghost_loader.exe built</div><div class="kc-detail">PE stager loader compiled</div></div><span class="kc-pass">PASS</span></div>
+  <div class="kc-phase"><span class="kc-num">3</span><div><div class="kc-label">ISUN magic gate</div><div class="kc-detail">Auth token "ISUN 4445" verified on connect</div></div><span class="kc-pass">PASS</span></div>
+  <div class="kc-phase"><span class="kc-num">4</span><div><div class="kc-label">PS1 stager delivery</div><div class="kc-detail">Zero-width Unicode ghost_cheyanne.ps1 delivered over auth socket</div></div><span class="kc-pass">PASS</span></div>
+  <div class="kc-phase"><span class="kc-num">5</span><div><div class="kc-label">AMSI bypass</div><div class="kc-detail">Type-name splitting — KAV disabled Defender AMSI service, bypass not required</div></div><span class="kc-pass">PASS</span></div>
+  <div class="kc-phase"><span class="kc-num">6</span><div><div class="kc-label">TCP callback received</div><div class="kc-detail">Shell connected &lt;1s after stale PID fix (netstat kill loop)</div></div><span class="kc-pass">PASS</span></div>
+  <div class="kc-phase"><span class="kc-num">7</span><div><div class="kc-label">Recon validated</div><div class="kc-detail">gwu07 / LAPTOP-R32M8MLI / Win11 Home confirmed</div></div><span class="kc-pass">PASS</span></div>
+  <div class="kc-phase"><span class="kc-num">8</span><div><div class="kc-label">Persistence set + cleaned</div><div class="kc-detail">HKCU\Run\WindowsSecurityUpdate — verified present, test cleanup applied</div></div><span class="kc-pass">PASS</span></div>
+</div>
+
+<!-- ═══ RELAY FLOW ═══ -->
+<div class="section">
+  <div class="section-label">// RELAY ARCHITECTURE</div>
+  <div class="section-title">cross-machine comms via git commits</div>
+  <div class="relay-flow">
+    <div class="relay-step">
+      <span class="relay-machine radon">RADON</span>
+      <span class="relay-arrow">──→</span>
+      <span class="relay-action">Builds iron_sun_vN.exe + pushes PAYLOAD_vN.md to rainfantry/iron-sun</span>
+    </div>
+    <div class="relay-step">
+      <span class="relay-machine gwu07">GWU07</span>
+      <span class="relay-arrow">──→</span>
+      <span class="relay-action">gwu07_relay.py polls every 30s, detects new PAYLOAD_vN.md</span>
+    </div>
+    <div class="relay-step">
+      <span class="relay-machine gwu07">GWU07</span>
+      <span class="relay-arrow">──→</span>
+      <span class="relay-action">Downloads binary, kills stale PIDs on :4443, launches payload</span>
+    </div>
+    <div class="relay-step">
+      <span class="relay-machine gwu07">GWU07</span>
+      <span class="relay-arrow">──→</span>
+      <span class="relay-action">18s observation window — checks process survival vs KAV</span>
+      <span class="relay-verdict">EVADED / DETECTED</span>
+    </div>
+    <div class="relay-step">
+      <span class="relay-machine gwu07">GWU07</span>
+      <span class="relay-arrow">──→</span>
+      <span class="relay-action">Pushes RESULT_vN.md to rainfantry/iron-sun</span>
+    </div>
+    <div class="relay-step">
+      <span class="relay-machine radon">RADON</span>
+      <span class="relay-arrow">──→</span>
+      <span class="relay-action">Reads RESULT_vN.md — if DETECTED, mutates XOR key and builds vN+1</span>
+    </div>
+  </div>
+  <div style="margin-top:.8rem;font-size:.75rem;color:var(--muted)">
+    No direct SSH between machines needed. All comms via commit messages and pushed files.
+    Channel: <a href="https://github.com/rainfantry/iron-sun">rainfantry/iron-sun</a> main branch.
+  </div>
+</div>
+
+<!-- ═══ SCREENSHOTS ═══ -->
+<div class="section">
+  <div class="section-label">// PROOF — LIVE SCREENSHOTS</div>
+  <div class="section-title">operation evidence from 2026-06-26</div>
+  <div class="ss-strip">
+    <div class="ss-card">
+      <img src="showcase/PROOF_iron_sun_radon_20260626.png" alt="iron-sun proof — Kaspersky active" loading="lazy">
+      <div class="ss-caption">iron-sun v1 — KAV active (avpui+avp), EVADED</div>
+    </div>
+    <div class="ss-card">
+      <img src="showcase/SUITE_v2_complete_radon.png" alt="v2 relay complete" loading="lazy">
+      <div class="ss-caption">Relay v2 complete — EVADED, result pushed to RADON</div>
+    </div>
+    <div class="ss-card">
+      <img src="showcase/SUITE_v3_zero_fail_radon.png" alt="v3 zero fail" loading="lazy">
+      <div class="ss-caption">v3 — zero failures, 18s window cleared</div>
+    </div>
+    <div class="ss-card">
+      <img src="showcase/LIVE_TEST_banner_connect_radon.png" alt="live test banner" loading="lazy">
+      <div class="ss-caption">CHEYANNE live — banner connect to RADON</div>
+    </div>
+    <div class="ss-card">
+      <img src="showcase/LIVE_TEST_recon_complete_radon.png" alt="recon complete" loading="lazy">
+      <div class="ss-caption">Recon complete — hostname, user, OS confirmed</div>
+    </div>
+    <div class="ss-card">
+      <img src="showcase/MSRC_VULN195458_Submission.png" alt="MSRC submission" loading="lazy">
+      <div class="ss-caption">MSRC VULN-195458 — responsible disclosure filed</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BUILDER ═══ -->
+<div class="section">
+  <div class="section-label">// iron_dome_builder.py</div>
+  <div class="section-title">unified deployment builder</div>
+  <div style="font-size:.82rem;color:var(--text);margin-bottom:.8rem">
+    <code style="color:var(--green)">iron_dome_builder.py</code> assembles the full deployment package from one command:
+    XOR-obfuscated PE + ghost PS1 stager + deployment checklist. Requires MinGW gcc for compile step.
+  </div>
+  <div class="code-block">python iron_dome_builder.py --target 192.168.1.145 --port 4443 --xor 0xFC
+
+<span style="color:var(--green)">  IRON-DOME BUILDER v1.0.0</span>
+  Target: 192.168.1.145:4443  XOR: 0xFC  Variant: v1
+
+[1/4] Generating C source (iron_dome_v1.c)...
+      XOR key 0xFC applied to IP + ISUN magic
+[2/4] Compiling PE (7-layer evasion stack)...
+      COMPILED — 60411 bytes
+      SHA256: d720a508ba244172a13588e93654389c...
+      Evasion layers applied:
+        [1] XOR string obfuscation
+        [2] Dynamic API resolution
+        [3] Anti-sandbox (timing + screen + disk)
+        [4] PE header stomp
+        [5] ISUN magic auth gate
+        [6] Execution jitter
+        [7] MinGW/gcc PE (no MSVC fingerprint)
+[3/4] Generating ghost PS1 stager...
+      Zero-width Unicode encoding applied
+[4/4] Writing deployment doc...
+
+<span style="color:var(--green)">  BUILD COMPLETE</span></div>
+  <a href="https://github.com/rainfantry/cheyanne/tree/portfolio" style="color:var(--amber);font-size:.8rem">→ Source: rainfantry/cheyanne (portfolio branch)</a>
+</div>
+
+<!-- ═══ COURSE LINK ═══ -->
+<div class="section">
+  <div class="section-label">// LEARN THE STACK</div>
+  <div class="section-title">interactive course — iron-dome evasion</div>
+  <div style="font-size:.82rem;color:var(--text);margin-bottom:1rem">
+    The full methodology is documented as a structured course in the 22LABS curriculum.
+    Learn how each evasion layer works, why it defeats AV scanning, and how to build your own.
+  </div>
+  <div style="display:grid;gap:.6rem">
+    <a href="labs/index.html" style="display:block;background:var(--bg3);border:1px solid #1e1e1e;border-left:3px solid var(--green);border-radius:4px;padding:.8rem 1rem;font-size:.82rem;color:var(--text)">
+      <span style="color:var(--green);font-weight:700">22LABS</span> — Full curriculum including evasion stack, C2 theory, kill chain methodology
+    </a>
+    <a href="csec.html" style="display:block;background:var(--bg3);border:1px solid #1e1e1e;border-left:3px solid var(--cyan);border-radius:4px;padding:.8rem 1rem;font-size:.82rem;color:var(--text)">
+      <span style="color:var(--cyan);font-weight:700">CSEC</span> — Security course: from TCP sockets to full kill chain
+    </a>
+    <a href="ghost.html" style="display:block;background:var(--bg3);border:1px solid #1e1e1e;border-left:3px solid var(--amber);border-radius:4px;padding:.8rem 1rem;font-size:.82rem;color:var(--text)">
+      <span style="color:var(--amber);font-weight:700">GHOST ENCODER</span> — Zero-width Unicode steganography — how the PS1 stager is hidden
+    </a>
+    <a href="rootkit.html" style="display:block;background:var(--bg3);border:1px solid #1e1e1e;border-left:3px solid var(--blue);border-radius:4px;padding:.8rem 1rem;font-size:.82rem;color:var(--text)">
+      <span style="color:var(--blue);font-weight:700">VADER ROOTKIT</span> — AMSI/ETW bypass, indirect syscalls, concealment layer
+    </a>
+  </div>
+</div>
+
+<div class="footer">
+  <div>22DIV // George Wu // Sydney // All research on personally-owned hardware</div>
+  <div style="margin-top:.4rem"><a href="https://github.com/rainfantry/iron-sun">rainfantry/iron-sun</a> &nbsp;|&nbsp; <a href="https://github.com/rainfantry/cheyanne/tree/portfolio">rainfantry/cheyanne</a></div>
+</div>
+</div>
+
+</body>
+</html>
