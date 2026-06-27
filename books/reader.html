@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>// FIELD MANUAL — 22DIV</title>
 <meta name="robots" content="noindex, nofollow">
+<script>/* 22DIV AUTH v3 — cookie||localStorage */
+(function(){
+  var c = document.cookie.indexOf('22div_gate_auth=1') > -1;
+  var l = (function(){ try { return localStorage.getItem('22div_gate_auth') === '1'; } catch(e){ return false; } })();
+  if (!c && !l) {
+    var ret = encodeURIComponent(location.href);
+    location.replace('https://rainfantry.github.io/22nd-survey-division/?unlock=1&ret=' + ret);
+  }
+})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -84,6 +94,89 @@ nav .ch-label{color:var(--dim);font-size:.7rem;letter-spacing:.08em;flex:1;text-
 .ch-nav button{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;padding:.25rem .7rem;border:1px solid #2a2a2a;background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;}
 .ch-nav button:hover{border-color:var(--green3);color:var(--green2);}
 .ch-nav button:disabled{opacity:.2;cursor:default;}
+
+/* ── language primer ── */
+.primer{border:1px solid #0d1a2a;background:#04070a;margin:0 0 1.4rem;overflow:hidden;}
+.primer-header{background:#080f18;padding:.4rem .9rem;font-size:.58rem;letter-spacing:.18em;color:#2a5a8e;border-bottom:1px solid #0d1a2a;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;}
+.primer-header span:first-child{color:#2a5a8e;}
+.primer-langs{font-size:.55rem;letter-spacing:.1em;color:#3a7aae;}
+.primer-toggle{font-size:.65rem;color:#2a5a8e;transition:transform .2s;}
+.primer.open .primer-toggle{transform:rotate(90deg);}
+.primer-body{display:none;padding:.6rem .9rem .8rem;}
+.primer.open .primer-body{display:block;}
+.primer-table{width:100%;border-collapse:collapse;font-size:.7rem;}
+.primer-table tr+tr td{border-top:1px solid #0a1520;}
+.primer-table td{padding:.35rem .5rem;vertical-align:top;line-height:1.55;}
+.primer-table td:first-child{color:#5a9ad4;font-family:monospace;font-size:.68rem;white-space:nowrap;padding-right:1.2rem;min-width:160px;}
+.primer-table td:nth-child(2){font-size:.6rem;letter-spacing:.1em;color:#2a5a8e;width:38px;padding-right:.8rem;white-space:nowrap;}
+.primer-table td:last-child{color:#8aa8c4;}
+
+/* ── mission briefing ── */
+.sitrep{border:1px solid #001a00;background:#04090400;margin:0 0 2rem;overflow:hidden;}
+.sitrep-header{background:#0a140a;padding:.4rem .9rem;font-size:.58rem;letter-spacing:.18em;color:#2a6e2a;border-bottom:1px solid #001a00;}
+.sitrep-body{padding:.8rem .9rem;display:grid;grid-template-columns:5.5rem 1fr;row-gap:.45rem;font-size:.72rem;line-height:1.5;}
+.sitrep-key{color:#2a6e2a;font-size:.6rem;letter-spacing:.14em;padding-top:.08rem;}
+.sitrep-val{color:#aaa;}
+.sitrep-val em{color:#ccc;font-style:normal;}
+.sitrep-doctrine{border-top:1px solid #0d1a0d;margin-top:.4rem;padding-top:.4rem;grid-column:1/3;color:#3a7e3a;font-size:.65rem;letter-spacing:.08em;}
+
+/* ── repo unlock block ── */
+.repo-unlock{border:1px solid #1a1100;background:#080600;margin:0 0 1.4rem;overflow:hidden;}
+.repo-unlock-header{background:#0f0a00;padding:.4rem .9rem;font-size:.58rem;letter-spacing:.18em;color:#886600;border-bottom:1px solid #1a1100;}
+.repo-unlock-body{padding:.7rem .9rem;font-size:.72rem;line-height:1.6;}
+.repo-unlock-repos{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0 .6rem;}
+.repo-tag{background:#100a00;border:1px solid #332200;color:#bb9900;font-size:.62rem;letter-spacing:.08em;padding:.15rem .55rem;}
+.repo-unlock-price{color:#ffcc00;font-size:.8rem;letter-spacing:.04em;font-weight:400;}
+.repo-unlock-cta{font-size:.65rem;color:#886600;margin-top:.35rem;}
+.repo-unlock-cta a{color:#bb9900;text-decoration:none;border-bottom:1px solid #443300;}
+.repo-unlock-cta a:hover{color:#ffcc00;}
+
+/* ── exercise engine ── */
+.ex-section-label{font-size:.6rem;letter-spacing:.16em;color:var(--dim);margin:2.5rem 0 .8rem;padding-top:1.2rem;border-top:1px solid #1a1a1a;}
+.ex-block{margin:1.2rem 0;font-size:.8rem;}
+
+/* terminal replay */
+.ex-terminal{border:1px solid #003311;background:#060d06;overflow:hidden;}
+.ex-terminal .ex-bar{background:#0a150a;padding:.35rem .9rem;font-size:.62rem;color:var(--dim);letter-spacing:.1em;display:flex;gap:.8rem;align-items:center;}
+.ex-terminal .ex-bar span{color:var(--green3);}
+.term-screen{padding:.9rem 1rem;min-height:72px;font-size:.75rem;line-height:1.7;font-family:var(--mono);}
+.term-line{color:#00ff41;display:block;opacity:0;transition:opacity .08s;}
+.term-line.show{opacity:1;}
+.term-line.dim{color:var(--dim);}
+.term-line.ok{color:var(--green);}
+.term-line.err{color:var(--red);}
+.ex-terminal .ex-controls{border-top:1px solid #0a1a0a;padding:.4rem .9rem;display:flex;gap:.6rem;}
+.term-btn{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;padding:.2rem .65rem;border:1px solid #1a3a1a;background:transparent;color:var(--green3);cursor:pointer;transition:all .15s;}
+.term-btn:hover{border-color:var(--green);color:var(--green);}
+.term-btn:disabled{opacity:.3;cursor:default;}
+
+/* MCQ */
+.ex-mcq{border:1px solid #1e1e1e;background:#0d0d0d;padding:1rem 1.1rem;}
+.ex-mcq .ex-tag{font-size:.6rem;letter-spacing:.12em;color:var(--amber);margin-bottom:.5rem;}
+.ex-question{color:var(--bright);font-size:.82rem;line-height:1.6;margin-bottom:.9rem;}
+.ex-choices{display:flex;flex-direction:column;gap:.4rem;}
+.ex-choice{background:#111;border:1px solid #222;color:var(--text);padding:.45rem .8rem;cursor:pointer;text-align:left;font-family:var(--mono);font-size:.76rem;transition:all .12s;width:100%;}
+.ex-choice:hover:not(:disabled){border-color:#004d18;color:var(--bright);}
+.ex-choice.correct{border-color:var(--green)!important;color:var(--green)!important;background:#020d02;}
+.ex-choice.wrong{border-color:var(--red)!important;color:var(--red)!important;background:#0d0202;}
+.ex-feedback{font-size:.74rem;margin-top:.7rem;padding:.55rem .8rem;display:none;border-left:3px solid;}
+.ex-feedback.show{display:block;}
+.ex-feedback.fb-ok{color:var(--green2);border-color:var(--green3);background:#020d02;}
+.ex-feedback.fb-err{color:#ff8888;border-color:var(--red);background:#0d0202;}
+
+/* fill-in-blank */
+.ex-fillin{border:1px solid #1e1e1e;background:#0d0d0d;padding:1rem 1.1rem;}
+.ex-fillin .ex-tag{font-size:.6rem;letter-spacing:.12em;color:var(--cyan);margin-bottom:.5rem;}
+.ex-prompt{color:var(--bright);font-size:.82rem;margin-bottom:.8rem;}
+.ex-fillin pre{background:#090909;border:1px solid #141414;padding:.8rem 1rem;margin:.6rem 0 .8rem;overflow-x:auto;font-size:.74rem;line-height:1.7;}
+.code-blank{background:#001200;border:none;border-bottom:1px solid var(--green3);color:var(--green);font-family:var(--mono);font-size:.74rem;padding:.05em .3em;min-width:10ch;width:auto;outline:none;transition:border-color .15s;}
+.code-blank:focus{border-bottom-color:var(--green);}
+.code-blank.fb-ok{border-color:var(--green);color:var(--green);}
+.code-blank.fb-err{border-color:var(--red);color:var(--red);background:#0d0000;}
+.ex-submit{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;padding:.25rem .75rem;border:1px solid #2a2a2a;background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;margin-top:.3rem;}
+.ex-submit:hover{border-color:var(--green3);color:var(--green2);}
+.ex-hint{font-size:.7rem;color:var(--dim);cursor:pointer;margin-left:.8rem;text-decoration:underline dashed;}
+.ex-hint:hover{color:var(--muted);}
 </style>
 </head>
 <body>
@@ -129,7 +222,13 @@ const CHAPTERS = {
   10:'10_CORPUS_DICTIONARY',11:'11_CAMPAIGN_MANAGEMENT',12:'12_EXPLOIT_DEVELOPMENT',
   13:'13_0X1SECURITY_DOCTRINE',14:'14_CASE_STUDIES',15:'15_POST_EXPLOITATION',
   16:'16_RESPONSIBLE_DISCLOSURE',17:'17_NETWORK_WARFARE',18:'18_CRYPTOGRAPHY_EVASION',
-  20:'20_ACTIVE_DIRECTORY',21:'21_WEB_APPLICATION_WARFARE',22:'22_OSINT_SOCIAL_ENGINEERING'
+  19:'19_LIVING_OFF_THE_LAND',
+  20:'20_ACTIVE_DIRECTORY',21:'21_WEB_APPLICATION_WARFARE',22:'22_OSINT_SOCIAL_ENGINEERING',
+  101:'01_OFFENSIVE_MINDSET',102:'02_RECON_FOOTPRINTING',103:'03_VULNERABILITY_RESEARCH',
+  105:'05_EXPLOIT_DEVELOPMENT',106:'06_WINDOWS_INTERNALS',
+  108:'08_PRIVILEGE_ESCALATION',109:'09_MALWARE_DEVELOPMENT',110:'10_CODE_INJECTION',
+  111:'11_ROOTKITS',112:'12_ANTIVIRUS_EVASION',113:'13_MEMORY_FORENSICS',
+  114:'14_REVERSE_ENGINEERING',116:'16_COMMAND_AND_CONTROL',121:'21_MOBILE_SECURITY'
 };
 const CHAPTER_TITLES = {
   1:'Heap Internals',2:'Overflow Patterns',3:'UAF & Type Confusion',
@@ -138,7 +237,13 @@ const CHAPTER_TITLES = {
   10:'Corpus & Dictionary',11:'Campaign Management',12:'Exploit Development',
   13:'0x1security Doctrine',14:'Case Studies',15:'Post-Exploitation',
   16:'Responsible Disclosure',17:'Network Warfare',18:'Cryptography & Evasion',
-  20:'Active Directory Warfare',21:'Web Application Warfare',22:'OSINT & Social Engineering'
+  19:'Living Off The Land',
+  20:'Active Directory Warfare',21:'Web Application Warfare',22:'OSINT & Social Engineering',
+  101:'Offensive Mindset',102:'Recon & Footprinting',103:'Vulnerability Research',
+  105:'Exploit Development',106:'Windows Internals',
+  108:'Privilege Escalation',109:'Malware Development',110:'Code Injection',
+  111:'Rootkits',112:'AV Evasion',113:'Memory Forensics',
+  114:'Reverse Engineering',116:'Command & Control',121:'Mobile Security'
 };
 const BOOK_TO_NUM = Object.fromEntries(Object.entries(CHAPTERS).map(([n,b])=>[b,+n]));
 const NUM_ORDER = Object.keys(CHAPTERS).map(Number).sort((a,b)=>a-b);
@@ -214,6 +319,12 @@ function loadBook(slug){
 
       document.getElementById('doc').style.display='block';
       if(chNum) updateNav(chNum);
+
+      // load mission briefing, repo unlock, language primer, exercises
+      loadSitrep(slug, contentEl);
+      loadRepo(slug, contentEl);
+      loadPrimer(slug, contentEl);
+      loadExercises(slug, contentEl);
     })
     .catch(e=>{
       document.getElementById('loader').style.display='none';
@@ -228,6 +339,231 @@ window.addEventListener('scroll', ()=>{
   const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
   document.getElementById('read-progress').style.width = Math.min(pct,100) + '%';
 });
+
+// ── Exercise Engine ──────────────────────────────────────────────────────────
+
+var _primers = null;
+function loadPrimer(slug, container) {
+  function inject(data) {
+    var p = data[slug];
+    if (!p || !p.entries || !p.entries.length) return;
+    var langs = p.languages ? p.languages.join(' &nbsp;•&nbsp; ') : '';
+    var rows = p.entries.map(function(e) {
+      return '<tr><td>' + e.term + '</td><td>' + (e.lang || '') + '</td><td>' + e.meaning + '</td></tr>';
+    }).join('');
+    var el = document.createElement('div');
+    el.className = 'primer';
+    el.innerHTML =
+      '<div class="primer-header">' +
+        '<span>// LANGUAGE PRIMER</span>' +
+        '<span class="primer-langs">' + langs + '</span>' +
+        '<span class="primer-toggle">&#9658;</span>' +
+      '</div>' +
+      '<div class="primer-body">' +
+        '<table class="primer-table">' + rows + '</table>' +
+      '</div>';
+    el.querySelector('.primer-header').addEventListener('click', function() {
+      el.classList.toggle('open');
+    });
+    var sitrep = container.querySelector('.sitrep');
+    if (sitrep && sitrep.nextSibling) {
+      container.insertBefore(el, sitrep.nextSibling);
+    } else if (sitrep) {
+      container.appendChild(el);
+    } else {
+      container.insertBefore(el, container.firstChild);
+    }
+  }
+  if (_primers) { inject(_primers); return; }
+  fetch('./primers.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ _primers = data; inject(data); })
+    .catch(function(){});
+}
+
+var _sitreps = null;
+function loadSitrep(slug, container) {
+  function inject(data) {
+    var s = data[slug];
+    if (!s) return;
+    var el = document.createElement('div');
+    el.className = 'sitrep';
+    el.innerHTML =
+      '<div class="sitrep-header">// MISSION BRIEFING ─────────────────────────────────────────</div>' +
+      '<div class="sitrep-body">' +
+        '<span class="sitrep-key">ENEMY</span><span class="sitrep-val">' + s.enemy + '</span>' +
+        '<span class="sitrep-key">SITREP</span><span class="sitrep-val">' + s.situation + '</span>' +
+        '<span class="sitrep-key">WHY YOU</span><span class="sitrep-val">' + s.why_soldiers + '</span>' +
+        '<div class="sitrep-doctrine">DOCTRINE // ' + s.doctrine + '</div>' +
+      '</div>';
+    container.insertBefore(el, container.firstChild);
+  }
+  if (_sitreps) { inject(_sitreps); return; }
+  fetch('./sitrep.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ _sitreps = data; inject(data); })
+    .catch(function(){});
+}
+
+function loadExercises(slug, container) {
+  fetch('./exercises/' + slug + '.json')
+    .then(r => { if (!r.ok) return null; return r.json(); })
+    .then(data => { if (data && data.length) ExEngine.render(data, container); })
+    .catch(() => {});
+}
+
+var _repos = null;
+function loadRepo(slug, container) {
+  function inject(data) {
+    var r = data[slug];
+    if (!r) return;
+    var repoTags = r.repos && r.repos.length
+      ? r.repos.map(function(rn){ return '<span class="repo-tag">// ' + rn + '</span>'; }).join('')
+      : '<span class="repo-tag">// doctrine module</span>';
+    var el = document.createElement('div');
+    el.className = 'repo-unlock';
+    el.innerHTML =
+      '<div class="repo-unlock-header">// MODULE UNLOCK ────────────────────────────────────</div>' +
+      '<div class="repo-unlock-body">' +
+        '<div class="repo-unlock-repos">' + repoTags + '</div>' +
+        '<div class="repo-unlock-price">$' + (r.price || '—') + ' AUD — ' + (r.label || '') + '</div>' +
+        '<div class="repo-unlock-cta">AU: PayID <strong>gwu0738@gmail.com</strong> — ref: ' + slug + ' → access PIN + GitHub invite within 24h. ' +
+        'INT: <a href="mailto:gwu0738@gmail.com?subject=22DIV%20Module%20Purchase%20' + slug + '&body=Hi%20George%2C%20I%27d%20like%20to%20purchase%20module%20' + slug + '">email for invoice</a>. ' +
+        '<span style="color:#443300;">PIN at <a href="https://rainfantry.github.io/22nd-survey-division/" style="color:#886600;">22nd-survey-division</a> → enter → course unlocks.</span></div>' +
+      '</div>';
+    var sitrep = container.querySelector('.sitrep');
+    if (sitrep && sitrep.nextSibling) container.insertBefore(el, sitrep.nextSibling);
+    else container.insertBefore(el, container.firstChild);
+  }
+  if (_repos) { inject(_repos); return; }
+  fetch('./repos.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ _repos = data; inject(data); })
+    .catch(function(){});
+}
+
+const ExEngine = {
+  render(exercises, container) {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = '<div class="ex-section-label">// DRILL — INTERACTIVE EXERCISES</div>';
+    exercises.forEach((ex, i) => {
+      const el = document.createElement('div');
+      el.className = 'ex-block';
+      if (ex.type === 'terminal')  el.appendChild(ExEngine.buildTerminal(ex, i));
+      else if (ex.type === 'mcq')  el.appendChild(ExEngine.buildMCQ(ex, i));
+      else if (ex.type === 'fillin') el.appendChild(ExEngine.buildFillIn(ex, i));
+      wrap.appendChild(el);
+    });
+    container.appendChild(wrap);
+  },
+
+  buildTerminal(ex, idx) {
+    const d = document.createElement('div');
+    d.className = 'ex-terminal';
+    d.innerHTML = `<div class="ex-bar"><span>▶ TERMINAL</span> ${ex.title || ''}</div>
+      <div class="term-screen" id="ts-${idx}"></div>
+      <div class="ex-controls">
+        <button class="term-btn" id="tb-${idx}">▶ PLAY</button>
+        <button class="term-btn" id="tr-${idx}" disabled>↺ REPLAY</button>
+      </div>`;
+    const screen = d.querySelector('#ts-' + idx);
+    const playBtn = d.querySelector('#tb-' + idx);
+    const replayBtn = d.querySelector('#tr-' + idx);
+    let timer = null;
+
+    function run() {
+      screen.innerHTML = '';
+      playBtn.disabled = true;
+      replayBtn.disabled = true;
+      let delay = 0;
+      (ex.frames || []).forEach(f => {
+        delay += (f.delay || 300);
+        timer = setTimeout(() => {
+          const line = document.createElement('span');
+          line.className = 'term-line ' + (f.cls || '');
+          line.textContent = f.text;
+          screen.appendChild(line);
+          setTimeout(() => line.classList.add('show'), 20);
+          screen.scrollTop = screen.scrollHeight;
+        }, delay);
+      });
+      setTimeout(() => { replayBtn.disabled = false; }, delay + 400);
+    }
+
+    playBtn.addEventListener('click', () => { run(); playBtn.style.display = 'none'; });
+    replayBtn.addEventListener('click', () => { run(); });
+    return d;
+  },
+
+  buildMCQ(ex, idx) {
+    const d = document.createElement('div');
+    d.className = 'ex-mcq';
+    const choicesHtml = (ex.choices || []).map((c, i) =>
+      `<button class="ex-choice" data-idx="${i}">${c}</button>`).join('');
+    d.innerHTML = `<div class="ex-tag">// MCQ</div>
+      <div class="ex-question">${ex.question}</div>
+      <div class="ex-choices">${choicesHtml}</div>
+      <div class="ex-feedback" id="ef-${idx}"></div>`;
+    const fb = d.querySelector('#ef-' + idx);
+    d.querySelectorAll('.ex-choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = +btn.dataset.idx;
+        const correct = ex.answer;
+        d.querySelectorAll('.ex-choice').forEach(b => b.disabled = true);
+        if (chosen === correct) {
+          btn.classList.add('correct');
+          fb.textContent = '✓ CORRECT — ' + (ex.explanation || '');
+          fb.className = 'ex-feedback show fb-ok';
+        } else {
+          btn.classList.add('wrong');
+          d.querySelectorAll('.ex-choice')[correct].classList.add('correct');
+          fb.textContent = '✗ WRONG — ' + (ex.explanation || '');
+          fb.className = 'ex-feedback show fb-err';
+        }
+      });
+    });
+    return d;
+  },
+
+  buildFillIn(ex, idx) {
+    const d = document.createElement('div');
+    d.className = 'ex-fillin';
+    const code = (ex.code || '').replace(/\[BLANK\]/g,
+      `<input class="code-blank" id="fb-input-${idx}" placeholder="${ex.hint || '?'}" autocomplete="off" spellcheck="false">`);
+    d.innerHTML = `<div class="ex-tag">// FILL IN THE BLANK</div>
+      <div class="ex-prompt">${ex.prompt}</div>
+      <pre>${code}</pre>
+      <button class="ex-submit" id="fb-btn-${idx}">CHECK →</button>
+      <span class="ex-hint" id="fb-hint-${idx}">hint</span>
+      <div class="ex-feedback" id="fb-fb-${idx}"></div>`;
+    const input = d.querySelector('#fb-input-' + idx);
+    const btn   = d.querySelector('#fb-btn-' + idx);
+    const hintEl = d.querySelector('#fb-hint-' + idx);
+    const fb    = d.querySelector('#fb-fb-' + idx);
+    const answers = Array.isArray(ex.answers) ? ex.answers : [ex.answer];
+
+    function check() {
+      const val = (input.value || '').trim();
+      const ok = answers.some(a => val.toLowerCase() === String(a).toLowerCase());
+      input.className = 'code-blank ' + (ok ? 'fb-ok' : 'fb-err');
+      fb.textContent = ok
+        ? '✓ CORRECT — ' + (ex.explanation || 'Exactly right.')
+        : '✗ Try again. ' + (ex.wrong_hint || '');
+      fb.className = 'ex-feedback show ' + (ok ? 'fb-ok' : 'fb-err');
+      if (ok) { btn.disabled = true; input.disabled = true; }
+    }
+
+    btn.addEventListener('click', check);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+    hintEl.addEventListener('click', () => {
+      fb.textContent = '// HINT: ' + (ex.hint || ex.answer);
+      fb.className = 'ex-feedback show fb-err';
+    });
+    return d;
+  }
+};
+
+// ── End Exercise Engine ───────────────────────────────────────────────────────
 
 // init
 const params = new URLSearchParams(location.search);

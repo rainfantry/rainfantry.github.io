@@ -1,0 +1,48 @@
+[
+  {
+    "type": "mcq",
+    "question": "0x1security doctrine (Unit 8200 framework): what do you search for first?",
+    "choices": [
+      "A working exploit for the target version",
+      "CVEs older than 90 days with public PoCs",
+      "Knowledge — the architecture of what you're attacking",
+      "The fastest path to remote code execution"
+    ],
+    "answer": 2,
+    "explanation": "'Search for knowledge. Not bugs.' — ASF doctrine. Understanding the defence architecture is the prerequisite. The bypass is a side effect of understanding the system deeply enough."
+  },
+  {
+    "type": "mcq",
+    "question": "Unit 8200 Hunt Mindset: when you enter an unknown network, your first assumption is:",
+    "choices": [
+      "The network is clean — begin scanning from the outside in",
+      "The network is already compromised — hunt for the adversary's presence",
+      "Enumerate domain controllers before touching any endpoint",
+      "Assume you've been detected and work fast"
+    ],
+    "answer": 1,
+    "explanation": "'Assume compromise. Hunt, don't defend.' — thinking like a defender means you're always reactive. Thinking like a hunter means you're looking for evidence of what's already there."
+  },
+  {
+    "type": "mcq",
+    "question": "The 22DIV crash-to-RCE progression is: Crash → __ → Execute. Fill the gap.",
+    "choices": [
+      "Patch",
+      "Leak",
+      "Enumerate",
+      "Persist"
+    ],
+    "answer": 1,
+    "explanation": "Crash → Leak → Execute. A crash confirms a vulnerability exists. A memory leak (info leak) gives you the addresses you need to defeat ASLR. Execution is now possible with a working write-what-where primitive."
+  },
+  {
+    "type": "fillin",
+    "prompt": "Complete the 22DIV pre-op checklist entry (doctrine rule #1 before any engagement):",
+    "code": "// Pre-op checklist\n// 1. Confirm [BLANK] hardware only\n// 2. Document all actions\n// 3. Responsible disclosure within 90 days",
+    "answer": "own",
+    "answers": ["own", "researcher-owned", "your own", "authorized"],
+    "hint": "You never touch what you don't...",
+    "explanation": "Own hardware only. Every technique in this course is tested on researcher-owned machines. Unauthorized access is illegal, unethical, and gets you caught.",
+    "wrong_hint": "The first rule: only attack hardware you..."
+  }
+]

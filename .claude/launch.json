@@ -1,11 +1,1 @@
-{
-  "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "portfolio",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "."],
-      "port": 8765
-    }
-  ]
-}
+{"version":"0.0.1","configurations":[{"name":"portfolio","runtimeExecutable":"npx","runtimeArgs":["serve","-p","3022","."],"port":3022}]}

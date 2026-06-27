@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>22ND SURVEY DIVISION — ACCESS TIERS</title>
+  <meta name="description" content="Offensive security course pricing. Monthly access or lifetime bundle with full source code. Occupation Force Callsign GSW Pty Ltd.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23010901'/><text x='50%25' y='60%25' font-size='20' text-anchor='middle' dominant-baseline='middle' fill='%2300cc44' font-family='monospace' font-weight='bold'>22</text></svg>">
+  <script src="site.js" defer></script>
+  <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+  <style>
+    :root {
+      --bg: #010901;
+      --bg2: #010e01;
+      --bg3: #020f02;
+      --border: #0d3a0d;
+      --border2: #1a6a1a;
+      --green: #4adc6a;
+      --green-dim: #2a7a2a;
+      --green-bright: #6aff8a;
+      --cyan: #4adcdc;
+      --cyan-dim: #1a6a6a;
+      --gold: #dca84a;
+      --gold-dim: #6a5a1a;
+      --text: #c0dcc0;
+      --text-dim: #6a8a6a;
+      --text-faint: #3a5a3a;
+      --red-dim: #5a1a1a;
+      --red: #dc4a4a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(1,9,1,.97);
+      border-bottom: 1px solid var(--border);
+      padding: .8rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .nav-logo { font-size: .7rem; font-weight: 700; color: var(--green); letter-spacing: .18em; text-decoration: none; }
+    .nav-back { font-size: .56rem; color: var(--green-dim); letter-spacing: .14em; text-decoration: none; }
+    .nav-back:hover { color: var(--green); }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 3.5rem;
+      background: linear-gradient(180deg, #010f01 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(42,122,42,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag { font-size: .44rem; letter-spacing: .3em; color: var(--green-dim); margin-bottom: 1rem; }
+    .hero-title {
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      color: var(--green);
+      font-weight: 900;
+      letter-spacing: .1em;
+      line-height: 1.1;
+      text-shadow: 0 0 40px rgba(74,220,106,.25);
+      margin-bottom: 1rem;
+    }
+    .hero-sub {
+      font-size: .82rem;
+      color: var(--text-dim);
+      letter-spacing: .06em;
+      max-width: 560px;
+      margin: 0 auto 1.8rem;
+      line-height: 1.7;
+    }
+    .hero-company {
+      font-size: .46rem;
+      color: var(--text-faint);
+      letter-spacing: .1em;
+    }
+
+    /* ── CONTAINER ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+    @media(max-width:600px){ .container { padding: 0 1rem; } }
+
+    /* ── SECTION ── */
+    section { padding: 4rem 0; }
+    .section-label {
+      font-size: .44rem; letter-spacing: .3em; color: var(--green-dim);
+      text-align: center; margin-bottom: .8rem;
+    }
+    .section-title {
+      font-size: 1.5rem; color: var(--green); font-weight: 700;
+      text-align: center; letter-spacing: .08em; margin-bottom: 2.5rem;
+    }
+
+    /* ── TIER CARDS ── */
+    .tiers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    @media(max-width:768px){ .tiers { grid-template-columns: 1fr; } }
+
+    .tier {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .tier.featured {
+      border-color: var(--border2);
+      box-shadow: 0 0 30px rgba(42,122,42,.12), inset 0 0 60px rgba(42,122,42,.03);
+    }
+    .tier-badge {
+      position: absolute; top: 1rem; right: 1rem;
+      font-size: .44rem; letter-spacing: .18em;
+      background: var(--green-dim); color: #010f01;
+      padding: .2rem .6rem; font-weight: 700;
+    }
+    .tier-head {
+      padding: 2rem 1.8rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tier-name {
+      font-size: .5rem; letter-spacing: .28em; color: var(--text-dim);
+      margin-bottom: .5rem;
+    }
+    .tier-price {
+      font-size: 2.6rem; font-weight: 900; color: var(--green);
+      line-height: 1; margin-bottom: .3rem;
+      text-shadow: 0 0 20px rgba(74,220,106,.3);
+    }
+    .tier-price span { font-size: .9rem; font-weight: 400; color: var(--text-dim); }
+    .tier-desc {
+      font-size: .6rem; color: var(--text-dim); line-height: 1.6;
+      margin-top: .6rem; letter-spacing: .04em;
+    }
+    .tier-body { padding: 1.5rem 1.8rem; }
+
+    /* ── FEATURE LIST ── */
+    .feat-group { margin-bottom: 1.4rem; }
+    .feat-group-label {
+      font-size: .42rem; letter-spacing: .22em; color: var(--text-faint);
+      margin-bottom: .6rem; padding-bottom: .3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .feat {
+      display: flex; align-items: flex-start; gap: .5rem;
+      font-size: .6rem; color: var(--text-dim); line-height: 1.5;
+      margin-bottom: .35rem; padding: .2rem 0;
+    }
+    .feat .icon {
+      flex-shrink: 0; width: 1rem; text-align: center;
+      font-style: normal;
+    }
+    .feat .icon.yes { color: var(--green); }
+    .feat .icon.no  { color: var(--text-faint); }
+    .feat .icon.star { color: var(--gold); }
+    .feat-text { flex: 1; }
+    .feat-text strong { color: var(--text); }
+    .feat.locked .feat-text { color: var(--text-faint); text-decoration: line-through; }
+    .feat-tag {
+      font-size: .38rem; letter-spacing: .12em;
+      padding: .1rem .4rem; margin-left: .4rem;
+      background: var(--green-dim); color: #010f01; font-weight: 700;
+      vertical-align: middle; white-space: nowrap;
+    }
+    .feat-tag.gold { background: var(--gold-dim); color: var(--gold); }
+
+    /* ── TOOL CARDS (full bundle section) ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .tool-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green-dim);
+      padding: 1.2rem 1.4rem;
+    }
+    .tool-card.special { border-left-color: var(--cyan-dim); }
+    .tool-name {
+      font-size: .7rem; font-weight: 700; color: var(--green);
+      letter-spacing: .1em; margin-bottom: .3rem;
+    }
+    .tool-card.special .tool-name { color: var(--cyan); }
+    .tool-lang {
+      font-size: .44rem; color: var(--text-faint); letter-spacing: .1em;
+      margin-bottom: .6rem;
+    }
+    .tool-desc { font-size: .6rem; color: var(--text-dim); line-height: 1.6; }
+    .tool-stat {
+      margin-top: .6rem; font-size: .48rem; color: var(--green-dim);
+      letter-spacing: .1em;
+    }
+
+    /* ── PAYMENT BLOCK ── */
+    .payment-block {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    .payment-label { font-size: .44rem; letter-spacing: .26em; color: var(--text-faint); margin-bottom: .5rem; }
+    .payment-title { font-size: 1.1rem; color: var(--green); font-weight: 700; letter-spacing: .06em; margin-bottom: .4rem; }
+    .payment-price { font-size: .72rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+    .stripe-wrap { display: flex; justify-content: center; margin-bottom: 1.2rem; }
+    .stripe-wrap stripe-buy-button { display: block; max-width: 360px; width: 100%; }
+    .pay-divider { font-size: .44rem; color: var(--text-faint); letter-spacing: .18em; margin: .6rem 0; }
+    .pay-wise {
+      display: inline-block;
+      border: 1px solid var(--cyan-dim);
+      color: var(--cyan);
+      font-size: .58rem; letter-spacing: .12em;
+      padding: .6rem 1.6rem; text-decoration: none; margin-top: .3rem;
+    }
+    .pay-wise:hover { background: #011a1a; border-color: var(--cyan); }
+    .pay-note { font-size: .46rem; color: var(--text-faint); line-height: 1.6; margin-top: 1rem; letter-spacing: .04em; }
+
+    /* ── COFFEE ── */
+    .coffee-block {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold-dim);
+      background: #0a0a01;
+      padding: 1.4rem 1.8rem;
+      display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .coffee-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .coffee-text { flex: 1; min-width: 180px; }
+    .coffee-title { font-size: .7rem; color: var(--gold); font-weight: 700; letter-spacing: .1em; margin-bottom: .3rem; }
+    .coffee-desc { font-size: .56rem; color: var(--text-dim); line-height: 1.6; }
+    .coffee-link {
+      display: inline-block; border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: .56rem; letter-spacing: .12em;
+      padding: .5rem 1.2rem; text-decoration: none; white-space: nowrap;
+    }
+    .coffee-link:hover { background: #1a1000; border-color: var(--gold); }
+
+    /* ── COMPARISON TABLE ── */
+    .compare-table {
+      width: 100%; border-collapse: collapse;
+      font-size: .58rem;
+      margin-bottom: 2rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: .7rem .9rem; border: 1px solid var(--border);
+      text-align: left; vertical-align: top;
+    }
+    .compare-table th {
+      background: var(--bg3); color: var(--green);
+      letter-spacing: .1em; font-size: .52rem; font-weight: 700;
+    }
+    .compare-table th.featured-col { background: #011801; }
+    .compare-table td.featured-col { background: #010f01; }
+    .compare-table tr:hover td { background: #020f02; }
+    .compare-table .row-label { color: var(--text-dim); font-weight: 700; letter-spacing: .06em; }
+    .compare-table .check { color: var(--green); text-align: center; }
+    .compare-table .cross { color: var(--text-faint); text-align: center; }
+    .compare-table .star  { color: var(--gold);  text-align: center; }
+    @media(max-width:600px){
+      .compare-table { font-size: .5rem; }
+      .compare-table th, .compare-table td { padding: .5rem .6rem; }
+    }
+
+    /* ── GLOW DIVIDER ── */
+    .glow-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+      margin: 0;
+    }
+
+    /* ── COMPANY ── */
+    .company-bar {
+      background: var(--bg3);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 1.5rem 2rem;
+      font-size: .46rem; color: var(--text-faint); letter-spacing: .08em; line-height: 2;
+    }
+    .company-bar a { color: var(--green-dim); text-decoration: none; }
+    .company-bar a:hover { color: var(--green); }
+
+    /* ── SCROLL INDICATOR ── */
+    @keyframes floatdown { 0%,100%{transform:translateY(0);opacity:.7;} 50%{transform:translateY(4px);opacity:1;} }
+    .scroll-hint {
+      display: block; text-align: center; font-size: .5rem;
+      color: var(--text-faint); letter-spacing: .18em; margin-top: 1.5rem;
+      animation: floatdown 2.4s ease-in-out infinite;
+    }
+
+    /* ── PULSE ANIMATION ── */
+    @keyframes neonpulse {
+      0%,100%{ text-shadow: 0 0 20px rgba(74,220,106,.2), 0 0 40px rgba(74,220,106,.1); }
+      50%{ text-shadow: 0 0 30px rgba(74,220,106,.4), 0 0 60px rgba(74,220,106,.2); }
+    }
+    .neon { animation: neonpulse 3s ease-in-out infinite; }
+
+    /* ── FAQ ── */
+    .faq-item { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .faq-q { font-size: .64rem; color: var(--green); font-weight: 700; letter-spacing: .06em; margin-bottom: .4rem; }
+    .faq-a { font-size: .6rem; color: var(--text-dim); line-height: 1.7; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--green-dim); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">// RAINFANTRY</a>
+  <a class="nav-back" href="https://rainfantry.github.io/22nd-survey-division/">← 22DIV MAIN SITE</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-tag">// OCCUPATION FORCE CALLSIGN GSW PTY LTD</div>
+  <h1 class="hero-title neon">CHOOSE YOUR<br>ACCESS TIER</h1>
+  <p class="hero-sub">22nd Survey Division — offensive security research course. 22 modules. Live tools. Original CVE research. Two ways to get in.</p>
+  <div class="hero-company">ABN&nbsp;50&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; ACN&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; SYDNEY&nbsp;AU</div>
+  <span class="scroll-hint">↓ SCROLL TO COMPARE ↓</span>
+</header>
+
+<div class="glow-divider"></div>
+
+<!-- TIER CARDS -->
+<section>
+  <div class="container">
+    <div class="section-label">// SELECT ACCESS LEVEL</div>
+    <h2 class="section-title">TWO TIERS. ZERO FILLER.</h2>
+
+    <div class="tiers">
+
+      <!-- MONTHLY -->
+      <div class="tier">
+        <div class="tier-head">
+          <div class="tier-name">// MONTHLY ACCESS</div>
+          <div class="tier-price">A$21.99<span>/mo</span></div>
+          <div class="tier-desc">Course access with live updates. Cancel anytime. Best for learning on a budget or testing the content before committing.</div>
+        </div>
+        <div class="tier-body">
+
+          <div class="feat-group">
+            <div class="feat-group-label">COURSE CONTENT</div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>22 full modules</strong> — read access, all sections</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Module updates</strong> — new content as it drops</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Windows internals &amp; kernel dev</strong></span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>C2 architecture</strong>, lateral movement, AV evasion concepts</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>HWBP AMSI/ETW bypass</strong> — written by the researcher (VULN-195458)</span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">TOOLS</div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>GeoDefend scanner</strong> — hosted tool, web access<span class="feat-tag">INCLUDED</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>IRON-DOME demo</strong> — results walkthrough (no source)</span>
+            </div>
+            <div class="feat locked">
+              <i class="icon no">✗</i>
+              <span class="feat-text">IRON-DOME v4 source repository</span>
+            </div>
+            <div class="feat locked">
+              <i class="icon no">✗</i>
+              <span class="feat-text">CHEYANNE C2 source repository</span>
+            </div>
+            <div class="feat locked">
+              <i class="icon no">✗</i>
+              <span class="feat-text">STARKILLER, WinRecon, Ghost-Encoder source</span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">SUPPORT &amp; UPDATES</div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Email support</strong> — gwu0738@gmail.com</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Cancel anytime</strong> — no lock-in</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FULL BUNDLE -->
+      <div class="tier featured">
+        <div class="tier-badge">BEST VALUE</div>
+        <div class="tier-head">
+          <div class="tier-name">// FULL BUNDLE — ONE-TIME</div>
+          <div class="tier-price">A$247.50<span> once</span></div>
+          <div class="tier-desc">Everything. Forever. All 5 private tool repos. Full source code. No subscription. One payment, lifetime access including all future updates.</div>
+        </div>
+        <div class="tier-body">
+
+          <div class="feat-group">
+            <div class="feat-group-label">EVERYTHING IN MONTHLY, PLUS:</div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>Lifetime access</strong> — no recurring fees, ever</span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>All future module updates</strong> included automatically</span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">PRIVATE TOOL REPOSITORIES (SOURCE CODE)</div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>IRON-DOME v4</strong> — AV evasion loader. C/PowerShell. 26 binaries, 0 detections.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>CHEYANNE C2</strong> — full command &amp; control framework, full kill chain.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>STARKILLER</strong> — Android RAT (Kotlin), Phase 1 complete.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>WinRecon / SKYWALKER</strong> — Windows recon &amp; enumeration suite.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>Ghost-Encoder</strong> — zero-width Unicode steganography engine.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">RESEARCH &amp; TOOLS</div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>GeoDefend</strong> — web tool access + full source code<span class="feat-tag">INCLUDED</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>MSRC VULN-195458 writeup</strong> — HWBP AMSI/ETW bypass, full technical doc + PoC</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Priority email support</strong> + direct contact</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div style="overflow-x:auto;">
+      <div class="section-label" style="margin-top:1rem;">// SIDE BY SIDE</div>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:40%;">FEATURE</th>
+            <th style="width:30%;text-align:center;">MONTHLY<br><span style="color:var(--text-dim);font-size:.7em;">A$21.99/mo</span></th>
+            <th class="featured-col" style="width:30%;text-align:center;">FULL BUNDLE<br><span style="color:var(--green);font-size:.7em;">A$247.50 once</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="row-label">22 Course modules</td><td class="check">✓</td><td class="check featured-col">✓</td></tr>
+          <tr><td class="row-label">Module updates</td><td class="check">✓</td><td class="check featured-col">✓ forever</td></tr>
+          <tr><td class="row-label">GeoDefend scanner (hosted)</td><td class="check">✓</td><td class="check featured-col">✓ + source</td></tr>
+          <tr><td class="row-label">HWBP bypass research</td><td class="check">✓</td><td class="check featured-col">✓ + PoC code</td></tr>
+          <tr><td class="row-label">IRON-DOME v4 source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">CHEYANNE C2 source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">STARKILLER Android RAT source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">WinRecon / SKYWALKER source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">Ghost-Encoder source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">MSRC writeup + PoC</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">Recurring payment</td><td style="color:var(--red);text-align:center;">A$21.99/mo</td><td class="check featured-col" style="color:var(--green);">none</td></tr>
+          <tr><td class="row-label">Lifetime access</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- TOOL BREAKDOWN — VERBOSE -->
+<section style="background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container" style="max-width:860px;">
+    <div class="section-label">// FULL BUNDLE — WHAT YOU'RE BUYING</div>
+    <h2 class="section-title">THE TOOLS — HOW THEY WORK</h2>
+    <p style="text-align:center;font-size:.64rem;color:var(--text-dim);max-width:640px;margin:0 auto 3rem;line-height:1.8;">Five private repositories. Not demos. Not tutorials. Operational tools — built, tested against live AV, and documented. Here's exactly what each one does, how it works under the hood, and why it evades detection.</p>
+
+    <!-- ── IRON-DOME ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 01 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">IRON-DOME v4</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#4a9adc;letter-spacing:.12em;">C &nbsp;/&nbsp; POWERSHELL &nbsp;/&nbsp; x64</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">26 BINARIES &nbsp;·&nbsp; 0 DETECTIONS</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">An AV evasion loader. You give it shellcode (Meterpreter, Cobalt Strike beacon, custom payload — anything). It encrypts it, wraps it in a clean-looking binary, and executes it on the target machine without triggering Windows Defender, ESET, or Kaspersky. <strong style="color:var(--green);">26 compiled binaries tested. All 0 detections.</strong></p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.4rem;">
+          <div style="grid-column:1/-1;">
+            <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">HOW IT WORKS — STEP BY STEP</div>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">① ENCRYPTION</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">Shellcode is XOR/RC4 encrypted at compile time. The binary on disk contains only ciphertext — no recognisable malware bytes. Static AV scanners match signatures against raw bytes. No matching bytes, no detection.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">② MEMORY STAGING</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">Allocates memory as RW (read/write only — not executable). Decrypts shellcode into it. Then changes permissions to RX (read/execute — no longer writable). AV behavioural engines specifically flag RWX allocations. We avoid that entirely.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">③ API UNHOOKING</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">EDR products hook ntdll.dll functions (NtAllocateVirtualMemory, NtWriteVirtualMemory etc.) to intercept calls. IRON-DOME maps a fresh copy of ntdll from disk and calls through it directly, bypassing EDR's hooks entirely.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">④ PROCESS HOLLOWING</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">Spawns a legitimate Windows process (svchost.exe, explorer.exe) in suspended state. Unmaps its memory. Writes the payload into the hollowed address space. Resumes the thread. Payload now runs inside a trusted process — task manager shows svchost.exe, not malware.exe.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">⑤ IMPORT OBFUSCATION</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">The binary's Import Address Table (IAT) contains no suspicious entries. Functions like VirtualAlloc and WriteProcessMemory are resolved at runtime via GetProcAddress with hashed names — not listed statically where AV can read them.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">⑥ SLEEP &amp; SANDBOX CHECKS</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">AV sandboxes run samples for a fixed time window (usually 30–90 seconds). IRON-DOME checks for sandbox artefacts (low RAM, no user activity, virtualisation registry keys) and sleeps beyond the analysis window before executing.</p>
+          </div>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT WORKS — THE THEORY</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Modern AV has three detection layers: static (bytes on disk), behavioural (API call chains at runtime), and cloud-submitted sandbox. IRON-DOME destroys static signatures with encryption, avoids the suspicious RWX→execute behavioural chain, removes the API hooks behavioural engines rely on, and defeats sandbox timing. Targeting all three layers simultaneously is what gets 0 detections — beating just one layer isn't enough.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">loader.c — main evasion engine</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">encryptor.py — payload prep tool</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">unhook.c — ntdll refresh module</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">hollow.c — process hollowing</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">26× prebuilt binaries (tested, 0 det.)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">build.bat — one-command compile</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">PENTEST_LOG.md — test methodology</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── CHEYANNE C2 ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 02 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">CHEYANNE C2</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#4a9adc;letter-spacing:.12em;">C &nbsp;/&nbsp; PYTHON &nbsp;/&nbsp; FULL KILL CHAIN</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">BEACON &nbsp;·&nbsp; HANDLER &nbsp;·&nbsp; CONSOLE</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">A complete command-and-control framework. You deploy a beacon implant on a target machine. It calls back to your handler server on a configurable interval. You interact with it through an operator console — run commands, exfiltrate files, pivot to other machines, establish persistence. The full offensive kill chain in one codebase, documented with a real PENTEST_LOG.md.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">THREE COMPONENTS — HOW EACH WORKS</div>
+
+        <div style="margin-bottom:1.2rem;background:#010901;border:1px solid var(--border);border-left:3px solid var(--gdim);padding:1.1rem 1.4rem;">
+          <div style="font-size:.56rem;color:var(--green);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;">BEACON IMPLANT</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Runs on the compromised machine. Sleeps for a configurable interval (default 30s with ±10s jitter), then sends an HTTPS callback to the handler. Jitter prevents detection by timing-pattern analysis — a beacon that checks in every exactly 30 seconds is trivial to spot in network logs. The jitter makes the pattern statistical noise. On callback the beacon receives a queued job (run command, upload file, spawn process etc.), executes it, and sends output back encrypted. If no job, it sleeps again. Minimal network footprint.</p>
+        </div>
+
+        <div style="margin-bottom:1.2rem;background:#010901;border:1px solid var(--border);border-left:3px solid var(--gdim);padding:1.1rem 1.4rem;">
+          <div style="font-size:.56rem;color:var(--green);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;">HANDLER (C2 SERVER)</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Receives beacon callbacks over HTTPS. Maintains a job queue per implant. Stores output. Serves a listener on configurable port. Traffic profile mimics a legitimate web server — responds to non-beacon requests with normal HTTP responses so port scans don't flag an open C2 port. Malleable comms profile lets you shape the HTTPS request headers to look like browser traffic (User-Agent, Accept headers etc.).</p>
+        </div>
+
+        <div style="margin-bottom:1.4rem;background:#010901;border:1px solid var(--border);border-left:3px solid var(--gdim);padding:1.1rem 1.4rem;">
+          <div style="font-size:.56rem;color:var(--green);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;">OPERATOR CONSOLE</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">CLI interface for the pentester. List active beacons, select a session, run commands. Built-in modules: screenshot, keylogger, credential dump path, file upload/download, lateral movement (pass-the-hash via NTLM), persistence (registry run key, scheduled task, WMI subscription). Output is logged per-session for report generation.</p>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT EVADES DETECTION</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">C2 traffic is flagged by network defenders when it's periodic, encrypted in non-standard ways, or communicates with known-bad IPs. CHEYANNE uses HTTPS (standard encrypted channel), jitter (defeats periodicity detection), mimicked browser headers (passes application-layer inspection), and operator-controlled listener domains (fresh infrastructure = no threat-intel hits). Compare this to off-the-shelf tools like Metasploit — whose callback signatures are in every SIEM rule. This is custom, undocumented, and not in any threat intelligence database.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">implant/ — beacon source (C)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">handler/ — C2 server (Python)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">console/ — operator CLI</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">modules/ — keylogger, screenshot, creds</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">malleable/ — traffic profiles</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">PENTEST_LOG.md — full kill chain run</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── STARKILLER ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 03 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">STARKILLER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#4a9adc;letter-spacing:.12em;">KOTLIN &nbsp;/&nbsp; ANDROID 10+</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">PHASE 1 COMPLETE &nbsp;·&nbsp; COMMIT 67aa4fd</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">An Android Remote Access Trojan written in Kotlin. Packaged as a legitimate-looking Android application, it operates silently in the background once installed — exfiltrating device data, intercepting SMS messages, streaming GPS coordinates, and providing a remote shell. Phase 1 complete and operational on Android 10, 11, 12, 13.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">CAPABILITIES — HOW EACH WORKS</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.4rem;">
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">SMS INTERCEPT</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Registers a BroadcastReceiver for SMS_RECEIVED intents. Every incoming SMS is intercepted before it reaches the user's messaging app, forwarded to the C2, and optionally suppressed from notification tray. Requires RECEIVE_SMS permission declared in manifest.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">GPS TRACKING</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Uses Android's LocationManager with both GPS and network providers. Location updates stream continuously to the C2 at configurable intervals. On Android 10+ background location requires ACCESS_BACKGROUND_LOCATION — included and declared.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">REMOTE SHELL</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Opens a socket connection to the C2 handler. Commands sent from operator are executed via Runtime.exec(). Output piped back over the same socket. Provides interactive shell access to the device — list files, exfiltrate data, run apps.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">PERSISTENCE</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Runs as a Foreground Service — Android's mechanism for long-running background operations. Foreground Services survive Doze mode and app backgrounding. Shows a minimal notification (disguised as a system notice). RECEIVE_BOOT_COMPLETED restarts it after reboot.</p>
+          </div>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT WORKS — THE PERMISSION MODEL</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Android's security model is permission-based, not code-based. The OS doesn't analyse what your app does with a permission — it only checks if you have it. Once the user grants SMS, location, and contacts access (which apps legitimately request all the time), STARKILLER has the same access as a banking app. The APK build pipeline applies string obfuscation and class renaming — Google Play Protect scans by signature and behaviour; obfuscation defeats signature, and the behaviour (background service, network calls) looks identical to any live-data app.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">Android Studio project (Kotlin)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">C2 handler (Python)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">APK build + obfuscation config</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">AndroidManifest.xml (all perms)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">Operator guide + deployment notes</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── WINRECON ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 04 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">WINRECON / SKYWALKER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#9a4adc;letter-spacing:.12em;">POWERSHELL &nbsp;/&nbsp; C#</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">POST-EXPLOITATION RECON</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">A post-exploitation reconnaissance suite for Windows environments. The first 15 minutes after gaining access are the most critical — you need to understand the environment before you move. WinRecon automates that map: who's here, what can I reach, what security controls are running, where are the credentials. Structured output for rapid situational awareness and report generation.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">WHAT IT ENUMERATES</div>
+
+        <div style="columns:2;column-gap:1.5rem;margin-bottom:1.4rem;">
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">IDENTITY</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Current user, group memberships, privilege tokens (SeDebugPrivilege, SeImpersonatePrivilege — both escalation paths), domain membership, local administrator status.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">NETWORK</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">All network adapters and IPs, listening ports, established connections, ARP cache (reveals other live hosts), DNS server addresses, routing table.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">SECURITY</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Running AV/EDR processes (Defender, CrowdStrike, SentinelOne, Carbon Black — pattern matched), firewall state, UAC level, AMSI status, Windows Defender exclusion paths.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">CREDENTIALS</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Cached credential entries (cmdkey), browser credential stores (Chrome/Edge path locations), Wi-Fi stored PSKs (via netsh), RDP saved connections.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">PERSISTENCE VECTORS</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">All non-Microsoft scheduled tasks, registry Run/RunOnce keys, startup folder entries, WMI subscriptions, service binaries with writable paths (privesc via service hijacking).</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">DOMAIN (IF JOINED)</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Domain controllers, domain admins, all domain computers (potential pivot targets), GPO names, trust relationships, Kerberoastable service accounts (SPNs).</p>
+          </div>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT'S LOW-NOISE</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Pure PowerShell and .NET — no external executables dropped to disk. Uses built-in Windows APIs and WMI rather than spawning child processes that trigger parent-child chain detection (e.g. powershell.exe → net.exe is flagged; WMI queries from powershell.exe are not). Output is structured JSON for direct import into pentest report templates. No external network calls — everything runs locally against the Windows API.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">WinRecon.ps1 — main script</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">WinRecon.cs — C# compiled version</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">modules/ — domain, creds, security</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">report-gen.py — JSON → DOCX</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">USAGE.md — engagement guide</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GHOST-ENCODER ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 05 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">GHOST-ENCODER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#dcdc4a;letter-spacing:.12em;">JAVASCRIPT &nbsp;/&nbsp; PYTHON</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">ZERO-WIDTH UNICODE STEGANOGRAPHY</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">A steganography engine that hides arbitrary data inside plain text using zero-width Unicode characters. The output looks completely empty to a human reader — no unusual characters, no visible difference. The data is there, encoded in invisible bytes. Use case: covert C2 channel inside Slack, email, or any text field that passes through DLP inspection.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">HOW THE ENCODING WORKS</div>
+
+        <div style="background:#000a00;border:1px solid #0a1a0a;border-left:3px solid var(--gdim);padding:1rem 1.2rem;margin-bottom:1.2rem;overflow-x:auto;">
+          <pre style="font-size:.56rem;color:#b0dcb0;line-height:1.8;white-space:pre;"><span style="color:#3a7a3a;">// Zero-width character map</span>
+U+200B = ZERO WIDTH SPACE        → binary 0
+U+200C = ZERO WIDTH NON-JOINER  → binary 1
+
+<span style="color:#3a7a3a;">// Encoding "A" (ASCII 0x41 = 01000001)</span>
+Binary:   0 1 0 0 0 0 0 1
+Encoded:  ​‌​​​​​‌
+<span style="color:#3a7a3a;">// ↑ That line contains 8 invisible characters. Try selecting it.</span>
+
+<span style="color:#3a7a3a;">// Practical use: embed in a Slack message</span>
+msg = "Hey, meeting at 3pm" + encode(c2_command) + "."
+<span style="color:#3a7a3a;">// Recipient sees:  "Hey, meeting at 3pm."</span>
+<span style="color:#3a7a3a;">// C2 decoder sees: "Hey, meeting at 3pm[EXEC:whoami]."</span></pre>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.4rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY DLP TOOLS DON'T CATCH IT</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Data Loss Prevention tools scan for patterns: credit card numbers, keywords, binary file signatures, large base64 blobs. Zero-width characters are valid Unicode — they appear in legitimate documents (right-to-left markers, no-break joins in Arabic/Thai text). DLP tools see plain text, not binary exfiltration. The channel looks like a Slack message, not a data exfil event. Standard regex and keyword matching is completely blind to this. Only a tool explicitly checking for anomalous zero-width character density would flag it — and almost nothing does this by default.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">encoder.js — browser-side engine</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">decoder.js — extraction engine</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">ghost.py — Python CLI tool</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">demo.html — live browser demo</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">c2-channel.md — integration guide</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">RESEARCH.md — DLP bypass analysis</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GEODEFEND ── -->
+    <div style="border:1px solid var(--cdim);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--cdim);margin-bottom:.3rem;">// TOOL 06 — MONTHLY: HOSTED &nbsp;|&nbsp; BUNDLE: + SOURCE</div>
+            <div style="font-size:1.3rem;color:var(--cyan);font-weight:900;letter-spacing:.08em;">GEODEFEND SCANNER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.12em;">WEB APP &nbsp;/&nbsp; DEFENSIVE</div>
+            <div style="font-size:.46rem;color:var(--text-dim);letter-spacing:.1em;margin-top:.2rem;">BLUE TEAM COUNTERPART</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">The defensive counterpart to the offensive tools above. GeoDefend runs the same reconnaissance and enumeration logic a red teamer runs — but points it at your own infrastructure. It tells you what an attacker sees when they look at you: exposed services, misconfigured headers, weak TLS, open ports, information disclosure, known CVE signatures on detected service versions.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.4rem;">
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">ATTACK SURFACE MAPPING</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Port scan, service fingerprinting, TLS version check, HTTP header analysis (missing security headers: CSP, HSTS, X-Frame-Options). Outputs what an nmap + nikto + testssl run would find — in one automated pass.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">MISCONFIGURATION CHECKS</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Default credentials on common services, directory listing enabled, DEBUG mode exposed, admin panels accessible, S3/cloud storage buckets open, CORS wildcard policy, info disclosure in error pages.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">IOC CORRELATION</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Matches detected artefacts against IOC patterns used by the IRON-DOME / CHEYANNE tools. Tells you: if these tools were deployed against you, here's what would trip detection and here's what wouldn't.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">REPORT OUTPUT</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Generates a structured JSON + HTML report. Severity-rated findings (Critical / High / Medium / Low). Remediation recommendations per finding. Built for inclusion in pentest reports or internal security audit documentation.</p>
+          </div>
+        </div>
+
+        <div style="background:#010e01;border:1px solid var(--cdim);padding:1rem 1.4rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--cdim);margin-bottom:.4rem;">TIER DIFFERENCE</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;"><strong style="color:var(--text);">Monthly:</strong> Web-hosted access — run scans through the hosted interface, download reports. No setup required.<br><strong style="color:var(--text);">Full Bundle:</strong> Full source code + deployment guide. Host it yourself, modify detection rules, integrate into your own toolchain, extend with custom checks.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- PAYMENT -->
+<section id="buy">
+  <div class="container">
+    <div class="section-label">// CHECKOUT</div>
+    <h2 class="section-title">SELECT YOUR TIER &amp; PAY</h2>
+
+    <!-- BUNDLE PAYMENT -->
+    <div class="payment-block">
+      <div class="payment-label">// OPTION 1 — ONE-TIME</div>
+      <div class="payment-title">FULL BUNDLE — ALL TOOLS + LIFETIME ACCESS</div>
+      <div class="payment-price">A$247.50 &nbsp;·&nbsp; one-time &nbsp;·&nbsp; no recurring fees</div>
+      <div class="stripe-wrap">
+        <stripe-buy-button
+          buy-button-id="buy_btn_1Tmp4iS5K1Ttf6KaIUlvp1xr"
+          publishable-key="pk_live_51SOog7S5K1Ttf6KaHTIbEAiN80J2FHk7l1alno8IR7bliBd0gcOSqjpFmGQ1DXOKMMZkD7ec7nz6ewJhxuyW9C4z00y6JxsrH6">
+        </stripe-buy-button>
+      </div>
+      <div class="pay-divider">— OR PAY INTERNATIONALLY —</div>
+      <a class="pay-wise" href="https://wise.com/pay/r/iGdeLuD93vCb4U8" target="_blank" rel="noopener">
+        BANK TRANSFER VIA WISE — A$247.50 PRESET &rarr;
+      </a>
+      <div class="pay-note">
+        Stripe: credit/debit card, Apple Pay, Google Pay &nbsp;·&nbsp; AUD pricing<br>
+        Wise: international bank transfer (SWIFT/local) for overseas buyers &nbsp;·&nbsp; amount pre-filled<br>
+        Access delivered within 24h of confirmed payment &nbsp;·&nbsp; Contact: gwu0738@gmail.com
+      </div>
+    </div>
+
+    <!-- MONTHLY PAYMENT -->
+    <div class="payment-block">
+      <div class="payment-label">// OPTION 2 — MONTHLY SUBSCRIPTION</div>
+      <div class="payment-title">MONTHLY ACCESS — COURSE + GEODEFEND</div>
+      <div class="payment-price">A$21.99/month &nbsp;·&nbsp; cancel anytime</div>
+      <div class="stripe-wrap">
+        <stripe-buy-button
+          buy-button-id="buy_btn_1Tmp9SS5K1Ttf6KaxgbBvxcw"
+          publishable-key="pk_live_51SOog7S5K1Ttf6KaHTIbEAiN80J2FHk7l1alno8IR7bliBd0gcOSqjpFmGQ1DXOKMMZkD7ec7nz6ewJhxuyW9C4z00y6JxsrH6">
+        </stripe-buy-button>
+      </div>
+      <div class="pay-note">
+        Subscription billed monthly via Stripe &nbsp;·&nbsp; Cancel via Stripe customer portal anytime<br>
+        No source code repos on monthly tier &nbsp;·&nbsp; Upgrade to bundle anytime, price adjusted
+      </div>
+    </div>
+
+    <!-- COFFEE -->
+    <div class="coffee-block">
+      <span class="coffee-icon">☕</span>
+      <div class="coffee-text">
+        <div class="coffee-title">BUY ME A COFFEE &nbsp;/&nbsp; DONATE</div>
+        <div class="coffee-desc">Not buying the course but want to support the research? Anything helps — keeps the lab running, pays for CVE filings and Burp Pro renewals. No account needed, just send via Wise.</div>
+      </div>
+      <a class="coffee-link" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
+        SEND VIA WISE &rarr;
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- FAQ -->
+<section style="background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container" style="max-width:760px;">
+    <div class="section-label">// COMMON QUESTIONS</div>
+    <h2 class="section-title">FAQ</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">How do I receive access after payment?</div>
+      <div class="faq-a">Within 24 hours of confirmed payment you'll receive an email at the address you used at checkout. Source code repos are delivered as encrypted 7z packages. Email gwu0738@gmail.com if you haven't heard back within 24h.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What is GeoDefend?</div>
+      <div class="faq-a">GeoDefend is the defensive counterpart to the offensive material in the course — an automated scanner that maps attack surface and identifies misconfigurations. Monthly subscribers get web-hosted access. Full bundle buyers also receive the complete source code.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I upgrade from Monthly to the Full Bundle?</div>
+      <div class="faq-a">Yes. Cancel your subscription, purchase the bundle, and the prorated difference will be refunded manually on request. Email gwu0738@gmail.com to arrange.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Are the tools operational or just demos?</div>
+      <div class="faq-a">Operational. IRON-DOME, CHEYANNE, STARKILLER, WinRecon are live research tools built and tested on real hardware. These are research artifacts — you are responsible for legal authorised use only.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is there a refund policy?</div>
+      <div class="faq-a">If you haven't received any course materials or tool repos within 48h of payment, full refund guaranteed. Source code repos once delivered are non-refundable — contact before purchasing if you have specific questions about content.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Who is behind this course?</div>
+      <div class="faq-a">Occupation Force Callsign GSW Pty Ltd (ABN 50 692 429 397, ACN 692 429 397), registered NSW Australia. Researcher: George Wu. GitHub: rainfantry. MSRC VULN-195458 on record. The course is built from original research, not repackaged certifications.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER / COMPANY -->
+<div class="company-bar">
+  <strong style="color:var(--green-dim);">OCCUPATION FORCE CALLSIGN GSW PTY LTD</strong><br>
+  ABN&nbsp;50&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; ACN&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; Sydney,&nbsp;NSW,&nbsp;Australia &nbsp;·&nbsp; Registered&nbsp;1&nbsp;Nov&nbsp;2025<br>
+  <a href="mailto:gwu0738@gmail.com">gwu0738@gmail.com</a> &nbsp;·&nbsp;
+  <a href="https://rainfantry.github.io/22nd-survey-division/">22nd-survey-division</a> &nbsp;·&nbsp;
+  <a href="https://rainfantry.github.io/">portfolio</a><br>
+  <span style="color:var(--text-faint);font-size:.38rem;">Secure checkout via Stripe &nbsp;·&nbsp; International payments via Wise &nbsp;·&nbsp; AUD pricing &nbsp;·&nbsp; All prices inclusive of applicable taxes</span>
+</div>
+
+<script src="payment-widget.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+{
+  "01_OFFENSIVE_MINDSET": {
+    "enemy": "Your own assumptions.",
+    "situation": "Before every op, soldiers get a briefing. Who's the enemy. What terrain. What rules of engagement. This chapter is that briefing — for offensive security. You will be taught to think like the threat, not the target. The mindset comes first. The tools come after.",
+    "why_soldiers": "A soldier who doesn't understand the enemy's doctrine gets ambushed. An operator who doesn't understand attacker doctrine installs AV that the attacker already bypasses. Same problem, different battlefield.",
+    "doctrine": "Search for knowledge. Not bugs. Crash → Leak → Execute. Assume compromise. 80% recon, 20% action."
+  },
+  "02_RECON_FOOTPRINTING": {
+    "enemy": "The target's digital perimeter.",
+    "situation": "Before any mission, you surveil. What assets does the target expose? What attack surface exists before you've touched a single system? Footprinting is the intelligence phase — it generates the map you'll use for every subsequent step.",
+    "why_soldiers": "You don't breach a compound blind. You survey it first. Same principle. Open-source intelligence (OSINT), DNS enumeration, and passive recon are your binoculars — they reveal the terrain without triggering any alarms.",
+    "doctrine": "Every operation produces intelligence. Recon is not optional. It determines whether the operation is possible."
+  },
+  "03_VULNERABILITY_RESEARCH": {
+    "enemy": "Bugs that defenders haven't patched and attackers haven't found yet.",
+    "situation": "Software has flaws. Not because developers are incompetent — because all non-trivial code has edge cases that weren't anticipated. This chapter teaches you to find them: methodically, reproducibly, at scale. Not by luck.",
+    "why_soldiers": "Intel wins wars. A unit that knows the enemy's weakness before the fight starts wins. A vulnerability is that weakness — a position in the code that can't hold under the right pressure.",
+    "doctrine": "See the PATH. See the BLOCK. Find the SUBSTITUTE."
+  },
+  "04_MITIGATIONS": {
+    "enemy": "The defensive stack — ASLR, DEP, CFG, stack canaries, Secure Boot.",
+    "situation": "Microsoft and Intel added layers of protection specifically to stop exploit techniques that used to work. This chapter maps every mitigation, explains what attack class it stops, and identifies where each one has limits. You need to know the walls before you can find the doors.",
+    "why_soldiers": "Know your enemy's fortifications. A mitigation is a fortified position. You don't charge it blind — you find the flanking route. Most mitigations stop the naive approach but leave a seam.",
+    "doctrine": "Teach the defence architecture first. The bypass is a side effect of understanding the architecture deeply enough."
+  },
+  "05_EXPLOIT_DEVELOPMENT": {
+    "enemy": "A vulnerable program. Your goal: hijack its execution flow.",
+    "situation": "You found a bug. Now what? Exploit development is the engineering discipline of turning a crash into a controlled execution primitive. Stack overflows. Heap feng shui. Primitive chains. This chapter is the craft.",
+    "why_soldiers": "A soldier who finds a gap in the enemy's wall still has to get troops through it. Finding the vulnerability is the gap. Exploit development is the breach. Controlled, reliable, on demand.",
+    "doctrine": "Crash → Leak → Execute. The crash is just the entry point."
+  },
+  "06_WINDOWS_INTERNALS": {
+    "enemy": "Windows itself — the OS is both your target environment and the platform that will try to stop you.",
+    "situation": "Before you can touch Windows security, you need to understand how Windows works. Kernel vs user space. The win32 API. Handle tables. Tokens and privileges. Thread execution context. This is the terrain map. Everything else builds on this.",
+    "why_soldiers": "You can't navigate terrain you don't understand. Windows internals is the topography of every engagement you'll run on a Windows target. Get this wrong and every technique breaks in ways you won't understand.",
+    "doctrine": "Intelligence first. Understand the ground before you manoeuvre on it."
+  },
+  "07_EXPLOIT_PRIMITIVES": {
+    "enemy": "Memory protection — preventing arbitrary reads and writes.",
+    "situation": "An exploit primitive is a controlled capability: 'I can write 4 bytes to any address.' Or: 'I can read 8 bytes from any address.' These primitives are the building blocks from which full exploitation is constructed — they're more fundamental than any specific exploit technique.",
+    "why_soldiers": "A soldier's kit: rifle, radio, med pack. An exploiter's kit: arbitrary read, arbitrary write, code execution. You learn the individual tools first, then assemble them into a weapon.",
+    "doctrine": "Fuzz for VOLUME, manual analysis for DEPTH."
+  },
+  "08_PRIVILEGE_ESCALATION": {
+    "enemy": "The access control system — keeping you at user privileges.",
+    "situation": "You're in. You have a shell. Standard user. The target is SYSTEM or Domain Admin. The gap is privilege escalation — finding a path from where you are to where you need to be. This chapter covers the two confirmed 22DIV techniques: CWE-732 (weak service ACL) and CWE-427 (phantom DLL hijack).",
+    "why_soldiers": "Privesc is a promotion by force. You identify a gap in the rank structure and exploit it. The techniques in this chapter were confirmed live on Windows 11 by 22DIV research — not theory, not aged PoCs.",
+    "doctrine": "Confirm on own hardware. Every technique verified live, Defender active."
+  },
+  "09_MALWARE_DEVELOPMENT": {
+    "enemy": "Your own tradecraft — commodity tools get caught.",
+    "situation": "Metasploit shells are caught in 4 seconds. msfvenom binaries are flagged on disk. If you want persistent access in a defended environment, you build custom. Not because it's clever — because custom code has no signature. This chapter is engineering: how to build a dropper, loader, and stager chain from scratch.",
+    "why_soldiers": "The soldier who uses standard-issue kit in enemy territory is predictable. Custom tradecraft is tradecraft that hasn't been catalogued. Build your own weapons.",
+    "doctrine": "No signature = no detection. The window before heuristics catch up is your operational window."
+  },
+  "10_CODE_INJECTION": {
+    "enemy": "Process isolation — keeping your code from running in another process's address space.",
+    "situation": "Code injection is the technique of running your code inside a different process. Why? To hide from process-based monitoring, to elevate privileges through the host process, or to access memory the host process can reach. This chapter covers the injection technique stack: classic DLL injection, process hollowing, reflective loading, and atom bombing.",
+    "why_soldiers": "You're wearing the enemy's uniform. From the outside, it's their process — their memory, their identity. The attacker's code runs behind a trusted cover.",
+    "doctrine": "Trust boundaries are where the bypass lives. Find the seam between identity and execution."
+  },
+  "11_ROOTKITS": {
+    "enemy": "Telemetry — everything Windows logs, hooks, and reports to EDR.",
+    "situation": "A rootkit doesn't just run malicious code — it hides evidence that it ran. HWBP-based AMSI bypass. ETW patch. NtQuery* hooks for process and file hiding. This chapter builds the concealment layer that lets the payload operate without triggering alerts. Based directly on VADER kill chain research.",
+    "why_soldiers": "OPSEC is not optional. A soldier who leaves footprints dies. A rootkit is operational security at the code level — it removes the evidence of your presence from every sensor the defender has.",
+    "doctrine": "VULN-195458: hardware breakpoints bypass Tamper Protection without a single memory write. MSRC-rejected. Durable."
+  },
+  "12_ANTIVIRUS_EVASION": {
+    "enemy": "The AV/EDR stack — five detection gates between your payload and execution.",
+    "situation": "AV evasion is not about outsmarting the engine. It's about understanding what the engine checks, then not being that thing. There are five detection gates. Each gate looks for a different signal. This chapter maps each gate, explains what defeats it, and builds the layered evasion model that IRON-DOME is built on.",
+    "why_soldiers": "Know which sensors the enemy has and what they detect. Then don't produce that signal. This is not magic — it's pattern avoidance applied systematically. The same principle as counter-surveillance.",
+    "doctrine": "IRON-DOME v4.0.0: 10/10 layers active, 26+ binaries, 0 detections by Kaspersky Premium active scan."
+  },
+  "13_MEMORY_FORENSICS": {
+    "enemy": "The forensic analyst running Volatility after the incident.",
+    "situation": "Everything leaves traces. Process memory. Page file artifacts. Registry entries. Prefetch files. A skilled analyst working a post-incident examination can reconstruct everything you did. This chapter teaches you what they look for — and what you must erase, redirect, or never create.",
+    "why_soldiers": "A soldier who completes a mission but leaves evidence didn't complete the mission. Forensics is the post-op debrief your enemy runs to reconstruct your actions. Know what they find.",
+    "doctrine": "The VADER 5-phase forensics wipe: clear evidence → timestomp → canary → self-delete."
+  },
+  "14_REVERSE_ENGINEERING": {
+    "enemy": "Unknown binaries — what is this code doing?",
+    "situation": "Reverse engineering is reading code you don't have the source for. You're given a binary. You need to understand its purpose, extract IOCs, identify vulnerabilities, or reproduce its functionality. This chapter builds the RE workflow: static analysis with Ghidra, dynamic analysis with x64dbg, and identifying anti-reverse techniques.",
+    "why_soldiers": "Intelligence analysis. You captured an enemy weapon — what does it do? How does it work? Can you turn it against them? RE is the technical equivalent of exploiting captured enemy equipment.",
+    "doctrine": "Every operation produces intelligence. RE turns enemy code into your knowledge."
+  },
+  "15_POST_EXPLOITATION": {
+    "enemy": "The defender's incident response clock — it starts ticking the moment you have access.",
+    "situation": "You have SYSTEM. Now you have minutes to hours before someone notices. Post-exploitation is the operational phase: credential harvesting, lateral movement, persistence, exfil. Speed and stealth. Every action leaves a trace — your job is to complete the mission before the analyst finds your trace.",
+    "why_soldiers": "D-Day: you're on the beach. The objective is inland. Post-exploitation is the advance from the beachhead to the objective. You have a window. Use it.",
+    "doctrine": "The clock starts on first execution. Everything after that is a race."
+  },
+  "16_COMMAND_AND_CONTROL": {
+    "enemy": "Network monitoring — anything that looks like C2 traffic gets blocked.",
+    "situation": "Without C2, your exploit is a one-shot. You need a persistent, reliable channel from implant to operator that survives reboots, network interruptions, and detection. This chapter covers the full C2 architecture: beaconing, malleable profiles, redirectors, and the CHEYANNE C2 framework (22DIV's own C2, PENTEST_LOG documented).",
+    "why_soldiers": "Radio comms are the nervous system of any operation. A unit that loses comms loses the mission. Your implant is a deep-cover asset — it needs a comms channel that doesn't look like what it is.",
+    "doctrine": "CHEYANNE: TCP reverse shell + HWBP VADER integration + Discord C2 bridge. Full kill chain, own infrastructure."
+  },
+  "17_NETWORK_WARFARE": {
+    "enemy": "Network segmentation, firewalls, and IDS sensors.",
+    "situation": "Networks are the terrain. Understanding routing, NAT traversal, lateral movement across subnets, and pivoting through compromised hosts is the network warfare skill set. This chapter covers the techniques that let you move through a network that was designed to contain you.",
+    "why_soldiers": "Terrain denial. The enemy built chokepoints to stop your movement. Network segmentation, VLANs, and firewall rules are defensive chokepoints. Pivoting is your infiltration route around them.",
+    "doctrine": "Map the network first. Move second. You don't cross terrain you haven't surveilled."
+  },
+  "18_CRYPTOGRAPHY_EVASION": {
+    "enemy": "Pattern matching and entropy analysis.",
+    "situation": "Cryptography has two roles in offensive security: hiding your payload from static analysis, and securing your C2 channel from network inspection. XOR encoding, RC4, and AES as packer layers. TLS for C2 comms. This chapter explains both — the evasion application and the cryptographic primitives behind it.",
+    "why_soldiers": "Encrypted radio traffic looks like noise. Encoded payloads look like data. The enemy's scanners look for patterns — your job is to not have any patterns they recognise.",
+    "doctrine": "Per-vector key isolation. Single-key XOR is broken by frequency analysis. Rotate keys."
+  },
+  "19_LIVING_OFF_THE_LAND": {
+    "enemy": "EDR behavioural analysis looking for new or unsigned binaries.",
+    "situation": "Living Off The Land (LOTL) means using the tools already on the target system to achieve your objectives — PowerShell, WMI, certutil, bitsadmin, regsvr32. No new binaries dropped. No AV signatures to match. The defender's tools become your weapons.",
+    "why_soldiers": "Commandos behind enemy lines use local resources — local vehicles, local clothing, local food. You don't air-drop supplies that can be traced back to your origin. LOTL is the cyber equivalent.",
+    "doctrine": "No footprint. Use what's there. Leave what's not needed."
+  },
+  "20_ACTIVE_DIRECTORY": {
+    "enemy": "Active Directory — the central identity and access system of every corporate network.",
+    "situation": "Active Directory (AD) is how Windows enterprise networks manage authentication. Compromising AD is compromising the entire organisation. This chapter covers the key attack paths: Kerberoasting, Pass-the-Hash, Golden/Silver tickets, DCSync, and AD persistence mechanisms.",
+    "why_soldiers": "Take the command centre and you control the whole battlefield. AD is the command centre. Every computer, every user, every access grant flows through it. One compromised domain controller = full network access.",
+    "doctrine": "Attack the identity infrastructure, not just the endpoints."
+  },
+  "21_MOBILE_SECURITY": {
+    "enemy": "Google Play Protect and Android sandboxing.",
+    "situation": "Mobile devices are the most personal attack surface — they carry credentials, location data, contacts, and communication history. This chapter covers Android attack techniques including the STARKILLER RAT (22DIV Phase 1 complete: GPS exfil, remote camera, Play Protect evasion).",
+    "why_soldiers": "Every high-value target carries a phone. If you can control that phone, you have their location, their comms, their contacts. Mobile access is often higher-value than desktop access.",
+    "doctrine": "STARKILLER commit 67aa4fd. Phase 1 complete. GPS exfil confirmed."
+  },
+  "22_OSINT_SOCIAL_ENGINEERING": {
+    "enemy": "The human — the weakest point in any security architecture.",
+    "situation": "Open-Source Intelligence (OSINT) gathers information from public sources — social media, company websites, LinkedIn, Shodan, certificate transparency logs. Social engineering uses that information to manipulate humans into granting access. Together they form the lowest-cost, highest-yield attack vector.",
+    "why_soldiers": "Intelligence drives operations. Most of what you need to mount an operation is already public — you just need to know where to look and how to synthesise it. The human is always the easier target than the machine.",
+    "doctrine": "Think in graphs, not lists. Every data point connects. Build the map before you move."
+  }
+}
