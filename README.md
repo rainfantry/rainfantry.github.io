@@ -60,3 +60,17 @@ Additional findings submitted to MSRC as confirmed. All research with exploitabl
 GitHub: [rainfantry](https://github.com/rainfantry)
 
 Occupation Force Callsign GSW Pty Ltd | ABN 50 692 429 397 | ACN 692 429 397
+
+---
+
+## TODO — Release Blackops
+
+_Automated read-only assessment — what a full public-release pass would do for this repo. Suggestions only; nothing above has been changed or removed._
+
+- [ ] **AI/Claude attribution detected in git history — scrub it** (`filter-branch` + force-push; nuke-and-recreate if a 0-star/0-fork repo and the orphaned SHA lingers).
+- [ ] Add a `LICENSE` file (MIT or your choice + holder).
+- [ ] Add discovery topics for SEO (`gh repo edit --add-topic ...`, up to 20).
+- [ ] Add a screenshot or diagram to the README if there's a GUI or visual output.
+- [ ] Verify a clean from-scratch build/run against the README quick start (produce a real artifact, don't trust the docs).
+
+<sub>Workflow: https://github.com/rainfantry/release-blackops-skill</sub>
