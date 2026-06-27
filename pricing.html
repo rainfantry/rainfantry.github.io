@@ -523,56 +523,350 @@
 
 <div class="glow-divider"></div>
 
-<!-- TOOL BREAKDOWN -->
+<!-- TOOL BREAKDOWN — VERBOSE -->
 <section style="background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-  <div class="container">
-    <div class="section-label">// FULL BUNDLE — WHAT YOU GET</div>
-    <h2 class="section-title">THE TOOL REPOSITORIES</h2>
+  <div class="container" style="max-width:860px;">
+    <div class="section-label">// FULL BUNDLE — WHAT YOU'RE BUYING</div>
+    <h2 class="section-title">THE TOOLS — HOW THEY WORK</h2>
+    <p style="text-align:center;font-size:.64rem;color:var(--text-dim);max-width:640px;margin:0 auto 3rem;line-height:1.8;">Five private repositories. Not demos. Not tutorials. Operational tools — built, tested against live AV, and documented. Here's exactly what each one does, how it works under the hood, and why it evades detection.</p>
 
-    <div class="tools-grid">
-
-      <div class="tool-card">
-        <div class="tool-name">IRON-DOME v4</div>
-        <div class="tool-lang">C &nbsp;/&nbsp; POWERSHELL &nbsp;/&nbsp; x64</div>
-        <div class="tool-desc">AV evasion loader. Custom PE packing, API unhooking, process hollowing. 26 compiled binaries tested — all 0 detections across Windows Defender, ESET, Kaspersky. Obfuscation and shellcode injection chain included.</div>
-        <div class="tool-stat">26 BINARIES &nbsp;·&nbsp; 0 DETECTIONS &nbsp;·&nbsp; LIVE-TESTED</div>
+    <!-- ── IRON-DOME ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 01 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">IRON-DOME v4</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#4a9adc;letter-spacing:.12em;">C &nbsp;/&nbsp; POWERSHELL &nbsp;/&nbsp; x64</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">26 BINARIES &nbsp;·&nbsp; 0 DETECTIONS</div>
+          </div>
+        </div>
       </div>
+      <div style="padding:1.6rem 1.8rem;">
 
-      <div class="tool-card">
-        <div class="tool-name">CHEYANNE C2</div>
-        <div class="tool-lang">FULL KILL CHAIN &nbsp;/&nbsp; MULTI-PLATFORM</div>
-        <div class="tool-desc">Complete command &amp; control framework. Beacon implant, handler, operator console. Covers: initial access, persistence, lateral movement, exfiltration. Full kill chain documented with PENTEST_LOG.md.</div>
-        <div class="tool-stat">FULL C2 FRAMEWORK &nbsp;·&nbsp; OPERATIONAL</div>
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">An AV evasion loader. You give it shellcode (Meterpreter, Cobalt Strike beacon, custom payload — anything). It encrypts it, wraps it in a clean-looking binary, and executes it on the target machine without triggering Windows Defender, ESET, or Kaspersky. <strong style="color:var(--green);">26 compiled binaries tested. All 0 detections.</strong></p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.4rem;">
+          <div style="grid-column:1/-1;">
+            <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">HOW IT WORKS — STEP BY STEP</div>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">① ENCRYPTION</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">Shellcode is XOR/RC4 encrypted at compile time. The binary on disk contains only ciphertext — no recognisable malware bytes. Static AV scanners match signatures against raw bytes. No matching bytes, no detection.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">② MEMORY STAGING</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">Allocates memory as RW (read/write only — not executable). Decrypts shellcode into it. Then changes permissions to RX (read/execute — no longer writable). AV behavioural engines specifically flag RWX allocations. We avoid that entirely.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">③ API UNHOOKING</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">EDR products hook ntdll.dll functions (NtAllocateVirtualMemory, NtWriteVirtualMemory etc.) to intercept calls. IRON-DOME maps a fresh copy of ntdll from disk and calls through it directly, bypassing EDR's hooks entirely.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">④ PROCESS HOLLOWING</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">Spawns a legitimate Windows process (svchost.exe, explorer.exe) in suspended state. Unmaps its memory. Writes the payload into the hollowed address space. Resumes the thread. Payload now runs inside a trusted process — task manager shows svchost.exe, not malware.exe.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">⑤ IMPORT OBFUSCATION</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">The binary's Import Address Table (IAT) contains no suspicious entries. Functions like VirtualAlloc and WriteProcessMemory are resolved at runtime via GetProcAddress with hashed names — not listed statically where AV can read them.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.12em;margin-bottom:.5rem;">⑥ SLEEP &amp; SANDBOX CHECKS</div>
+            <p style="font-size:.6rem;color:var(--tdim);line-height:1.7;">AV sandboxes run samples for a fixed time window (usually 30–90 seconds). IRON-DOME checks for sandbox artefacts (low RAM, no user activity, virtualisation registry keys) and sleeps beyond the analysis window before executing.</p>
+          </div>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT WORKS — THE THEORY</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Modern AV has three detection layers: static (bytes on disk), behavioural (API call chains at runtime), and cloud-submitted sandbox. IRON-DOME destroys static signatures with encryption, avoids the suspicious RWX→execute behavioural chain, removes the API hooks behavioural engines rely on, and defeats sandbox timing. Targeting all three layers simultaneously is what gets 0 detections — beating just one layer isn't enough.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">loader.c — main evasion engine</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">encryptor.py — payload prep tool</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">unhook.c — ntdll refresh module</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">hollow.c — process hollowing</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">26× prebuilt binaries (tested, 0 det.)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">build.bat — one-command compile</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">PENTEST_LOG.md — test methodology</span>
+        </div>
+
       </div>
+    </div>
 
-      <div class="tool-card">
-        <div class="tool-name">STARKILLER</div>
-        <div class="tool-lang">KOTLIN &nbsp;/&nbsp; ANDROID</div>
-        <div class="tool-desc">Android RAT. Phase 1 complete — device info exfiltration, remote shell, GPS tracking, SMS intercept, contact dump. APK build pipeline with obfuscation. Targets Android 10+.</div>
-        <div class="tool-stat">ANDROID RAT &nbsp;·&nbsp; PHASE 1 COMPLETE &nbsp;·&nbsp; COMMIT 67aa4fd</div>
+    <!-- ── CHEYANNE C2 ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 02 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">CHEYANNE C2</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#4a9adc;letter-spacing:.12em;">C &nbsp;/&nbsp; PYTHON &nbsp;/&nbsp; FULL KILL CHAIN</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">BEACON &nbsp;·&nbsp; HANDLER &nbsp;·&nbsp; CONSOLE</div>
+          </div>
+        </div>
       </div>
+      <div style="padding:1.6rem 1.8rem;">
 
-      <div class="tool-card">
-        <div class="tool-name">WINRECON / SKYWALKER</div>
-        <div class="tool-lang">POWERSHELL &nbsp;/&nbsp; C#</div>
-        <div class="tool-desc">Windows post-exploitation recon suite. Enumeration of users, shares, scheduled tasks, registry run keys, AV presence, EDR processes, LSASS targets. Low noise, high signal output for rapid situational awareness.</div>
-        <div class="tool-stat">WINDOWS RECON &nbsp;·&nbsp; POST-EXPLOITATION</div>
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">A complete command-and-control framework. You deploy a beacon implant on a target machine. It calls back to your handler server on a configurable interval. You interact with it through an operator console — run commands, exfiltrate files, pivot to other machines, establish persistence. The full offensive kill chain in one codebase, documented with a real PENTEST_LOG.md.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">THREE COMPONENTS — HOW EACH WORKS</div>
+
+        <div style="margin-bottom:1.2rem;background:#010901;border:1px solid var(--border);border-left:3px solid var(--gdim);padding:1.1rem 1.4rem;">
+          <div style="font-size:.56rem;color:var(--green);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;">BEACON IMPLANT</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Runs on the compromised machine. Sleeps for a configurable interval (default 30s with ±10s jitter), then sends an HTTPS callback to the handler. Jitter prevents detection by timing-pattern analysis — a beacon that checks in every exactly 30 seconds is trivial to spot in network logs. The jitter makes the pattern statistical noise. On callback the beacon receives a queued job (run command, upload file, spawn process etc.), executes it, and sends output back encrypted. If no job, it sleeps again. Minimal network footprint.</p>
+        </div>
+
+        <div style="margin-bottom:1.2rem;background:#010901;border:1px solid var(--border);border-left:3px solid var(--gdim);padding:1.1rem 1.4rem;">
+          <div style="font-size:.56rem;color:var(--green);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;">HANDLER (C2 SERVER)</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Receives beacon callbacks over HTTPS. Maintains a job queue per implant. Stores output. Serves a listener on configurable port. Traffic profile mimics a legitimate web server — responds to non-beacon requests with normal HTTP responses so port scans don't flag an open C2 port. Malleable comms profile lets you shape the HTTPS request headers to look like browser traffic (User-Agent, Accept headers etc.).</p>
+        </div>
+
+        <div style="margin-bottom:1.4rem;background:#010901;border:1px solid var(--border);border-left:3px solid var(--gdim);padding:1.1rem 1.4rem;">
+          <div style="font-size:.56rem;color:var(--green);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;">OPERATOR CONSOLE</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">CLI interface for the pentester. List active beacons, select a session, run commands. Built-in modules: screenshot, keylogger, credential dump path, file upload/download, lateral movement (pass-the-hash via NTLM), persistence (registry run key, scheduled task, WMI subscription). Output is logged per-session for report generation.</p>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT EVADES DETECTION</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">C2 traffic is flagged by network defenders when it's periodic, encrypted in non-standard ways, or communicates with known-bad IPs. CHEYANNE uses HTTPS (standard encrypted channel), jitter (defeats periodicity detection), mimicked browser headers (passes application-layer inspection), and operator-controlled listener domains (fresh infrastructure = no threat-intel hits). Compare this to off-the-shelf tools like Metasploit — whose callback signatures are in every SIEM rule. This is custom, undocumented, and not in any threat intelligence database.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">implant/ — beacon source (C)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">handler/ — C2 server (Python)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">console/ — operator CLI</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">modules/ — keylogger, screenshot, creds</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">malleable/ — traffic profiles</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">PENTEST_LOG.md — full kill chain run</span>
+        </div>
+
       </div>
+    </div>
 
-      <div class="tool-card">
-        <div class="tool-name">GHOST-ENCODER</div>
-        <div class="tool-lang">JAVASCRIPT &nbsp;/&nbsp; PYTHON</div>
-        <div class="tool-desc">Zero-width Unicode steganography engine. Encodes arbitrary payloads into invisible characters inside plain text. Browser-based encoder/decoder demo included. Command exfiltration via covert channel research.</div>
-        <div class="tool-stat">ZERO-WIDTH ENCODING &nbsp;·&nbsp; COVERT CHANNEL</div>
+    <!-- ── STARKILLER ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 03 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">STARKILLER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#4a9adc;letter-spacing:.12em;">KOTLIN &nbsp;/&nbsp; ANDROID 10+</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">PHASE 1 COMPLETE &nbsp;·&nbsp; COMMIT 67aa4fd</div>
+          </div>
+        </div>
       </div>
+      <div style="padding:1.6rem 1.8rem;">
 
-      <div class="tool-card special">
-        <div class="tool-name">GEODEFEND SCANNER</div>
-        <div class="tool-lang">WEB APP &nbsp;/&nbsp; DEFENSE</div>
-        <div class="tool-desc">Automated defense scanner. Maps attack surface, identifies misconfigurations, correlates detections. Web-hosted tool included in Monthly. Full source code delivered with Full Bundle. Built as the defensive counterpart to the offensive tools taught in the course.</div>
-        <div class="tool-stat">MONTHLY: HOSTED ACCESS &nbsp;·&nbsp; BUNDLE: + FULL SOURCE</div>
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">An Android Remote Access Trojan written in Kotlin. Packaged as a legitimate-looking Android application, it operates silently in the background once installed — exfiltrating device data, intercepting SMS messages, streaming GPS coordinates, and providing a remote shell. Phase 1 complete and operational on Android 10, 11, 12, 13.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">CAPABILITIES — HOW EACH WORKS</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.4rem;">
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">SMS INTERCEPT</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Registers a BroadcastReceiver for SMS_RECEIVED intents. Every incoming SMS is intercepted before it reaches the user's messaging app, forwarded to the C2, and optionally suppressed from notification tray. Requires RECEIVE_SMS permission declared in manifest.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">GPS TRACKING</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Uses Android's LocationManager with both GPS and network providers. Location updates stream continuously to the C2 at configurable intervals. On Android 10+ background location requires ACCESS_BACKGROUND_LOCATION — included and declared.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">REMOTE SHELL</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Opens a socket connection to the C2 handler. Commands sent from operator are executed via Runtime.exec(). Output piped back over the same socket. Provides interactive shell access to the device — list files, exfiltrate data, run apps.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.4rem;">PERSISTENCE</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Runs as a Foreground Service — Android's mechanism for long-running background operations. Foreground Services survive Doze mode and app backgrounding. Shows a minimal notification (disguised as a system notice). RECEIVE_BOOT_COMPLETED restarts it after reboot.</p>
+          </div>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT WORKS — THE PERMISSION MODEL</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Android's security model is permission-based, not code-based. The OS doesn't analyse what your app does with a permission — it only checks if you have it. Once the user grants SMS, location, and contacts access (which apps legitimately request all the time), STARKILLER has the same access as a banking app. The APK build pipeline applies string obfuscation and class renaming — Google Play Protect scans by signature and behaviour; obfuscation defeats signature, and the behaviour (background service, network calls) looks identical to any live-data app.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">Android Studio project (Kotlin)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">C2 handler (Python)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">APK build + obfuscation config</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">AndroidManifest.xml (all perms)</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">Operator guide + deployment notes</span>
+        </div>
+
       </div>
+    </div>
 
+    <!-- ── WINRECON ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 04 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">WINRECON / SKYWALKER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#9a4adc;letter-spacing:.12em;">POWERSHELL &nbsp;/&nbsp; C#</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">POST-EXPLOITATION RECON</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">A post-exploitation reconnaissance suite for Windows environments. The first 15 minutes after gaining access are the most critical — you need to understand the environment before you move. WinRecon automates that map: who's here, what can I reach, what security controls are running, where are the credentials. Structured output for rapid situational awareness and report generation.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">WHAT IT ENUMERATES</div>
+
+        <div style="columns:2;column-gap:1.5rem;margin-bottom:1.4rem;">
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">IDENTITY</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Current user, group memberships, privilege tokens (SeDebugPrivilege, SeImpersonatePrivilege — both escalation paths), domain membership, local administrator status.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">NETWORK</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">All network adapters and IPs, listening ports, established connections, ARP cache (reveals other live hosts), DNS server addresses, routing table.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">SECURITY</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Running AV/EDR processes (Defender, CrowdStrike, SentinelOne, Carbon Black — pattern matched), firewall state, UAC level, AMSI status, Windows Defender exclusion paths.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">CREDENTIALS</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Cached credential entries (cmdkey), browser credential stores (Chrome/Edge path locations), Wi-Fi stored PSKs (via netsh), RDP saved connections.</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">PERSISTENCE VECTORS</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">All non-Microsoft scheduled tasks, registry Run/RunOnce keys, startup folder entries, WMI subscriptions, service binaries with writable paths (privesc via service hijacking).</p>
+          </div>
+          <div style="break-inside:avoid;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:var(--green);letter-spacing:.1em;margin-bottom:.3rem;">DOMAIN (IF JOINED)</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.6;">Domain controllers, domain admins, all domain computers (potential pivot targets), GPO names, trust relationships, Kerberoastable service accounts (SPNs).</p>
+          </div>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.2rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY IT'S LOW-NOISE</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Pure PowerShell and .NET — no external executables dropped to disk. Uses built-in Windows APIs and WMI rather than spawning child processes that trigger parent-child chain detection (e.g. powershell.exe → net.exe is flagged; WMI queries from powershell.exe are not). Output is structured JSON for direct import into pentest report templates. No external network calls — everything runs locally against the Windows API.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">WinRecon.ps1 — main script</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">WinRecon.cs — C# compiled version</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">modules/ — domain, creds, security</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">report-gen.py — JSON → DOCX</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">USAGE.md — engagement guide</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GHOST-ENCODER ── -->
+    <div style="border:1px solid var(--border2);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--gdim);margin-bottom:.3rem;">// TOOL 05 — FULL BUNDLE</div>
+            <div style="font-size:1.3rem;color:var(--green);font-weight:900;letter-spacing:.08em;">GHOST-ENCODER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:#dcdc4a;letter-spacing:.12em;">JAVASCRIPT &nbsp;/&nbsp; PYTHON</div>
+            <div style="font-size:.46rem;color:var(--green);letter-spacing:.1em;margin-top:.2rem;">ZERO-WIDTH UNICODE STEGANOGRAPHY</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">A steganography engine that hides arbitrary data inside plain text using zero-width Unicode characters. The output looks completely empty to a human reader — no unusual characters, no visible difference. The data is there, encoded in invisible bytes. Use case: covert C2 channel inside Slack, email, or any text field that passes through DLP inspection.</p>
+
+        <div style="font-size:.42rem;letter-spacing:.22em;color:var(--gdim);margin-bottom:.8rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);">HOW THE ENCODING WORKS</div>
+
+        <div style="background:#000a00;border:1px solid #0a1a0a;border-left:3px solid var(--gdim);padding:1rem 1.2rem;margin-bottom:1.2rem;overflow-x:auto;">
+          <pre style="font-size:.56rem;color:#b0dcb0;line-height:1.8;white-space:pre;"><span style="color:#3a7a3a;">// Zero-width character map</span>
+U+200B = ZERO WIDTH SPACE        → binary 0
+U+200C = ZERO WIDTH NON-JOINER  → binary 1
+
+<span style="color:#3a7a3a;">// Encoding "A" (ASCII 0x41 = 01000001)</span>
+Binary:   0 1 0 0 0 0 0 1
+Encoded:  ​‌​​​​​‌
+<span style="color:#3a7a3a;">// ↑ That line contains 8 invisible characters. Try selecting it.</span>
+
+<span style="color:#3a7a3a;">// Practical use: embed in a Slack message</span>
+msg = "Hey, meeting at 3pm" + encode(c2_command) + "."
+<span style="color:#3a7a3a;">// Recipient sees:  "Hey, meeting at 3pm."</span>
+<span style="color:#3a7a3a;">// C2 decoder sees: "Hey, meeting at 3pm[EXEC:whoami]."</span></pre>
+        </div>
+
+        <div style="background:#010901;border-left:3px solid var(--green);padding:1rem 1.4rem;margin-bottom:1.4rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHY DLP TOOLS DON'T CATCH IT</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;">Data Loss Prevention tools scan for patterns: credit card numbers, keywords, binary file signatures, large base64 blobs. Zero-width characters are valid Unicode — they appear in legitimate documents (right-to-left markers, no-break joins in Arabic/Thai text). DLP tools see plain text, not binary exfiltration. The channel looks like a Slack message, not a data exfil event. Standard regex and keyword matching is completely blind to this. Only a tool explicitly checking for anomalous zero-width character density would flag it — and almost nothing does this by default.</p>
+        </div>
+
+        <div style="font-size:.42rem;letter-spacing:.18em;color:var(--gdim);margin-bottom:.5rem;">WHAT'S IN THE REPO</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">encoder.js — browser-side engine</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">decoder.js — extraction engine</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">ghost.py — Python CLI tool</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">demo.html — live browser demo</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">c2-channel.md — integration guide</span>
+          <span style="font-size:.52rem;color:var(--tdim);background:#010901;border:1px solid var(--border);padding:.2rem .6rem;">RESEARCH.md — DLP bypass analysis</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GEODEFEND ── -->
+    <div style="border:1px solid var(--cdim);margin-bottom:2rem;overflow:hidden;">
+      <div style="background:#010e01;padding:1.4rem 1.8rem;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div>
+            <div style="font-size:.42rem;letter-spacing:.24em;color:var(--cdim);margin-bottom:.3rem;">// TOOL 06 — MONTHLY: HOSTED &nbsp;|&nbsp; BUNDLE: + SOURCE</div>
+            <div style="font-size:1.3rem;color:var(--cyan);font-weight:900;letter-spacing:.08em;">GEODEFEND SCANNER</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.12em;">WEB APP &nbsp;/&nbsp; DEFENSIVE</div>
+            <div style="font-size:.46rem;color:var(--text-dim);letter-spacing:.1em;margin-top:.2rem;">BLUE TEAM COUNTERPART</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:1.6rem 1.8rem;">
+
+        <p style="font-size:.7rem;color:var(--text);line-height:1.9;margin-bottom:1.4rem;">The defensive counterpart to the offensive tools above. GeoDefend runs the same reconnaissance and enumeration logic a red teamer runs — but points it at your own infrastructure. It tells you what an attacker sees when they look at you: exposed services, misconfigured headers, weak TLS, open ports, information disclosure, known CVE signatures on detected service versions.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.4rem;">
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">ATTACK SURFACE MAPPING</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Port scan, service fingerprinting, TLS version check, HTTP header analysis (missing security headers: CSP, HSTS, X-Frame-Options). Outputs what an nmap + nikto + testssl run would find — in one automated pass.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">MISCONFIGURATION CHECKS</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Default credentials on common services, directory listing enabled, DEBUG mode exposed, admin panels accessible, S3/cloud storage buckets open, CORS wildcard policy, info disclosure in error pages.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">IOC CORRELATION</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Matches detected artefacts against IOC patterns used by the IRON-DOME / CHEYANNE tools. Tells you: if these tools were deployed against you, here's what would trip detection and here's what wouldn't.</p>
+          </div>
+          <div style="background:#010901;border:1px solid var(--border);border-left:3px solid var(--cdim);padding:.9rem 1.1rem;">
+            <div style="font-size:.5rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.4rem;">REPORT OUTPUT</div>
+            <p style="font-size:.58rem;color:var(--tdim);line-height:1.7;">Generates a structured JSON + HTML report. Severity-rated findings (Critical / High / Medium / Low). Remediation recommendations per finding. Built for inclusion in pentest reports or internal security audit documentation.</p>
+          </div>
+        </div>
+
+        <div style="background:#010e01;border:1px solid var(--cdim);padding:1rem 1.4rem;">
+          <div style="font-size:.42rem;letter-spacing:.18em;color:var(--cdim);margin-bottom:.4rem;">TIER DIFFERENCE</div>
+          <p style="font-size:.62rem;color:var(--tdim);line-height:1.8;"><strong style="color:var(--text);">Monthly:</strong> Web-hosted access — run scans through the hosted interface, download reports. No setup required.<br><strong style="color:var(--text);">Full Bundle:</strong> Full source code + deployment guide. Host it yourself, modify detection rules, integrate into your own toolchain, extend with custom checks.</p>
+        </div>
+
+      </div>
     </div>
 
   </div>
@@ -598,12 +892,12 @@
         </stripe-buy-button>
       </div>
       <div class="pay-divider">— OR PAY INTERNATIONALLY —</div>
-      <a class="pay-wise" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
-        BANK TRANSFER VIA WISE &rarr;
+      <a class="pay-wise" href="https://wise.com/pay/r/iGdeLuD93vCb4U8" target="_blank" rel="noopener">
+        BANK TRANSFER VIA WISE — A$247.50 PRESET &rarr;
       </a>
       <div class="pay-note">
         Stripe: credit/debit card, Apple Pay, Google Pay &nbsp;·&nbsp; AUD pricing<br>
-        Wise: international bank transfer (SWIFT/local) for overseas buyers<br>
+        Wise: international bank transfer (SWIFT/local) for overseas buyers &nbsp;·&nbsp; amount pre-filled<br>
         Access delivered within 24h of confirmed payment &nbsp;·&nbsp; Contact: gwu0738@gmail.com
       </div>
     </div>
@@ -619,12 +913,8 @@
           publishable-key="pk_live_51SOog7S5K1Ttf6KaHTIbEAiN80J2FHk7l1alno8IR7bliBd0gcOSqjpFmGQ1DXOKMMZkD7ec7nz6ewJhxuyW9C4z00y6JxsrH6">
         </stripe-buy-button>
       </div>
-      <div class="pay-divider">— OR PAY INTERNATIONALLY —</div>
-      <a class="pay-wise" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
-        ARRANGE MANUAL INVOICE VIA WISE &rarr;
-      </a>
       <div class="pay-note">
-        Subscription billed monthly &nbsp;·&nbsp; Cancel via Stripe customer portal anytime<br>
+        Subscription billed monthly via Stripe &nbsp;·&nbsp; Cancel via Stripe customer portal anytime<br>
         No source code repos on monthly tier &nbsp;·&nbsp; Upgrade to bundle anytime, price adjusted
       </div>
     </div>

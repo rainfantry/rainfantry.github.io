@@ -5,7 +5,7 @@
   var STRIPE_KEY = 'pk_live_51SOog7S5K1Ttf6KaHTIbEAiN80J2FHk7l1alno8IR7bliBd0gcOSqjpFmGQ1DXOKMMZkD7ec7nz6ewJhxuyW9C4z00y6JxsrH6';
   var BTN_BUNDLE  = 'buy_btn_1Tmp4iS5K1Ttf6KaIUlvp1xr';
   var BTN_MONTHLY = 'buy_btn_1Tmp9SS5K1Ttf6KaxgbBvxcw';
-  var WISE_URL    = 'https://wise.com/pay/business/occupationforcecallsigngswptyltd';
+  var WISE_URL    = 'https://wise.com/pay/r/iGdeLuD93vCb4U8';
   var SALES_URL   = 'https://rainfantry.github.io/22nd-survey-division/#pricing';
 
   var CSS = [
@@ -66,19 +66,20 @@
         '<button id="_22pw-x">&#x2715;</button>' +
       '</div>' +
       '<div id="_22pw-b">' +
-        '<div style="font-size:.44rem;color:#3a7a3a;letter-spacing:.14em;text-align:center;margin-bottom:.7rem;">SELECT PAYMENT OPTION</div>' +
+        '<div style="font-size:.44rem;color:#3a7a3a;letter-spacing:.14em;text-align:center;margin-bottom:.4rem;">FULL BUNDLE — A$247.50 ONE-TIME</div>' +
         '<stripe-buy-button' +
           ' buy-button-id="' + BTN_BUNDLE + '"' +
           ' publishable-key="' + STRIPE_KEY + '">' +
         '</stripe-buy-button>' +
-        '<div id="_22pw-or">— OR —</div>' +
+        '<a id="_22pw-wise" href="' + WISE_URL + '" target="_blank" rel="noopener">' +
+          'INTERNATIONAL? PAY A$247.50 VIA WISE &rarr;' +
+        '</a>' +
+        '<div id="_22pw-or">— OR SUBSCRIBE —</div>' +
+        '<div style="font-size:.44rem;color:#3a7a3a;letter-spacing:.14em;text-align:center;margin-bottom:.4rem;">MONTHLY — A$21.99/MONTH</div>' +
         '<stripe-buy-button' +
           ' buy-button-id="' + BTN_MONTHLY + '"' +
           ' publishable-key="' + STRIPE_KEY + '">' +
         '</stripe-buy-button>' +
-        '<a id="_22pw-wise" href="' + WISE_URL + '" target="_blank" rel="noopener">' +
-          'BANK TRANSFER / INTERNATIONAL &rarr; PAY VIA WISE' +
-        '</a>' +
       '</div>' +
       '<div id="_22pw-info">' +
         'Secure checkout via Stripe &nbsp;|&nbsp; AUD pricing &nbsp;|&nbsp; Receipt emailed<br>' +
