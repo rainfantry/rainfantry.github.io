@@ -42,7 +42,21 @@
 
     initParticleField();
     initTypewriter();
+    inject22divBuy();
   });
+
+  function inject22divBuy() {
+    var s = document.createElement('style');
+    s.textContent = '#_fb{position:fixed;bottom:1.4rem;right:1.4rem;z-index:9999;background:#0a2a0a;border:2px solid #2a7a2a;color:#4adc6a;font-family:monospace;font-size:.68rem;font-weight:700;letter-spacing:.14em;padding:.7rem 1.15rem;text-decoration:none;display:block;animation:_fbp 2.2s infinite;}#_fb:hover{background:#0f400f;color:#6aff8a;border-color:#3aaa3a;}@keyframes _fbp{0%,100%{box-shadow:0 0 0 0 rgba(42,122,42,0);}55%{box-shadow:0 0 0 8px rgba(42,122,42,.18);}}@media(max-width:400px){#_fb{font-size:.58rem;padding:.55rem .85rem;bottom:.8rem;right:.8rem;}}';
+    document.head.appendChild(s);
+    var a = document.createElement('a');
+    a.id = '_fb';
+    a.href = 'https://rainfantry.github.io/22nd-survey-division/#pricing';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = 'BUY NOW — A$247.50 →';
+    document.body.appendChild(a);
+  }
 
   function setIcon(btn) {
     var isLight = document.documentElement.getAttribute('data-theme') === 'light';
