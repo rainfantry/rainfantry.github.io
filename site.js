@@ -47,13 +47,7 @@
 
   function loadPaymentWidget() {
     var s = document.createElement('script');
-    s.src = (document.location.hostname === 'localhost' ? '' : '/rainfantry.github.io') + '/payment-widget.js';
-    s.onerror = function() {
-      // fallback: direct src
-      var s2 = document.createElement('script');
-      s2.src = 'payment-widget.js';
-      document.head.appendChild(s2);
-    };
+    s.src = 'payment-widget.js';
     document.head.appendChild(s);
   }
 
