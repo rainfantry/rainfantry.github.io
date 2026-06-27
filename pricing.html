@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>22ND SURVEY DIVISION — ACCESS TIERS</title>
+  <meta name="description" content="Offensive security course pricing. Monthly access or lifetime bundle with full source code. Occupation Force Callsign GSW Pty Ltd.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23010901'/><text x='50%25' y='60%25' font-size='20' text-anchor='middle' dominant-baseline='middle' fill='%2300cc44' font-family='monospace' font-weight='bold'>22</text></svg>">
+  <script src="site.js" defer></script>
+  <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+  <style>
+    :root {
+      --bg: #010901;
+      --bg2: #010e01;
+      --bg3: #020f02;
+      --border: #0d3a0d;
+      --border2: #1a6a1a;
+      --green: #4adc6a;
+      --green-dim: #2a7a2a;
+      --green-bright: #6aff8a;
+      --cyan: #4adcdc;
+      --cyan-dim: #1a6a6a;
+      --gold: #dca84a;
+      --gold-dim: #6a5a1a;
+      --text: #c0dcc0;
+      --text-dim: #6a8a6a;
+      --text-faint: #3a5a3a;
+      --red-dim: #5a1a1a;
+      --red: #dc4a4a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(1,9,1,.97);
+      border-bottom: 1px solid var(--border);
+      padding: .8rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .nav-logo { font-size: .7rem; font-weight: 700; color: var(--green); letter-spacing: .18em; text-decoration: none; }
+    .nav-back { font-size: .56rem; color: var(--green-dim); letter-spacing: .14em; text-decoration: none; }
+    .nav-back:hover { color: var(--green); }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 3.5rem;
+      background: linear-gradient(180deg, #010f01 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(42,122,42,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag { font-size: .44rem; letter-spacing: .3em; color: var(--green-dim); margin-bottom: 1rem; }
+    .hero-title {
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      color: var(--green);
+      font-weight: 900;
+      letter-spacing: .1em;
+      line-height: 1.1;
+      text-shadow: 0 0 40px rgba(74,220,106,.25);
+      margin-bottom: 1rem;
+    }
+    .hero-sub {
+      font-size: .82rem;
+      color: var(--text-dim);
+      letter-spacing: .06em;
+      max-width: 560px;
+      margin: 0 auto 1.8rem;
+      line-height: 1.7;
+    }
+    .hero-company {
+      font-size: .46rem;
+      color: var(--text-faint);
+      letter-spacing: .1em;
+    }
+
+    /* ── CONTAINER ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+    @media(max-width:600px){ .container { padding: 0 1rem; } }
+
+    /* ── SECTION ── */
+    section { padding: 4rem 0; }
+    .section-label {
+      font-size: .44rem; letter-spacing: .3em; color: var(--green-dim);
+      text-align: center; margin-bottom: .8rem;
+    }
+    .section-title {
+      font-size: 1.5rem; color: var(--green); font-weight: 700;
+      text-align: center; letter-spacing: .08em; margin-bottom: 2.5rem;
+    }
+
+    /* ── TIER CARDS ── */
+    .tiers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    @media(max-width:768px){ .tiers { grid-template-columns: 1fr; } }
+
+    .tier {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .tier.featured {
+      border-color: var(--border2);
+      box-shadow: 0 0 30px rgba(42,122,42,.12), inset 0 0 60px rgba(42,122,42,.03);
+    }
+    .tier-badge {
+      position: absolute; top: 1rem; right: 1rem;
+      font-size: .44rem; letter-spacing: .18em;
+      background: var(--green-dim); color: #010f01;
+      padding: .2rem .6rem; font-weight: 700;
+    }
+    .tier-head {
+      padding: 2rem 1.8rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tier-name {
+      font-size: .5rem; letter-spacing: .28em; color: var(--text-dim);
+      margin-bottom: .5rem;
+    }
+    .tier-price {
+      font-size: 2.6rem; font-weight: 900; color: var(--green);
+      line-height: 1; margin-bottom: .3rem;
+      text-shadow: 0 0 20px rgba(74,220,106,.3);
+    }
+    .tier-price span { font-size: .9rem; font-weight: 400; color: var(--text-dim); }
+    .tier-desc {
+      font-size: .6rem; color: var(--text-dim); line-height: 1.6;
+      margin-top: .6rem; letter-spacing: .04em;
+    }
+    .tier-body { padding: 1.5rem 1.8rem; }
+
+    /* ── FEATURE LIST ── */
+    .feat-group { margin-bottom: 1.4rem; }
+    .feat-group-label {
+      font-size: .42rem; letter-spacing: .22em; color: var(--text-faint);
+      margin-bottom: .6rem; padding-bottom: .3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .feat {
+      display: flex; align-items: flex-start; gap: .5rem;
+      font-size: .6rem; color: var(--text-dim); line-height: 1.5;
+      margin-bottom: .35rem; padding: .2rem 0;
+    }
+    .feat .icon {
+      flex-shrink: 0; width: 1rem; text-align: center;
+      font-style: normal;
+    }
+    .feat .icon.yes { color: var(--green); }
+    .feat .icon.no  { color: var(--text-faint); }
+    .feat .icon.star { color: var(--gold); }
+    .feat-text { flex: 1; }
+    .feat-text strong { color: var(--text); }
+    .feat.locked .feat-text { color: var(--text-faint); text-decoration: line-through; }
+    .feat-tag {
+      font-size: .38rem; letter-spacing: .12em;
+      padding: .1rem .4rem; margin-left: .4rem;
+      background: var(--green-dim); color: #010f01; font-weight: 700;
+      vertical-align: middle; white-space: nowrap;
+    }
+    .feat-tag.gold { background: var(--gold-dim); color: var(--gold); }
+
+    /* ── TOOL CARDS (full bundle section) ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .tool-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green-dim);
+      padding: 1.2rem 1.4rem;
+    }
+    .tool-card.special { border-left-color: var(--cyan-dim); }
+    .tool-name {
+      font-size: .7rem; font-weight: 700; color: var(--green);
+      letter-spacing: .1em; margin-bottom: .3rem;
+    }
+    .tool-card.special .tool-name { color: var(--cyan); }
+    .tool-lang {
+      font-size: .44rem; color: var(--text-faint); letter-spacing: .1em;
+      margin-bottom: .6rem;
+    }
+    .tool-desc { font-size: .6rem; color: var(--text-dim); line-height: 1.6; }
+    .tool-stat {
+      margin-top: .6rem; font-size: .48rem; color: var(--green-dim);
+      letter-spacing: .1em;
+    }
+
+    /* ── PAYMENT BLOCK ── */
+    .payment-block {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    .payment-label { font-size: .44rem; letter-spacing: .26em; color: var(--text-faint); margin-bottom: .5rem; }
+    .payment-title { font-size: 1.1rem; color: var(--green); font-weight: 700; letter-spacing: .06em; margin-bottom: .4rem; }
+    .payment-price { font-size: .72rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+    .stripe-wrap { display: flex; justify-content: center; margin-bottom: 1.2rem; }
+    .stripe-wrap stripe-buy-button { display: block; max-width: 360px; width: 100%; }
+    .pay-divider { font-size: .44rem; color: var(--text-faint); letter-spacing: .18em; margin: .6rem 0; }
+    .pay-wise {
+      display: inline-block;
+      border: 1px solid var(--cyan-dim);
+      color: var(--cyan);
+      font-size: .58rem; letter-spacing: .12em;
+      padding: .6rem 1.6rem; text-decoration: none; margin-top: .3rem;
+    }
+    .pay-wise:hover { background: #011a1a; border-color: var(--cyan); }
+    .pay-note { font-size: .46rem; color: var(--text-faint); line-height: 1.6; margin-top: 1rem; letter-spacing: .04em; }
+
+    /* ── COFFEE ── */
+    .coffee-block {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold-dim);
+      background: #0a0a01;
+      padding: 1.4rem 1.8rem;
+      display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .coffee-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .coffee-text { flex: 1; min-width: 180px; }
+    .coffee-title { font-size: .7rem; color: var(--gold); font-weight: 700; letter-spacing: .1em; margin-bottom: .3rem; }
+    .coffee-desc { font-size: .56rem; color: var(--text-dim); line-height: 1.6; }
+    .coffee-link {
+      display: inline-block; border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: .56rem; letter-spacing: .12em;
+      padding: .5rem 1.2rem; text-decoration: none; white-space: nowrap;
+    }
+    .coffee-link:hover { background: #1a1000; border-color: var(--gold); }
+
+    /* ── COMPARISON TABLE ── */
+    .compare-table {
+      width: 100%; border-collapse: collapse;
+      font-size: .58rem;
+      margin-bottom: 2rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: .7rem .9rem; border: 1px solid var(--border);
+      text-align: left; vertical-align: top;
+    }
+    .compare-table th {
+      background: var(--bg3); color: var(--green);
+      letter-spacing: .1em; font-size: .52rem; font-weight: 700;
+    }
+    .compare-table th.featured-col { background: #011801; }
+    .compare-table td.featured-col { background: #010f01; }
+    .compare-table tr:hover td { background: #020f02; }
+    .compare-table .row-label { color: var(--text-dim); font-weight: 700; letter-spacing: .06em; }
+    .compare-table .check { color: var(--green); text-align: center; }
+    .compare-table .cross { color: var(--text-faint); text-align: center; }
+    .compare-table .star  { color: var(--gold);  text-align: center; }
+    @media(max-width:600px){
+      .compare-table { font-size: .5rem; }
+      .compare-table th, .compare-table td { padding: .5rem .6rem; }
+    }
+
+    /* ── GLOW DIVIDER ── */
+    .glow-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green-dim), transparent);
+      margin: 0;
+    }
+
+    /* ── COMPANY ── */
+    .company-bar {
+      background: var(--bg3);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 1.5rem 2rem;
+      font-size: .46rem; color: var(--text-faint); letter-spacing: .08em; line-height: 2;
+    }
+    .company-bar a { color: var(--green-dim); text-decoration: none; }
+    .company-bar a:hover { color: var(--green); }
+
+    /* ── SCROLL INDICATOR ── */
+    @keyframes floatdown { 0%,100%{transform:translateY(0);opacity:.7;} 50%{transform:translateY(4px);opacity:1;} }
+    .scroll-hint {
+      display: block; text-align: center; font-size: .5rem;
+      color: var(--text-faint); letter-spacing: .18em; margin-top: 1.5rem;
+      animation: floatdown 2.4s ease-in-out infinite;
+    }
+
+    /* ── PULSE ANIMATION ── */
+    @keyframes neonpulse {
+      0%,100%{ text-shadow: 0 0 20px rgba(74,220,106,.2), 0 0 40px rgba(74,220,106,.1); }
+      50%{ text-shadow: 0 0 30px rgba(74,220,106,.4), 0 0 60px rgba(74,220,106,.2); }
+    }
+    .neon { animation: neonpulse 3s ease-in-out infinite; }
+
+    /* ── FAQ ── */
+    .faq-item { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .faq-q { font-size: .64rem; color: var(--green); font-weight: 700; letter-spacing: .06em; margin-bottom: .4rem; }
+    .faq-a { font-size: .6rem; color: var(--text-dim); line-height: 1.7; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--green-dim); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">// RAINFANTRY</a>
+  <a class="nav-back" href="https://rainfantry.github.io/22nd-survey-division/">← 22DIV MAIN SITE</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-tag">// OCCUPATION FORCE CALLSIGN GSW PTY LTD</div>
+  <h1 class="hero-title neon">CHOOSE YOUR<br>ACCESS TIER</h1>
+  <p class="hero-sub">22nd Survey Division — offensive security research course. 22 modules. Live tools. Original CVE research. Two ways to get in.</p>
+  <div class="hero-company">ABN&nbsp;50&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; ACN&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; SYDNEY&nbsp;AU</div>
+  <span class="scroll-hint">↓ SCROLL TO COMPARE ↓</span>
+</header>
+
+<div class="glow-divider"></div>
+
+<!-- TIER CARDS -->
+<section>
+  <div class="container">
+    <div class="section-label">// SELECT ACCESS LEVEL</div>
+    <h2 class="section-title">TWO TIERS. ZERO FILLER.</h2>
+
+    <div class="tiers">
+
+      <!-- MONTHLY -->
+      <div class="tier">
+        <div class="tier-head">
+          <div class="tier-name">// MONTHLY ACCESS</div>
+          <div class="tier-price">A$21.99<span>/mo</span></div>
+          <div class="tier-desc">Course access with live updates. Cancel anytime. Best for learning on a budget or testing the content before committing.</div>
+        </div>
+        <div class="tier-body">
+
+          <div class="feat-group">
+            <div class="feat-group-label">COURSE CONTENT</div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>22 full modules</strong> — read access, all sections</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Module updates</strong> — new content as it drops</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Windows internals &amp; kernel dev</strong></span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>C2 architecture</strong>, lateral movement, AV evasion concepts</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>HWBP AMSI/ETW bypass</strong> — written by the researcher (VULN-195458)</span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">TOOLS</div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>GeoDefend scanner</strong> — hosted tool, web access<span class="feat-tag">INCLUDED</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>IRON-DOME demo</strong> — results walkthrough (no source)</span>
+            </div>
+            <div class="feat locked">
+              <i class="icon no">✗</i>
+              <span class="feat-text">IRON-DOME v4 source repository</span>
+            </div>
+            <div class="feat locked">
+              <i class="icon no">✗</i>
+              <span class="feat-text">CHEYANNE C2 source repository</span>
+            </div>
+            <div class="feat locked">
+              <i class="icon no">✗</i>
+              <span class="feat-text">STARKILLER, WinRecon, Ghost-Encoder source</span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">SUPPORT &amp; UPDATES</div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Email support</strong> — gwu0738@gmail.com</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Cancel anytime</strong> — no lock-in</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FULL BUNDLE -->
+      <div class="tier featured">
+        <div class="tier-badge">BEST VALUE</div>
+        <div class="tier-head">
+          <div class="tier-name">// FULL BUNDLE — ONE-TIME</div>
+          <div class="tier-price">A$247.50<span> once</span></div>
+          <div class="tier-desc">Everything. Forever. All 5 private tool repos. Full source code. No subscription. One payment, lifetime access including all future updates.</div>
+        </div>
+        <div class="tier-body">
+
+          <div class="feat-group">
+            <div class="feat-group-label">EVERYTHING IN MONTHLY, PLUS:</div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>Lifetime access</strong> — no recurring fees, ever</span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>All future module updates</strong> included automatically</span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">PRIVATE TOOL REPOSITORIES (SOURCE CODE)</div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>IRON-DOME v4</strong> — AV evasion loader. C/PowerShell. 26 binaries, 0 detections.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>CHEYANNE C2</strong> — full command &amp; control framework, full kill chain.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>STARKILLER</strong> — Android RAT (Kotlin), Phase 1 complete.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>WinRecon / SKYWALKER</strong> — Windows recon &amp; enumeration suite.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>Ghost-Encoder</strong> — zero-width Unicode steganography engine.<span class="feat-tag gold">SOURCE</span></span>
+            </div>
+          </div>
+
+          <div class="feat-group">
+            <div class="feat-group-label">RESEARCH &amp; TOOLS</div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>GeoDefend</strong> — web tool access + full source code<span class="feat-tag">INCLUDED</span></span>
+            </div>
+            <div class="feat">
+              <i class="icon star">★</i>
+              <span class="feat-text"><strong>MSRC VULN-195458 writeup</strong> — HWBP AMSI/ETW bypass, full technical doc + PoC</span>
+            </div>
+            <div class="feat">
+              <i class="icon yes">✓</i>
+              <span class="feat-text"><strong>Priority email support</strong> + direct contact</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div style="overflow-x:auto;">
+      <div class="section-label" style="margin-top:1rem;">// SIDE BY SIDE</div>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:40%;">FEATURE</th>
+            <th style="width:30%;text-align:center;">MONTHLY<br><span style="color:var(--text-dim);font-size:.7em;">A$21.99/mo</span></th>
+            <th class="featured-col" style="width:30%;text-align:center;">FULL BUNDLE<br><span style="color:var(--green);font-size:.7em;">A$247.50 once</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="row-label">22 Course modules</td><td class="check">✓</td><td class="check featured-col">✓</td></tr>
+          <tr><td class="row-label">Module updates</td><td class="check">✓</td><td class="check featured-col">✓ forever</td></tr>
+          <tr><td class="row-label">GeoDefend scanner (hosted)</td><td class="check">✓</td><td class="check featured-col">✓ + source</td></tr>
+          <tr><td class="row-label">HWBP bypass research</td><td class="check">✓</td><td class="check featured-col">✓ + PoC code</td></tr>
+          <tr><td class="row-label">IRON-DOME v4 source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">CHEYANNE C2 source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">STARKILLER Android RAT source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">WinRecon / SKYWALKER source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">Ghost-Encoder source</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">MSRC writeup + PoC</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+          <tr><td class="row-label">Recurring payment</td><td style="color:var(--red);text-align:center;">A$21.99/mo</td><td class="check featured-col" style="color:var(--green);">none</td></tr>
+          <tr><td class="row-label">Lifetime access</td><td class="cross">—</td><td class="star featured-col">★</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- TOOL BREAKDOWN -->
+<section style="background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-label">// FULL BUNDLE — WHAT YOU GET</div>
+    <h2 class="section-title">THE TOOL REPOSITORIES</h2>
+
+    <div class="tools-grid">
+
+      <div class="tool-card">
+        <div class="tool-name">IRON-DOME v4</div>
+        <div class="tool-lang">C &nbsp;/&nbsp; POWERSHELL &nbsp;/&nbsp; x64</div>
+        <div class="tool-desc">AV evasion loader. Custom PE packing, API unhooking, process hollowing. 26 compiled binaries tested — all 0 detections across Windows Defender, ESET, Kaspersky. Obfuscation and shellcode injection chain included.</div>
+        <div class="tool-stat">26 BINARIES &nbsp;·&nbsp; 0 DETECTIONS &nbsp;·&nbsp; LIVE-TESTED</div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">CHEYANNE C2</div>
+        <div class="tool-lang">FULL KILL CHAIN &nbsp;/&nbsp; MULTI-PLATFORM</div>
+        <div class="tool-desc">Complete command &amp; control framework. Beacon implant, handler, operator console. Covers: initial access, persistence, lateral movement, exfiltration. Full kill chain documented with PENTEST_LOG.md.</div>
+        <div class="tool-stat">FULL C2 FRAMEWORK &nbsp;·&nbsp; OPERATIONAL</div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">STARKILLER</div>
+        <div class="tool-lang">KOTLIN &nbsp;/&nbsp; ANDROID</div>
+        <div class="tool-desc">Android RAT. Phase 1 complete — device info exfiltration, remote shell, GPS tracking, SMS intercept, contact dump. APK build pipeline with obfuscation. Targets Android 10+.</div>
+        <div class="tool-stat">ANDROID RAT &nbsp;·&nbsp; PHASE 1 COMPLETE &nbsp;·&nbsp; COMMIT 67aa4fd</div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">WINRECON / SKYWALKER</div>
+        <div class="tool-lang">POWERSHELL &nbsp;/&nbsp; C#</div>
+        <div class="tool-desc">Windows post-exploitation recon suite. Enumeration of users, shares, scheduled tasks, registry run keys, AV presence, EDR processes, LSASS targets. Low noise, high signal output for rapid situational awareness.</div>
+        <div class="tool-stat">WINDOWS RECON &nbsp;·&nbsp; POST-EXPLOITATION</div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-name">GHOST-ENCODER</div>
+        <div class="tool-lang">JAVASCRIPT &nbsp;/&nbsp; PYTHON</div>
+        <div class="tool-desc">Zero-width Unicode steganography engine. Encodes arbitrary payloads into invisible characters inside plain text. Browser-based encoder/decoder demo included. Command exfiltration via covert channel research.</div>
+        <div class="tool-stat">ZERO-WIDTH ENCODING &nbsp;·&nbsp; COVERT CHANNEL</div>
+      </div>
+
+      <div class="tool-card special">
+        <div class="tool-name">GEODEFEND SCANNER</div>
+        <div class="tool-lang">WEB APP &nbsp;/&nbsp; DEFENSE</div>
+        <div class="tool-desc">Automated defense scanner. Maps attack surface, identifies misconfigurations, correlates detections. Web-hosted tool included in Monthly. Full source code delivered with Full Bundle. Built as the defensive counterpart to the offensive tools taught in the course.</div>
+        <div class="tool-stat">MONTHLY: HOSTED ACCESS &nbsp;·&nbsp; BUNDLE: + FULL SOURCE</div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- PAYMENT -->
+<section id="buy">
+  <div class="container">
+    <div class="section-label">// CHECKOUT</div>
+    <h2 class="section-title">SELECT YOUR TIER &amp; PAY</h2>
+
+    <!-- BUNDLE PAYMENT -->
+    <div class="payment-block">
+      <div class="payment-label">// OPTION 1 — ONE-TIME</div>
+      <div class="payment-title">FULL BUNDLE — ALL TOOLS + LIFETIME ACCESS</div>
+      <div class="payment-price">A$247.50 &nbsp;·&nbsp; one-time &nbsp;·&nbsp; no recurring fees</div>
+      <div class="stripe-wrap">
+        <stripe-buy-button
+          buy-button-id="buy_btn_1Tmp4iS5K1Ttf6KaIUlvp1xr"
+          publishable-key="pk_live_51SOog7S5K1Ttf6KaHTIbEAiN80J2FHk7l1alno8IR7bliBd0gcOSqjpFmGQ1DXOKMMZkD7ec7nz6ewJhxuyW9C4z00y6JxsrH6">
+        </stripe-buy-button>
+      </div>
+      <div class="pay-divider">— OR PAY INTERNATIONALLY —</div>
+      <a class="pay-wise" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
+        BANK TRANSFER VIA WISE &rarr;
+      </a>
+      <div class="pay-note">
+        Stripe: credit/debit card, Apple Pay, Google Pay &nbsp;·&nbsp; AUD pricing<br>
+        Wise: international bank transfer (SWIFT/local) for overseas buyers<br>
+        Access delivered within 24h of confirmed payment &nbsp;·&nbsp; Contact: gwu0738@gmail.com
+      </div>
+    </div>
+
+    <!-- MONTHLY PAYMENT -->
+    <div class="payment-block">
+      <div class="payment-label">// OPTION 2 — MONTHLY SUBSCRIPTION</div>
+      <div class="payment-title">MONTHLY ACCESS — COURSE + GEODEFEND</div>
+      <div class="payment-price">A$21.99/month &nbsp;·&nbsp; cancel anytime</div>
+      <div class="stripe-wrap">
+        <stripe-buy-button
+          buy-button-id="buy_btn_1Tmp9SS5K1Ttf6KaxgbBvxcw"
+          publishable-key="pk_live_51SOog7S5K1Ttf6KaHTIbEAiN80J2FHk7l1alno8IR7bliBd0gcOSqjpFmGQ1DXOKMMZkD7ec7nz6ewJhxuyW9C4z00y6JxsrH6">
+        </stripe-buy-button>
+      </div>
+      <div class="pay-divider">— OR PAY INTERNATIONALLY —</div>
+      <a class="pay-wise" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
+        ARRANGE MANUAL INVOICE VIA WISE &rarr;
+      </a>
+      <div class="pay-note">
+        Subscription billed monthly &nbsp;·&nbsp; Cancel via Stripe customer portal anytime<br>
+        No source code repos on monthly tier &nbsp;·&nbsp; Upgrade to bundle anytime, price adjusted
+      </div>
+    </div>
+
+    <!-- COFFEE -->
+    <div class="coffee-block">
+      <span class="coffee-icon">☕</span>
+      <div class="coffee-text">
+        <div class="coffee-title">BUY ME A COFFEE &nbsp;/&nbsp; DONATE</div>
+        <div class="coffee-desc">Not buying the course but want to support the research? Anything helps — keeps the lab running, pays for CVE filings and Burp Pro renewals. No account needed, just send via Wise.</div>
+      </div>
+      <a class="coffee-link" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
+        SEND VIA WISE &rarr;
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- FAQ -->
+<section style="background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container" style="max-width:760px;">
+    <div class="section-label">// COMMON QUESTIONS</div>
+    <h2 class="section-title">FAQ</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">How do I receive access after payment?</div>
+      <div class="faq-a">Within 24 hours of confirmed payment you'll receive an email at the address you used at checkout. Source code repos are delivered as encrypted 7z packages. Email gwu0738@gmail.com if you haven't heard back within 24h.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What is GeoDefend?</div>
+      <div class="faq-a">GeoDefend is the defensive counterpart to the offensive material in the course — an automated scanner that maps attack surface and identifies misconfigurations. Monthly subscribers get web-hosted access. Full bundle buyers also receive the complete source code.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I upgrade from Monthly to the Full Bundle?</div>
+      <div class="faq-a">Yes. Cancel your subscription, purchase the bundle, and the prorated difference will be refunded manually on request. Email gwu0738@gmail.com to arrange.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Are the tools operational or just demos?</div>
+      <div class="faq-a">Operational. IRON-DOME, CHEYANNE, STARKILLER, WinRecon are live research tools built and tested on real hardware. These are research artifacts — you are responsible for legal authorised use only.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is there a refund policy?</div>
+      <div class="faq-a">If you haven't received any course materials or tool repos within 48h of payment, full refund guaranteed. Source code repos once delivered are non-refundable — contact before purchasing if you have specific questions about content.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Who is behind this course?</div>
+      <div class="faq-a">Occupation Force Callsign GSW Pty Ltd (ABN 50 692 429 397, ACN 692 429 397), registered NSW Australia. Researcher: George Wu. GitHub: rainfantry. MSRC VULN-195458 on record. The course is built from original research, not repackaged certifications.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER / COMPANY -->
+<div class="company-bar">
+  <strong style="color:var(--green-dim);">OCCUPATION FORCE CALLSIGN GSW PTY LTD</strong><br>
+  ABN&nbsp;50&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; ACN&nbsp;692&nbsp;429&nbsp;397 &nbsp;·&nbsp; Sydney,&nbsp;NSW,&nbsp;Australia &nbsp;·&nbsp; Registered&nbsp;1&nbsp;Nov&nbsp;2025<br>
+  <a href="mailto:gwu0738@gmail.com">gwu0738@gmail.com</a> &nbsp;·&nbsp;
+  <a href="https://rainfantry.github.io/22nd-survey-division/">22nd-survey-division</a> &nbsp;·&nbsp;
+  <a href="https://rainfantry.github.io/">portfolio</a><br>
+  <span style="color:var(--text-faint);font-size:.38rem;">Secure checkout via Stripe &nbsp;·&nbsp; International payments via Wise &nbsp;·&nbsp; AUD pricing &nbsp;·&nbsp; All prices inclusive of applicable taxes</span>
+</div>
+
+<script src="payment-widget.js"></script>
+
+</body>
+</html>
