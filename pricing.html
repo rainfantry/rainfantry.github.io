@@ -982,5 +982,125 @@ msg = "Hey, meeting at 3pm" + encode(c2_command) + "."
 
 <script src="payment-widget.js"></script>
 
+<!-- DEV ACCESS GATE -->
+<div id="dev-gate" style="
+  position:fixed; bottom:1.2rem; right:1.4rem; z-index:999;
+  display:flex; align-items:center; gap:.5rem;
+">
+  <input id="dev-pin" type="password" maxlength="8"
+    placeholder="// dev"
+    style="
+      background:#010901; border:1px solid #0d3a0d; color:#2a7a2a;
+      font-family:'Courier New',monospace; font-size:.5rem;
+      letter-spacing:.18em; padding:.3rem .6rem; width:80px;
+      outline:none; opacity:.35; transition:opacity .2s;
+    "
+    onfocus="this.style.opacity='1'"
+    onblur="this.style.opacity='.35'"
+  />
+  <span id="dev-status" style="font-size:.38rem;color:#1a4a1a;letter-spacing:.12em;"></span>
+</div>
+
+<!-- DEV PANEL (hidden until PIN correct) -->
+<section id="dev-panel" style="display:none; background:#010f01; border-top:2px solid #1a6a1a; padding:4rem 0;">
+  <div class="container" style="max-width:900px;">
+    <div style="font-size:.44rem;letter-spacing:.3em;color:#2a7a2a;margin-bottom:.6rem;">// DEV ACCESS — FULL COURSE MANIFEST</div>
+    <h2 style="font-size:1.4rem;color:#4adc6a;font-weight:900;letter-spacing:.1em;margin-bottom:.5rem;">22ND SURVEY DIVISION — DEVELOPER VIEW</h2>
+    <p style="font-size:.56rem;color:#3a6a3a;letter-spacing:.06em;margin-bottom:2.5rem;">All modules, tools, and source repos. For developer testing only. Links are live on rainfantry.github.io.</p>
+
+    <div style="font-size:.42rem;letter-spacing:.22em;color:#1a4a1a;margin-bottom:.8rem;padding-bottom:.4rem;border-bottom:1px solid #0d3a0d;">// COURSE MODULES</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem;margin-bottom:2.5rem;">
+      <a href="https://rainfantry.github.io/crash-course.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">CRASH COURSE</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Windows internals primer — the warfighter foundation. Memory, processes, API architecture from first principles.</div>
+      </a>
+      <a href="https://rainfantry.github.io/networking.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">NETWORKING</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Network terrain — protocols, packet analysis, lateral movement fundamentals. Treat the network as an AO.</div>
+      </a>
+      <a href="https://rainfantry.github.io/csec.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">CSEC — CERT IV TRACK</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Certificate IV in Cyber Security alignment — academic framing over the same material.</div>
+      </a>
+      <a href="https://rainfantry.github.io/defender.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">DEFENDER INTERNALS</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Inside Microsoft Defender — how it actually works, what it catches, what it misses, and why.</div>
+      </a>
+      <a href="https://rainfantry.github.io/reverseeng.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">REVERSE ENGINEERING</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Reading the enemy's code — static and dynamic analysis, disassembly, understanding compiled binaries.</div>
+      </a>
+      <a href="https://rainfantry.github.io/rootkit.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">ROOTKIT / VADER</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">VADER platform research — Windows kernel and detection gap analysis. HWBP, AMSI/ETW bypass mechanics.</div>
+      </a>
+      <a href="https://rainfantry.github.io/fuzzer.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">FUZZER / VULN RESEARCH</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Finding bugs before the enemy does — fuzzing methodology, crash triage, MSRC submission process.</div>
+      </a>
+      <a href="https://rainfantry.github.io/books.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #2a7a2a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adc6a'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adc6a;letter-spacing:.08em;margin-bottom:.3rem;">READING LIST</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Annotated bibliography — what to read, what order, what's worth the time.</div>
+      </a>
+    </div>
+
+    <div style="font-size:.42rem;letter-spacing:.22em;color:#1a4a1a;margin-bottom:.8rem;padding-bottom:.4rem;border-bottom:1px solid #0d3a0d;">// TOOL PAGES</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem;margin-bottom:2.5rem;">
+      <a href="https://rainfantry.github.io/irondome.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #1a6a6a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adcdc'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adcdc;letter-spacing:.08em;margin-bottom:.3rem;">IRON-DOME v4</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">AV evasion loader — C/PowerShell. 8-layer evasion stack. MSRC VULN-195458. 26 binaries, 0 detections.</div>
+      </a>
+      <a href="https://rainfantry.github.io/ghost.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #1a6a6a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adcdc'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adcdc;letter-spacing:.08em;margin-bottom:.3rem;">GHOST-ENCODER</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Zero-width Unicode steganographic payload encoder. 16-char GHOST_ALPHABET. Invisible payload delivery.</div>
+      </a>
+      <a href="https://rainfantry.github.io/starkiller.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #1a6a6a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adcdc'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adcdc;letter-spacing:.08em;margin-bottom:.3rem;">STARKILLER</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Android RAT (Kotlin) — mobile C2 research. Phase 1 complete. Play Protect evasion study.</div>
+      </a>
+      <a href="https://rainfantry.github.io/skywalker.html" target="_blank" style="display:block;background:#020f02;border:1px solid #0d3a0d;border-left:3px solid #1a6a6a;padding:1rem 1.2rem;text-decoration:none;transition:border-color .15s;" onmouseover="this.style.borderColor='#4adcdc'" onmouseout="this.style.borderColor='#0d3a0d'">
+        <div style="font-size:.62rem;font-weight:700;color:#4adcdc;letter-spacing:.08em;margin-bottom:.3rem;">WINRECON / SKYWALKER</div>
+        <div style="font-size:.52rem;color:#3a6a3a;">Windows recon and enumeration suite — post-exploitation intel gathering, OPSEC-aware design.</div>
+      </a>
+    </div>
+
+    <div style="font-size:.42rem;letter-spacing:.22em;color:#1a4a1a;margin-bottom:.8rem;padding-bottom:.4rem;border-bottom:1px solid #0d3a0d;">// DEV NOTES</div>
+    <div style="font-size:.54rem;color:#2a5a2a;line-height:1.8;letter-spacing:.04em;">
+      <div>// PIN gate: SHA-256 obscured. Client-side only — dev testing use.</div>
+      <div>// Source repos: delivered as encrypted 7z on payment confirmation.</div>
+      <div>// Annotated code backbone in progress — each tool repo is being serviced.</div>
+      <div>// Contact: <a href="mailto:gwu0738@gmail.com" style="color:#2a7a2a;">gwu0738@gmail.com</a></div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var PIN_HASH = 'b8a5fb6a66b8798ac3bb58fc53419648e6713638adf134b6e9de60c3ace9b276';
+  async function sha256(str) {
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  }
+  var inp = document.getElementById('dev-pin');
+  var status = document.getElementById('dev-status');
+  var panel = document.getElementById('dev-panel');
+  if (!inp) return;
+  inp.addEventListener('keydown', async function(e) {
+    if (e.key !== 'Enter') return;
+    var hash = await sha256(inp.value.trim());
+    if (hash === PIN_HASH) {
+      panel.style.display = 'block';
+      document.getElementById('dev-gate').style.display = 'none';
+      panel.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      status.textContent = 'denied';
+      status.style.color = '#5a1a1a';
+      inp.value = '';
+      setTimeout(function(){ status.textContent = ''; }, 1500);
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
