@@ -1,1 +1,1 @@
-{"version":"0.0.1","configurations":[{"name":"22div-site","runtimeExecutable":"python","runtimeArgs":["-m","http.server","7422"],"port":7422}]}
+{"version":"0.0.1","configurations":[{"name":"portfolio","runtimeExecutable":"npx","runtimeArgs":["serve","-p","3022","."],"port":3022}]}
