@@ -1,73 +1,62 @@
-# 22DIV // george wu
+# George Wu — Security Researcher
 
-**https://rainfantry.github.io**  |  **Front: https://rainfantry.github.io/22nd-survey-division/**
+**Independent offensive security researcher. Sydney, Australia.**
 
-Security research against live Windows 11 defenses. CSEC student. Sydney.
-
-50 findings across 13 engagements. Every technique built from first principles against Defender with Real-Time Protection enabled on my own hardware. Responsible disclosure via MSRC.
-
----
-
-### Courses & Labs
-
-| Lab | Topic |
-|-----|-------|
-| [Ghost Encoder](https://rainfantry.github.io/labs/ghost.html) | Unicode steganography — invisible PS1 bootstrap |
-| [VADER Rootkit](https://rainfantry.github.io/labs/rootkit.html) | Modular rootkit — AMSI/ETW bypass |
-| [StarKiller](https://rainfantry.github.io/labs/starkiller.html) | Android RAT — Kotlin C2 + obfuscation |
-| [CHEYANNE](https://rainfantry.github.io/labs/cheyanne.html) | C2 framework — polymorphic loader + kill chain |
-| [VADER Agent](https://rainfantry.github.io/labs/vader.html) | AI persona engine — multi-agent Discord C2 |
+Entity: **Occupation Force Callsign GSW Pty Ltd** t/a 22nd Survey Division
+ABN 50 692 429 397 | ACN 692 429 397 | Registered NSW, 1 November 2025
 
 ---
 
-### Private Research Repos
+## Research
 
-| Repo | What |
-|------|------|
-| `rainfantry/cheyanne` | CHEYANNE C2 — ghost_iron polymorph, full kill chain |
-| `rainfantry/vader-rootkit` | Rootkit — 26 binaries, all clean; MSRC VULN-195458 |
-| `rainfantry/starkiller` | Android RAT — Phase 1 complete |
-| `rainfantry/iron-sun` | FUD reverse shell — XOR obfuscation, anti-sandbox, PE stomp |
-| `rainfantry/eclipse` | Anti-forensics / OPSEC cleanup |
+Original research against live Windows defenses — developed from first principles on personally-owned hardware. No reproduced CTF writeups. No borrowed techniques. All findings discovered empirically with AV controls active.
 
----
+### Published Findings
 
-### Public Tools
+| ID | Finding | Target | Disclosure |
+|----|---------|--------|------------|
+| [VULN-195458](https://github.com/rainfantry/22sd-research-findings/blob/main/findings/F004_hwbp_amsi_etw_zero_write.md) | AMSI and ETW defeated via hardware debug registers — zero memory writes. DR0/DR7 + VEH intercepts AmsiScanBuffer and EtwEventWrite without modifying Tamper-Protected memory. | Windows Tamper Protection | MSRC submitted; closed as out-of-scope; published on embargo void |
+| [F001](https://github.com/rainfantry/22sd-research-findings/blob/main/findings/F001_wdfilter_scan_on_write.md) | WdFilter triggers on IRP_MJ_WRITE, not IRP_MJ_CLEANUP | Windows Defender / WdFilter | Published |
+| [F002](https://github.com/rainfantry/22sd-research-findings/blob/main/findings/F002_oplock_fileobject_scope.md) | Batch oplock compatibility evaluated at FILE_OBJECT scope, not process scope | NTFS Oplock Subsystem | Published |
+| [F003](https://github.com/rainfantry/22sd-research-findings/blob/main/findings/F003_writethrough_oplock_bypass.md) | Writing through an existing oplock handle does not break the batch oplock | NTFS Oplock Subsystem | Published |
 
-| Repo | What |
-|------|------|
-| [rainfantry/winrecon](https://github.com/rainfantry/winrecon) | PowerShell privesc audit script |
-| [rainfantry/ghost-encoder](https://github.com/rainfantry/ghost-encoder) | Unicode steganographic PS1 encoder |
-| [rainfantry/defender-quarantine-architecture](https://github.com/rainfantry/defender-quarantine-architecture) | Windows Defender quarantine research |
+Full index: **[rainfantry/22sd-research-findings](https://github.com/rainfantry/22sd-research-findings)**
 
 ---
 
-### Online Courses
+## Public Repositories
 
-| Platform | Course |
-|----------|--------|
-| [TryHackMe](https://tryhackme.com) | Active — CSEC curriculum |
-| [PortSwigger Web Security Academy](https://portswigger.net/web-security) | Active |
-| [TCM Security](https://academy.tcm-sec.com) | Active — Practical Ethical Hacking |
-
----
-
-### Key Findings
-
-- **Standard user to SYSTEM** — replaced a LocalSystem service binary as a standard user. No admin credentials. No UAC prompt. Full SYSTEM token on next reboot. (CWE-732)
-
-- **Defender's tamper protection has a blind spot** — hardware breakpoints bypass both AMSI and ETW without modifying a single byte of memory. Defender monitors memory integrity but not CPU debug registers. No behavioral rule exists for this. (MSRC potential)
-
-- **The "dark room"** — AMSI script scanning and ETW process telemetry simultaneously defeated. All user-mode security telemetry blind. Zero VirtualProtect calls. Zero bytes patched.
-
-- **Vendor hardened the wrong layer** — target service had manifest-based DLL redirection locking all imports to System32. They hardened the windows but left the front door open: the exe itself was writable by everyone.
-
-- **User-writable directories in the machine SYSTEM PATH** — third-party installers placed user-owned directories into the machine-level PATH. Any SYSTEM process searching PATH for a DLL finds attacker-controlled territory first. (CWE-427, MSRC potential)
-
-- **Phantom DLL in first-party Microsoft service** — Office ClickToRunSvc (LocalSystem, auto-start) delay-loads a DLL that does not exist anywhere on disk. User-owned PATH directory fills the void. (CWE-427, MSRC high)
-
-- **Defender's ML has a ~15 minute blind spot** — first deployment of a payload survives static analysis. Cloud/ML catches up retroactively but the binary is already planted and grandfathered.
+| Repo | Stack | Description |
+|------|-------|-------------|
+| [iron-sun](https://github.com/rainfantry/iron-sun) | C / x64 | TCP reverse shell — 8-layer evasion. XOR, dynamic API resolution, anti-sandbox, PE stomping, HWBP AMSI/ETW bypass |
+| [flagship](https://github.com/rainfantry/flagship) | C / PowerShell | IRON-DOME evasion platform — ntdll unhooking, process hollowing, 26 tested binaries, 0 detections |
+| [22sd-research-findings](https://github.com/rainfantry/22sd-research-findings) | C / Markdown | First-principle Windows findings with PoC |
+| [security-advisoriespublic](https://github.com/rainfantry/security-advisoriespublic) | Markdown | Published security advisories |
 
 ---
 
-*Research ongoing. Disclosure pending confirmation of first-party vectors.*
+## Responsible Disclosure
+
+**MSRC VULN-195458** — submitted to Microsoft Security Response Center. Technique: hardware debug registers (DR0/DR7) + Vectored Exception Handler to intercept AmsiScanBuffer and EtwEventWrite without memory writes, bypassing Tamper Protection. MSRC closed as out-of-scope for the Tamper Protection threat model. Published on embargo void. Full write-up in [F004](https://github.com/rainfantry/22sd-research-findings/blob/main/findings/F004_hwbp_amsi_etw_zero_write.md).
+
+Additional findings submitted to MSRC as confirmed. All research with exploitable impact disclosed to the vendor before publication.
+
+---
+
+## Course & Platform
+
+**22nd Survey Division** — offensive security course built directly from the research corpus above.
+
+22 modules covering: Windows internals, PE format, shellcode, process injection, C2 architecture, AV/EDR evasion, Android security, steganography, OPSEC. Each module is the research — not a textbook summary.
+
+→ **[rainfantry.github.io/22nd-survey-division](https://rainfantry.github.io/22nd-survey-division/)**
+→ **[rainfantry.github.io](https://rainfantry.github.io/)** — full portfolio
+
+---
+
+## Contact
+
+**gwu0738@gmail.com** | Sydney, NSW, Australia
+GitHub: [rainfantry](https://github.com/rainfantry)
+
+Occupation Force Callsign GSW Pty Ltd | ABN 50 692 429 397 | ACN 692 429 397
