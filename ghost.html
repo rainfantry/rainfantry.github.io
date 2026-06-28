@@ -1037,6 +1037,16 @@ footer {
             <td class="detect-yes">YES</td>
             <td class="notes">Logs the PowerShell command pipeline &mdash; needs dark_room to suppress</td>
           </tr>
+          <tr>
+            <td class="layer">Kaspersky KSN (cloud)</td>
+            <td class="detect-partial">PARTIAL</td>
+            <td class="notes">KSN submits unknown carrier file hash on first run &mdash; 0/72 is Defender-era. Novel ghost files have no KSN reputation. Cloud engine can flag anomalous Unicode density independently of content.</td>
+          </tr>
+          <tr>
+            <td class="layer">Kaspersky System Watcher</td>
+            <td class="detect-partial">POST-EXEC RISK</td>
+            <td class="notes">Behavioral rollback engine (bRollbackAllowed=1 confirmed on lab). Does not block delivery or execution &mdash; but can <em>undo</em> file writes, registry changes, and persistence vectors if heuristic fires after the fact. AMSI/ETW bypass does not neutralise System Watcher.</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -1044,7 +1054,9 @@ footer {
     <div class="card" style="margin-top: 1.5rem;">
       <div class="card-title">Summary</div>
       <div class="prose">
-        <p>Ghost encoding defeats all static analysis. The file is invisible to human review and opaque to signature-based scanning. Runtime detection depends on whether AMSI and ETW are active &mdash; if dark_room has already blinded them, the entire chain is undetectable from disk to execution.</p>
+        <p>Ghost encoding defeats all static analysis. The file is invisible to human review and opaque to signature-based scanning. Against Windows Defender, the chain is complete: ghost delivery + dark_room AMSI/ETW bypass = disk-to-execution undetectable.</p>
+        <p>Against Kaspersky Premium (tested: 21.25.7.504, KSN enabled), two gaps remain. First: KSN cloud lookup sees the carrier file hash on first execution &mdash; novel files with no KSN reputation trigger cloud analysis even when static and AMSI scans pass. Second: System Watcher is a rollback engine, not a blocker. It can fire post-execution and undo persistence writes (registry Run, scheduled task, startup LNK) independent of whether AMSI and ETW were blinded. Neutralising System Watcher requires either disabling it via the Kaspersky UI, operating within an excluded path, or avoiding disk writes entirely (fileless persistence only).</p>
+        <p style="color: var(--amber); font-size: 0.85rem; font-family: var(--mono);">STATUS: Defender &mdash; VERIFIED CLEAN. Kaspersky &mdash; UNDER TEST. System Watcher bypass: PENDING.</p>
       </div>
     </div>
   </section>
