@@ -1081,6 +1081,49 @@ footer {
     </ul>
   </section>
 
+  <!-- ════════════ OPERATIONAL BUILD PLAN ════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-number">05</div>
+      <h2 class="section-title">Operational Build Plan</h2>
+      <p class="section-subtitle">How the 22-module curriculum is constructed, tested on live lab machines, and deployed. No simulations. Real code, real AV, real defenses.</p>
+    </div>
+
+    <div class="finding">
+      <div class="finding-id">PHASE 1 — SKELETON</div>
+      <div class="finding-title">Build automation pipeline + 3 core modules</div>
+      <p>Widget Generator (Python template engine) → Reader Generator (iframe embed) → POC Tester (SSH to lab machines) → Git Push & Verify (automated deploy). Target modules: 12 (ETW Bypass), 13 (KAV Evasion), 14 (Cloud Files).</p>
+    </div>
+
+    <div class="finding">
+      <div class="finding-id">PHASE 2 — BULK FILL</div>
+      <div class="finding-title">Fill remaining gaps + Track B (Blue Team)</div>
+      <p>Modules 03, 04, 06, 07, 09, 10, 15, 17, 18, 20, 22. Track B: Blue Team Fundamentals, Detection Engineering, Incident Response, Threat Hunting, Deception Technology.</p>
+    </div>
+
+    <div class="finding">
+      <div class="finding-id">PHASE 3 — POLISH</div>
+      <div class="finding-title">Mobile responsive, cross-browser, performance, SEO</div>
+      <p>Payment gate integration only after all content verified live. No product = no sale.</p>
+    </div>
+
+    <div class="finding">
+      <div class="finding-id">LAB MATRIX</div>
+      <div class="finding-title">.92 Intel (Kaspersky ON) | .42 AMD (Clean sandbox) | .145 RADON (Authorized target)</div>
+      <p>Every POC tested on at least one live machine before widget built. Real output embedded, not invented.</p>
+    </div>
+
+    <div class="finding">
+      <div class="finding-id">KSN CAVEAT</div>
+      <div class="finding-title">Ghost beats static signatures, not cloud reputation</div>
+      <p>Zero-width Unicode bypasses static AV — file appears as noise. But Kaspersky KSN performs cloud hash lookup on first execution. If carrier is novel, KSN submits for behavioral analysis. Combine ghost with Dark Room (HWBP ETW bypass) for runtime evasion. Test on live Kaspersky before claiming FUD.</p>
+    </div>
+
+    <p style="text-align: center; margin-top: 2rem;">
+      <a href="https://rainfantry.github.io/22nd-survey-division/" class="btn-primary">22nd Survey Division Course Portal →</a>
+    </p>
+  </section>
+
 </main>
 
 <!-- ════════════ FOOTER ════════════ -->
