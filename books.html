@@ -509,6 +509,27 @@ nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0
 [data-theme="light"] nav { background: rgba(245,245,240,0.95); border-bottom-color: #ccc; }
 [data-theme="light"] .term { background: #1a1a1a; color: #ccc; }
 @media (max-width: 768px) { .hamburger { display: block; } .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.5rem; align-items: flex-start; } .nav-links.show { display: flex; } nav .inner { flex-wrap: wrap; justify-content: space-between; } }
+
+    /* ── COFFEE ── */
+    .coffee-block {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold-dim);
+      background: #0a0a01;
+      padding: 1.4rem 1.8rem;
+      display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .coffee-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .coffee-text { flex: 1; min-width: 180px; }
+    .coffee-title { font-size: .7rem; color: var(--gold); font-weight: 700; letter-spacing: .1em; margin-bottom: .3rem; }
+    .coffee-desc { font-size: .56rem; color: var(--text-dim); line-height: 1.6; }
+    .coffee-link {
+      display: inline-block; border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: .56rem; letter-spacing: .12em;
+      padding: .5rem 1.2rem; text-decoration: none; white-space: nowrap;
+    }
+    .coffee-link:hover { background: #1a1000; border-color: var(--gold); }
+
 </style>
 </head>
 <body>
@@ -894,5 +915,19 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="site.js"></script>
+
+
+    <!-- COFFEE BANNER -->
+    <div class="coffee-block">
+      <span class="coffee-icon">☕</span>
+      <div class="coffee-text">
+        <div class="coffee-title">SUPPORT THIS RESEARCH</div>
+        <div class="coffee-desc">Not interested in the course? Support the lab directly. Wise transfer, no account needed, no fees.</div>
+      </div>
+      <a class="coffee-link" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
+        SEND VIA WISE →
+      </a>
+    </div>
+
 </body>
 </html>

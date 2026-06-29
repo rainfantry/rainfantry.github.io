@@ -57,6 +57,27 @@ th { color: var(--muted); text-align: left; padding: 0.4rem 0.8rem; border-botto
 td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #111; color: var(--text); }
 td:first-child { color: var(--green); }
 .cheyanne-line { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #111; font-size: 0.7rem; color: #1a2a1a; letter-spacing: 0.1em; }
+
+    /* ── COFFEE ── */
+    .coffee-block {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold-dim);
+      background: #0a0a01;
+      padding: 1.4rem 1.8rem;
+      display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .coffee-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .coffee-text { flex: 1; min-width: 180px; }
+    .coffee-title { font-size: .7rem; color: var(--gold); font-weight: 700; letter-spacing: .1em; margin-bottom: .3rem; }
+    .coffee-desc { font-size: .56rem; color: var(--text-dim); line-height: 1.6; }
+    .coffee-link {
+      display: inline-block; border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: .56rem; letter-spacing: .12em;
+      padding: .5rem 1.2rem; text-decoration: none; white-space: nowrap;
+    }
+    .coffee-link:hover { background: #1a1000; border-color: var(--gold); }
+
 </style>
 </head>
 <body>
@@ -141,5 +162,19 @@ td:first-child { color: var(--green); }
 <div style="position:fixed;bottom:1.2rem;right:1.5rem;font-family:'Courier New',monospace;font-size:0.6rem;color:#0d2b0d;z-index:1000;pointer-events:none;letter-spacing:0.12em;user-select:none;" aria-hidden="true">for cheyanne. always.</div>
 </div>
 <script src="site.js"></script>
+
+
+    <!-- COFFEE BANNER -->
+    <div class="coffee-block">
+      <span class="coffee-icon">☕</span>
+      <div class="coffee-text">
+        <div class="coffee-title">SUPPORT THIS RESEARCH</div>
+        <div class="coffee-desc">Not interested in the course? Support the lab directly. Wise transfer, no account needed, no fees.</div>
+      </div>
+      <a class="coffee-link" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
+        SEND VIA WISE →
+      </a>
+    </div>
+
 </body>
 </html>

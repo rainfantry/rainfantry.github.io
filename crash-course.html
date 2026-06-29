@@ -136,7 +136,28 @@
 
     @keyframes neonpulse{0%,100%{text-shadow:0 0 20px rgba(74,220,106,.2);}50%{text-shadow:0 0 40px rgba(74,220,106,.5),0 0 80px rgba(74,220,106,.2);}}
     .neon{animation:neonpulse 3s ease-in-out infinite;}
-  </style>
+  
+    /* ── COFFEE ── */
+    .coffee-block {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold-dim);
+      background: #0a0a01;
+      padding: 1.4rem 1.8rem;
+      display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .coffee-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .coffee-text { flex: 1; min-width: 180px; }
+    .coffee-title { font-size: .7rem; color: var(--gold); font-weight: 700; letter-spacing: .1em; margin-bottom: .3rem; }
+    .coffee-desc { font-size: .56rem; color: var(--text-dim); line-height: 1.6; }
+    .coffee-link {
+      display: inline-block; border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: .56rem; letter-spacing: .12em;
+      padding: .5rem 1.2rem; text-decoration: none; white-space: nowrap;
+    }
+    .coffee-link:hover { background: #1a1000; border-color: var(--gold); }
+
+</style>
 </head>
 <body>
 
@@ -978,6 +999,20 @@ payload_sizes = [<span class="num">100</span>, <span class="num">500</span>, <sp
   <a href="index.html">portfolio</a> &nbsp;·&nbsp;
   <a href="mailto:gwu0738@gmail.com">gwu0738@gmail.com</a><br>
   <span style="color:var(--tfaint);font-size:.38rem;">For authorised security testing only. All tools are for research and educational purposes. Know your jurisdiction.</span>
+
+
+    <!-- COFFEE BANNER -->
+    <div class="coffee-block">
+      <span class="coffee-icon">☕</span>
+      <div class="coffee-text">
+        <div class="coffee-title">SUPPORT THIS RESEARCH</div>
+        <div class="coffee-desc">Not interested in the course? Support the lab directly. Wise transfer, no account needed, no fees.</div>
+      </div>
+      <a class="coffee-link" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
+        SEND VIA WISE →
+      </a>
+    </div>
+
 </footer>
 
 <script src="payment-widget.js"></script>
