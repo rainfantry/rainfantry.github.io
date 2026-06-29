@@ -530,6 +530,17 @@ nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0
     }
     .coffee-link:hover { background: #1a1000; border-color: var(--gold); }
 
+
+    .coffee-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: none; border: 1px solid var(--gold-dim);
+      color: var(--gold); font-size: 1rem; width: 2.2rem; height: 2.2rem;
+      cursor: pointer; border-radius: 3px; text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .coffee-btn:hover { background: rgba(255,176,0,0.1); border-color: var(--gold); }
+    .coffee-btn:focus { outline: none; box-shadow: 0 0 6px rgba(255,176,0,0.4); }
+
 </style>
 </head>
 <body>
@@ -553,6 +564,7 @@ nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0
       <a href="dossier.html">dossier</a>
       <a href="guide.html">guide</a>
       <a href="crash-course.html" class="nav-green">crash course</a>
+      <a href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" class="coffee-btn" target="_blank" rel="noopener" title="Support via Wise">☕</a>
       <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
     </div>
   </div>
