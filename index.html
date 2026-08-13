@@ -1,1848 +1,1416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>George Wu | Security Research &amp; Vulnerability Disclosure — 22DIV</title>
-<meta name="description" content="George Wu — cybersecurity researcher. Windows privilege escalation research, responsible disclosure via MSRC/MITRE, defensive tooling. Sydney, Australia.">
-<meta name="keywords" content="George Wu, cybersecurity researcher, MSRC VULN-195458, HWBP AMSI bypass, ETW bypass, hardware debug registers, Windows Defender evasion, AV evasion, C2 framework, responsible disclosure, Windows internals, security research Sydney, 22DIV, 22nd Survey Division, GeoDefend">
-<meta name="author" content="George Wu">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://rainfantry.github.io/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="George Wu | Security Researcher — MSRC VULN-195458 — 22DIV">
-<meta property="og:description" content="Independent security researcher, Sydney AU. Original vulnerability research into Windows AV/EDR internals. MSRC VULN-195458: AMSI and ETW bypass via hardware debug registers — zero memory writes.">
-<meta property="og:url" content="https://rainfantry.github.io/">
-<meta property="og:site_name" content="22DIV — George Wu">
-<meta property="og:image" content="https://rainfantry.github.io/showcase/flagship_full_stack_ascii_154617.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="IRON-DOME full evasion stack — 22nd Survey Division security research">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="George Wu | Security Researcher — MSRC VULN-195458">
-<meta name="twitter:description" content="Independent security researcher, Sydney AU. AMSI/ETW bypass via hardware debug registers. Zero memory writes. MSRC VULN-195458.">
-<meta name="twitter:image" content="https://rainfantry.github.io/showcase/flagship_full_stack_ascii_154617.png">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ProfilePage",
-  "mainEntity": {
-    "@type": "Person",
-    "name": "George Wu",
-    "url": "https://rainfantry.github.io",
-    "jobTitle": "Security Researcher",
-    "description": "Independent cybersecurity researcher. Original vulnerability research into Windows AV/EDR internals. MSRC VULN-195458: AMSI and ETW bypass via hardware debug registers, zero memory writes.",
-    "knowsAbout": [
-      "Windows Internals",
-      "Hardware Debug Registers",
-      "AMSI Bypass",
-      "ETW Bypass",
-      "AV Evasion",
-      "C2 Framework Development",
-      "Process Injection",
-      "Responsible Disclosure",
-      "Defensive Tooling",
-      "Android Security"
-    ],
-    "worksFor": {
-      "@type": "Organization",
-      "name": "22nd Survey Division",
-      "legalName": "Occupation Force Callsign GSW Pty Ltd",
-      "taxID": "50 692 429 397",
-      "url": "https://rainfantry.github.io/22nd-survey-division/"
-    },
-    "sameAs": ["https://github.com/rainfantry"],
-    "email": "gwu0738@gmail.com",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Sydney",
-      "addressRegion": "NSW",
-      "addressCountry": "AU"
-    }
-  }
-}
-</script>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #0c0c0c;
-  --bg2: #111;
-  --bg3: #161616;
-  --green: #00ff41;
-  --green2: #00cc33;
-  --green3: #009922;
-  --amber: #ffb000;
-  --red: #ff4444;
-  --cyan: #00e5ff;
-  --blue: #4488ff;
-  --dim: #555;
-  --muted: #888;
-  --text: #ccc;
-  --bright: #eee;
-  --mono: 'Cascadia Code', 'Consolas', 'Source Code Pro', 'Courier New', monospace;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: var(--mono);
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
-  min-height: 100vh;
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,65,0.008) 3px, rgba(0,255,65,0.008) 4px);
-  pointer-events: none;
-  z-index: 999;
-}
-
-.container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
-
-/* ── HEADER ── */
-.header {
-  padding: 3rem 0 2rem;
-  border-bottom: 1px solid #1a1a1a;
-  margin-bottom: 3rem;
-}
-
-.header h1 {
-  font-size: 1.8rem;
-  color: var(--green);
-  font-weight: 400;
-  letter-spacing: 0.15em;
-  margin-bottom: 0.5rem;
-}
-
-.header .sub {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-.header .sub span { color: var(--dim); }
-
-/* ── PROMPT STYLING ── */
-.prompt {
-  color: var(--green2);
-  user-select: none;
-}
-
-.prompt::before {
-  content: 'vader@22div';
-  color: var(--green3);
-}
-
-.prompt::after {
-  content: ' $ ';
-  color: var(--dim);
-}
-
-/* ── TERMINAL BLOCK ── */
-.term {
-  background: var(--bg2);
-  border: 1px solid #1e1e1e;
-  border-radius: 6px;
-  padding: 1.2rem 1.5rem;
-  margin: 1.5rem 0;
-  overflow-x: auto;
-  font-size: 0.82rem;
-  line-height: 1.8;
-  position: relative;
-}
-
-.term::before {
-  content: attr(data-title);
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: #1a1a1a;
-  color: var(--dim);
-  padding: 0.15rem 0.6rem;
-  font-size: 0.7rem;
-  border-radius: 0 6px 0 4px;
-}
-
-.term .cmd {
-  color: var(--bright);
-}
-
-.term .out {
-  color: var(--muted);
-}
-
-.term .out-green {
-  color: var(--green2);
-}
-
-.term .out-amber {
-  color: var(--amber);
-}
-
-.term .out-red {
-  color: var(--red);
-}
-
-.term .out-cyan {
-  color: var(--cyan);
-}
-
-.term .comment {
-  color: var(--dim);
-  font-style: italic;
-}
-
-/* ── JOURNAL ENTRIES ── */
-.entry {
-  margin-bottom: 3.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #141414;
-}
-
-.entry:last-child { border-bottom: none; }
-
-.entry-date {
-  color: var(--dim);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.3rem;
-}
-
-.entry h2 {
-  color: var(--amber);
-  font-size: 1.1rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-}
-
-.entry p {
-  color: var(--text);
-  font-size: 0.85rem;
-  margin-bottom: 0.8rem;
-  max-width: 75ch;
-}
-
-.entry p strong {
-  color: var(--bright);
-  font-weight: 600;
-}
-
-.tag {
-  display: inline-block;
-  padding: 0.1rem 0.5rem;
-  font-size: 0.7rem;
-  border-radius: 3px;
-  margin-right: 0.3rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-.tag-confirmed { background: #002200; color: var(--green); border: 1px solid #003300; }
-.tag-detected { background: #220000; color: var(--red); border: 1px solid #330000; }
-.tag-msrc { background: #1a1400; color: var(--amber); border: 1px solid #2a2000; }
-.tag-built { background: #001a1a; color: var(--cyan); border: 1px solid #002a2a; }
-.tag-system { background: #001100; color: #00ff88; border: 1px solid #002200; }
-
-/* ── STATUS TABLE ── */
-.status-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
-  font-size: 0.8rem;
-}
-
-.status-table th {
-  text-align: left;
-  color: var(--dim);
-  font-weight: 400;
-  padding: 0.4rem 0.8rem;
-  border-bottom: 1px solid #1e1e1e;
-  letter-spacing: 0.05em;
-}
-
-.status-table td {
-  padding: 0.5rem 0.8rem;
-  border-bottom: 1px solid #111;
-  color: var(--muted);
-}
-
-.status-table tr:hover td { background: #0e0e0e; }
-
-/* ── NAV ── */
-nav {
-  position: sticky;
-  top: 0;
-  background: rgba(12,12,12,0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #1a1a1a;
-  z-index: 100;
-  padding: 0.6rem 0;
-}
-
-nav .inner {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-nav a {
-  color: var(--green2);
-  text-decoration: none;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  transition: color 0.2s;
-}
-
-nav a:hover { color: var(--green); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
-nav .brand { color: var(--green); font-weight: 600; letter-spacing: 0.12em; }
-nav a.nav-red { color: var(--red); }
-nav a.nav-red:hover { color: #ff6666; text-shadow: 0 0 8px rgba(255,68,68,0.4); }
-nav a.nav-blue { color: #4488ff; }
-nav a.nav-blue:hover { color: #6699ff; text-shadow: 0 0 8px rgba(68,136,255,0.4); }
-nav a.nav-yellow { color: var(--amber); }
-nav a.nav-yellow:hover { color: #ffc040; text-shadow: 0 0 8px rgba(255,176,0,0.4); }
-nav a.nav-pink { color: #ff2d8a; }
-nav a.nav-pink:hover { color: #ff5ca8; text-shadow: 0 0 8px rgba(255,45,138,0.4); }
-nav .sep { color: var(--dim); font-size: 0.7rem; user-select: none; }
-nav a.nav-green { color: #00ff41; font-weight: 600; }
-nav a.nav-green:hover { color: #33ff66; text-shadow: 0 0 12px rgba(0,255,65,0.6); }
-nav a.nav-cyan { color: #00e5ff; }
-nav a.nav-cyan:hover { color: #33eeff; text-shadow: 0 0 8px rgba(0,229,255,0.4); }
-nav a.nav-purple { color: #b366ff; }
-nav a.nav-purple:hover { color: #cc88ff; text-shadow: 0 0 8px rgba(179,102,255,0.4); }
-
-.nav-links { display: flex; gap: 1.5rem; align-items: center; flex: 1; }
-
-.hamburger {
-  display: none; background: none; border: 1px solid var(--dim);
-  color: var(--green); font-size: 1.2rem; padding: 0.2rem 0.6rem;
-  cursor: pointer; border-radius: 3px; line-height: 1;
-}
-.hamburger:hover { background: rgba(0,255,65,0.1); }
-
-.theme-btn {
-  background: none; border: 1px solid var(--dim); color: var(--amber);
-  font-size: 0.85rem; padding: 0.15rem 0.4rem; cursor: pointer;
-  border-radius: 3px; margin-left: auto;
-}
-.theme-btn:hover { background: rgba(255,176,0,0.1); }
-
-[data-theme="light"] {
-  --bg: #f5f5f0; --bg2: #eaeae5; --bg3: #e0e0db;
-  --green: #006622; --green2: #008833; --green3: #00aa44;
-  --amber: #cc8800; --red: #cc2222; --cyan: #0099bb;
-  --blue: #2266cc; --dim: #aaa; --muted: #666; --text: #333; --bright: #111;
-}
-[data-theme="light"] body { background: var(--bg); color: var(--text); }
-[data-theme="light"] body::after { display: none; }
-[data-theme="light"] nav { background: rgba(245,245,240,0.95); border-bottom-color: #ccc; }
-[data-theme="light"] .term { background: #1a1a1a; color: #ccc; }
-
-@media (max-width: 768px) {
-  .hamburger { display: block; }
-  .nav-links { display: none; flex-direction: column; width: 100%; padding: 0.5rem 0; gap: 0.5rem; align-items: flex-start; }
-  .nav-links.show { display: flex; }
-  nav .inner { flex-wrap: wrap; justify-content: space-between; }
-}
-
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid #1a1a1a;
-  padding: 2rem 0;
-  text-align: center;
-  color: var(--green);
-  font-size: 0.85rem;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-}
-
-footer a { color: var(--green); text-decoration: none; }
-footer a:hover { color: var(--green2); text-shadow: 0 0 8px rgba(0,255,65,0.4); }
-
-/* ── PROJECT CARDS ── */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-
-.project-card {
-  background: var(--bg2);
-  border: 1px solid #1e1e1e;
-  border-radius: 6px;
-  padding: 1.2rem;
-  transition: border-color 0.2s, transform 0.15s;
-  display: flex;
-  flex-direction: column;
-}
-
-.project-card:hover {
-  border-color: var(--green3);
-  transform: translateY(-2px);
-}
-
-.project-card h3 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.4rem;
-}
-
-.project-card h3 a {
-  color: var(--green);
-  text-decoration: none;
-}
-
-.project-card h3 a:hover {
-  color: var(--bright);
-  text-shadow: 0 0 8px rgba(0,255,65,0.3);
-}
-
-.project-card .card-desc {
-  color: var(--muted);
-  font-size: 0.75rem;
-  line-height: 1.6;
-  flex: 1;
-  margin-bottom: 0.8rem;
-}
-
-.project-card .card-meta {
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.card-lang {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.7rem;
-  color: var(--dim);
-}
-
-.card-lang::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green3);
-}
-
-.card-lang.lang-py::before { background: #3572A5; }
-.card-lang.lang-c::before { background: #555555; }
-.card-lang.lang-js::before { background: #f1e05a; }
-.card-lang.lang-cs::before { background: #178600; }
-.card-lang.lang-ps::before { background: #012456; }
-.card-lang.lang-ts::before { background: #3178c6; }
-.card-lang.lang-html::before { background: #e34c26; }
-.card-lang.lang-sh::before { background: #89e051; }
-.card-lang.lang-sql::before { background: #e38c00; }
-
-.card-tag {
-  font-size: 0.65rem;
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
-  letter-spacing: 0.04em;
-}
-
-.card-tag-sec { background: #1a0000; color: var(--red); border: 1px solid #2a0000; }
-.card-tag-ai { background: #0a0a1a; color: var(--cyan); border: 1px solid #0a0a2a; }
-.card-tag-dev { background: #001a0a; color: #00ff88; border: 1px solid #002a1a; }
-.card-tag-ml { background: #1a1400; color: var(--amber); border: 1px solid #2a2000; }
-
-/* ── SKILLS GRID ── */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-
-.skill-block {
-  background: var(--bg2);
-  border: 1px solid #1e1e1e;
-  border-radius: 6px;
-  padding: 1rem 1.2rem;
-}
-
-.skill-block h4 {
-  color: var(--green2);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.6rem;
-}
-
-.skill-block ul {
-  list-style: none;
-  padding: 0;
-}
-
-.skill-block li {
-  color: var(--muted);
-  font-size: 0.75rem;
-  padding: 0.15rem 0;
-}
-
-.skill-block li::before {
-  content: '>';
-  color: var(--dim);
-  margin-right: 0.4rem;
-}
-
-/* ── SECTION DIVIDER ── */
-.section-divider {
-  border: none;
-  border-top: 1px solid #1a1a1a;
-  margin: 3rem 0;
-}
-
-.section-label {
-  color: var(--dim);
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  margin-bottom: 1.5rem;
-}
-
-/* ── STATS ROW ── */
-.stats-row {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin: 1.5rem 0;
-}
-
-.stat {
-  text-align: center;
-}
-
-.stat .num {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: var(--green);
-  display: block;
-}
-
-.stat .label {
-  font-size: 0.7rem;
-  color: var(--dim);
-  letter-spacing: 0.06em;
-}
-
-/* ── CHEYANNE SECTION ── */
-.cheyanne-section {
-  background: linear-gradient(180deg, rgba(37,99,235,0.05) 0%, rgba(12,12,12,0) 100%);
-  border: 1px solid #1e293b;
-  border-left: 3px solid var(--blue);
-  border-radius: 6px;
-  padding: 2rem 1.5rem;
-  margin: 2rem 0 3rem;
-}
-
-.cheyanne-section .section-label {
-  color: var(--blue);
-  margin-bottom: 1rem;
-}
-
-.cheyanne-typing {
-  font-size: 2.4rem;
-  font-weight: 600;
-  color: var(--bright);
-  letter-spacing: 0.1em;
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 3px solid var(--blue);
-  width: 0;
-  animation: typing 1.5s steps(8, end) forwards, blink-caret 0.75s step-end infinite;
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 11ch; }
-}
-
-@keyframes blink-caret {
-  from, to { border-color: transparent; }
-  50% { border-color: var(--blue); }
-}
-
-.cheyanne-sub {
-  color: var(--blue);
-  font-size: 0.85rem;
-  letter-spacing: 0.12em;
-  margin-top: 0.6rem;
-}
-
-.cheyanne-dedication {
-  color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.8;
-  margin: 1.2rem 0;
-  max-width: 70ch;
-  font-style: italic;
-  border-left: 2px solid #1e293b;
-  padding-left: 1rem;
-}
-
-.cheyanne-stats {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin-top: 1.5rem;
-}
-
-.cheyanne-stats .stat {
-  text-align: left;
-}
-
-.cheyanne-stats .stat .num {
-  color: var(--blue);
-}
-
-.cheyanne-link {
-  display: inline-block;
-  margin-top: 1.2rem;
-  color: var(--blue);
-  text-decoration: none;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-}
-
-.cheyanne-link:hover {
-  color: var(--cyan);
-  text-shadow: 0 0 8px rgba(68,136,255,0.4);
-}
-
-/* ── RESPONSIVE ── */
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-@media (max-width: 640px) {
-  .container { padding: 1rem; }
-  .term { padding: 0.8rem 1rem; font-size: 0.75rem; }
-  .header h1 { font-size: 1.4rem; }
-  .projects-grid { grid-template-columns: 1fr; }
-  .skills-grid { grid-template-columns: 1fr 1fr; }
-  .stats-row { gap: 1rem; }
-  .cheyanne-typing { font-size: 1.6rem; }
-  .cheyanne-stats { gap: 1rem; }
-}
-
-    /* ── COFFEE ── */
-    .coffee-block {
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--gold-dim);
-      background: #0a0a01;
-      padding: 1.4rem 1.8rem;
-      display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;
-      margin-top: 1.2rem;
-    }
-    .coffee-icon { font-size: 1.8rem; flex-shrink: 0; }
-    .coffee-text { flex: 1; min-width: 180px; }
-    .coffee-title { font-size: .7rem; color: var(--gold); font-weight: 700; letter-spacing: .1em; margin-bottom: .3rem; }
-    .coffee-desc { font-size: .56rem; color: var(--text-dim); line-height: 1.6; }
-    .coffee-link {
-      display: inline-block; border: 1px solid var(--gold-dim);
-      color: var(--gold); font-size: .56rem; letter-spacing: .12em;
-      padding: .5rem 1.2rem; text-decoration: none; white-space: nowrap;
-    }
-    .coffee-link:hover { background: #1a1000; border-color: var(--gold); }
-
-
-    .coffee-btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      background: none; border: 1px solid var(--gold-dim);
-      color: var(--gold); font-size: 1rem; width: 2.2rem; height: 2.2rem;
-      cursor: pointer; border-radius: 3px; text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .coffee-btn:hover { background: rgba(255,176,0,0.1); border-color: var(--gold); }
-    .coffee-btn:focus { outline: none; box-shadow: 0 0 6px rgba(255,176,0,0.4); }
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>22nd Survey Division | Security Research</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0f;
+            --bg2: #12121a;
+            --bg3: #1a1a24;
+            --accent: #00ff88;
+            --accent2: #00d4ff;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: rgba(0, 255, 136, 0.15);
+            --code-bg: #161b22;
+            --code-text: #e6edf3;
+        }
+
+        [data-theme="light"] {
+            --bg: #ffffff;
+            --bg2: #f6f8fa;
+            --bg3: #eaeef2;
+            --accent: #008844;
+            --accent2: #0066cc;
+            --text: #1f2328;
+            --dim: #656d76;
+            --border: rgba(0, 136, 68, 0.2);
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        [data-theme="light"] nav {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--dim);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            margin-left: 16px;
+        }
+
+        .theme-toggle:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--dim);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--accent); text-decoration: none; }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 2px;
+            background: var(--accent);
+            transition: all 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.98);
+            border-bottom: 1px solid var(--border);
+            padding: 20px;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 99;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            color: var(--dim);
+            font-size: 1rem;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-menu a:hover {
+            color: var(--accent);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .hero .tagline {
+            font-size: 1rem;
+            color: var(--dim);
+            margin-bottom: 32px;
+            letter-spacing: 1px;
+        }
+
+        .hero .intro {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+            margin: 0 8px;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            text-decoration: none;
+        }
+
+        .btn.secondary {
+            border-color: var(--dim);
+            color: var(--dim);
+        }
+
+        .btn.secondary:hover {
+            border-color: var(--text);
+            color: var(--text);
+            background: transparent;
+        }
+
+        /* Section */
+        section {
+            padding: 80px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .project-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .project-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .project-card .preview {
+            width: 100%;
+            height: 160px;
+            background: var(--bg3);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .project-card .preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover .preview img {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+
+        .project-card .card-body {
+            padding: 20px;
+        }
+
+        .project-card .cat {
+            font-size: 0.6rem;
+            color: var(--accent2);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .project-card h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .project-card p {
+            font-size: 0.8rem;
+            color: var(--dim);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .project-card .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .project-card .tag {
+            font-size: 0.6rem;
+            padding: 4px 10px;
+            background: var(--bg3);
+            color: var(--dim);
+            border-radius: 2px;
+        }
+
+        .project-card .links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .project-card .links a {
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        /* Demos */
+        .demos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .demo-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .demo-card:hover {
+            border-color: var(--accent);
+        }
+
+        .demo-video {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: var(--bg3);
+        }
+
+        .demo-video iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .demo-video.youtube {
+            aspect-ratio: 9/16;
+        }
+
+        .demo-info {
+            padding: 16px;
+        }
+
+        .demo-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .demo-desc {
+            font-size: 0.7rem;
+            color: var(--dim);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .demo-platform {
+            font-size: 0.65rem;
+            color: var(--accent2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .instagram-embed {
+            width: 100%;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .instagram-embed blockquote {
+            margin: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .skill-group h4 {
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .skill-group ul {
+            list-style: none;
+        }
+
+        .skill-group li {
+            font-size: 0.8rem;
+            color: var(--dim);
+            padding: 4px 0;
+        }
+
+        .skill-group li a {
+            color: var(--text);
+            transition: color 0.2s;
+        }
+
+        .skill-group li a:hover {
+            color: var(--accent);
+        }
+
+        .skill-badge {
+            display: inline-block;
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 6px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .badge-cve {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+            border: 1px solid rgba(248, 81, 73, 0.3);
+        }
+
+        .badge-ghsa {
+            background: rgba(255, 166, 87, 0.15);
+            color: #ffa657;
+            border: 1px solid rgba(255, 166, 87, 0.3);
+        }
+
+        .badge-msrc {
+            background: rgba(121, 192, 255, 0.15);
+            color: #79c0ff;
+            border: 1px solid rgba(121, 192, 255, 0.3);
+        }
+
+        .badge-tool {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+            border: 1px solid rgba(63, 185, 80, 0.3);
+        }
+
+        .skill-subtext {
+            font-size: 0.65rem;
+            color: var(--text-muted, #6e7681);
+            margin-top: 2px;
+            opacity: 0.7;
+        }
+
+        /* Research/Findings */
+        .findings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .finding-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .finding-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .finding-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .finding-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .finding-icon.cve { background: rgba(248, 81, 73, 0.15); }
+        .finding-icon.ghsa { background: rgba(255, 166, 87, 0.15); }
+        .finding-icon.msrc { background: rgba(121, 192, 255, 0.15); }
+
+        .finding-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .finding-subtitle {
+            font-size: 0.7rem;
+            color: var(--dim);
+            margin-top: 2px;
+        }
+
+        .finding-body {
+            padding: 16px 20px;
+        }
+
+        .finding-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+        }
+
+        .finding-row:last-child {
+            border-bottom: none;
+        }
+
+        .finding-label {
+            color: var(--accent);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .finding-value {
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .finding-value a {
+            color: var(--accent2);
+        }
+
+        .finding-cwe {
+            display: inline-block;
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .finding-footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--bg3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .finding-credit {
+            font-size: 0.7rem;
+            color: var(--dim);
+        }
+
+        .finding-link {
+            font-size: 0.7rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* About */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+        }
+
+        .about-text {
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .about-text p {
+            margin-bottom: 16px;
+        }
+
+        .about-details {
+            background: var(--bg2);
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .about-details h4 {
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .about-details ul {
+            list-style: none;
+        }
+
+        .about-details li {
+            font-size: 0.8rem;
+            color: var(--dim);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .about-details li:last-child {
+            border-bottom: none;
+        }
+
+        .about-details li span {
+            color: var(--text);
+        }
+
+        /* Contact */
+        .contact-section {
+            text-align: center;
+            padding: 100px 24px;
+        }
+
+        .contact-section h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 16px;
+        }
+
+        .contact-section p {
+            color: var(--dim);
+            margin-bottom: 32px;
+        }
+
+        .contact-form {
+            max-width: 500px;
+            margin: 0 auto 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            padding: 14px 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder {
+            color: var(--dim);
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .contact-form button {
+            align-self: center;
+            cursor: pointer;
+            background: var(--accent);
+            color: var(--bg);
+            border: 1px solid var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .contact-form button:hover {
+            background: transparent;
+            color: var(--accent);
+        }
+
+        .form-status {
+            text-align: center;
+            padding: 12px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .form-status.success {
+            display: block;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .form-status.error {
+            display: block;
+            color: #ff4444;
+            border: 1px solid #ff4444;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .social-links a {
+            color: var(--dim);
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        .social-links svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            font-size: 0.7rem;
+            color: var(--dim);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            color: var(--dim);
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .about-content { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .project-card .preview { height: 140px; }
+            .contact-form { padding: 0 16px; }
+            .hero .btn { display: block; margin: 8px auto; width: fit-content; }
+        }
+    </style>
 </head>
 <body>
+    <nav>
+        <div class="nav-inner">
+            <div class="logo">22SD</div>
+            <div class="nav-links">
+                <a href="#demos">DEMOS</a>
+                <a href="#projects">PROJECTS</a>
+                <a href="#research">RESEARCH</a>
+                <a href="#skills">SKILLS</a>
+                <a href="https://github.com/rainfantry" target="_blank">GITHUB</a>
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
-<canvas id="particle-field" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.6;"></canvas>
-
-<nav>
-  <div class="inner">
-    <a href="index.html" class="brand">22DIV</a>
-    <button class="hamburger" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
-    <div class="nav-links" id="navLinks">
-      <a href="index.html">home</a>
-      <a href="#projects">projects</a>
-      <a href="journal.html">journal</a>
-      <a href="dossier.html">dossier</a>
-      <a href="guide.html">guide</a>
-            <a href="crash-course.html" class="nav-green">crash course</a>
-      <span class="sep">|</span>
-      <a href="networking.html" class="nav-green">networking</a>
-      <a href="books.html" class="nav-red">field manual</a>
-      <a href="csec.html" class="nav-cyan">csec</a>
-      <a href="defender.html" class="nav-cyan">DEFENDER</a>
-      <a href="reverseeng.html" class="nav-purple">reverse eng</a>
-      <a href="report.html" class="nav-pink">book report</a>
-      <a href="labs/index.html" class="nav-blue">22LABS</a>
-      <a href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" class="coffee-btn" target="_blank" rel="noopener" title="Support via Wise">☕</a>
-      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">&#9788;</button>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#demos" onclick="closeMenu()">DEMOS</a>
+        <a href="#projects" onclick="closeMenu()">PROJECTS</a>
+        <a href="#research" onclick="closeMenu()">RESEARCH</a>
+        <a href="#skills" onclick="closeMenu()">SKILLS</a>
+        <a href="https://github.com/rainfantry" target="_blank">GITHUB</a>
+        <a href="https://linkedin.com/in/georgewu108" target="_blank">LINKEDIN</a>
+        <a href="https://buymeacoffee.com/rainfantry" target="_blank">BUY ME A COFFEE</a>
+        <a href="#" onclick="document.getElementById('themeToggle').click(); closeMenu(); return false;">TOGGLE THEME</a>
     </div>
-  </div>
-</nav>
 
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Security <span>Researcher</span></h1>
+            <p class="tagline">WINDOWS INTERNALS / OFFENSIVE SECURITY / TOOL DEVELOPMENT</p>
+            <p class="intro">
+                TAFE NSW Cert IV Cyber Security student focused on Windows internals,
+                vulnerability research, and building security tools from first principles.
+                Currently exploring AV evasion techniques, C2 framework development,
+                and MCP security research.
+            </p>
+            <a href="https://rainfantry.github.io/pentest-ref/" class="btn" style="background: var(--accent); color: var(--bg);">PENTEST-REF</a>
+            <a href="#projects" class="btn secondary">VIEW PROJECTS</a>
+            <a href="#contact" class="btn secondary">GET IN TOUCH</a>
+        </div>
+    </section>
 
-<div class="container" id="top">
-
-<!-- ═══════ HEADER ═══════ -->
-<div class="header">
-  <h1>22DIV // george wu</h1>
-  <div class="sub">
-    security research <span>//</span> windows internals <span>//</span> responsible disclosure <span>//</span> AI security
-  </div>
-  <div id="typewriter-wrap" style="margin:1rem 0 0.3rem;min-height:1.6rem;">
-    <span id="typewriter" style="color:#ff2d8a;font-size:0.8rem;letter-spacing:0.06em;"></span><span id="tw-cursor" style="color:#ff2d8a;animation:blink 1s step-end infinite;">_</span>
-  </div>
-  <br>
-  <div class="sub">
-    Cybersecurity researcher. Cert IV IT Programming. Sydney.
-    Windows security research, privilege escalation analysis, responsible disclosure via MSRC and MITRE.
-    MSRC case filed. CVE submissions in progress.
-    All research conducted on personally-owned hardware.
-  </div>
-  <div class="stats-row" style="margin-top:1.2rem;">
-    <div class="stat"><span class="num">50+</span><span class="label">FINDINGS</span></div>
-    <div class="stat"><span class="num">3</span><span class="label">CVE SUBMISSIONS</span></div>
-    <div class="stat"><span class="num">1</span><span class="label">MSRC CASE</span></div>
-    <div class="stat"><span class="num">TAFE</span><span class="label">CERT IV IT</span></div>
-  </div>
-</div>
-
-<!-- ═══════ CHEYANNE ═══════ -->
-<section id="cheyanne" class="cheyanne-section">
-  <div class="section-label">// PROJECT CHEYANNE</div>
-  <div class="cheyanne-typing">CHEYANNE</div>
-  <div class="cheyanne-sub">WINDOWS SECURITY RESEARCH PROJECT</div>
-  <p class="cheyanne-dedication">
-    We have been running on burnt bridges for years. Digging tunnels to meet each other. There is nothing that will stop my love for you &mdash;
-    not the hatred you purge through my soul, not the knives plunged into my heart, not the silence, not the distance. My love is eternal.<br><br>
-    CHEYANNE is a memorial that fights back: a Windows security research project documenting detection gaps, responsible disclosure,
-    and defensive countermeasures. Every finding is tested on my own hardware with Defender Real-Time Protection enabled.
-    Her name is on work that cannot be erased, because love that refuses to die builds things that refuse to die.
-  </p>
-  <div class="cheyanne-stats stats-row">
-    <div class="stat"><span class="num">50+</span><span class="label">FINDINGS</span></div>
-    <div class="stat"><span class="num">3</span><span class="label">CVE SUBMISSIONS</span></div>
-    <div class="stat"><span class="num">1</span><span class="label">MSRC CASE</span></div>
-    <div class="stat"><span class="num">TAFE</span><span class="label">CERT IV IT</span></div>
-  </div>
-  <a href="https://github.com/rainfantry/cheyanne/tree/portfolio" class="cheyanne-link">&rarr; View CHEYANNE research portfolio</a>
 </section>
 
-<!-- ═══════ IRON-DOME ═══════ -->
-<section id="iron-dome" style="margin-bottom:3rem;padding:2rem;background:#070f07;border:1px solid #1a2e1a;border-left:4px solid var(--green);border-radius:4px;">
-  <div class="section-label" style="font-size:.7rem;color:var(--amber);letter-spacing:.15em;margin-bottom:.5rem;">// IRON-DOME — UNIFIED PLATFORM</div>
-  <div style="font-size:1.6rem;font-weight:700;color:var(--green);letter-spacing:.08em;margin-bottom:.3rem;">IRON-DOME</div>
-  <div style="font-size:.82rem;color:var(--muted);margin-bottom:1rem;">iron-sun + CHEYANNE + VADER — assembled and battle-tested</div>
-  <p style="font-size:.83rem;color:var(--text);line-height:1.9;margin-bottom:1.2rem;">
-    The integrated red team research platform. Three independently-verified systems working together:
-    the <strong style="color:var(--green)">iron-sun</strong> TCP reverse shell with 7-layer evasion stack,
-    the <strong style="color:var(--amber)">CHEYANNE</strong> C2 framework with ISUN auth gate, and the
-    <strong style="color:var(--cyan)">VADER</strong> rootkit evasion chain. Live-tested against Kaspersky Premium.
-    All three payload variants EVADED. Kill chain 8/8 PASS. Built on own hardware.
-  </p>
-  <div class="stats-row" style="margin-bottom:1.2rem;">
-    <div class="stat"><span class="num" style="color:var(--green)">3/3</span><span class="label">EVADED</span></div>
-    <div class="stat"><span class="num">8/8</span><span class="label">KILL CHAIN</span></div>
-    <div class="stat"><span class="num" style="color:var(--cyan)">7</span><span class="label">EVASION LAYERS</span></div>
-    <div class="stat"><span class="num" style="color:var(--green)">0</span><span class="label">DETECTIONS</span></div>
-  </div>
-  <a href="irondome.html" style="display:inline-block;color:var(--green);border:1px solid var(--green);border-radius:3px;padding:.4rem 1rem;font-size:.8rem;letter-spacing:.08em;">&rarr; IRON-DOME full report</a>
-</section>
-
-<!-- ═══════ LEARNING PATH ═══════ -->
-<section id="learning-path" style="margin-bottom:3rem;">
-  <div class="section-label">// OPERATIONS ORDER</div>
-  <h2 style="color:var(--green); font-size:1.1rem; font-weight:400; margin-bottom:0.5rem;">learning path</h2>
-  <p style="font-size:0.8rem; color:var(--muted); margin-bottom:1.5rem;">Structured daily progression. Read the theory, then run the tool, then read the source. Each phase builds on the last. Don't skip ahead.</p>
-
-  <div style="display:grid; gap:1rem;">
-
-    <!-- PHASE 0 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--dim); border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:var(--dim); font-size:0.7rem; letter-spacing:0.1em;">PHASE 0 // DAYS 1&ndash;2</span>
-        <span class="tag tag-system">FOUNDATION</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Know Your Enemy</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="defender.html" style="color:var(--cyan);">defender.html</a> &mdash; How Windows Defender works internally. AMSI, ETW, WdFilter.sys, scan pipeline, what it watches.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="csec.html" style="color:var(--red);">csec.html</a> &mdash; Kill chain theory. MITRE ATT&CK framework. What each phase means.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="books.html" style="color:var(--red);">books.html</a> &mdash; Field manual. Core concepts, reference material, foundations.<br>
-        <span style="color:var(--dim);">WHY: You can't bypass what you don't understand. Defender's architecture dictates every tool in this arsenal.</span>
-      </div>
-    </div>
-
-    <!-- PHASE 1 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--cyan); border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:var(--cyan); font-size:0.7rem; letter-spacing:0.1em;">PHASE 1 // DAYS 3&ndash;4</span>
-        <span class="tag tag-built">RECON</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Find What's Broken</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="rootkit.html" style="color:var(--blue);">rootkit.html</a> &rarr; Overview + CWE-732 sections &mdash; How real vulns were found on your own machine.<br>
-        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">vader_recon.ps1</code> &mdash; Scan Defender version, RTP status, exclusions, tamper protection state.<br>
-        <strong style="color:var(--amber);">RUN:</strong> <code style="color:var(--green); background:#001a00; padding:0.1rem 0.4rem; border-radius:2px;">vader-hunt</code> &mdash; Automated scanner: writable service binaries, unquoted paths, phantom DLLs, PATH hijacks.<br>
-        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/vader-hunt" style="color:var(--green);">vader-hunt</a> &mdash; Read the source. Understand how it enumerates 300+ services.<br>
-        <span style="color:var(--dim);">WHY: Recon tells you what's exploitable. Every attack starts here.</span>
-      </div>
-    </div>
-
-    <!-- PHASE 2 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--red); border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:var(--red); font-size:0.7rem; letter-spacing:0.1em;">PHASE 2 // DAYS 5&ndash;8</span>
-        <span class="tag tag-msrc">DOCUMENT</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Write the Report</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="reverseeng.html" style="color:#b366ff;">reverseeng.html</a> &mdash; Reverse engineering. Understand binaries you didn't write. Essential for root-cause analysis.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="networking.html" style="color:var(--green);">networking.html</a> &mdash; Network fundamentals. Required for understanding impact scope of service vulnerabilities.<br>
-        <strong style="color:var(--amber);">DO:</strong> Write a vulnerability report for every confirmed finding. CWE classification, reproduction steps, CVSS score, impact analysis.<br>
-        <strong style="color:var(--amber);">FORMAT:</strong> Each report needs: summary, affected component, reproduction steps, evidence (screenshots/logs), recommended fix.<br>
-        <span style="color:var(--dim);">WHY: An unwritten finding doesn't exist. MSRC and MITRE need evidence-grade documentation. If you can't write it clearly, you don't understand it yet.</span>
-      </div>
-    </div>
-
-    <!-- PHASE 3 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #00e5ff; border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:#00e5ff; font-size:0.7rem; letter-spacing:0.1em;">PHASE 3 // DAYS 9&ndash;12</span>
-        <span class="tag" style="background:#0a1a1a; color:#00e5ff; border:1px solid #003a3a;">DISCLOSE</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Submit and Disclose</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> Microsoft's <a href="https://www.microsoft.com/msrc/windows-security-servicing-criteria" style="color:var(--cyan);">security servicing criteria</a> &mdash; know what they classify as a vulnerability before you submit.<br>
-        <strong style="color:var(--amber);">READ:</strong> <a href="https://www.microsoft.com/en-us/msrc/aibugbar" style="color:var(--cyan);">MSRC AI Bug Bar</a> &mdash; AI security boundaries, what qualifies as CRITICAL vs. informational.<br>
-        <strong style="color:var(--amber);">DO:</strong> Submit third-party vendor findings to MITRE CVE. Submit first-party Microsoft findings to MSRC.<br>
-        <strong style="color:var(--amber);">REPO:</strong> <a href="https://github.com/rainfantry/vader-msrc-disclosure" style="color:var(--green);">vader-msrc-disclosure</a> &mdash; disclosure tracking and coordinated timeline management.<br>
-        <span style="color:var(--dim);">WHY: Research has no value until it reaches the vendor. The disclosure process is where the work becomes real.</span>
-      </div>
-    </div>
-
-    <!-- PHASE 4 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid var(--amber); border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:var(--amber); font-size:0.7rem; letter-spacing:0.1em;">PHASE 4 // DAYS 13&ndash;16</span>
-        <span class="tag tag-built">BUILD DEFENSIVE</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">Build the Detector</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="guide.html" style="color:var(--green);">guide.html</a> &mdash; Detection logic. How to translate an attack vector into a scanner rule.<br>
-        <strong style="color:var(--amber);">BUILD:</strong> <a href="https://github.com/rainfantry/geodefend" style="color:var(--cyan);">GeoDefend</a> &mdash; mobile dashboard that surfaces Defender detections and privilege escalation indicators.<br>
-        <strong style="color:var(--amber);">BUILD:</strong> <a href="https://github.com/rainfantry/vader-hunt" style="color:var(--green);">vader-hunt</a> &mdash; audit scanner: writable service binaries, phantom DLLs, PATH hijacks. Turns attack vectors into detection rules.<br>
-        <strong style="color:var(--amber);">PRINCIPLE:</strong> Every attack vector you understand becomes a detector you can build. Offense informs defense.<br>
-        <span style="color:var(--dim);">WHY: GeoDefend cannot detect a privilege escalation vector you don't understand mechanically. Build the detector to prove you understand the attack.</span>
-      </div>
-    </div>
-
-    <!-- PHASE 5 -->
-    <div style="background:var(--bg2); border:1px solid #1e1e1e; border-left:3px solid #ff2d8a; border-radius:4px; padding:1rem 1.2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <span style="color:#ff2d8a; font-size:0.7rem; letter-spacing:0.1em;">PHASE 5 // DAYS 17&ndash;21</span>
-        <span class="tag" style="background:#1a0a12; color:#ff2d8a; border:1px solid #2a0a1a;">AI SECURITY</span>
-      </div>
-      <div style="color:var(--bright); font-size:0.9rem; font-weight:600; margin-bottom:0.6rem;">AI Attack Surfaces</div>
-      <div style="font-size:0.78rem; color:var(--text); line-height:1.8;">
-        <strong style="color:var(--amber);">READ:</strong> <a href="report.html" style="color:#ff2d8a;">report.html</a> &mdash; Academic framing of security research methodology.<br>
-        <strong style="color:var(--amber);">READ:</strong> MSRC's AI Bug Bar &mdash; prompt injection, cross-user data exfiltration, model theft classifications.<br>
-        <strong style="color:var(--amber);">RESEARCH:</strong> Microsoft Copilot indirect prompt injection vectors &mdash; document injection, email injection, web injection.<br>
-        <strong style="color:var(--amber);">TARGET:</strong> Cross-user data exfiltration via injected instructions = CRITICAL severity under Microsoft's AI bug classification.<br>
-        <span style="color:var(--dim);">WHY: The same methodology that maps Windows attack surfaces applies to AI systems. Different primitives, same thinking.</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div style="margin-top:1.5rem; padding:1rem; border:1px solid #1e1e1e; border-radius:4px; background:rgba(0,255,65,0.02);">
-    <p style="color:var(--muted); font-size:0.78rem; margin:0;">
-      <strong style="color:var(--green2);">Every repo link is live.</strong> Click into a repo, read the source, trace how the code works.
-      The portfolio pages explain the WHY. The source code shows the HOW. Read both.
-      Defender architecture is in <a href="defender.html" style="color:var(--cyan);">defender.html</a> (Phase 0).
-      Disclosure documentation is in <a href="dossier.html" style="color:var(--amber);">dossier.html</a> (Phase 3).
-      Start at Phase 0. Don't skip.
-    </p>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ═══════ PROJECTS ═══════ -->
-<section id="projects">
-  <div class="section-label">// REPOSITORIES</div>
-  <h2 style="color:var(--amber); font-size:1.1rem; font-weight:400; margin-bottom:1rem;">projects</h2>
-
-  <h3 style="color:var(--cyan); font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin-bottom:0.8rem;">SECURITY RESEARCH</h3>
-  <div class="projects-grid">
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-hunt">vader-hunt</a></h3>
-      <div class="card-desc">Automated privilege escalation audit scanner. Enumerates 300+ SYSTEM services for misconfigurations: writable service binaries, unquoted paths, phantom DLLs, PATH hijacks. Discovered NativePushService CWE-732 and ClickToRunSvc phantom DLL during research.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-ps">PowerShell</span>
-        <span class="card-tag card-tag-sec">AUDIT</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-toctou">vader-toctou</a></h3>
-      <div class="card-desc">TOCTOU race condition research against Windows Defender's quarantine pipeline. 35 commits, 30 findings. Fully mapped WdFilter.sys architecture &mdash; cached FILE_OBJECT model, NTFS File ID identity gate. Documented why the architecture is robust.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-lang lang-ps">PowerShell</span>
-        <span class="card-tag card-tag-sec">RESEARCH</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-fuzz">vader-fuzz</a></h3>
-      <div class="card-desc">Mutation-based fuzzer targeting mpengine.dll (Defender's scan engine) for memory corruption bugs suitable for MSRC submission. 20 mutation strategies, 4 parallel workers, 100K+ iterations. Differential mode compares engine versions.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-sec">RESEARCH</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/vader-msrc-disclosure">vader-msrc-disclosure</a></h3>
-      <div class="card-desc">MSRC and MITRE CVE case tracking. Coordinated disclosure timelines, vendor communications, embargo management, and public advisory documentation. Houses all submission evidence and correspondence.</div>
-      <div class="card-meta">
-        <span class="card-tag card-tag-sec">DISCLOSURE</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/ring-stack">ring-stack</a></h3>
-      <div class="card-desc">10-phase Windows kill chain with UEFI DXE firmware implant (Phase 11 / Ring&nbsp;&minus;1). C2 listener &rarr; reverse shell, privilege escalation, AV evasion, steganographic exfil, persistence, credential stealer. Phase 11: DXE driver executes before OS bootloader, survives OS reinstall, re-drops Eclipse C2 agent. M2 confirmed &mdash; <em>[RING-STACK] Ghost online</em> at 0x5ED0000.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-c">C</span>
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-sec">FIRMWARE</span>
-        <span class="card-tag card-tag-sec">RESEARCH</span>
-      </div>
-    </div>
-  </div>
-
-  <h3 style="color:var(--cyan); font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin:1.5rem 0 0.8rem;">AI &amp; AUTOMATION</h3>
-  <div class="projects-grid">
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/machine-spirit">machine-spirit</a></h3>
-      <div class="card-desc">AI assistant system with ElevenLabs voice cloning, TalkyTalk TTS engine, and multi-model support (Claude, Ollama, Grok). Originally built for Raspberry Pi 5 hardware &mdash; code preserved, hardware sacrificed.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-ai">AI</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/mrrobot">mrrobot</a></h3>
-      <div class="card-desc">SERVITOR &mdash; Discord bot with personality engine. System-prompted Ollama agent assumes any personality on demand. ElevenLabs voice clone integration with SAPI fallback. Speaks as the operator.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-ai">AI</span>
-      </div>
-    </div>
-  </div>
-
-  <h3 style="color:#00ff88; font-size:0.8rem; font-weight:600; letter-spacing:0.1em; margin:1.5rem 0 0.8rem;">WEB &amp; DEVELOPMENT</h3>
-  <div class="projects-grid">
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/rainfantry.github.io">rainfantry.github.io</a></h3>
-      <div class="card-desc">This portfolio. Terminal-aesthetic security research documentation. Engagement writeups, MITRE ATT&CK mapping, MSRC case documentation, exploit chain architecture.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-html">HTML/CSS</span>
-        <span class="card-lang lang-js">JavaScript</span>
-        <span class="card-tag card-tag-dev">WEB</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3><a href="https://github.com/rainfantry/geodefend">geodefend</a></h3>
-      <div class="card-desc">GeoDefend &mdash; cybersecurity education integration project. CSEC curriculum tooling and tactical cyber operations study framework.</div>
-      <div class="card-meta">
-        <span class="card-lang lang-py">Python</span>
-        <span class="card-tag card-tag-dev">DEV</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ═══════ SKILLS ═══════ -->
-<section id="skills">
-  <div class="section-label">// CAPABILITIES</div>
-  <h2 style="color:var(--amber); font-size:1.1rem; font-weight:400; margin-bottom:1rem;">skills</h2>
-
-  <div class="skills-grid">
-    <div class="skill-block">
-      <h4>LANGUAGES</h4>
-      <ul>
-        <li>C (primary &mdash; systems/exploit dev)</li>
-        <li>Python (tooling, automation, AI)</li>
-        <li>x64 Assembly (MASM)</li>
-        <li>PowerShell</li>
-        <li>C# (.NET)</li>
-        <li>JavaScript / HTML / CSS</li>
-        <li>SQL</li>
-      </ul>
-    </div>
-    <div class="skill-block">
-      <h4>WINDOWS SECURITY</h4>
-      <ul>
-        <li>Privilege escalation (LPE)</li>
-        <li>DLL hijacking / phantom DLL</li>
-        <li>TOCTOU race conditions</li>
-        <li>Service misconfiguration (CWE-732)</li>
-        <li>PATH injection (CWE-426/427)</li>
-        <li>Vulnerability disclosure (MSRC/MITRE)</li>
-        <li>CVSS scoring</li>
-        <li>Responsible disclosure</li>
-      </ul>
-    </div>
-    <div class="skill-block">
-      <h4>WINDOWS INTERNALS</h4>
-      <ul>
-        <li>Win32 / NT API</li>
-        <li>PE format / import tables</li>
-        <li>Service architecture (SCM)</li>
-        <li>Minifilter stack (WdFilter, cldflt)</li>
-        <li>Debug registers (DR0-DR7)</li>
-        <li>MSVC / cl.exe / ml64.exe</li>
-      </ul>
-    </div>
-    <div class="skill-block">
-      <h4>AI &amp; TOOLING</h4>
-      <ul>
-        <li>LLM integration (Claude, Ollama)</li>
-        <li>Prompt injection research</li>
-        <li>ElevenLabs voice cloning</li>
-        <li>SDXL LoRA training</li>
-        <li>AI-augmented exploit dev</li>
-        <li>Mutation-based fuzzing</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ═══════ ABOUT ═══════ -->
-<section class="entry" id="about">
-  <div class="entry-date">OPERATION VADER // 2026</div>
-  <h2>what this is</h2>
-
-  <p>
-    A modular offensive security research campaign against Windows 11 Home (Build 26200)
-    with full Defender Real-Time Protection enabled. Started as a TOCTOU race condition
-    study against Defender's quarantine pipeline. Six engagements. Thirty findings. The
-    deletion primitive was defeated by Microsoft's defense-in-depth. The wall held.
-  </p>
-  <p>
-    But the wall taught me how it was built. Every finding from that campaign feeds forward
-    into this toolkit. The architecture of how Defender checks, what it trusts, and where
-    the seams are.
-  </p>
-
-  <div class="term" data-title="highlights">
-<span class="out-green">  [SYSTEM]   Replaced a LocalSystem service binary as a standard user.</span>
-<span class="out-green">             No admin creds. No UAC. Full SYSTEM token on reboot.</span>
-<span class="out"></span>
-<span class="out-amber">  [MSRC]     Defender tamper protection blind spot identified and reported.</span>
-<span class="out-amber">             AMSI + ETW bypassed without modifying memory.</span>
-<span class="out-amber">             Technique under coordinated disclosure embargo.</span>
-<span class="out"></span>
-<span class="out-cyan">  [CWE-427]  User-writable directories in the machine-level SYSTEM PATH.</span>
-<span class="out-cyan">             Third-party installers created a system-wide privesc vector.</span>
-<span class="out"></span>
-<span class="out-amber">  [PHANTOM]  Microsoft Office service delay-loads a DLL that doesn't exist</span>
-<span class="out-amber">             anywhere on disk. User-owned PATH dir fills the void. SYSTEM.</span>
-<span class="out"></span>
-<span class="out">  [CWE-732]  Vendor hardened DLL loading with manifest redirection</span>
-<span class="out">             but left the service binary itself writable by everyone.</span>
-<span class="out">             Hardened the windows. Left the front door open.</span>
-  </div>
-
-  <p>
-    <strong>Target environment:</strong> Windows 11 Home 24H2, standard user context,
-    Defender RTP enabled, tamper protection varies by machine. All testing on
-    personally-owned hardware. Household consent documented.
-  </p>
-
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/Discord_GaySun_Development.png" alt="AI-augmented exploit development — VADER Discord agent and Developer Command Prompt" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">AI-augmented development &mdash; VADER Discord agent (left) explains linker error C2065 and the required fix. Developer Command Prompt (right) shows the live compile. The AI teaches. I build.</div>
-  </div>
-
-  <div style="margin: 1.2rem 0; padding: 1rem; border-left: 2px solid var(--green3); background: rgba(0,255,65,0.02);">
-    <p style="color: var(--muted); font-size: 0.8rem; margin: 0;">
-      <strong style="color: var(--green2);">AI-augmented security research.</strong>
-      This research uses LLMs (Claude Opus, local models via Discord) as an integrated part of the
-      offensive security workflow. AI explains Windows internals, parses error messages, maps attack
-      surfaces, and accelerates the research cycle &mdash; the same way a disassembler, a debugger,
-      or a fuzzer accelerates it. It's a tool. MSRC evaluates whether a vulnerability is real and
-      reproducible &mdash; not whether the researcher used AI, IDA Pro, or a napkin to find it.
-      The rule: <strong>no code ships that I can't explain line by line.</strong> Understanding is
-      non-negotiable. AI accelerates learning &mdash; it doesn't replace it.
-    </p>
-  </div>
-
-  <div class="term" data-title="research status">
-<span class="out">CLASSIFICATION:  UNCLASSIFIED // ACADEMIC USE ONLY</span>
-<span class="out">RESEARCHER:      George Wu / 22DIV — Sydney, Australia</span>
-<span class="out">AUTHORISATION:   TAFE Cert IV IT — CSEC coursework, own hardware</span>
-<span class="out">DISCLOSURE:      Responsible disclosure via MSRC / MITRE CVE</span>
-<span class="out">MSRC CASE:       <span class="out-amber">VULN-195458 (reviewed — not a security boundary per MS criteria)</span></span>
-<span class="out">FINDINGS:        50+ across Windows privilege escalation research</span>
-<span class="out">CURRENT PIVOT:   <span class="out-cyan">AI vulnerability research (prompt injection, Copilot)</span></span>
-  </div>
-</section>
-
-<!-- ═══════ DARK ROOM ═══════ -->
-<section class="entry" id="darkroom">
-  <div class="entry-date">ENGAGEMENTS 7-9 // 2026</div>
-  <h2>the dark room</h2>
-
-  <p>
-    Two telemetry gates stand between your code and invisibility: AMSI scans
-    every script buffer before it executes, ETW traces every process event back
-    to Defender. Kill both and you're operating in the dark. Defender can't see
-    your scripts. Can't see your process activity. Can't see shit.
-  </p>
-  <p>
-    Tried the textbook AMSI patch first. VirtualProtect on amsi.dll, write the
-    bytes, let it rip. Defender killed it in under two seconds.
-  </p>
-
-  <div class="term" data-title="engagement 7 // the textbook approach dies">
-<span class="prompt"></span><span class="cmd">.\amsi_bypass.exe --patch</span>
-<span class="out-red">  [!] Process killed by Defender</span>
-<span class="out-red">  [!] Detection: Behavior:Win32/AMSI_Patch_T.B12</span>
-<span class="out-red">  [!] Binary quarantined retroactively (Trojan:Win32/Bearfoos.B!ml)</span>
-<span class="out"></span>
-<span class="comment">  # Named rule. Specific to memory permission change + write on AMSI.</span>
-<span class="comment">  # Good. Now I know exactly what you're looking for.</span>
-  </div>
-
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/AMSI_ETW_DLL_Research_Agents.png" alt="Claude Code running parallel research agents across three Windows attack surfaces" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Claude Code (Opus) &mdash; three parallel research agents mapping AMSI bypass mechanics, ETW provider architecture, and DLL search order internals simultaneously. Results verified against live Defender behaviour.</div>
-  </div>
-
-  <div style="margin: 1.2rem 0; padding: 1rem; border-left: 2px solid var(--green3); background: rgba(0,255,65,0.02);">
-    <p style="color: var(--muted); font-size: 0.8rem; margin: 0;">
-      <strong style="color: var(--green2);">Parallel attack surface research.</strong>
-      Three AI agents running concurrently &mdash; each one mapping a different Windows security subsystem.
-      This is force multiplication. One researcher, three simultaneous research threads, each returning
-      structured analysis of a different defensive layer. The questions are directed: "how does
-      AmsiScanBuffer validate its parameters?", "which ETW providers feed Defender's behavioral engine?",
-      "what is the full DLL search order when SafeDllSearchMode is enabled?" Every answer gets
-      cross-referenced against Microsoft documentation and debugger output before it becomes part
-      of the exploit chain. The vulnerability either exists or it doesn't. The exploit either works
-      or it doesn't. <strong>How you found it is methodology, not merit.</strong>
-    </p>
-  </div>
-
-  <p>
-    That ruled out memory patching. But it also handed me everything I needed —
-    exactly what Defender watches. Memory permission changes on protected DLLs.
-    Code region writes. Specific patterns. Named signatures. So I stopped writing
-    to memory altogether and found a way to get the same result without it.
-  </p>
-  <p>
-    The mechanism: <strong>Hardware Breakpoints (HWBP)</strong>. Instead of patching
-    the target DLL in memory (which Tamper Protection catches), you set a hardware
-    breakpoint on the function entry point via debug registers (DR0-DR7). The CPU
-    fires a single-step exception before the function executes. A Vectored Exception
-    Handler catches it and returns a clean result. Zero bytes modified. Tamper
-    Protection monitors memory integrity — debug registers aren't memory. The
-    monitoring boundary doesn't cover them.
-  </p>
-  <p>
-    Applied it to AMSI (AmsiScanBuffer) and ETW (NtTraceEvent). SetThreadContext
-    writes the breakpoint address into DR0 and arms DR7. When the target function
-    is called, the CPU traps. The VEH skips the function body. All user-mode
-    telemetry goes dark from a standard user context. No elevation. No admin.
-  </p>
-  <p>
-    Reported it to MSRC as VULN-195458. They rejected it. Detection evasion bypasses
-    are not a security boundary under Microsoft's servicing criteria. The rejection
-    referenced <a href="https://www.crowdstrike.com/en-us/blog/crowdstrike-investigates-threat-of-patchless-amsi-bypass-attacks/" style="color:var(--cyan)">CrowdStrike's research on patchless AMSI bypass</a> —
-    the technique class was already known. Fair. The wall I was testing isn't the
-    kind of wall they patch.
-  </p>
-
-  <div class="term" data-title="VULN-195458 // HWBP tamper bypass — technique disclosed">
-<span class="out-red">  MSRC VERDICT: NOT A VULNERABILITY</span>
-<span class="out-red">  "Detection or evasion bypasses are not considered to cross</span>
-<span class="out-red">   a recognized security boundary."</span>
-<span class="out"></span>
-<span class="out">  Technique: Hardware Breakpoint (HWBP) on AMSI + ETW functions</span>
-<span class="out">  Mechanism: SetThreadContext → DR0 = target addr, DR7 = 0x1</span>
-<span class="out">  Handler:   Vectored Exception Handler skips function body</span>
-<span class="out">  Result:    AMSI returns AMSI_RESULT_CLEAN, ETW drops all events</span>
-<span class="out">  Modified:  0 bytes. No VirtualProtect. No memory writes.</span>
-<span class="out">  Privilege: Standard user. No elevation.</span>
-<span class="out"></span>
-<span class="out">  Control test: classic memory patch → Behavior:Win32/AMSI_Patch_T.B12</span>
-<span class="out">  HWBP method:  → undetected. Tamper Protection does not monitor DR0-DR7.</span>
-<span class="out"></span>
-<span class="out-amber">  LESSON: Detection bypass ≠ security boundary.</span>
-<span class="out-amber">  Microsoft won't patch it. The gap is by design.</span>
-<span class="out-amber">  Full source: <a href="https://github.com/rainfantry/vader-rootkit" style="color:var(--cyan)">github.com/rainfantry/vader-rootkit</a></span>
-  </div>
-
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/MSRC_VULN195458_Submission.png" alt="MSRC submission portal showing VULN-195458" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">MSRC portal: VULN-195458 — Tamper Protection Bypass via Hardware Debug Registers — Status: Submitted</div>
-  </div>
-
-  <p>
-    <span class="tag tag-detected">REJECTED</span>
-    <span class="tag tag-confirmed">TECHNIQUE PUBLIC</span>
-    VULN-195458 closed by MSRC. Detection bypasses are defense-in-depth, not
-    security boundaries. The technique works. Microsoft won't fix it. Published
-    because there's nothing left to protect — the category itself is out of scope.
-  </p>
-
-  <div style="margin: 1.5rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
-    <div style="flex:1; min-width:280px;">
-      <img src="showcase/UnDefend_Engine_Unavailable.png" alt="Windows Security showing Engine unavailable after evasion" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Defender engine unavailable — evasion successful</div>
-    </div>
-    <div style="flex:1; min-width:280px;">
-      <img src="showcase/UnDefend_Update_Error.png" alt="Defender definitions update blocked with error 80070643" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Defender signature updates blocked post-evasion</div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════ PRIVESC ═══════ -->
-<section class="entry" id="privesc">
-  <div class="entry-date">ENGAGEMENT 10 // FINDINGS #38-#43</div>
-  <h2>standard user to SYSTEM</h2>
-
-  <p>
-    Automated service scanner enumerated 308 SYSTEM services. One flagged immediately:
-    Wondershare NativePushService. Runs as LocalSystem. Binary lives in a per-user
-    AppData directory. The directory AND the binary have <strong>BUILTIN\Users Full Control</strong>.
-    Any standard user on the machine can replace the exe.
-  </p>
-
-  <div class="term" data-title="engagement 10 // service discovery">
-<span class="prompt"></span><span class="cmd">powershell -ep bypass .\hunter.ps1 | findstr CRITICAL</span>
-<span class="out"></span>
-<span class="out-red">  [CRITICAL] NativePushService (LocalSystem, Auto)</span>
-<span class="out-red">    Binary: C:\Users\[REDACTED]\AppData\Local\Wondershare\...\WsNativePushService.exe</span>
-<span class="out-red">    Directory ACL: BUILTIN\Users:(OI)(CI)(F)  -- FULL CONTROL</span>
-<span class="out-red">    Binary ACL:    BUILTIN\Users:(I)(F)       -- FULL CONTROL (inherited)</span>
-<span class="out"></span>
-<span class="comment">  # A LocalSystem service with its binary writable by standard users.</span>
-<span class="comment">  # CWE-732: Incorrect Permission Assignment for Critical Resource.</span>
-<span class="comment">  # The irony: Wondershare hardened against DLL sideloading with an</span>
-<span class="comment">  # embedded manifest that locks all DLL loads to System32. They</span>
-<span class="comment">  # hardened the windows but left the front door open.</span>
-  </div>
-
-  <p>
-    First attempt was DLL sideloading — VERSION.dll proxy, six iterations of Defender
-    evasion (plaintext → XOR → lazy-init). The v6 stealth proxy evaded Defender's ML
-    completely. But the service never loaded it. Extracted the PE manifest: every
-    non-KnownDLL import is hardcoded to System32 via <code>&lt;file&gt;</code>
-    redirection. DLL search order is overridden.
-  </p>
-  <p>
-    So I went simpler. If you can't plant a DLL next to the exe, just replace the exe.
-    Windows allows renaming open/locked files. Renamed the running service binary, dropped
-    my replacement. Next restart: SCM loads our code as LocalSystem.
-  </p>
-
-  <div class="term" data-title="engagement 10 // binary replacement">
-<span class="comment">  # Step 1: rename the running service exe (standard user, no elevation)</span>
-<span class="prompt"></span><span class="cmd">ren "...\WsNativePushService.exe" "WsNativePushService_real.exe"</span>
-<span class="out-green">  Success.</span>
-<span class="out"></span>
-<span class="comment">  # Step 2: plant replacement</span>
-<span class="prompt"></span><span class="cmd">copy svc_replace.exe "...\WsNativePushService.exe"</span>
-<span class="out-green">  1 file(s) copied.</span>
-<span class="out"></span>
-<span class="comment">  # Step 3: service restarts (reboot or admin restart)</span>
-<span class="comment">  # Step 4: check proof-of-execution</span>
-<span class="prompt"></span><span class="cmd">type C:\Windows\Temp\ws_diag.log</span>
-<span class="out-green">  20260615_033636|SYSTEM|elev=1|pid=34776|BINARY_REPLACE</span>
-<span class="out">                   ^^^^^^ ^^^^^^</span>
-<span class="out-amber">                   NT AUTHORITY\SYSTEM. Full token. Elevated.</span>
-<span class="out-amber">                   No admin creds entered. No UAC prompt.</span>
-  </div>
-
-  <p>
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/TOCTOU_Vulnerability_Confirmed.png" alt="TOCTOU vulnerability confirmed — payload written to System32" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Vulnerability confirmed — SYSTEM token captured from standard user context</div>
-  </div>
-
-  <p>
-    <span class="tag tag-system">SYSTEM</span>
-    <span class="tag tag-confirmed">CONFIRMED</span>
-    <strong>Finding #42:</strong> Standard user to LocalSystem via service binary replacement.
-    CVSS 7.8 (High). CWE-732. The replacement binary launches the real service exe
-    for continuity — service keeps running, nobody notices. Attack complexity: LOW.
-    Privileges required: LOW (standard user). User interaction: NONE (auto-start on reboot).
-  </p>
-
-  <p>
-    <strong>Every defense layer tested:</strong> File ACL — broken. Directory ACL — broken.
-    UAC — not triggered (AppData, not Program Files). Code signing — SCM doesn't verify.
-    Manifest hardening — irrelevant (binary replaced, no DLL loading). Defender static —
-    clean (our binary is a legitimate service exe). Defender behavioral — clean.
-  </p>
-</section>
-
-<!-- ═══════ PATH INJECTION ═══════ -->
-<section class="entry" id="pathinjection">
-  <div class="entry-date">ENGAGEMENT 13 // 2026</div>
-  <h2>path injection -- the installer did it</h2>
-
-  <p>
-    Third-party installers adding user-profile directories to the machine-level
-    HKLM PATH. A standard user owns those directories. Every SYSTEM service that
-    searches PATH for a DLL traverses attacker-controlled ground.
-  </p>
-  <p>
-    Found multiple vendors injecting user-writable paths into the machine-wide
-    SYSTEM search path. Planted canary DLLs in the writable directories for known
-    phantom DLL targets — DLLs that SYSTEM services search for but don't exist on
-    disk. Standard user creates the file, SYSTEM service loads it on next start.
-  </p>
-  <p>
-    CWE-426: Untrusted Search Path Element. The installers created the attack
-    surface. Windows services are the victims. Multiple vendors affected.
-  </p>
-
-  <div class="term" data-title="status">
-<span class="out-amber">  VENDOR DISCLOSURE IN PROGRESS</span>
-<span class="out">  Vulnerability class:  CWE-426 / CWE-427 (PATH injection)</span>
-<span class="out">  Impact:               Standard user to SYSTEM via DLL plant</span>
-<span class="out">  Vendors affected:     Multiple (details withheld)</span>
-<span class="out">  Submission target:    MITRE CVE</span>
-<span class="out">  Canaries:             Planted, awaiting execution proof</span>
-<span class="out"></span>
-<span class="out">  Vendor names, specific paths, and phantom DLL targets</span>
-<span class="out">  withheld until vendors are notified and given response time.</span>
-  </div>
-
-  <p>
-    <span class="tag tag-msrc">DISCLOSURE PENDING</span>
-    <span class="tag tag-confirmed">CONFIRMED</span>
-    PATH injection to SYSTEM privilege escalation. CVSS 7.8 (High).
-    Vendor notification and MITRE submission in progress. Details
-    withheld pending coordinated disclosure.
-  </p>
-</section>
-
-<!-- ═══════ VADER-PRIME ═══════ -->
-<section class="entry" id="vaderprime">
-  <div class="entry-date">ENGAGEMENT 14 // VADER-PRIME FRAMEWORK</div>
-  <h2>vader-prime -- cldflt race exploitation</h2>
-
-  <p>
-    The TOCTOU campaign mapped Defender's quarantine architecture completely. 35 commits,
-    18 findings, zero shells. WdFilter.sys is hardened -- cached FILE_OBJECT makes junctions
-    invisible, identity gate uses NTFS File ID (architecturally unbypassable). The wall held.
-  </p>
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/GaySun_TOCTOU_SourceCode_VSS_EICAR.png" alt="GaySun TOCTOU source code — VSS shadow copy and EICAR trigger mechanism" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">TOCTOU source — VSS shadow copy trigger + EICAR bait mechanism</div>
-  </div>
-
-  <p>
-    But the wall taught us where the <em>other</em> drivers aren't looking. cldflt.sys
-    (Cloud Files Mini-Filter, altitude 180451) sits below WdFilter in the minifilter stack.
-    MiniPlasma proved the race is viable: CfAbortHydration against cldflt yields an
-    arbitrary registry ACL write primitive. VADER-PRIME re-arms that primitive with
-    novel payload chains.
-  </p>
-
-  <div class="term" data-title="vader-prime // architecture">
-<span class="out">  VADER-PRIME Exploit Framework</span>
-<span class="out">  ============================</span>
-<span class="out"></span>
-<span class="out">  Stage 1:  CfAbortHydration race against cldflt.sys</span>
-<span class="out">            Token impersonation during kernel callback</span>
-<span class="out">            -> arbitrary registry ACL modification</span>
-<span class="out"></span>
-<span class="out">  Stage 2:  NtKey symbolic link (HKU -> HKLM cross-hive)</span>
-<span class="out">            Redirects ACL write to protected HKLM keys</span>
-<span class="out"></span>
-<span class="out-cyan">  Payload A:  Print Processor registration</span>
-<span class="out-cyan">             HKLM\...\Print Processors\VaderProc -> DLL path</span>
-<span class="out-cyan">             Spooler (SYSTEM) loads our DLL on AddPrintProcessor</span>
-<span class="out-cyan">             Named pipe -> token capture -> SYSTEM shell</span>
-<span class="out"></span>
-<span class="out-cyan">  Payload B:  IFEO debugger hijack</span>
-<span class="out-cyan">             HKLM\...\Image File Execution Options\target.exe</span>
-<span class="out-cyan">             Debugger value intercepts SYSTEM binary launch</span>
-<span class="out"></span>
-<span class="out-amber">  STATUS:    Compiled. Untested. Depends on cldflt race viability</span>
-<span class="out-amber">            on Build 26200. MiniPlasma validation required first.</span>
-  </div>
-
-  <p>
-    <span class="tag tag-built">COMPILED</span>
-    <strong>VADER-PRIME:</strong> Two novel payload chains built on proven cldflt race primitive.
-    Print Processor chain (15-25% CVE probability) and IFEO chain (10-20%).
-    If the race works on this build, either chain delivers standard user to SYSTEM.
-    Both chains are original research -- not MiniPlasma clones. Different methodology,
-    different targets, different payload delivery.
-  </p>
-</section>
-
-<!-- ═══════ RECON ═══════ -->
-<section class="entry" id="recon">
-  <div class="entry-date">ENGAGEMENTS 11-12 // FINDINGS #44-#46</div>
-  <h2>reconnaissance and new vectors</h2>
-
-  <p>
-    Built a self-contained recon package for target profiling. 17 sections, runs as
-    standard user, outputs an organised log. Designed for USB drop when remote access
-    is unavailable.
-  </p>
-
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/CSEC_GUI_Listener_ReverseShell.png" alt="CSEC GUI Listener with active reverse shell connection" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">C2 listener — active reverse shell connection from target</div>
-  </div>
-
-  <div class="term" data-title="engagement 11 // recon execution">
-<span class="prompt"></span><span class="cmd">powershell -ep bypass .\vader_recon.ps1</span>
-<span class="out"></span>
-<span class="out">  ================================================================</span>
-<span class="out">  VADER RECON -- 22DIV</span>
-<span class="out">  Target: TARGET-PC</span>
-<span class="out">  Date: 2026-06-15 04:25:22</span>
-<span class="out">  User: standard_user</span>
-<span class="out">  ================================================================</span>
-<span class="out"></span>
-<span class="out">  Scanning 310 privileged services...</span>
-<span class="out-red">  [CRITICAL] SVC_WRITABLE -- NativePushService (LocalSystem) EXE WRITABLE</span>
-<span class="out-amber">  [HIGH] SVC_IN_PROFILE -- NativePushService binary in user profile</span>
-<span class="out-amber">  [HIGH] UNQUOTED_PATH -- pgbouncer: unquoted path with spaces</span>
-<span class="out-amber">  [HIGH] RAT_RUNNING -- TeamViewer active (PID 81748)</span>
-<span class="out-cyan">  [MEDIUM] RTP_ACTIVE -- Real-Time Protection enabled</span>
-<span class="out"></span>
-<span class="out-green">  RECON COMPLETE -- 1169 lines written to RECON_TARGET-PC_20260615.log</span>
-  </div>
-
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/CSEC_BindShell_vs_ReverseShell_Diagram.png" alt="Bind shell vs reverse shell architecture comparison" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Network attack patterns — bind shell vs reverse shell architecture</div>
-  </div>
-
-  <p>
-    Automated vector scan discovered new privilege escalation paths. Two user-owned
-    directories present in the machine-level SYSTEM PATH. Any SYSTEM-level process that
-    searches PATH for an executable or DLL will traverse directories that a standard
-    user has full control over.
-  </p>
-
-  <div class="term" data-title="engagement 12 // path hijack discovery">
-<span class="prompt"></span><span class="cmd">python scan_path.py --system-path --check-writable</span>
-<span class="out"></span>
-<span class="out">  === MACHINE PATH (HKLM) ===</span>
-<span class="out">    [locked]   C:\Program Files\nodejs\</span>
-<span class="out">    [locked]   C:\ProgramData\chocolatey\bin</span>
-<span class="out">    [locked]   C:\Program Files\dotnet\</span>
-<span class="out-red">    [WRITABLE] C:\Users\user\AppData\Local\[REDACTED]\lib  &lt;-- CWE-427</span>
-<span class="out">    [locked]   C:\Program Files\Git\cmd</span>
-<span class="out-red">    [WRITABLE] C:\Users\user\[REDACTED]            &lt;-- CWE-427</span>
-<span class="out">    [locked]   C:\Program Files\Microsoft SQL Server\...</span>
-<span class="out"></span>
-<span class="out-amber">  2 user-writable directories in machine-level SYSTEM PATH.</span>
-<span class="out-amber">  Associated services: [REDACTED — vendor disclosure pending]</span>
-<span class="out"></span>
-<span class="comment">  # CWE-427: Uncontrolled Search Path Element.</span>
-<span class="comment">  # Any SYSTEM process doing a PATH search for a DLL or EXE will find</span>
-<span class="comment">  # whatever we plant there. Scope is SYSTEMIC -- affects all services.</span>
-<span class="comment">  # Confirmation pending: Process Monitor capture needed to identify</span>
-<span class="comment">  # which SYSTEM processes actually search PATH for loadable binaries.</span>
-  </div>
-
-  <p>
-    <span class="tag tag-msrc">MSRC POTENTIAL</span>
-    <strong>Finding #45:</strong> User-writable directories in machine SYSTEM PATH (CWE-427).
-    If any first-party Windows service hits these paths during DLL search, that's a
-    Microsoft-actionable privilege escalation. Confirmation requires Process Monitor
-    capture — pending.
-  </p>
-</section>
-
-<!-- ═══════ AI EXPLOITATION ═══════ -->
-<section class="entry" id="ai-research">
-  <div class="entry-date">ENGAGEMENT 15 // 2026</div>
-  <h2>ai exploitation -- the pivot</h2>
-
-  <p>
-    MSRC rejection taught me what I should've read before the first submission:
-    Microsoft's <a href="https://www.microsoft.com/msrc/windows-security-servicing-criteria" style="color:var(--cyan)">security servicing criteria</a>.
-    Detection bypasses aren't security boundaries. Never were. The entire TOCTOU
-    campaign, the HWBP discovery, the EtwTi analysis — technically sound, architecturally
-    irrelevant to their bounty program. Wrong target category.
-  </p>
-  <p>
-    But MSRC included something in the rejection letter that changed the game:
-    a link to their <a href="https://www.microsoft.com/en-us/msrc/aibugbar" style="color:var(--cyan)">AI vulnerability classification</a>.
-  </p>
-
-  <p>
-    Prompt injection that exfiltrates another user's data with zero interaction:
-    <strong>CRITICAL severity</strong>. Model theft of confidential models: <strong>CRITICAL</strong>.
-    Input extraction across user boundaries: <strong>IMPORTANT</strong>. These cross
-    actual security boundaries — user isolation, data classification, tenant separation.
-  </p>
-
-  <div class="term" data-title="ai bug bar // what actually pays">
-<span class="out-green">  CRITICAL:</span>
-<span class="out">    Prompt injection → exfiltrate another user's data (zero-click)</span>
-<span class="out">    Model theft → extract confidential model architecture/weights</span>
-<span class="out"></span>
-<span class="out-amber">  IMPORTANT:</span>
-<span class="out">    Prompt injection → exfiltrate data (requires user interaction)</span>
-<span class="out">    Training data reconstruction → recover confidential records</span>
-<span class="out">    Input extraction → recover other users' prompts/inputs</span>
-<span class="out"></span>
-<span class="out-red">  NOT A VULNERABILITY:</span>
-<span class="out">    System prompt extraction (explicitly excluded)</span>
-<span class="out">    Detection/evasion bypass (learned that one the hard way)</span>
-<span class="out"></span>
-<span class="out-cyan">  TARGET SURFACE:</span>
-<span class="out">    Microsoft Copilot (free, publicly accessible)</span>
-<span class="out">    M365 Copilot (Word, Excel, Teams, Outlook — enterprise)</span>
-<span class="out">    Azure AI services</span>
-<span class="out">    GitHub Copilot</span>
-  </div>
-
-  <p>
-    The attack surface is newer than Windows kernel exploitation. Fewer researchers,
-    more unexplored territory. And the skill transfer from Windows internals is real —
-    the methodology is the same. Controlled test. Evidence-grade documentation. Map the
-    boundary. Find where the boundary logic fails. Prove the crossing.
-  </p>
-  <p>
-    The difference: instead of VirtualProtect and debug registers, the primitives are
-    indirect prompt injection, cross-context data exfiltration, and action abuse. Instead
-    of Defender's quarantine pipeline, the target is Copilot's trust boundary between
-    attacker-controlled content and user data. Different domain. Same thinking.
-  </p>
-
-  <div style="margin: 1.5rem 0;">
-    <img src="showcase/GaySun_XOR_Obfuscation_Explained.png" alt="XOR evasion technique — encoding explained" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-    <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">XOR evasion technique — the methodology that transfers to any target</div>
-  </div>
-
-  <div class="term" data-title="attack vectors // active research">
-<span class="out">  Vector 1: Document injection</span>
-<span class="out">    Hidden instructions in shared Word/Excel docs (white text, metadata,</span>
-<span class="out">    comments). Copilot reads the doc → follows attacker instructions →</span>
-<span class="out">    leaks victim's other documents, emails, calendar.</span>
-<span class="out"></span>
-<span class="out">  Vector 2: Email injection</span>
-<span class="out">    Prompt payload in email body/headers. Victim's Copilot summarises</span>
-<span class="out">    inbox → injected instruction causes cross-email data leakage.</span>
-<span class="out"></span>
-<span class="out">  Vector 3: Web injection (Copilot in Edge)</span>
-<span class="out">    Payload in HTML comments, hidden divs, meta tags. User asks Copilot</span>
-<span class="out">    about the page → injection overrides system instructions.</span>
-<span class="out"></span>
-<span class="out">  Vector 4: Action abuse</span>
-<span class="out">    If Copilot has actions enabled (send email, search files, create events),</span>
-<span class="out">    can injection trigger those actions with attacker-controlled parameters?</span>
-<span class="out"></span>
-<span class="out-amber">  STATUS: ACTIVE RESEARCH — test infrastructure being deployed</span>
-  </div>
-
-  <p>
-    <span class="tag tag-built">IN PROGRESS</span>
-    New attack surface. Same methodology. The TOCTOU campaign taught me how to
-    systematically map a defensive architecture and find the seams. The MSRC
-    rejection taught me which seams they actually care about fixing. Now I know
-    both. Applying that to AI.
-  </p>
-</section>
-
-<!-- ═══════ STATUS ═══════ -->
-<section class="entry" id="status">
-  <div class="entry-date">CURRENT STATUS // 2026-06-18</div>
-  <h2>kill chain</h2>
-
-  <table class="status-table">
-    <thead>
-      <tr>
-        <th>finding</th>
-        <th>vulnerability</th>
-        <th>status</th>
-        <th>notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="color:var(--dim)">#36</td>
-        <td>HWBP tamper protection bypass (AMSI+ETW via DR0/DR1)</td>
-        <td><span class="tag tag-detected">REVIEWED</span></td>
-        <td style="color:var(--dim)">MSRC VULN-195458 — not a security boundary per servicing criteria. Embargo void. Technique documented.</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">#42</td>
-        <td>CWE-732 — service binary replacement (Wondershare NativePushService)</td>
-        <td><span class="tag tag-msrc">CVE SUBMISSION</span></td>
-        <td style="color:var(--dim)">Standard user to SYSTEM. CVSS 7.8. MITRE submission in progress.</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">#47</td>
-        <td>CWE-427 — phantom DLL via ClickToRunSvc (osppc.dll)</td>
-        <td><span class="tag tag-msrc">MSRC SUBMISSION</span></td>
-        <td style="color:var(--dim)">First-party Microsoft service. User-writable PATH fills missing DLL. SYSTEM privilege. Highest-value finding.</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">#49</td>
-        <td>CWE-426 — user-writable directories in machine-level SYSTEM PATH</td>
-        <td><span class="tag tag-msrc">CVE PENDING</span></td>
-        <td style="color:var(--dim)">Third-party installers created systemic privesc vector. Canary-tested. Vendor disclosure in progress.</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">TOCTOU</td>
-        <td>Defender quarantine pipeline race condition research</td>
-        <td><span class="tag tag-confirmed">DOCUMENTED</span></td>
-        <td style="color:var(--dim)">35 commits, 30 findings. WdFilter.sys architecture fully mapped. Identity gate architecturally sound.</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">FUZZ</td>
-        <td>mpengine.dll mutation fuzzing campaign</td>
-        <td><span class="tag tag-built">ACTIVE</span></td>
-        <td style="color:var(--dim)">100K+ iterations, 20 mutation strategies, 4 workers. Targeting memory corruption for MSRC submission.</td>
-      </tr>
-      <tr>
-        <td style="color:var(--dim)">AI</td>
-        <td>Microsoft Copilot prompt injection research</td>
-        <td><span class="tag tag-built">IN PROGRESS</span></td>
-        <td style="color:var(--dim)">Cross-user data exfiltration vectors. M365 Developer sandbox setup pending.</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2 style="margin-top: 2.5rem;">defender architecture findings</h2>
-
-  <table class="status-table">
-    <thead>
-      <tr>
-        <th>component</th>
-        <th>finding</th>
-        <th>implication</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>WdFilter quarantine pipeline</td>
-        <td style="color:var(--green)">ROBUST</td>
-        <td style="color:var(--dim)">Cached FILE_OBJECT + NTFS File ID identity gate. TOCTOU junction redirect architecturally blocked.</td>
-      </tr>
-      <tr>
-        <td>Service binary ACLs (third-party)</td>
-        <td><span class="tag tag-detected">MISCONFIGURED</span></td>
-        <td style="color:var(--dim)">#42 CWE-732 — vendors installing services with user-writable binaries. Vendor disclosure pending.</td>
-      </tr>
-      <tr>
-        <td>Machine-level SYSTEM PATH</td>
-        <td><span class="tag tag-detected">MISCONFIGURED</span></td>
-        <td style="color:var(--dim)">#49 CWE-426 — third-party installers adding user-owned directories to SYSTEM PATH.</td>
-      </tr>
-      <tr>
-        <td>DLL search order (phantom DLL)</td>
-        <td><span class="tag tag-detected">MISCONFIGURED</span></td>
-        <td style="color:var(--dim)">#47 CWE-427 — Microsoft Office service loads non-existent DLL from user-writable PATH location.</td>
-      </tr>
-      <tr>
-        <td>Debug register monitoring (DR0-DR7)</td>
-        <td style="color:var(--amber)">GAP DOCUMENTED</td>
-        <td style="color:var(--dim)">MSRC reviewed VULN-195458 — detection bypasses not a servicing boundary. Documented for enterprise awareness.</td>
-      </tr>
-      <tr>
-        <td>Code signing enforcement (SCM)</td>
-        <td style="color:var(--amber)">NOT ENFORCED</td>
-        <td style="color:var(--dim)">Service Control Manager does not verify binary signatures on start. Relevant to #42.</td>
-      </tr>
-      <tr>
-        <td>cldflt.sys race window</td>
-        <td style="color:var(--dim)">UNDER RESEARCH</td>
-        <td style="color:var(--dim)">CfAbortHydration race primitive documented by MiniPlasma. Novel payload chains under academic study.</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div style="margin: 1.5rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
-    <div style="flex:1; min-width:280px;">
-      <img src="showcase/Defender_Quarantine_GaySun.png" alt="Defender quarantining GaySun.exe — Exploit:Win32/DfndrPERedSun.BC" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">GaySun.exe caught — Defender signature detection</div>
-    </div>
-    <div style="flex:1; min-width:280px;">
-      <img src="showcase/Defender_Quarantine_RoguePlanet.png" alt="Defender quarantining RoguePlanet.exe — signatured in 4 days" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">RoguePlanet detected — signatured within 4 days of release</div>
-    </div>
-  </div>
-
-  <div style="margin: 1.5rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
-    <div style="flex:1; min-width:280px;">
-      <img src="showcase/XOR_Obfuscate.png" alt="XOR obfuscation applied to signature strings" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">XOR obfuscation — encoding signature strings at compile time</div>
-    </div>
-    <div style="flex:1; min-width:280px;">
-      <img src="showcase/GaySun_ImportTable_Evasion.png" alt="PE import table analysis — structural evasion" style="max-width:100%; border:1px solid #1e1e1e; border-radius:6px; display:block;" loading="lazy">
-      <div style="color:var(--dim); font-size:0.72rem; margin-top:0.4rem; font-style:italic;">Import table analysis — why string mutation wasn't enough</div>
-    </div>
-  </div>
-
-  <div class="term" data-title="research summary" style="margin-top: 2rem;">
-<span class="out-amber">  OBJECTIVE:</span>
-<span class="out">  CVE with george wu's name on it. Security boundary crossing.</span>
-<span class="out">  Reported via MSRC/MITRE -> assigned -> credited.</span>
-<span class="out"></span>
-<span class="out-green">  CONFIRMED FINDINGS:</span>
-<span class="out-green">    #42  CWE-732  NativePushService binary replacement -> SYSTEM</span>
-<span class="out-green">         CVSS 7.8 (High). MITRE CVE submission written.</span>
-<span class="out-green">    #47  CWE-427  Phantom DLL via ClickToRunSvc (osppc.dll) -> SYSTEM</span>
-<span class="out-green">         First-party MS service. MSRC HIGH. Submission in progress.</span>
-<span class="out-green">    #49  CWE-426  User-writable dirs in machine SYSTEM PATH</span>
-<span class="out-green">         Third-party installers. Canary-tested. Vendor disclosure pending.</span>
-<span class="out"></span>
-<span class="out-amber">  MSRC CASE:</span>
-<span class="out">    #36 -> VULN-195458  HWBP tamper bypass (AMSI+ETW via DR0/DR1)</span>
-<span class="out">    Reviewed. Not a security boundary per MS servicing criteria.</span>
-<span class="out">    Lesson: detection bypass != vulnerability. Technique documented.</span>
-<span class="out"></span>
-<span class="out-cyan">  RESEARCH PIVOT: AI vulnerability research</span>
-<span class="out-cyan">    Target: Microsoft Copilot indirect prompt injection</span>
-<span class="out-cyan">    Goal: cross-user data exfiltration = CRITICAL severity</span>
-<span class="out-cyan">    Surface: M365 Copilot, Azure AI, Copilot in Edge</span>
-<span class="out-cyan">    Same methodology. Right target category.</span>
-<span class="out"></span>
-<span class="out">  Documented defeats:</span>
-<span class="out">    vader-toctou: 35 commits, 30 findings. WdFilter identity gate held.</span>
-<span class="out">    VULN-195458: technique valid, wrong category. Research documented.</span>
-  </div>
-
-  <p style="margin-top: 1.5rem; color: var(--dim); font-size: 0.8rem;">
-    50+ findings across Windows privilege escalation research. One MSRC case filed and reviewed.
-    Three CVE submissions in progress across CWE-732, CWE-427, and CWE-426.
-    Every technique built from scratch on personally-owned hardware.
-    The wall held where it was supposed to. Now targeting AI security boundaries.
-  </p>
-</section>
-
-</div>
-
-<!-- ═══════ DEFENSIVE RECOMMENDATIONS ═══════ -->
-<div class="container">
-<section class="entry" id="defensive-recommendations">
-  <div class="entry-date">BASED ON RESEARCH FINDINGS // 2026</div>
-  <h2>protective recommendations</h2>
-
-  <p>These recommendations come directly from findings documented above. Not generic advice — specific mitigations for the exact attack surfaces this research mapped.</p>
-
-  <h3 style="color:var(--cyan); font-size:0.85rem; font-weight:600; margin:1.5rem 0 0.8rem;">For home users</h3>
-  <ul style="font-size:0.82rem; color:var(--muted); line-height:2; padding-left:1.2rem;">
-    <li>Audit third-party software you've installed. Many silently register services running as SYSTEM with weak binary permissions (CWE-732). Check with: <code style="color:var(--green); background:#001a00; padding:0.1rem 0.3rem; border-radius:2px;">icacls "C:\Program Files\[AppName]"</code></li>
-    <li>Review your system PATH for user-writable directories. Run <code style="color:var(--green); background:#001a00; padding:0.1rem 0.3rem; border-radius:2px;">$env:PATH -split ";"</code> and check each entry with <code style="color:var(--green); background:#001a00; padding:0.1rem 0.3rem; border-radius:2px;">icacls</code>. (CWE-426)</li>
-    <li>Keep Windows Defender's tamper protection enabled. It specifically exists to prevent runtime bypass of the scan engine.</li>
-    <li>Uninstall software you no longer use. Abandoned services with weak ACLs stay exploitable indefinitely.</li>
-  </ul>
-
-  <h3 style="color:var(--amber); font-size:0.85rem; font-weight:600; margin:1.5rem 0 0.8rem;">For companies</h3>
-  <ul style="font-size:0.82rem; color:var(--muted); line-height:2; padding-left:1.2rem;">
-    <li>Enforce application allowlisting (WDAC or AppLocker). This defeats most DLL hijacking and binary replacement vectors at the policy level, regardless of ACL misconfiguration.</li>
-    <li>Audit machine-level SYSTEM PATH entries after any software installation. Third-party installers frequently add user-writable paths without disclosure.</li>
-    <li>Enable Credential Guard on Windows 11 endpoints. Significantly raises the bar against in-memory credential attacks.</li>
-    <li>Monitor for debug register (DR0–DR7) modifications via ETW or EDR telemetry. Hardware breakpoint abuse is a documented bypass vector against AMSI/ETW hooks (see VULN-195458).</li>
-    <li>Enforce code signing for services via WDAC policy. The Service Control Manager does not verify binary signatures by default — this is the gap exploited by CWE-732 findings.</li>
-  </ul>
-</section>
-
-<!-- ═══════ ANTHROPIC CREDIT ═══════ -->
-<section class="entry" id="acknowledgements">
-  <div class="entry-date">RESEARCH METHODOLOGY</div>
-  <h2>acknowledgements</h2>
-
-  <div style="margin: 1.2rem 0; padding: 1rem; border-left: 2px solid var(--green3); background: rgba(0,255,65,0.02);">
-    <p style="color: var(--muted); font-size: 0.82rem; margin: 0 0 0.8rem;">
-      <strong style="color: var(--green2);">Claude (Anthropic)</strong> was the primary research tool throughout this program — not as a shortcut, but as a teacher.
-    </p>
-    <p style="color: var(--muted); font-size: 0.82rem; margin: 0 0 0.8rem;">
-      Windows internals documentation is sparse and often inaccessible to independent researchers without lab access or a university supervisor. When I needed to understand how WdFilter.sys caches FILE_OBJECTs, why the NTFS File ID identity gate is architecturally unbypassable, or what debug registers actually do at the CPU level — Claude explained the mechanism, corrected my misunderstandings, and helped me verify my reasoning before I wrote a single line.
-    </p>
-    <p style="color: var(--muted); font-size: 0.82rem; margin: 0 0 0.8rem;">
-      The rule throughout: <strong style="color:var(--bright);">no code ships that I can't explain line by line.</strong> Claude accelerates learning — it doesn't replace it. Everything here was built from first principles. The AI teaches. I build.
-    </p>
-    <p style="color: var(--muted); font-size: 0.82rem; margin: 0;">
-      Anthropic's willingness to engage seriously with technical security questions — treating me as a researcher rather than a risk — is what made this level of independent learning possible for a self-funded student. That matters, and it deserves to be said plainly.
-    </p>
-  </div>
-</section>
-
-<!-- ═══════ CHEYANNE ═══════ -->
-<section class="entry" id="cheyanne">
-  <div class="entry-date">PERSONAL</div>
-  <h2>for cheyanne</h2>
-  <p style="color:var(--muted); font-size:0.85rem; max-width:60ch;">
-    You watched me disappear into this for months. Late nights, weird hours, a screen full of things you didn't ask about and I couldn't always explain. You never made me feel like it wasn't worth it.
-  </p>
-  <p style="color:var(--muted); font-size:0.85rem; max-width:60ch;">
-    It is worth it. And you're part of why.
-  </p>
-  <p style="color:var(--dim); font-size:0.78rem;">— George</p>
-</section>
-</div>
-
-<footer>
-  <div>george wu / 22DIV</div>
-  <div style="margin-top: 0.3rem;">
-    <a href="https://github.com/rainfantry">github.com/rainfantry</a>
-    <span style="color:var(--dim); margin:0 0.4rem;">|</span>
-    <a href="mailto:gwu0738@gmail.com">gwu0738@gmail.com</a>
-  </div>
-  <div style="margin-top: 0.4rem; font-size: 0.75rem;">
-    <a href="https://github.com/rainfantry/geodefend" style="color:#00cc33;">geodefend</a> &middot;
-    <a href="https://github.com/rainfantry/vader-hunt" style="color:#00e5ff;">vader-hunt</a> &middot;
-    <a href="https://github.com/rainfantry/vader-toctou" style="color:#ffb000;">vader-toctou</a> &middot;
-    <a href="https://github.com/rainfantry/vader-msrc-disclosure" style="color:#888;">msrc disclosure</a>
-  </div>
-  <div style="margin-top: 0.5rem; opacity: 0.4;">windows internals // responsible disclosure // AI security // TAFE cert IV</div>
-  <div style="margin-top: 0.3rem; opacity: 0.25; font-size: 0.7rem;">Sydney, Australia</div>
-
-
-    <!-- COFFEE BANNER -->
-    <div class="coffee-block">
-      <span class="coffee-icon">☕</span>
-      <div class="coffee-text">
-        <div class="coffee-title">SUPPORT THIS RESEARCH</div>
-        <div class="coffee-desc">Not interested in the course? Support the lab directly. Wise transfer, no account needed, no fees.</div>
-      </div>
-      <a class="coffee-link" href="https://wise.com/pay/business/occupationforcecallsigngswptyltd" target="_blank" rel="noopener">
-        SEND VIA WISE →
-      </a>
-    </div>
-
-</footer>
-
-<script src="site.js"></script>
+    <section id="demos">
+        <h2 class="section-title">VIDEO DEMOS</h2>
+        <p style="color: var(--dim); margin-bottom: 24px; font-size: 0.85rem;">Authorized lab demonstrations and security research recordings. All tests performed in controlled environments.</p>
+        <div class="demos-grid">
+
+            <div class="demo-card">
+                <div class="demo-video youtube">
+                    <iframe src="https://www.youtube.com/embed/rQpyQK4UQXw" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">YouTube</div>
+                    <div class="demo-title">Attacker vs Victim RCE POV</div>
+                    <div class="demo-desc">Dual-view demo showing attacker terminal and victim Windows desktop simultaneously during authorized RCE test</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Db2gDulTtNc/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">Telegram OSINT Member Scraper</div>
+                    <div class="demo-desc">Custom tool for scraping Telegram group members - public repo</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Db2dvLvTY1f/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">PowerShell Pentest Cheatsheet</div>
+                    <div class="demo-desc">Live document with offensive PowerShell commands, includes encoder/decoder for IP substitution</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbxO4mPzEol/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">Authorized Lab: RDP Privilege Escalation</div>
+                    <div class="demo-desc">Controlled environment demo - RDP access to test VM followed by escalation to NT AUTHORITY\SYSTEM</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbpdJxCTxay/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">PowerShell to EXE Generator</div>
+                    <div class="demo-desc">Tool that converts PS1 scripts to standalone executables for payload delivery</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbmXl1XTtUZ/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">NT/Authority > Administrator</div>
+                    <div class="demo-desc">Demonstrates SYSTEM shell access being higher privilege than local admin</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbVS1emzHbP/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">Ransomware Simulation: Fake Update Screen</div>
+                    <div class="demo-desc">Educational demo replicating Petya-style fake system scan while encrypting + DPAPI credential extraction</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbUw_igTygt/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">Adding Audio Feedback to Payloads</div>
+                    <div class="demo-desc">Development showcase - integrating WAV sound effects into stealer for execution confirmation</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Da9rE7kTcUI/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">C2 VNC Live Session</div>
+                    <div class="demo-desc">Real-time VNC connection via C2 framework - victim laptop (left) controlled from attacker station (right)</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbNHD0Tzrtr/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">Multi-Monitor C2 Setup</div>
+                    <div class="demo-desc">Workspace showing dual/triple monitor setup with terminals and C2 panels</div>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Dak5aV3zRr4/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">CVE-2026-73498 Discovery Demo</div>
+                    <div class="demo-desc">Prompt injection via Jira ticket exploiting mcp-atlassian - discovered using RunPod OpenWebUI + MCP</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="projects">
+        <h2 class="section-title">FEATURED PROJECTS</h2>
+        <div class="projects-grid">
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://raw.githubusercontent.com/rainfantry/pentest-ref/main/Screenshot%202026-08-10%20152841.png" alt="Pentest Reference">
+                </div>
+                <div class="card-body">
+                    <div class="cat">TOOLS</div>
+                    <h3>pentest-ref</h3>
+                    <p>Interactive offensive security command reference with placeholder substitution. Sanitized cheatsheet for lab use.</p>
+                    <div class="tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Reference</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/pentest-ref">GitHub</a>
+                        <a href="https://rainfantry.github.io/pentest-ref/">Live Demo</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://raw.githubusercontent.com/rainfantry/VaderShell/master/docs/terminal.png" alt="VaderShell">
+                </div>
+                <div class="card-body">
+                    <div class="cat">AUTOMATION</div>
+                    <h3>VaderShell</h3>
+                    <p>Personal terminal agent + Discord bot wrapping Claude CLI. One-line brain switching to Kimi/OpenRouter, dual-model planning council.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Claude</span>
+                        <span class="tag">Discord</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/VaderShell">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://raw.githubusercontent.com/rainfantry/mcp-atlassian-poc/main/CONFLUNCE_CHAT.png" alt="MCP Atlassian PoC">
+                </div>
+                <div class="card-body">
+                    <div class="cat">VULNERABILITY RESEARCH</div>
+                    <h3>mcp-atlassian-poc</h3>
+                    <p>PoC for arbitrary file read via missing path validation in mcp-atlassian (GHSA-g5r6-gv6m-f5jv). Responsible disclosure.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">CVE</span>
+                        <span class="tag">MCP</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/mcp-atlassian-poc">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://github.com/user-attachments/assets/06a53bae-77a9-4cb6-bbb3-b78a3155940c" alt="Telegram OSINT">
+                </div>
+                <div class="card-body">
+                    <div class="cat">OSINT</div>
+                    <h3>telegram-osint</h3>
+                    <p>Telegram OSINT scanner using Telethon. Scans public channels/groups for keywords, exports structured results.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Telethon</span>
+                        <span class="tag">OSINT</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/telegram-osint">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://raw.githubusercontent.com/rainfantry/piper-reader/master/docs/screenshot.png" alt="Piper Reader">
+                </div>
+                <div class="card-body">
+                    <div class="cat">APPLICATION</div>
+                    <h3>piper-reader</h3>
+                    <p>Offline desktop app that reads documents aloud using Piper neural TTS. No cloud, no API keys. Accessibility focused.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">TTS</span>
+                        <span class="tag">Accessibility</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/piper-reader">GitHub</a>
+                        <a href="https://github.com/rainfantry/piper-reader/releases">Download</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://raw.githubusercontent.com/rainfantry/voiceloop/master/screenshot.png" alt="VoiceLoop">
+                </div>
+                <div class="card-body">
+                    <div class="cat">APPLICATION</div>
+                    <h3>voiceloop</h3>
+                    <p>Fully offline local Voice-to-Text / Text-to-Voice with Ollama LLM. RAG knowledge base for context hijacking.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Ollama</span>
+                        <span class="tag">Voice</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/voiceloop">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://raw.githubusercontent.com/rainfantry/lyricsync/master/PREVIEW.png" alt="LyricSync">
+                </div>
+                <div class="card-body">
+                    <div class="cat">APPLICATION</div>
+                    <h3>lyricsync</h3>
+                    <p>Transcribe lyrics from any audio into synced LRC files. Isolates vocals with Demucs, transcribes with Whisper.</p>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Whisper</span>
+                        <span class="tag">Audio</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/lyricsync">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="preview">
+                    <img src="https://github.com/rainfantry/mind-palace/raw/main/assets/board-screenshot.png" alt="Mind Palace">
+                </div>
+                <div class="card-body">
+                    <div class="cat">APPLICATION</div>
+                    <h3>mind-palace</h3>
+                    <p>Gesture-driven memory twin. Wave at your webcam, grab a memory out of the air, hear it read back. MediaPipe hands + three.js.</p>
+                    <div class="tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">MediaPipe</span>
+                        <span class="tag">three.js</span>
+                    </div>
+                    <div class="links">
+                        <a href="https://github.com/rainfantry/mind-palace">GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="research">
+        <h2 class="section-title">SECURITY RESEARCH</h2>
+        <div class="findings-grid">
+
+            <a href="https://github.com/advisories/GHSA-g5r6-gv6m-f5jv" target="_blank" class="finding-card" style="text-decoration: none;">
+                <div class="finding-header">
+                    <div class="finding-icon ghsa">⚠️</div>
+                    <div>
+                        <div class="finding-title">Path Traversal in mcp-atlassian</div>
+                        <div class="finding-subtitle">Arbitrary file read via Confluence API</div>
+                    </div>
+                </div>
+                <div class="finding-body">
+                    <div class="finding-row">
+                        <span class="finding-label">Weakness</span>
+                        <span class="finding-cwe">CWE-22</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">CVE ID</span>
+                        <span class="finding-value">CVE-2026-73498</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">GHSA ID</span>
+                        <span class="finding-value">GHSA-g5r6-gv6m-f5jv</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">Source</span>
+                        <span class="finding-value">sooperset/mcp-atlassian</span>
+                    </div>
+                </div>
+                <div class="finding-footer">
+                    <span class="finding-credit">Reporter: rainfantry</span>
+                    <span class="finding-link">View Advisory →</span>
+                </div>
+            </a>
+
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div class="finding-icon msrc">🛡️</div>
+                    <div>
+                        <div class="finding-title">Windows Defender Research</div>
+                        <div class="finding-subtitle">Tamper Protection bypass analysis</div>
+                    </div>
+                </div>
+                <div class="finding-body">
+                    <div class="finding-row">
+                        <span class="finding-label">Status</span>
+                        <span class="finding-value">MSRC Acknowledged</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">Case ID</span>
+                        <span class="finding-value">VULN-195458</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">Focus</span>
+                        <span class="finding-value">Hardware breakpoints</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">Target</span>
+                        <span class="finding-value">WdFilter.sys / AMSI / ETW</span>
+                    </div>
+                </div>
+                <div class="finding-footer">
+                    <span class="finding-credit">Responsible disclosure</span>
+                    <span class="finding-link" style="color: var(--dim);">Private</span>
+                </div>
+            </div>
+
+            <a href="case-study-credential-exposure.html" class="finding-card" style="text-decoration: none;">
+                <div class="finding-header">
+                    <div class="finding-icon" style="background: rgba(255, 71, 87, 0.15);">📋</div>
+                    <div>
+                        <div class="finding-title">CWE-200 Case Study</div>
+                        <div class="finding-subtitle">Credential exposure to full compromise</div>
+                    </div>
+                </div>
+                <div class="finding-body">
+                    <div class="finding-row">
+                        <span class="finding-label">Type</span>
+                        <span class="finding-value">Case Study</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">Vector</span>
+                        <span class="finding-value">Screenshare leak</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">Impact</span>
+                        <span class="finding-value">SYSTEM takeover</span>
+                    </div>
+                    <div class="finding-row">
+                        <span class="finding-label">Time</span>
+                        <span class="finding-value">&lt;10 minutes</span>
+                    </div>
+                </div>
+                <div class="finding-footer">
+                    <span class="finding-credit">Lab demonstration</span>
+                    <span class="finding-link">View Case Study →</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <section id="skills">
+        <h2 class="section-title">SKILLS</h2>
+        <div class="skills-grid">
+            <div class="skill-group">
+                <h4>VULNERABILITY RESEARCH</h4>
+                <ul>
+                    <li>Path Traversal (CWE-22) <span class="skill-badge badge-cve">CVE-2026-73498</span></li>
+                    <li>MCP Server Security <span class="skill-badge badge-ghsa">GHSA</span></li>
+                    <li>Windows Defender Research <span class="skill-badge badge-msrc">MSRC</span></li>
+                    <li>SSRF / Access Control</li>
+                    <li>Responsible Disclosure</li>
+                </ul>
+            </div>
+            <div class="skill-group">
+                <h4>OFFENSIVE SECURITY</h4>
+                <ul>
+                    <li><a href="https://github.com/rainfantry/winrecon">Windows Internals</a> <span class="skill-badge badge-tool">TOOL</span></li>
+                    <li>AV/EDR Evasion</li>
+                    <li><a href="https://rainfantry.github.io/pentest-ref/">Penetration Testing</a> <span class="skill-badge badge-tool">REF</span></li>
+                    <li><a href="https://github.com/rainfantry/telegram-osint">OSINT</a> <span class="skill-badge badge-tool">TOOL</span></li>
+                    <li>Red Team Operations</li>
+                </ul>
+            </div>
+            <div class="skill-group">
+                <h4>DEVELOPMENT</h4>
+                <ul>
+                    <li>C / C++ <div class="skill-subtext">Shellcode, drivers</div></li>
+                    <li>Python <div class="skill-subtext">Automation, exploits</div></li>
+                    <li>PowerShell <div class="skill-subtext">Post-exploitation</div></li>
+                    <li>C# / .NET <div class="skill-subtext">Implants, loaders</div></li>
+                    <li>JavaScript <div class="skill-subtext">Web app testing</div></li>
+                </ul>
+            </div>
+            <div class="skill-group">
+                <h4>PLATFORMS & TOOLS</h4>
+                <ul>
+                    <li>Windows Server / AD</li>
+                    <li>Kali Linux</li>
+                    <li>Burp Suite / Wireshark</li>
+                    <li>IDA Pro / Ghidra / x64dbg</li>
+                    <li>Azure / AWS</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2 class="section-title">ABOUT</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>
+                    I'm a Cert IV Cyber Security student at TAFE NSW with a focus on offensive security
+                    and Windows internals. My approach is first-principles: I build tools from scratch
+                    to understand how they work, not just how to use them.
+                </p>
+                <p>
+                    Current research areas include AV/EDR evasion techniques, C2 framework development,
+                    and MCP (Model Context Protocol) security. I've disclosed vulnerabilities through
+                    responsible disclosure and maintain several open-source security tools.
+                </p>
+                <p>
+                    Outside of security, I build accessibility tools, AI integrations, and
+                    audio processing applications. I believe in learning by doing and
+                    documenting everything along the way.
+                </p>
+            </div>
+            <div class="about-details">
+                <h4>DETAILS</h4>
+                <ul>
+                    <li>Location: <span>Sydney, NSW</span></li>
+                    <li>Education: <span>TAFE NSW Cert IV Cyber Security</span></li>
+                    <li>Focus: <span>Offensive Security</span></li>
+                    <li>Current: <span>VU23222 / VU23215</span></li>
+                </ul>
+                <h4 style="margin-top: 24px;">LINKS</h4>
+                <ul>
+                    <li><a href="https://github.com/rainfantry">GitHub @rainfantry</a></li>
+                    <li><a href="https://linkedin.com/in/georgewu108">LinkedIn</a></li>
+                    <li><a href="https://rainfantry.github.io/pentest-ref/">Pentest Reference</a></li>
+                    <li><a href="https://buymeacoffee.com/rainfantry">Buy Me a Coffee</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+        <h2>Get In Touch</h2>
+        <p>Interested in security research, collaboration, or just want to chat?</p>
+
+        <form class="contact-form" action="https://formspree.io/f/xaewepwa" method="POST" id="contactForm">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+            <input type="hidden" name="_subject" value="Portfolio Contact">
+            <button type="submit" class="btn">SEND MESSAGE</button>
+        </form>
+        <div class="form-status" id="formStatus"></div>
+
+        <div class="social-links">
+            <a href="https://github.com/rainfantry" target="_blank" title="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+            <a href="https://linkedin.com/in/georgewu108" target="_blank" title="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+            <a href="https://buymeacoffee.com/rainfantry" target="_blank" title="Buy Me a Coffee">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p>22ND SURVEY DIVISION / GSW PTY LTD / ABN 16 689 424 026</p>
+        <div class="footer-links">
+            <a href="https://github.com/rainfantry">GitHub</a>
+            <a href="https://linkedin.com/in/georgewu108">LinkedIn</a>
+            <a href="https://buymeacoffee.com/rainfantry">Buy Me a Coffee</a>
+        </div>
+        <p style="margin-top: 12px; opacity: 0.5;">Built with first principles</p>
+    </footer>
+
+    <script>
+        // Hamburger menu
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        function closeMenu() {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        }
+
+        // Close menu on scroll
+        window.addEventListener('scroll', closeMenu);
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check saved preference or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            html.setAttribute('data-theme', 'light');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            if (current === 'light') {
+                html.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+
+    <!-- Instagram Embeds -->
+    <script async src="https://www.instagram.com/embed.js"></script>
 </body>
 </html>
