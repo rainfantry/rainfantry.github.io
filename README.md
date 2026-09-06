@@ -1,4 +1,10 @@
 # George Wu — Security Researcher
+https://buymeacoffee.com/rainfantry
+
+consider even $1 if ur taking this i dont have a job im struggling to find one, if i keep getting people forking or taking this I’m going to private all my work. im literally losing money/time for all and not even a thank you.
+
+if i get any more forks or whatever, and not even a thank u or $1 when I have nothing im sick of IT. i really wanted to help but im afraid I’ll take this whole portfolio down so the next person can have you to thank. all i ask is for appreciation if $1 is too much for u to take all my work 
+
 
 **Independent offensive security researcher. Sydney, Australia.**
 
