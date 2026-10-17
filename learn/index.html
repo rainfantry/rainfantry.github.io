@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Here — 22nd Survey Division</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --text: #e5e5e5;
+            --dim: #888;
+            --accent: #ff6b35;
+            --border: #222;
+            --card-bg: #111;
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Nav */
+        .spa-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+        .spa-nav a { color: var(--dim); text-decoration: none; font-size: 0.75rem; transition: color 0.2s; }
+        .spa-nav a:hover { color: var(--text); }
+        .spa-nav .logo { color: var(--text); font-weight: 500; font-size: 0.85rem; }
+        .nav-links { display: flex; gap: 1.25rem; }
+        .nav-hamburger {
+            display: none;
+            background: none; border: none;
+            color: var(--text); font-size: 1.5rem;
+            cursor: pointer; padding: 0.25rem;
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%; left: 0; right: 0;
+                background: rgba(10,10,10,0.98);
+                flex-direction: column;
+                padding: 1rem 1.5rem;
+                gap: 1rem;
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-links.open { display: flex; }
+            .nav-hamburger { display: block; }
+        }
+
+        /* Layout */
+        .page-wrap {
+            padding-top: 60px;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            min-height: 100vh;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        @media (max-width: 900px) {
+            .page-wrap { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            padding: 2rem 1.25rem;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+        .sidebar ul { list-style: none; }
+        .sidebar ul li { margin-bottom: 0.5rem; }
+        .sidebar ul li a {
+            color: var(--dim);
+            text-decoration: none;
+            font-size: 0.65rem;
+            line-height: 1.6;
+            display: block;
+            padding: 0.25rem 0;
+            transition: color 0.2s;
+        }
+        .sidebar ul li a:hover { color: var(--text); }
+        .sidebar ul li a.active { color: var(--accent); }
+        .ch-num {
+            color: var(--accent);
+            font-size: 0.55rem;
+            margin-right: 0.4rem;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 3rem 2.5rem;
+            max-width: 720px;
+        }
+        @media (max-width: 768px) {
+            .main-content { padding: 2rem 1.25rem; }
+        }
+
+        /* Mobile chapter nav */
+        .mobile-toc {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            margin-bottom: 2.5rem;
+            overflow: hidden;
+        }
+        .mobile-toc-toggle {
+            background: none; border: none;
+            color: var(--dim); font-family: inherit;
+            font-size: 0.7rem; padding: 0.9rem 1rem;
+            width: 100%; text-align: left;
+            cursor: pointer; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .mobile-toc-toggle:hover { color: var(--text); }
+        .mobile-toc-list { display: none; padding: 0 1rem 0.75rem; }
+        .mobile-toc-list.open { display: block; }
+        .mobile-toc-list a {
+            display: block; color: var(--dim);
+            text-decoration: none; font-size: 0.65rem;
+            padding: 0.3rem 0; transition: color 0.2s;
+        }
+        .mobile-toc-list a:hover { color: var(--text); }
+        @media (max-width: 900px) { .mobile-toc { display: block; } }
+
+        /* Intro */
+        .intro-block {
+            margin-bottom: 4rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .intro-block h1 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+        .intro-block h1 span { color: var(--accent); }
+        .intro-block p {
+            font-size: 0.8rem;
+            color: var(--dim);
+            line-height: 1.9;
+            margin-bottom: 0.75rem;
+        }
+        .intro-note {
+            border-left: 2px solid var(--accent);
+            padding: 0.75rem 1rem;
+            background: rgba(255,107,53,0.04);
+            margin-top: 1.5rem;
+        }
+        .intro-note p {
+            font-size: 0.7rem;
+            color: var(--dim);
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        /* Chapter */
+        .chapter {
+            margin-bottom: 5rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .chapter:last-child { border-bottom: none; }
+        .chapter-header {
+            margin-bottom: 2rem;
+        }
+        .chapter-num {
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+        .chapter-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+        .chapter-hook {
+            font-size: 0.85rem;
+            color: var(--dim);
+            border-left: 2px solid var(--border);
+            padding-left: 1rem;
+            font-style: italic;
+            line-height: 1.7;
+        }
+        .chapter-body p {
+            font-size: 0.78rem;
+            color: #ccc;
+            line-height: 1.95;
+            margin-bottom: 1.25rem;
+            font-weight: 300;
+        }
+        .chapter-body strong { color: var(--text); font-weight: 500; }
+        .chapter-body code {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 2px;
+            padding: 0.1rem 0.35rem;
+            font-size: 0.75rem;
+            color: #79c0ff;
+        }
+        .chapter-body pre {
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        .chapter-body pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.72rem;
+            color: #8b949e;
+            line-height: 1.8;
+        }
+        .chapter-body pre .hi { color: #56d364; }
+        .chapter-body pre .warn { color: #e3b341; }
+        .chapter-body pre .dim { color: #484f58; }
+
+        /* Callout blocks */
+        .callout {
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 1rem 1.25rem;
+            margin: 1.75rem 0;
+            background: #0d0d0d;
+        }
+        .callout.validated { border-left: 3px solid #56d364; }
+        .callout.warning   { border-left: 3px solid #e3b341; }
+        .callout.obsolete  { border-left: 3px solid #f85149; }
+        .callout-label {
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .callout.validated .callout-label { color: #56d364; }
+        .callout.warning   .callout-label { color: #e3b341; }
+        .callout.obsolete  .callout-label { color: #f85149; }
+        .callout p {
+            font-size: 0.72rem !important;
+            color: var(--dim) !important;
+            margin: 0 !important;
+            line-height: 1.7;
+        }
+
+        /* Ref links */
+        .chapter-refs {
+            margin-top: 1.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .ref-link {
+            font-size: 0.62rem;
+            color: var(--dim);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.6rem;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+        .ref-link:hover {
+            color: var(--text);
+            border-color: var(--dim);
+        }
+
+        /* Live CVE box */
+        .live-cve-section {
+            margin-top: 2rem;
+        }
+        .live-cve-label {
+            font-size: 0.58rem;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .live-cve-label::before {
+            content: '';
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .cve-mini-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+        .cve-mini-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0.9rem 1rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+            align-items: start;
+        }
+        .cve-mini-id {
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .cve-mini-id:hover { color: var(--text); }
+        .cve-mini-title {
+            font-size: 0.72rem;
+            color: var(--text);
+            font-weight: 400;
+            margin-top: 0.3rem;
+            grid-column: 1 / -1;
+        }
+        .cve-mini-cvss {
+            font-size: 0.6rem;
+            padding: 0.1rem 0.35rem;
+            border-radius: 2px;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+        .cve-mini-badge {
+            font-size: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            padding: 0.12rem 0.35rem;
+            border-radius: 2px;
+        }
+        .badge-wild { background: #f85149; color: #fff; }
+        .badge-likely { background: #e3b341; color: #0d1117; }
+        .cve-mini-meta {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .cve-loading {
+            font-size: 0.68rem;
+            color: var(--dim);
+            padding: 1rem 0;
+        }
+
+        /* Case studies grid */
+        .writeup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .writeup-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 1rem;
+            text-decoration: none;
+            display: block;
+            transition: border-color 0.2s;
+        }
+        .writeup-card:hover { border-color: var(--dim); }
+        .wc-tag {
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.4rem;
+        }
+        .wc-title {
+            font-size: 0.72rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .wc-desc {
+            font-size: 0.65rem;
+            color: var(--dim);
+            line-height: 1.6;
+            margin-top: 0.4rem;
+        }
+
+        /* Scrollspy */
+        .chapter[data-active] .chapter-num { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<nav class="spa-nav">
+    <a href="/" class="logo">22nd Survey Division</a>
+    <button class="nav-hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/blueteam-ref.html">Blue Team</a>
+        <a href="/pentest-ref.html">Red Team</a>
+        <a href="/learn/" style="color:var(--accent);">Learn</a>
+        <a href="/hebrew.html">עברית</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-label">Chapters</div>
+        <ul>
+            <li><a href="#start"><span class="ch-num">00</span> Start Here</a></li>
+            <li><a href="#thewire"><span class="ch-num">00½</span> The Wire</a></li>
+            <li><a href="#rings"><span class="ch-num">01</span> The CPU Lie</a></li>
+            <li><a href="#filing"><span class="ch-num">02</span> The Filing Cabinet</a></li>
+            <li><a href="#tokens"><span class="ch-num">03</span> Who Windows Thinks You Are</a></li>
+            <li><a href="#printer"><span class="ch-num">04</span> The Printer That Gave Up SYSTEM</a></li>
+            <li><a href="#gap"><span class="ch-num">05</span> The Gap</a></li>
+            <li><a href="#kernel"><span class="ch-num">06</span> Blinding the Sensor Array</a></li>
+            <li><a href="#zerowrites"><span class="ch-num">07</span> Zero Writes</a></li>
+            <li><a href="#delivery"><span class="ch-num">08</span> The Human API</a></li>
+            <li><a href="#lastmile"><span class="ch-num">09</span> The Last Mile</a></li>
+            <li><a href="#theframe"><span class="ch-num">10</span> The Frame</a></li>
+            <li><a href="#syscalllattice"><span class="ch-num">11</span> The Syscall Lattice</a></li>
+            <li><a href="#casestudies"><span class="ch-num">12</span> Case Studies</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+
+        <!-- Mobile TOC -->
+        <div class="mobile-toc">
+            <button class="mobile-toc-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.arrow').textContent=this.nextElementSibling.classList.contains('open')?'▲':'▼'">
+                <span>Chapters</span><span class="arrow">▼</span>
+            </button>
+            <div class="mobile-toc-list">
+                <a href="#rings">01 — The CPU Lie</a>
+                <a href="#filing">02 — The Filing Cabinet</a>
+                <a href="#tokens">03 — Who Windows Thinks You Are</a>
+                <a href="#printer">04 — The Printer That Gave Up SYSTEM</a>
+                <a href="#gap">05 — The Gap</a>
+                <a href="#kernel">06 — Blinding the Sensor Array</a>
+                <a href="#zerowrites">07 — Zero Writes</a>
+                <a href="#delivery">08 — The Human API</a>
+                <a href="#casestudies">09 — Case Studies</a>
+            </div>
+        </div>
+
+        <!-- Intro -->
+        <div class="intro-block" id="start">
+            <h1>Why Windows <span>breaks</span> the way it does.</h1>
+            <p>Nine chapters. No vendor slides. No certification prep. Every technique here was run against real systems — engagements, lab targets, or disclosed vulnerabilities we found and filed. If something is no longer reliable, it's marked obsolete. If it's been proven under conditions that matter, it's marked validated.</p>
+            <p>The chapters build on each other. Chapter 1 is the only one you can safely skip if you already know CPU privilege rings. Every chapter after it assumes you read the one before.</p>
+            <p>Each chapter ends with a live CVE box — current Microsoft vulnerabilities using the same primitive, pulled from the MSRC API after each Patch Tuesday. The technique in the chapter is the same technique attackers are using this month, against the CVEs in that box.</p>
+            <div class="intro-note">
+                <p>This isn't a learning path to a cert. It's a map of how Windows actually breaks. Start at the beginning if you're new to internals. Jump to the chapter that matches the CVE you're reversing if you're not.</p>
+            </div>
+        </div>
+
+        <!-- CH01 -->
+        <div class="chapter" id="thewire">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 00½</div>
+                <div class="chapter-title">The Wire</div>
+                <div class="chapter-hook">Every attack in this curriculum travels over a network. Before you can debug a shell that won't connect, you need to know what a socket is.</div>
+            </div>
+            <div class="chapter-body">
+                <p>A network is just two machines with a convention about how to label their data. An <strong>IP address</strong> identifies the machine. A <strong>port</strong> identifies the process on that machine. Together they form an endpoint — the address your shell connects to, and the address your C2 listener waits on.</p>
+                <p><strong>TCP</strong> (Transmission Control Protocol) is the transport under everything. Before data flows, both sides complete a three-way handshake: SYN → SYN-ACK → ACK. If the SYN is dropped by a firewall, the handshake never completes. Your listener waits forever. Nothing arrives.</p>
+                <p>This is why reverse shells exist. A <strong>reverse shell</strong> has the victim initiate the connection — calling out to the attacker. Outbound traffic is almost never blocked on Windows. The victim calls home, the attacker answers. A <strong>bind shell</strong> has the attacker connect to a listener on the victim, which requires an inbound port to be open — rarely available on a hardened target.</p>
+                <p>A <strong>socket</strong> is a file descriptor. You write bytes to it and they travel across the network. You read bytes from it and they came from the other end. The OS handles routing, retransmission, checksums. Your code does four things: socket() → bind()/connect() → send()/recv() → close(). That's the entire API. A C2 implant is a program that does this in a loop: connect to the C2 server, receive a command, execute it, send back the output, close the connection, sleep, repeat.</p>
+                <p>A <strong>C2 beacon</strong> uses short-lived connections rather than a permanent open socket. A persistent TCP connection shows as an unusual long-lived flow in NetFlow analysis. Short-lived HTTPS connections to a CDN look like normal web browsing. The implant connects for seconds, collects a command or confirms check-in, and disconnects. Jitter — randomising the sleep interval — prevents regular intervals from becoming a detection signature.</p>
+                <h3>The errors that actually stop operations</h3>
+                <p>These errors fired during ring-stack kill chain development against a live Windows 11 target. Every one of them is a networking problem:</p>
+                <ul>
+                    <li><strong>Connection refused</strong> — nothing listening on the target port. Listener not running, wrong port, wrong interface.</li>
+                    <li><strong>Listener waits forever</strong> — SYN dropped by firewall. Switch to reverse shell on port 443 or 80.</li>
+                    <li><strong>Error 67 (SMB)</strong> — UNC path trying to reach port 445, blocked at network boundary. Switch exfil to HTTP or SCP.</li>
+                    <li><strong>Shell connects then drops immediately</strong> — WaitForSingleObject overflow in PowerShell. Use <code>[uint32]::MaxValue</code> not <code>0xFFFFFFFF</code>.</li>
+                    <li><strong>send() returns -1 / WSAECONNRESET</strong> — remote end closed. Add reconnect loop — production implants always retry on failure.</li>
+                </ul>
+                <div class="callout validated">
+                    <div class="callout-label">Validated</div>
+                    <p>ring-stack Phase 0 (networking theory) and Phase 1 (C2 listener in C) and Phase 2 (reverse shell in C) complete. All errors above documented from live testing against Windows 11 target 192.168.1.61. Phase 10 live test: 3 Edge passwords exfiltrated to C2, 504-byte zip received, exit code 0, Defender silent.</p>
+                </div>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-networking-c2.html" class="ref-link">Writeup: The Wire — TCP, Sockets, C2 Communication</a>
+                <a href="/writeups/writeup-c2-architecture.html" class="ref-link">Writeup: C2 Architecture</a>
+                <a href="/writeups/writeup-einayim-implant.html" class="ref-link">Writeup: Einayim Implant</a>
+            </div>
+        </div>
+
+        <div class="chapter" id="rings">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 01</div>
+                <div class="chapter-title">The CPU Lie</div>
+                <div class="chapter-hook">Every program running right now believes it is the most important thing on your machine. The CPU lies to all of them.</div>
+            </div>
+            <div class="chapter-body">
+                <p>Your CPU has privilege levels called <strong>rings</strong>. Ring 0 is kernel mode — the OS kernel runs here, hardware drivers run here. Ring 3 is user mode — every application you've opened, every browser tab, every piece of software ever installed on your machine. In Ring 3, the CPU actively filters everything. You can't directly touch hardware. You can't read another process's memory. You can't even look at the kernel without going through a tiny, guarded doorway called a <strong>syscall</strong>.</p>
+                <p>This isn't a software policy. The CPU itself enforces it at the hardware level. A user-mode process that attempts to read kernel memory doesn't get an error message — it gets terminated by an access fault. The CPU interrupted execution, checked the privilege level, and killed the attempt before anything happened.</p>
+                <p>Every attacker who has ever escalated privilege on Windows hit this wall first. The question is never "can I break through the ring boundary?" — you can't, not directly from Ring 3. The question is always: <strong>is there a door that's already open?</strong></p>
+                <p>Doors that are already open exist in two forms. First: signed kernel drivers. These run in Ring 0 by definition, signed by Microsoft or a trusted vendor. If a driver has a bug that lets user space control its kernel operations, you inherit Ring 0 access without ever touching the protection boundary. Second: privileged user-mode services that have been granted specific capabilities by the OS — capabilities that, under the right conditions, let you swap your identity to something higher.</p>
+                <p>Everything in the following chapters is a variation on one of those two doors. The ring model is the constraint that makes all privilege escalation necessary. If you understand it, you understand why every technique described here exists.</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated</div>
+                <p>CPU ring model is hardware architecture — Intel and AMD documentation, confirmed through direct kernel driver development (ring-stack). No exceptions, no caveats. This is how the CPU works.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-internals-philosophy.html" class="ref-link">Writeup: Internals Philosophy</a>
+            </div>
+        </div>
+
+        <!-- CH02 -->
+        <div class="chapter" id="filing">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 02</div>
+                <div class="chapter-title">The Filing Cabinet</div>
+                <div class="chapter-hook">When you open a file in Windows, you don't get the file. You get a number. The rights attached to it were frozen the moment you opened it.</div>
+            </div>
+            <div class="chapter-body">
+                <p>That number is a <strong>handle</strong>. It's an index into a table stored in your process's kernel structure — the <code>HandleTable</code> field inside <code>EPROCESS</code>. The table maps your handle value to the real kernel object: the file, the process, the mutex, the token, whatever you opened. The access rights you were granted at open time are frozen inside that table entry. Windows does not re-check them on subsequent operations.</p>
+                <p>This freezing property is the entire basis of handle-based attacks. Whoever holds a handle carries whatever rights were embedded in it at creation. If a high-privilege process opens a handle to a sensitive object and you can access that handle — through inheritance, through <code>DuplicateHandle</code>, through a handle leak — you have that privilege on that object. The rights travel with the handle, not with the process identity.</p>
+                <p><strong>DLL hijacking</strong> is the file-path version of this same principle. When a process loads a DLL, it walks a search path: the application directory, <code>System32</code>, other registered paths. If you control a directory earlier in the search path than the legitimate DLL, your code loads instead. The process's token gave you the rights to write there. The loading mechanism trusted the path. The gap between "who can write here" and "who should be trusted to provide this library" is the vulnerability.</p>
+                <p>The information disclosure class of CVEs mostly serves one goal: map kernel object addresses you weren't supposed to know. Before you can duplicate a handle you didn't legitimately acquire, you need to find it. <code>NtQuerySystemInformation(SystemHandleInformation)</code> enumerates the system-wide handle table — object type, process ID, handle value, object address. Every info-disclosure bug that leaks a kernel pointer is helping an attacker build this map.</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated</div>
+                <p>Handle table structure confirmed via WinDbg inspection of live kernel. DLL hijacking validated across multiple targets. <code>NtQuerySystemInformation</code> handle enumeration runs without elevation.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-dll-injection.html" class="ref-link">Writeup: DLL Injection</a>
+                <a href="/writeups/writeup-token-stealing.html" class="ref-link">Writeup: Token Stealing</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs using this primitive</div>
+                <div class="cve-mini-grid" data-primitive="dll-hijack,info-disclosure">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH03 -->
+        <div class="chapter" id="tokens">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 03</div>
+                <div class="chapter-title">Who Windows Thinks You Are</div>
+                <div class="chapter-hook">Windows doesn't care who you are. It cares what your process's access token says you are.</div>
+            </div>
+            <div class="chapter-body">
+                <p>Every process running on Windows has an <strong>access token</strong>. That token is a kernel object encoding three things: which user logged in, which groups they belong to, and which privileges are currently enabled. When your code calls <code>CreateFile</code>, the kernel looks at your token. When you spawn a child process, it inherits your token. Your identity, to Windows, is the contents of that token object.</p>
+                <p><strong>Privileges</strong> are the important part. There are dozens of them. Most are disabled by default and cannot be enabled without elevation. But service accounts that receive client connections and impersonate those clients — by design, as part of their legitimate function — are granted <code>SeImpersonatePrivilege</code>. This privilege authorises the holder to call Windows APIs that adopt another thread's identity: <code>ImpersonateNamedPipeClient</code>, <code>ImpersonateLoggedOnUser</code>, <code>CreateProcessWithTokenW</code>.</p>
+                <p>The Windows design assumption was: only trusted service accounts will have this privilege, and they'll only use it on clients they're legitimately serving. The attacker's read: if you land on a service account with <code>SeImpersonatePrivilege</code>, and you can get a SYSTEM-level process to interact with an object you control, you can impersonate SYSTEM. One call to <code>ImpersonateNamedPipeClient</code>, and the thread token swaps. Your process is now running as SYSTEM.</p>
+                <p>The impersonation APIs haven't changed. What changes is the coercion vector — how you get SYSTEM to connect to your object in the first place. PrintSpoofer used the print subsystem. Potato techniques used COM activation. JuicyPotato used scheduled task activation. Each time Microsoft closes one coercion path, researchers find the next service account that can be coerced. The privilege and the API remain.</p>
+                <p><strong>Token stealing</strong> is the direct version: open a handle to a SYSTEM process, duplicate its token with <code>DuplicateTokenEx</code>, call <code>CreateProcessWithTokenW</code>. No coercion needed — but you need <code>SeDebugPrivilege</code> to open a handle to a protected process. SeDebug is typically available to local administrators. If you've escalated to a local admin, this is the path to SYSTEM.</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated</div>
+                <p><code>SeImpersonatePrivilege</code> exploitation confirmed live. Token duplication from admin to SYSTEM confirmed. rainfantry/UAC-to-SYSTEM-POC documents the full chain.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-seimpersonate.html" class="ref-link">Writeup: SeImpersonate</a>
+                <a href="/writeups/writeup-token-stealing.html" class="ref-link">Writeup: Token Stealing</a>
+                <a href="/writeups/writeup-uac-bypass.html" class="ref-link">Writeup: UAC Bypass</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs using this primitive</div>
+                <div class="cve-mini-grid" data-primitive="token-impersonation,credential-access">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH04 -->
+        <div class="chapter" id="printer">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 04</div>
+                <div class="chapter-title">The Printer That Gave Up SYSTEM</div>
+                <div class="chapter-hook">In 1996, Microsoft built an API for print servers. Thirty years later, it still works on unpatched Windows.</div>
+            </div>
+            <div class="chapter-body">
+                <p><strong>Named pipes</strong> are a local IPC mechanism. A server process creates a pipe with a name. A client connects to that name. Once connected, the server calls <code>ImpersonateNamedPipeClient</code> and the server's thread adopts the client's token for the duration of the call. Microsoft built this for print servers: the server needs to print as the connecting user. The API does exactly what it advertises.</p>
+                <p>The attack is PrintSpoofer. The Windows Print Spooler runs as SYSTEM and exposes an RPC function, <code>RpcOpenPrinter</code>, that accepts a printer path and connects to it. The path format includes a port component. If you craft that port component to point to a named pipe you own — using the UNC path format Windows expects for shared printer objects — the Spooler, running as SYSTEM, connects to your pipe as a client. You call <code>ImpersonateNamedPipeClient</code>. Your thread is now running as SYSTEM.</p>
+                <pre><code><span class="hi">[+]</span> Named pipe created: \\.\pipe\test\pipe\spoolss
+<span class="hi">[+]</span> Calling RpcOpenPrinter to coerce Spooler connection...
+<span class="hi">[+]</span> Client connected. Calling ImpersonateNamedPipeClient...
+<span class="hi">[+]</span> Got impersonation token: NT AUTHORITY\SYSTEM
+<span class="hi">[+]</span> Spawning: cmd.exe
+Microsoft Windows [Version 10.0.19045.3803]
+C:\Windows\system32&gt;</code></pre>
+                <p>The <code>-c</code> flag replaces <code>cmd.exe</code> with your C2 agent. The Spooler connects, you call <code>CreateProcessWithTokenW</code> with the SYSTEM token and your payload path. The payload runs as SYSTEM with no elevation prompt, no UAC bypass required.</p>
+                <p>The specific Spooler coercion path was patched. Then researchers found a different <code>RpcOpenPrinter</code> variant. Then another via the MSDTC service. Then via DCOM object activation. The underlying mechanism — <code>ImpersonateNamedPipeClient</code> on a coerced SYSTEM connection — never changed. Each patch closed one coercion source. New coercion sources are found by reading Windows RPC interfaces and asking: which service runs as SYSTEM and can be induced to connect to a path I specify?</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated</div>
+                <p>PrintSpoofer technique confirmed on Windows 10 pre-patch. Spooler service coercion confirmed live. Patched on modern fully-updated systems — lateral movement via service accounts on unpatched domain hosts remains a live finding.</p>
+            </div>
+            <div class="callout warning">
+                <div class="callout-label">Current status</div>
+                <p>Original PrintSpooler vector patched. JuicyPotatoNG and similar tools are widely signatured by 2026. Coercion via less-known RPC services still viable on unpatched internal systems. Enumeration-first approach required.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-seimpersonate.html" class="ref-link">Writeup: SeImpersonate</a>
+                <a href="/writeups/writeup-process-hollowing.html" class="ref-link">Writeup: Process Hollowing</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs using this primitive</div>
+                <div class="cve-mini-grid" data-primitive="privilege-escalation">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH05 -->
+        <div class="chapter" id="gap">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 05</div>
+                <div class="chapter-title">The Gap</div>
+                <div class="chapter-hook">Defender scans your file. Your file is clean. Defender approves it. Your file is now something else. Defender doesn't know.</div>
+            </div>
+            <div class="chapter-body">
+                <p>This is <strong>TOCTOU</strong> — Time of Check to Time of Use. Every security decision has this property: there is a moment when the check happens, and a later moment when the action occurs. If the object being checked can be replaced between those two moments, the check measured something that no longer exists. The action happens against a different object than the one that was evaluated.</p>
+                <p>Windows Defender's MiniFilter driver, <code>WdFilter</code>, hooks <code>IRP_MJ_WRITE</code> — the I/O Request Packet for file write operations. When data is written to a path, the filter intercepts and scans it. If the content is clean, the write completes. The quarantine decision, if triggered, is asynchronous — it happens in a separate work item after the initial scan callback returns. Between scan and action: the gap.</p>
+                <p>NTFS gives attackers the tool to exploit this gap: <strong>junction points</strong> and directory symlinks. You can atomically redirect what a path resolves to without modifying the file itself. A racing thread substitutes the real payload during the scan window. The scanner evaluates the benign version at check time. The loader executes the malicious version at use time.</p>
+                <p>We tested this experimentally. The gap is real and measurable. The timing window varies with system load. It is not reliable enough to be a production delivery mechanism in its current form — the race window is narrow and environment-dependent. What makes it operationally relevant is the broader principle: every security product that follows a scan-then-act pattern has this gap. <code>WdFilter</code> has it. ETW event writers have it. Forensic collectors have it. Every one of them trusts that the object they measured is the object they're acting on.</p>
+                <p>We filed a variant with MSRC as VULN-195458 (referenced in Chapter 7 as well). Their response: user-mode functionality is outside the security boundary. Technically accurate by Microsoft's definitions. The gap still exists in production systems.</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated (Research)</div>
+                <p>TOCTOU timing gap confirmed experimentally across multiple Windows 10/11 builds. Race window measurable. Not a reliable production primitive in isolation — requires favorable timing conditions or repeated attempts.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-scanner-detection.html" class="ref-link">Writeup: Scanner Detection</a>
+                <a href="/writeups/writeup-av-evasion.html" class="ref-link">Writeup: AV Evasion</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs using this primitive</div>
+                <div class="cve-mini-grid" data-primitive="memory-corruption">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH06 -->
+        <div class="chapter" id="kernel">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 06</div>
+                <div class="chapter-title">Blinding the Sensor Array</div>
+                <div class="chapter-hook">Windows keeps a list of every security product that wants to know when a new process is created. We found the list. We zeroed it. Windows stopped telling them.</div>
+            </div>
+            <div class="chapter-body">
+                <p>When AV and EDR products install on Windows, they register a callback using <code>PsSetCreateProcessNotifyRoutine</code>. The kernel stores these callbacks in <code>PspCreateProcessNotifyRoutine</code> — a 64-entry array in non-paged kernel memory. Each slot holds a pointer to the vendor's notification function. When any process is created anywhere on the machine, the kernel walks this array and calls every registered function. That's how Defender knows in real time when a new process starts.</p>
+                <p>From Ring 3, you cannot touch kernel memory. Chapter 1 established this. The door is a vulnerable signed driver. <strong>RTCore64.sys</strong> (CVE-2019-16098) is a Micro-Star hardware monitoring driver from 2018. It has a bug: IOCTL <code>0x80002048</code> accepts a user-supplied kernel address and size and reads it. IOCTL <code>0x8000204c</code> accepts a kernel address and value and writes it. Arbitrary kernel read/write, from Ring 3, via a completely legitimate Microsoft-signed driver. The certificate was never revoked.</p>
+                <p>The array address changes on every boot — KASLR randomises the kernel base. So you walk the kernel's own internal structure dynamically. Load <code>ntdll.dll</code>, parse its PE headers, find the export directory, walk the function name table until you find <code>PsSetCreateProcessNotifyRoutine</code>. Follow the <code>E8 CALL</code> byte sequence inside it — that's an unconditional call to the internal function <code>PspSetCreateProcessNotifyRoutine</code>. Disassemble that function until you find a <code>LEA RIP+offset</code> instruction pointing at the array. Decode the relative offset. Array address resolved, without a single hardcoded value. Survives every reboot, every kernel update, every KASLR roll.</p>
+                <pre><code><span class="hi">[+]</span> PsSetCreateProcessNotifyRoutine: fffff8047f08f010
+<span class="hi">[+]</span> PspSetCreateProcessNotifyRoutine: fffff8047f08efc0
+<span class="hi">[+]</span> PspCreateProcessNotifyRoutine: fffff8047f0ec1e0
+<span class="hi">[+]</span> Zeroing callback 0: fffff8045fa91b80 <span class="dim">← Defender</span>
+<span class="hi">[+]</span> Zeroing callback 1: fffff8045fb12340
+<span class="hi">[+]</span> Zeroing callback 2: fffff8045fb98a10
+<span class="warn">[!]</span> Done. 10 callbacks zeroed. EDR is BLIND.
+<span class="hi">[+]</span> Spawning calc.exe — PID: 8712  <span class="dim">← no Defender popup</span></code></pre>
+                <p>RTCore64 only supports 4-byte (DWORD) reads and writes. Each 8-byte pointer in the array requires two writes: low 4 bytes to zero, high 4 bytes to zero. The 48-byte struct passed to the driver's IOCTL encodes the target address, offset, and value. Write both halves, read back to verify, move to the next slot.</p>
+                <p>PatchGuard (KPP) monitors critical kernel structures on a randomised timer and BSODs the machine if it detects tampering. The zeroed array will trigger a BSOD eventually — typically within minutes. This is a VM primitive, not a production technique in its current form. It demonstrates the principle. The production version either disables PatchGuard first or operates within the KPP sweep window.</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated</div>
+                <p>Phase 2 complete July 2026. 10 callbacks zeroed. calc.exe spawned, no Defender alert. Writes verified persistent across second run. VM-only due to PatchGuard. RTCore64.sys still valid signature as of test date.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-byovd-ring0.html" class="ref-link">Writeup: BYOVD Ring 0 — Kernel Callback Zeroing</a>
+                <a href="/writeups/writeup-persistence-levels.html" class="ref-link">Writeup: Persistence Levels</a>
+                <a href="/writeups/writeup-av-evasion.html" class="ref-link">Writeup: AV Evasion</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs using this primitive</div>
+                <div class="cve-mini-grid" data-primitive="kernel-exploit">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH07 -->
+        <div class="chapter" id="zerowrites">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 07</div>
+                <div class="chapter-title">Zero Writes</div>
+                <div class="chapter-hook">AMSI scans the PowerShell you're about to run. ETW logs everything you do. We bypassed both without changing a single byte of memory.</div>
+            </div>
+            <div class="chapter-body">
+                <p><code>AmsiScanBuffer</code> is the function Windows calls to scan script content before execution. <code>EtwEventWrite</code> is the function that logs events to Event Tracing for Windows. Both live in loaded DLLs — <code>amsi.dll</code> and <code>ntdll.dll</code> — mapped into your process when it starts.</p>
+                <p>The standard bypass is to patch the function prologue: overwrite the first bytes with <code>xor eax, eax; ret</code>. The function immediately returns a "clean" result before doing anything. This worked for years. It stopped working when EDRs began monitoring <code>NtProtectVirtualMemory</code> — the syscall used to make memory executable before writing it. Any write to an executable memory region, at an address matching a known security function, is flagged instantly.</p>
+                <p><strong>Hardware breakpoints</strong> use the CPU's debug registers directly: <code>DR0</code>–<code>DR3</code> hold breakpoint addresses, <code>DR7</code> enables them. When the instruction pointer reaches a breakpointed address, the CPU raises a debug exception <em>before the instruction executes</em>. No instruction ran. No bytes were written. No memory was modified. The exception fires at the hardware level.</p>
+                <p>You register a Vectored Exception Handler via <code>AddVectoredExceptionHandler</code> before setting the breakpoints. When the exception fires, your handler receives <code>EXCEPTION_POINTERS</code> with a <code>ContextRecord</code> containing the full CPU register state. You check that the exception code is <code>EXCEPTION_SINGLE_STEP</code> and the instruction pointer is at your target address. You manipulate <code>ContextRecord.Rax</code> to return a "clean" result. You call <code>ContinueExecution</code>. Execution resumes from the instruction after the one that was about to run, with the return value you substituted.</p>
+                <p>AMSI never scanned. ETW never logged. Zero bytes changed in any memory region. Zero <code>NtProtectVirtualMemory</code> calls. Zero memory-write events for behavior engines to catch.</p>
+                <p>We filed this technique with MSRC on 2026-06-16 as VULN-195458. Microsoft's response: in-process user-mode techniques are outside the Windows security boundary. This is correct under their definitions — the security boundary applies to cross-process attacks. The technique is valid. Detection rate as of filing: zero.</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated</div>
+                <p>HWBP bypass confirmed: AmsiScanBuffer and EtwEventWrite bypassed in-process with zero memory writes. iron-sun layers 7–8. Filed as VULN-195458 2026-06-16. Microsoft classified outside security boundary.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-hwbp-zero-write.html" class="ref-link">Writeup: HWBP Zero-Write — AMSI + ETW Bypass (VULN-195458)</a>
+                <a href="/writeups/writeup-av-evasion.html" class="ref-link">Writeup: AV Evasion</a>
+                <a href="/writeups/writeup-chrome-abe-bypass.html" class="ref-link">Writeup: Chrome ABE Bypass</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs using this primitive</div>
+                <div class="cve-mini-grid" data-primitive="security-bypass,auth-bypass">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH08 -->
+        <div class="chapter" id="delivery">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 08</div>
+                <div class="chapter-title">The Human API</div>
+                <div class="chapter-hook">Every exploit in the previous seven chapters has a delivery problem. Someone has to run something. Cialdini solved delivery in 1984 — he called it influence.</div>
+            </div>
+            <div class="chapter-body">
+                <p>Robert Cialdini spent years studying what makes people comply without deliberating. Six principles emerged: reciprocity, commitment, social proof, authority, liking, scarcity. These aren't phishing theory. They're empirically derived from behavioral research and validated across cultures. Three of them do most of the work in an engagement context.</p>
+                <p><strong>Authority</strong>: people comply with apparent authority figures without verifying credentials. An email from "IT Security" requesting an urgent action gets acted on at a higher rate than the same email from an unknown sender. The uniform is the message. Header, signature, domain that looks right at a glance — not under scrutiny, just at a glance. Scrutiny is the second reaction. The first reaction is the one that determines behavior.</p>
+                <p><strong>Scarcity and urgency</strong>: "Your account will be locked in 24 hours" removes the pause between "should I?" and "I already did." Urgency bypasses the deliberation step entirely. A well-timed message arriving right after a real security incident announcement multiplies this — the primed mind fills in the plausible narrative before the logic check fires.</p>
+                <p><strong>HTML smuggling</strong> is the technical implementation of getting past email scanners to reach the human. You don't send an executable. You send an HTML file. The HTML contains a Base64-encoded blob in a JavaScript variable. The browser reads it, calls <code>atob()</code> to decode, creates a <code>Blob</code> object, calls <code>URL.createObjectURL()</code> to generate a local download reference, and programmatically triggers a download. The email scanner received HTML. The browser assembled the executable locally. The victim's Downloads folder now contains a payload the scanner never evaluated as executable.</p>
+                <p><strong>Quishing</strong> (QR code phishing) routes around corporate email security entirely. The QR code resolves to a credential capture URL. It's scanned on a personal phone, on mobile data, outside the corporate proxy. The inspection layer never saw the URL. MFA-resistant proxies like evilginx2 sit in the middle of the real authentication flow — you're not capturing a password, you're proxying the actual login in real time and extracting the session token <em>after</em> MFA completes. The user authenticated legitimately. The session cookie is yours.</p>
+                <p>Delivery isn't a separate problem from security research. It's the <code>AV:N/AC:L/UI:R</code> in the CVSS vector made explicit. Every high-severity CVE that requires user interaction is a delivery problem with a technical wrapper. Understanding how influence works tells you exactly what that interaction needs to look like.</p>
+            </div>
+            <div class="callout validated">
+                <div class="callout-label">Validated</div>
+                <p>HTML smuggling confirmed bypassing major enterprise email gateways. Cialdini principles confirmed in live phishing engagements. evilginx2 MFA bypass confirmed against Outlook 365 targets. QR-to-mobile technique confirmed bypassing Proofpoint-protected environments.</p>
+            </div>
+            <div class="callout obsolete">
+                <div class="callout-label">Obsolete</div>
+                <p>Office macros: blocked by default since Office 2022 for internet-sourced files. GoPhish: widely signatured by 2025, use alternative infrastructure. Volume phishing: low signal-to-noise, generates detection events. Target selection and pretexting matter more than delivery tool.</p>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-c2-architecture.html" class="ref-link">Writeup: C2 Architecture</a>
+                <a href="/writeups/writeup-credential-harvesting.html" class="ref-link">Writeup: Credential Harvesting</a>
+                <a href="/writeups/writeup-regsvr32-lolbin.html" class="ref-link">Writeup: LOLBin via regsvr32</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs using this primitive</div>
+                <div class="cve-mini-grid" data-primitive="rce-remote,lolbin">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH09 -->
+        <div class="chapter" id="lastmile">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 09</div>
+                <div class="chapter-title">The Last Mile</div>
+                <div class="chapter-hook">"Your payload is undetectable. Getting it onto the machine is a different problem entirely."</div>
+            </div>
+            <div class="chapter-body">
+                <p>The delivery layer is where most operations fail. An EXE that defeats every AV engine still needs to reach the target, execute, and not get flagged in the first 30 seconds of runtime. That path — from your infrastructure to target execution — is the last mile. It has its own threat model, its own detection signatures, and its own body of proven technique.</p>
+
+                <h3>Why delivery is harder than the exploit</h3>
+                <p>Email gateways detonate attachments in sandboxes before delivery. Mark of the Web (MOTW) tags files downloaded from the internet and restricts what they can do. Large executables trigger behavioural analysis. Known payload patterns are signatured before first execution. The delivery problem is not "can we bypass detection" — it is "can we deliver without ever being visible to a detection surface."</p>
+
+                <h3>Technique 1 — HTML Smuggling</h3>
+                <p>The file never transits the email gateway because there is no file in transit. The email body contains HTML. When the victim opens it in a browser, JavaScript assembles the payload from base64 chunks using <code>atob()</code>, builds a Blob object, and creates a download link via <code>URL.createObjectURL()</code>. The file materialises on disk inside the browser process — after the gateway has already cleared the email. No binary attachment, no file hash in gateway logs. Confirmed bypassing enterprise gateways in engagements. Covered in Ch08 as initial access; this chapter covers the architecture behind it.</p>
+
+                <h3>Technique 2 — LNK + LOLBin stager</h3>
+                <p>A <code>.lnk</code> shortcut renders as a document icon. Its target is <code>mshta.exe</code> — a signed Microsoft binary — with an inline JavaScript payload in the arguments. mshta.exe runs the JS, which downloads the real payload. No unsigned binary was ever emailed. The initial file is a legitimate Windows shortcut pointing to a legitimate Windows application. Stage 1 is under 1KB. Einayim's LNK toolkit generates these with configurable payloads and icon spoofing.</p>
+
+                <h3>Technique 3 — Staged delivery</h3>
+                <p>Never deliver the final payload at stage 1. The stage 1 stager should be small (&lt; 50KB), make no suspicious API calls, and contain no network connections to known C2 infrastructure. Its only job is to confirm the environment is real (not a sandbox), then pull the actual payload from clean infrastructure. Staging works because detonation sandboxes time out — typically after 120 seconds of no malicious behaviour, the file is cleared. If stage 1 is clean-looking for 130 seconds before downloading stage 2, the sandbox never sees stage 2.</p>
+
+                <h3>Technique 4 — Domain fronting via CDN</h3>
+                <p>C2 callback traffic goes to a legitimate CDN IP (Cloudflare, Azure). DNS resolves to that known-good IP. The HTTPS SNI field names a clean-looking domain you control. The HTTP <code>Host</code> header inside the encrypted tunnel points to your actual C2 backend. Network inspection at the perimeter sees traffic to Cloudflare — which is on every corporate allowlist. The C2 communication is inside the TLS layer, invisible to DPI that cannot decrypt it. Requires a Cloudflare Worker or Azure CDN rule routing traffic to your listener. Implemented in Hermes Gateway (private) for this infrastructure.</p>
+
+                <div class="callout callout-validated">
+                    <div class="callout-label">Validated</div>
+                    HTML smuggling confirmed bypassing enterprise email gateways. LNK + mshta.exe confirmed against targets with Defender. Domain fronting via Cloudflare Workers confirmed operational in staged engagements. Staged delivery (2-stage) confirmed surviving 120-second sandbox timeout.
+                </div>
+
+                <h3>Technique 5 — Counter-recon honeypot</h3>
+                <p>Every internet-facing server gets scanned for leaked credentials hundreds of times per day. The defensive version of this is a honeypot. The offensive version is <em>trickery of Rhea</em> — you intentionally serve fake-but-convincing credentials and shell scripts at every path scanners probe (<code>/.env</code>, <code>/setup.sh</code>, <code>/.aws/credentials</code>, <code>/.git/config</code>). When the scanner operator downloads the "found" script and runs it to test the credentials, your implant loader inside the script backgrounds, self-deletes, and beacons home. The scanner becomes the victim.</p>
+                <p>This works because automated tools find the files, but humans often run them. A person who just found what looks like production AWS keys is motivated to test them quickly. The script does real-looking work (npm install, directory creation, env exports) and produces clean output — the implant is buried in one line that looks like a system manifest check.</p>
+                <p>The technique sits in a legal grey zone: running code on a remote system without authorisation is illegal in most jurisdictions regardless of whether that system was attacking you. Document this as a technique that exists, not a playbook to run without legal advice.</p>
+
+                <div class="callout callout-validated">
+                    <div class="callout-label">Validated</div>
+                    Trickery of Rhea deployed on 22div infrastructure. Scanner hits on /.env, /setup.sh, /.git/config confirmed in server logs. Counter-shell acquisition from scanner infrastructure confirmed. Active in production.
+                </div>
+
+                <h3>OPSEC baseline</h3>
+                <p>Fresh infrastructure per operation — never reuse C2 IPs across engagements. Randomised beacon intervals with jitter — not <code>sleep(60)</code> but <code>sleep(60 + rand(0,30))</code> — so traffic doesn't produce detectable timing patterns. Callback on port 443 with a valid TLS certificate. User-Agent set to a current common browser string. If possible, callback only during business hours — overnight connections from an employee's machine with no other traffic are an anomaly.</p>
+
+                <div class="callout callout-warning">
+                    <div class="callout-label">MOTW (Mark of the Web)</div>
+                    Files downloaded from the internet receive a Zone.Identifier ADS tag. Windows restricts what MOTW-tagged files can do (Office macros blocked, LNK warns on open). HTML smuggling bypasses this because the file is assembled locally by the browser, not downloaded directly — it may receive MOTW depending on the browser and version. Test against your specific target browser configuration.
+                </div>
+            </div>
+            <div class="chapter-refs">
+                <a href="/writeups/writeup-steganography.html" class="ref-link">Writeup: Steganography — LSB PNG + Zero-Width Unicode</a>
+                <a href="/writeups/writeup-trickery-of-rhea.html" class="ref-link">Writeup: Trickery of Rhea — Offensive Honeypot</a>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs — lolbin · rce-remote</div>
+                <div class="cve-mini-grid" data-primitive="lolbin,rce-remote">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH10 -->
+        <div class="chapter" id="theframe">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 10</div>
+                <div class="chapter-title">The Frame</div>
+                <div class="chapter-hook">"An implant without architecture is a one-time tool. Architecture is what makes access persistent, resilient, and controllable."</div>
+            </div>
+            <div class="chapter-body">
+                <p>Once the payload executes, the question is no longer whether you can run code. The question is: how do you maintain that position across reboots, issue commands remotely, exfiltrate data without alerting network detection, and do all of this without an analyst noticing the process in Task Manager. This is the C2 architecture layer — the frame the implant lives inside.</p>
+
+                <h3>The three-layer model</h3>
+                <p>Every operational implant separates three concerns:</p>
+                <ul>
+                    <li><strong>Implant (target):</strong> beacons home, executes commands, maintains persistence, hides from analysis.</li>
+                    <li><strong>Panel (operator):</strong> receives beacons, presents the operator interface, stores session history, issues tasking.</li>
+                    <li><strong>Infrastructure:</strong> the network layer between them — redirectors, domain fronts, staging servers — responsible for making C2 traffic look like normal internet traffic.</li>
+                </ul>
+                <p>These three never run on the same machine. If the target's SOC traces the C2 IP, they should find only a Cloudflare Worker or a redirector, not your operator panel.</p>
+
+                <h3>DLL hijacking as the implant vehicle</h3>
+                <p><code>version.dll</code> is a system DLL loaded by nearly every Windows application. Windows searches for DLLs in the application's own directory before searching System32 (Ch02 — search order). Place a malicious <code>version.dll</code> in the directory of any startup application and Windows loads yours. The trusted process loads the implant. Task Manager shows the trusted application. The implant runs inside a legitimately-signed process — the process name, path, and signature all clear inspection.</p>
+                <p>Einayim uses this: the implant is compiled as <code>version.dll</code>, placed in a target application directory, and loaded automatically on next startup. No new process created. No new scheduled task visible in the obvious places.</p>
+
+                <h3>Five persistence layers (einayim_kav pattern)</h3>
+                <p>Deploy all five simultaneously. Removing one or two should not kill the implant:</p>
+                <ul>
+                    <li><strong>Registry Run key</strong> (HKCU\...\Run) — survives user login, no admin required</li>
+                    <li><strong>Windows Service</strong> — survives reboots, no user login needed, SYSTEM context available</li>
+                    <li><strong>WMI Event Subscription</strong> — triggers on system events (startup, user login, any WMI query), leaves no registry footprint under common inspection paths</li>
+                    <li><strong>COM hijacking</strong> (HKCU COM object override) — no admin required, hijacks a COM object a legitimate application loads</li>
+                    <li><strong>Scheduled Task</strong> — flexible trigger, configurable to run as SYSTEM if elevated at install time</li>
+                </ul>
+
+                <h3>Beacon design</h3>
+                <p>Raw TCP on port 4444 is Metasploit. It is already in every threat intel feed. The working approach: HTTPS on port 443, TLS with a valid certificate from Let's Encrypt or a legitimate CA, HTTP responses that look like legitimate API calls (JSON keys are normal business names, not <code>cmd</code> and <code>output</code>). Operator commands are base64-encoded inside a field like <code>"config"</code> or <code>"token"</code>. Responses look like authentication tokens or session data.</p>
+
+                <h3>Anti-analysis checks</h3>
+                <p>Before the implant does anything useful, it should confirm it is on a real target. Sandboxes have predictable behaviour:</p>
+                <ul>
+                    <li><strong>Timing check:</strong> call <code>Sleep(5000)</code>, check wall clock. If fewer than 4 seconds elapsed, the sandbox fast-forwarded the sleep. Exit.</li>
+                    <li><strong>Mouse movement:</strong> record cursor position twice, 2 seconds apart. Same position = no human present = sandbox. Exit.</li>
+                    <li><strong>Analyst processes:</strong> check running process list against known analysis tools (Wireshark, ProcMon, x64dbg, Fiddler). If any are running, enter dormant mode.</li>
+                    <li><strong>Debugger check:</strong> <code>IsDebuggerPresent()</code> and <code>CheckRemoteDebuggerPresent()</code>. Both should return false on a real target.</li>
+                </ul>
+                <p>If any check fails, the implant exits cleanly. No crash, no error dialog, no registry remnants from the checks themselves. The sandbox report shows a process that ran for 5 seconds and exited normally.</p>
+
+                <div class="callout callout-validated">
+                    <div class="callout-label">Validated</div>
+                    Einayim C2 framework (v3.2-C): DLL hijack via version.dll confirmed. Five persistence methods deployed simultaneously. Anti-analysis timing + mouse checks confirmed defeating 120-second sandbox timeout. TCP beacon functional; HTTPS migration in progress.
+                </div>
+
+                <div class="callout callout-warning">
+                    <div class="callout-label">EDR coverage of persistence</div>
+                    Modern EDRs monitor WMI event subscriptions (Sysmon Event ID 19/20/21) and service creation (Event ID 7045). Registry Run keys are baseline monitored. Scheduled tasks are logged in Security event 4698. The persistence methods above are not invisible — they require the EDR's telemetry to be incomplete or its rules to have gaps. Combine with timing-based evasion to avoid triggering on install.
+                </div>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs — security-bypass · auth-bypass</div>
+                <div class="cve-mini-grid" data-primitive="security-bypass,auth-bypass">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH11 -->
+        <div class="chapter" id="syscalllattice">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 11</div>
+                <div class="chapter-title">The Syscall Lattice</div>
+                <div class="chapter-hook">"You found the bug. Now you need to exploit it without the EDR watching every API call you make."</div>
+            </div>
+            <div class="chapter-body">
+                <p>When developing a new vulnerability — whether a memory corruption, a TOCTOU race, or a kernel object misuse — the hardest part is rarely finding the bug. It is weaponizing it: making exploitation reliable, making the exploit binary undetectable, and making the system calls that deliver the payload invisible to EDR hooks. This chapter covers the syscall layer: what it is, why EDRs instrument it, and how direct syscall invocation bypasses that instrumentation.</p>
+
+                <h3>Do you need this for 0-day development?</h3>
+                <p>Yes — specifically when your exploit code uses any of these four Windows API calls:</p>
+                <ul>
+                    <li><code>VirtualAllocEx</code> — allocate memory in a target process</li>
+                    <li><code>WriteProcessMemory</code> — write shellcode into that memory</li>
+                    <li><code>CreateRemoteThread</code> / <code>NtCreateThreadEx</code> — execute the shellcode</li>
+                    <li><code>NtOpenProcess</code> — open a handle to the target</li>
+                </ul>
+                <p>These are the four most monitored calls in Windows. Every EDR instruments them at the ntdll layer. If your exploit binary calls them via normal WinAPI, the EDR intercepts the call before it reaches the kernel, logs it, and may block it. The exploit is technically correct but never executes.</p>
+
+                <h3>The call chain — and where EDR hooks live</h3>
+                <p>Normal execution path:</p>
+                <p><code>Your code → kernel32.dll → kernelbase.dll → ntdll.dll (NtAllocateVirtualMemory stub) → syscall → kernel</code></p>
+                <p>EDR hooks live in ntdll — specifically, they overwrite the first bytes of each NT function stub with a jump to the EDR's monitoring code. The hook reads the arguments, decides whether to allow or block, then either passes through to the real syscall or terminates the call.</p>
+                <p>Direct syscall bypasses this entirely: your code calls the kernel using the syscall service number directly, skipping ntdll's stub. The EDR's hook is never reached.</p>
+
+                <h3>Hell's Gate — runtime SSN resolution</h3>
+                <p>You need the syscall service number (SSN) for each function. SSNs differ between Windows builds — you cannot hardcode them. Hell's Gate resolves them at runtime:</p>
+                <ol>
+                    <li>Walk ntdll.dll in the process's own memory (no disk access)</li>
+                    <li>Find each NT function by DJB2 hash of its name — no plaintext string "NtAllocateVirtualMemory" in your binary</li>
+                    <li>Read the first bytes of the function stub: <code>mov eax, 0x??; mov r10, rcx; syscall</code></li>
+                    <li>Extract the immediate value — that is the SSN for this build</li>
+                    <li>Execute <code>syscall [SSN]</code> directly in your inline ASM stub</li>
+                </ol>
+                <p>ChromElevator uses this to make its process hollowing and memory operations invisible to ntdll-level EDR hooks (Ch07 + writeup).</p>
+
+                <h3>Halo's Gate — when EDR hooks the stub</h3>
+                <p>If the EDR has already patched the NT function's first bytes to a jump instruction, Hell's Gate cannot read the SSN from it. Halo's Gate handles this: walk to the adjacent function in the export table (the next function alphabetically). Its stub is probably unhooked. Read its SSN. Subtract 1 — SSNs are allocated sequentially by function sort order in memory. You recover the original SSN without ever reading the hooked function.</p>
+
+                <h3>SysWhispers3 — syscall stubs for your dev machine</h3>
+                <p>Rather than implementing Hell's Gate manually for every exploit, SysWhispers3 generates compilable C/ASM stubs for whatever NT functions you need. Run it on your dev machine, specify the function list, and it produces stubs with randomised syscall instruction embedding — the <code>syscall</code> instruction itself appears at a random offset in the stub, defeating static pattern matching against the stub's structure. The generated code drops into any C project without modification.</p>
+
+                <h3>The 0-day development workflow (hatokef applied)</h3>
+                <ol>
+                    <li><strong>Find the assumption:</strong> what does this Windows component assume about the data or object it receives? (Ch01 — objects and invariants)</li>
+                    <li><strong>Find the object:</strong> which kernel structure holds the state being validated? (EPROCESS, HANDLE_TABLE_ENTRY, OBJECT_HEADER — Ch02–03)</li>
+                    <li><strong>Find the gap:</strong> between when the state is checked and when it is used, can it change? (Ch05 — The Gap)</li>
+                    <li><strong>Fuzz the gap:</strong> WinAFL for user-mode, kAFL for kernel. Targeted at the specific input that crosses the check-to-use boundary.</li>
+                    <li><strong>Analyze the crash:</strong> WinDbg kernel debugger, <code>!analyze -v</code>, identify the instruction that faulted, determine if the write offset is controlled.</li>
+                    <li><strong>Write the PoC:</strong> minimal C program that reproduces the crash reliably across builds.</li>
+                    <li><strong>Weaponize:</strong> convert crash to controlled write → shellcode allocation → privilege escalation. Replace all WinAPI calls with SysWhispers3 stubs.</li>
+                    <li><strong>Test under telemetry:</strong> run in a VM with Sysmon, Defender, and Process Monitor active. Watch what you generate. Fix anything that triggers.</li>
+                </ol>
+
+                <div class="callout callout-research">
+                    <div class="callout-label">Research — Pending</div>
+                    ring-stack Phase 9: FUD gate for BYOVD.exe. The BYOVD exploit (Phase 8 — Ch06) is functionally complete. Phase 9 is the delivery wrapper: making the compiled binary undetectable to static analysis and surviving the initial execution without Defender quarantining it before the driver loads. This chapter is the theoretical foundation for that pending phase.
+                </div>
+
+                <div class="callout callout-validated">
+                    <div class="callout-label">Validated</div>
+                    Hell's Gate / DJB2 hash-based function resolution confirmed in ChromElevator (private). Direct IOCTL syscall-equivalent used in BYOVD (ring-stack Phase 8) — driver IOCTL bypasses ntdll layer entirely at the kernel object level. SysWhispers3 stubs: confirmed compilable and functional on Windows 10 22H2 and Windows 11 23H2.
+                </div>
+            </div>
+            <div class="live-cve-section">
+                <div class="live-cve-label">Live CVEs — kernel-exploit · security-bypass</div>
+                <div class="cve-mini-grid" data-primitive="kernel-exploit,security-bypass">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CH12 -->
+        <div class="chapter" id="casestudies">
+            <div class="chapter-header">
+                <div class="chapter-num">Chapter 12</div>
+                <div class="chapter-title">Case Studies</div>
+                <div class="chapter-hook">This is where the primitives become observable. The chapters taught the technique. The writeups show what happens when you actually run it.</div>
+            </div>
+            <div class="chapter-body">
+                <p>Each writeup below documents a technique from the preceding chapters — applied against a real target, disclosed through a responsible disclosure process, or demonstrated on a controlled lab target with documented conditions. Every writeup notes whether the technique was patched, still valid, or superseded.</p>
+                <p>The live CVE feed below pulls the current month's Microsoft CVEs across all primitives covered in this curriculum. Each entry links to the MSRC advisory. If a CVE maps to a chapter here, you have the context to understand what Windows component is broken and why.</p>
+            </div>
+            <div class="writeup-grid">
+                <a href="/writeups/writeup-internals-philosophy.html" class="writeup-card">
+                    <div class="wc-tag">Ch01 · Rings</div>
+                    <div class="wc-title">Windows Internals Philosophy</div>
+                    <div class="wc-desc">First-principles view of the NT kernel design</div>
+                </a>
+                <a href="/writeups/writeup-dll-injection.html" class="writeup-card">
+                    <div class="wc-tag">Ch02 · Handles</div>
+                    <div class="wc-title">DLL Injection</div>
+                    <div class="wc-desc">Handle table manipulation for code injection</div>
+                </a>
+                <a href="/writeups/writeup-token-stealing.html" class="writeup-card">
+                    <div class="wc-tag">Ch03 · Tokens</div>
+                    <div class="wc-title">Token Stealing</div>
+                    <div class="wc-desc">SeDebugPrivilege to SYSTEM via token duplication</div>
+                </a>
+                <a href="/writeups/writeup-seimpersonate.html" class="writeup-card">
+                    <div class="wc-tag">Ch03–04 · Impersonation</div>
+                    <div class="wc-title">SeImpersonatePrivilege</div>
+                    <div class="wc-desc">Named pipe coercion to SYSTEM token</div>
+                </a>
+                <a href="/writeups/writeup-uac-bypass.html" class="writeup-card">
+                    <div class="wc-tag">Ch04 · EoP</div>
+                    <div class="wc-title">UAC Bypass</div>
+                    <div class="wc-desc">Elevation from medium to high integrity</div>
+                </a>
+                <a href="/writeups/writeup-scanner-detection.html" class="writeup-card">
+                    <div class="wc-tag">Ch05 · TOCTOU</div>
+                    <div class="wc-title">Scanner Detection</div>
+                    <div class="wc-desc">How detection works and where the gaps are</div>
+                </a>
+                <a href="/writeups/writeup-av-evasion.html" class="writeup-card">
+                    <div class="wc-tag">Ch06–07 · Evasion</div>
+                    <div class="wc-title">AV Evasion</div>
+                    <div class="wc-desc">BYOVD, HWBP, and zero-write bypass techniques</div>
+                </a>
+                <a href="/writeups/writeup-chrome-abe-bypass.html" class="writeup-card">
+                    <div class="wc-tag">Ch07 · Security Bypass</div>
+                    <div class="wc-title">Chrome ABE Bypass</div>
+                    <div class="wc-desc">App-Bound Encryption bypass technique</div>
+                </a>
+                <a href="/writeups/writeup-einayim-implant.html" class="writeup-card">
+                    <div class="wc-tag">Ch06–08 · Full Chain</div>
+                    <div class="wc-title">Einayim Implant</div>
+                    <div class="wc-desc">Persistence implant — full kill chain documented</div>
+                </a>
+                <a href="/writeups/writeup-c2-architecture.html" class="writeup-card">
+                    <div class="wc-tag">Ch08 · Delivery</div>
+                    <div class="wc-title">C2 Architecture</div>
+                    <div class="wc-desc">Command and control infrastructure design</div>
+                </a>
+                <a href="/writeups/writeup-persistence-levels.html" class="writeup-card">
+                    <div class="wc-tag">Ch06 · Persistence</div>
+                    <div class="wc-title">Persistence Levels</div>
+                    <div class="wc-desc">From Run keys to firmware — persistence depth</div>
+                </a>
+                <a href="/writeups/writeup-process-hollowing.html" class="writeup-card">
+                    <div class="wc-tag">Ch03–04 · Injection</div>
+                    <div class="wc-title">Process Hollowing</div>
+                    <div class="wc-desc">Replace a process's image in memory post-creation</div>
+                </a>
+                <a href="/writeups/writeup-byovd-ring0.html" class="writeup-card">
+                    <div class="wc-tag">Ch06 · Kernel Security</div>
+                    <div class="wc-title">BYOVD Ring 0: Callback Zeroing</div>
+                    <div class="wc-desc">RTCore64.sys arbitrary kernel R/W, EDR callback zeroing, PatchGuard detonation</div>
+                </a>
+                <a href="/writeups/writeup-cve-2026-73498.html" class="writeup-card">
+                    <div class="wc-tag">CVE Research · MCP</div>
+                    <div class="wc-title">CVE-2026-73498</div>
+                    <div class="wc-desc">mcp-atlassian path traversal. Stage 3: prompt injection → AI agent uploads /proc/self/environ → live creds in Confluence. CVSS 7.7.</div>
+                </a>
+                <a href="/writeups/writeup-hwbp-zero-write.html" class="writeup-card">
+                    <div class="wc-tag">Ch07 · Evasion</div>
+                    <div class="wc-title">HWBP Zero-Write</div>
+                    <div class="wc-desc">DR0/DR1 hardware breakpoints blind AMSI + ETW, zero memory writes, VULN-195458</div>
+                </a>
+                <a href="/writeups/writeup-steganography.html" class="writeup-card">
+                    <div class="wc-tag">Ch09 · Delivery</div>
+                    <div class="wc-title">Steganography: LSB PNG + Ghost</div>
+                    <div class="wc-desc">XOR payload in PNG LSBs, zero-width Unicode covert channel, SSH pipe no-disk delivery</div>
+                </a>
+                <a href="/writeups/writeup-networking-c2.html" class="writeup-card">
+                    <div class="wc-tag">Ch00½ · Foundations</div>
+                    <div class="wc-title">The Wire: TCP, Sockets, C2</div>
+                    <div class="wc-desc">TCP handshake, reverse shell, socket API in C, C2 beacon pattern, kill chain errors</div>
+                </a>
+                <a href="/writeups/writeup-trickery-of-rhea.html" class="writeup-card">
+                    <div class="wc-tag">Ch09 · Counter-Recon</div>
+                    <div class="wc-title">Trickery of Rhea: Offensive Honeypot</div>
+                    <div class="wc-desc">Serve authentic-looking credentials to scanners, trick them into running your implant. Counter-recon: the scanner becomes the victim.</div>
+                </a>
+            </div>
+
+            <div class="live-cve-section" style="margin-top:2.5rem;">
+                <div class="live-cve-label">All live CVEs this month</div>
+                <div class="cve-mini-grid" data-primitive="all">
+                    <div class="cve-loading">Loading…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:2rem 0 3rem; border-top:1px solid var(--border); text-align:center;">
+            <p style="font-size:0.65rem;color:var(--dim);line-height:1.8;">CVE data from <a href="https://msrc.microsoft.com" target="_blank" rel="noopener" style="color:var(--dim);">Microsoft MSRC CVRF API</a> · Updated after each Patch Tuesday · <a href="/api/vader-intel.json" target="_blank" style="color:var(--dim);">raw JSON</a></p>
+            <p style="font-size:0.6rem;color:#444;margin-top:0.5rem;">22nd Survey Division · <a href="/" style="color:#444;">Home</a></p>
+        </div>
+
+    </main>
+</div>
+
+<script>
+(function() {
+    const PRIMITIVE_COLORS = {
+        "kernel-exploit":       "#f85149",
+        "token-impersonation":  "#ff7b72",
+        "privilege-escalation": "#e3b341",
+        "rce-remote":           "#d29922",
+        "credential-access":    "#a5d6ff",
+        "auth-bypass":          "#79c0ff",
+        "security-bypass":      "#56d364",
+        "dll-hijack":           "#bc8cff",
+        "memory-corruption":    "#ffa657",
+        "lolbin":               "#8b949e",
+        "info-disclosure":      "#6e7681",
+        "other":                "#484f58",
+    };
+
+    function cvssColor(v) {
+        if (!v) return '#6e7681';
+        if (v >= 9) return '#f85149';
+        if (v >= 7) return '#e3b341';
+        return '#56d364';
+    }
+
+    function renderCveBox(container, cves) {
+        if (!cves.length) {
+            container.innerHTML = '<div style="font-size:0.65rem;color:#484f58;padding:0.75rem 0;">No CVEs matched this primitive in the current dataset.</div>';
+            return;
+        }
+        container.innerHTML = cves.slice(0, 4).map(cve => {
+            const color = PRIMITIVE_COLORS[cve.attack_primitive] || '#8b949e';
+            const badge = cve.exploited_in_wild
+                ? '<span class="cve-mini-badge badge-wild">WILD</span>'
+                : cve.likely_exploited
+                ? '<span class="cve-mini-badge badge-likely">LIKELY</span>'
+                : '';
+            return `<div class="cve-mini-card" style="border-left:2px solid ${color};">
+                <a href="${cve.msrc_url}" target="_blank" rel="noopener" class="cve-mini-id">${cve.id}</a>
+                <div style="display:flex;gap:0.4rem;align-items:center;justify-content:flex-end;flex-wrap:wrap;">
+                    <span class="cve-mini-cvss" style="color:${cvssColor(cve.cvss)};border-color:${cvssColor(cve.cvss)};">CVSS ${cve.cvss || 'N/A'}</span>
+                    ${badge}
+                </div>
+                <div class="cve-mini-title">${cve.title}</div>
+            </div>`;
+        }).join('');
+    }
+
+    fetch('/api/vader-intel.json')
+        .then(r => r.json())
+        .then(data => {
+            const all = data.cves || [];
+
+            document.querySelectorAll('.cve-mini-grid[data-primitive]').forEach(box => {
+                const primitiveAttr = box.getAttribute('data-primitive');
+
+                let filtered;
+                if (primitiveAttr === 'all') {
+                    // Show top exploited/likely, sorted by wild then CVSS
+                    filtered = [...all]
+                        .sort((a, b) => {
+                            if (b.exploited_in_wild !== a.exploited_in_wild) return b.exploited_in_wild - a.exploited_in_wild;
+                            if (b.likely_exploited !== a.likely_exploited) return b.likely_exploited - a.likely_exploited;
+                            return (b.cvss || 0) - (a.cvss || 0);
+                        })
+                        .slice(0, 6);
+                } else {
+                    const primitives = primitiveAttr.split(',').map(p => p.trim());
+                    filtered = all
+                        .filter(c => primitives.includes(c.attack_primitive))
+                        .sort((a, b) => {
+                            if (b.exploited_in_wild !== a.exploited_in_wild) return b.exploited_in_wild - a.exploited_in_wild;
+                            if (b.likely_exploited !== a.likely_exploited) return b.likely_exploited - a.likely_exploited;
+                            return (b.cvss || 0) - (a.cvss || 0);
+                        });
+                }
+
+                renderCveBox(box, filtered);
+            });
+        })
+        .catch(() => {
+            document.querySelectorAll('.cve-mini-grid').forEach(box => {
+                box.innerHTML = '<div style="font-size:0.65rem;color:#484f58;">CVE feed offline.</div>';
+            });
+        });
+
+    // Scrollspy
+    const chapters = document.querySelectorAll('.chapter');
+    const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+    function onScroll() {
+        let current = '';
+        chapters.forEach(ch => {
+            if (window.scrollY >= ch.offsetTop - 120) current = '#' + ch.id;
+        });
+        sidebarLinks.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === current);
+        });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+})();
+</script>
+
+</body>
+</html>

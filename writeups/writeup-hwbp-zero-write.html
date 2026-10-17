@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HWBP Zero-Write: AMSI + ETW Bypass via Hardware Breakpoints | 22nd Survey Division</title>
+    <meta name="description" content="VULN-195458: zero memory modification AMSI + ETW bypass using CPU debug registers. DR0 on AmsiScanBuffer, DR1 on EtwEventWrite. Filed MSRC 2026-06-16. Zero detection.">
+    <meta property="og:title" content="HWBP Zero-Write AMSI Bypass | 22nd Survey Division">
+    <meta property="og:type" content="article">
+    <meta name="author" content="George Wu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a; --bg2: rgba(18,18,18,0.95); --card: #0d1117;
+            --border: rgba(255,255,255,0.12); --text: #ffffff; --dim: #888888;
+            --link: #58a6ff; --green: #00ff88; --red: #ff4757;
+            --orange: #ffa657; --purple: #a78bfa; --cyan: #00d4ff; --amber: #e3b341;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.7; }
+        .navbar { background: rgba(10,14,20,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; position: sticky; top: 0; z-index: 100; }
+        .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .logo { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .logo-sep { color: var(--dim); margin: 0 0.5rem; }
+        .logo-name { color: var(--dim); font-size: 0.75rem; }
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-links a { color: var(--dim); text-decoration: none; font-size: 0.8rem; }
+        .nav-links a:hover { color: var(--text); }
+        .hamburger { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; }
+        .nav-mobile { display: none; flex-direction: column; gap: 1rem; padding: 1rem 0; }
+        .nav-mobile.open { display: flex; }
+        .nav-mobile a { color: var(--dim); text-decoration: none; font-size: 0.9rem; }
+        @media (max-width: 768px) { .nav-links { display: none; } .hamburger { display: block; } }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .tag { display: inline-block; background: rgba(88,166,255,0.1); color: var(--link); padding: 0.2rem 0.6rem; font-size: 0.65rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 0.5rem; margin-bottom: 1rem; }
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.2; }
+        .meta { color: var(--dim); font-size: 0.8rem; margin-bottom: 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        h2 { font-size: 1.3rem; margin: 2.5rem 0 1rem; }
+        h3 { font-size: 1.1rem; margin: 2rem 0 0.75rem; }
+        p { margin-bottom: 1rem; color: var(--dim); font-size: 0.9rem; }
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        code { font-family: 'JetBrains Mono', monospace; background: rgba(255,255,255,0.05); padding: 0.15rem 0.4rem; font-size: 0.8rem; border-radius: 3px; }
+        pre { background: var(--card); border: 1px solid var(--border); padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.6; margin: 1rem 0; color: #c9d1d9; }
+        ul, ol { margin: 1rem 0 1rem 1.5rem; color: var(--dim); font-size: 0.9rem; }
+        li { margin-bottom: 0.5rem; }
+        .concept-box { background: rgba(88,166,255,0.05); border-left: 3px solid var(--link); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .concept-box h4 { color: var(--link); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .concept-box p { margin-bottom: 0.5rem; }
+        .concept-box p:last-child { margin-bottom: 0; }
+        .warning-box { background: rgba(255,71,87,0.08); border-left: 3px solid var(--red); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .warning-box h4 { color: var(--red); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .warning-box p { margin-bottom: 0; }
+        .success-box { background: rgba(0,255,136,0.06); border-left: 3px solid var(--green); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .success-box h4 { color: var(--green); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .success-box p { margin-bottom: 0; }
+        .amber-box { background: rgba(227,179,65,0.07); border-left: 3px solid var(--amber); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .amber-box h4 { color: var(--amber); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .amber-box p { margin-bottom: 0; }
+        .diagram { background: var(--card); border: 1px solid var(--border); padding: 1.5rem; margin: 1.5rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; line-height: 1.5; overflow-x: auto; white-space: pre; color: var(--dim); }
+        .highlight { color: var(--green); } .highlight-amber { color: var(--amber); } .highlight-red { color: var(--red); }
+        .mitre-tag { display: inline-block; background: rgba(167,139,250,0.15); color: var(--purple); padding: 0.15rem 0.5rem; font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.8rem; }
+        th, td { border: 1px solid var(--border); padding: 0.75rem; text-align: left; }
+        th { background: rgba(255,255,255,0.03); font-weight: 600; }
+        td { color: var(--dim); }
+        .layman-box { background: rgba(0,212,255,0.05); border-left: 3px solid var(--cyan); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .layman-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .layman-tldr { font-size: 0.85rem; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+        .layman-box p { font-size: 0.82rem; color: var(--dim); margin: 0; }
+        .status-badge { display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-right: 0.5rem; }
+        .badge-validated { background: rgba(0,255,136,0.15); color: var(--green); }
+        .badge-research { background: rgba(227,179,65,0.15); color: var(--amber); }
+        .reg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+        .reg-card { background: var(--card); border: 1px solid var(--border); padding: 0.75rem 1rem; }
+        .reg-name { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--amber); margin-bottom: 0.25rem; }
+        .reg-use { font-size: 0.75rem; color: var(--dim); }
+        .footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; text-align: center; margin-top: 4rem; }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; }
+        .footer-links a { color: var(--dim); font-size: 0.8rem; }
+        .footer-copy { color: var(--dim); font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-inner">
+        <div style="display:flex;align-items:center;">
+            <a href="/" class="logo">22nd Survey Division</a>
+            <span class="logo-sep">-</span>
+            <span class="logo-name">Open-Source Software Development</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/">Tools</a>
+            <a href="/writeups/">Writeups</a>
+            <a href="/writeups/">Research</a>
+            <a href="/learn/">Learn</a>
+        </div>
+        <button class="hamburger" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    </div>
+    <div class="nav-mobile">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/learn/">Learn</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <span class="tag">AV Evasion</span>
+    <span class="tag">AMSI Bypass</span>
+    <span class="tag">ETW Blind</span>
+    <span class="tag">VULN-195458</span>
+
+    <h1>HWBP Zero-Write: AMSI + ETW Bypass via Hardware Breakpoints</h1>
+
+    <div class="meta">
+        <span>George Wu</span>
+        <span>June 2026</span>
+        <span>22nd Survey Division</span>
+        <span>vader-rootkit Phase DELTA+FOXTROT / asf-counterintel</span>
+    </div>
+
+    <div class="mitre-tag">T1562.001</div>
+    <div class="mitre-tag">T1562.006</div>
+    <div class="mitre-tag">T1620</div>
+
+    <div class="layman-box" style="margin-top:1.5rem;">
+        <div class="layman-label">Plain English</div>
+        <div class="layman-tldr">Windows has two surveillance systems watching what runs on the machine. We make both of them return "nothing to see here" before they can look. The method leaves zero trace in memory — it uses a CPU-level mechanism designed for debuggers, not attackers. Microsoft reviewed it and decided it's not their problem to fix.</div>
+    </div>
+
+    <p>
+        <span class="status-badge badge-validated">Validated</span> AMSI bypass: DR0 breakpoint on AmsiScanBuffer, Defender RTP enabled, zero detections.<br>
+        <span class="status-badge badge-validated">Validated</span> ETW bypass: DR1 breakpoint on EtwEventWrite, behavioural logging blind.<br>
+        <span class="status-badge badge-validated">Validated</span> Zero bytes written to executable memory. Zero NtProtectVirtualMemory calls.<br>
+        <span class="status-badge badge-validated">Validated</span> MSRC filed 2026-06-16 as VULN-195458. Response: does not meet security servicing bar.
+    </p>
+
+    <h2>The Two Watchers</h2>
+
+    <p>When an attacker runs a payload on a Windows machine, two surveillance systems see it:</p>
+
+    <p><strong>AMSI — Antimalware Scan Interface.</strong> Every time PowerShell, .NET, VBScript, or VBA executes code, AMSI intercepts the script content and passes it to Defender. This happens <em>after</em> any decoding or decryption — AMSI sees the final, ready-to-run version regardless of how it was obfuscated on disk. The critical function is <code>AmsiScanBuffer</code> in <code>amsi.dll</code>. Every scan passes through it.</p>
+
+    <p><strong>ETW — Event Tracing for Windows.</strong> The telemetry backbone of every modern EDR. Every process creation, thread injection, image load, and suspicious memory operation generates an ETW event. Defender's behavioural engine, Sysmon, and every commercial EDR reads ETW. The function that emits every event from user-mode code: <code>EtwEventWrite</code> in <code>ntdll.dll</code>.</p>
+
+    <div class="concept-box">
+        <h4>Why the classic patch is dead</h4>
+        <p>The traditional approach: overwrite the first 6 bytes of <code>AmsiScanBuffer</code> with instructions that return a clean result (<code>0xB8, 0x57, 0x00, 0x07, 0x80, 0xC3</code> — "mov eax, E_INVALIDARG / ret"). This worked. Then Defender signed the specific byte patterns. Now the patch itself is the signature. Write those bytes to amsi.dll's memory region and Defender flags the write, not the payload. The surveillance system is watching for people trying to blind the surveillance system.</p>
+    </div>
+
+    <p>The memory patch also requires calling <code>VirtualProtect</code> to mark executable memory as writable before writing. That call is loud — ETW logs it, behavioural engines flag it, and Sysmon Event ID 10 captures it.</p>
+
+    <h2>The Hardware Breakpoint Mechanism</h2>
+
+    <p>Every x86-64 CPU has four debug registers: DR0, DR1, DR2, DR3. They hold memory addresses. When the instruction pointer reaches an address stored in a debug register, the CPU raises a hardware exception — <code>EXCEPTION_SINGLE_STEP</code> (0x80000004). Debuggers use this as a breakpoint mechanism: pause execution without modifying target code.</p>
+
+    <div class="diagram"><span class="highlight">DEBUG REGISTER LAYOUT — x86-64</span>
+─────────────────────────────────────────────────────────────
+  Register    Purpose                      Our use
+  ────────    ─────────────────────────    ──────────────────
+  DR0         Breakpoint address 0    →    <span class="highlight">AmsiScanBuffer</span>
+  DR1         Breakpoint address 1    →    <span class="highlight">EtwEventWrite</span>
+  DR2         Breakpoint address 2         (available)
+  DR3         Breakpoint address 3         (available)
+  DR6         Debug status (which fired)
+  DR7         Enable/disable per register
+─────────────────────────────────────────────────────────────
+<span class="highlight-amber">Debug registers live in the CPU — not in RAM.</span>
+<span class="highlight-amber">Nothing to hash, sign, or integrity-check.</span>
+<span class="highlight-amber">Per-thread: one thread's breakpoints don't affect any other.</span></div>
+
+    <h2>The Attack: Four Steps</h2>
+
+    <h3>Step 1 — Resolve the target addresses</h3>
+    <p>Load <code>amsi.dll</code> and get the address of <code>AmsiScanBuffer</code> via <code>GetProcAddress</code>. Load <code>ntdll.dll</code> (already in every process) and get the address of <code>EtwEventWrite</code> the same way. These are the addresses we'll arm as breakpoints.</p>
+
+    <h3>Step 2 — Install the VEH handler</h3>
+    <p>Register a Vectored Exception Handler (VEH) with <code>AddVectoredExceptionHandler</code>. The VEH is a callback function in our code that fires for any exception in our process. We register it first, before arming breakpoints, so it's ready to handle the exceptions the breakpoints will generate.</p>
+
+    <h3>Step 3 — Arm the debug registers</h3>
+    <p>Call <code>GetThreadContext</code> on the current thread to retrieve the thread's register state. Write the addresses of <code>AmsiScanBuffer</code> and <code>EtwEventWrite</code> into <code>context.Dr0</code> and <code>context.Dr1</code>. Enable both breakpoints in <code>context.Dr7</code>. Call <code>SetThreadContext</code> to apply the modified context. The CPU is now watching those addresses. No memory was modified.</p>
+
+    <h3>Step 4 — The VEH intercepts the call</h3>
+    <p>When PowerShell calls <code>AmsiScanBuffer</code> to scan script content:</p>
+    <ol>
+        <li>The CPU's instruction pointer hits DR0's address</li>
+        <li>CPU raises <code>EXCEPTION_SINGLE_STEP</code> before the function executes a single instruction</li>
+        <li>Our VEH handler fires</li>
+        <li>Handler sets <code>RAX</code> to <code>0x80070057</code> (E_INVALIDARG — "AMSI unavailable")</li>
+        <li>Handler reads the return address from the stack, writes it into RIP, adjusts RSP</li>
+        <li>Returns <code>EXCEPTION_CONTINUE_EXECUTION</code> — resume at the <em>caller</em>, not at AmsiScanBuffer</li>
+        <li>PowerShell sees E_INVALIDARG, treats AMSI as broken, executes the script without scanning</li>
+    </ol>
+
+    <p>Same sequence fires for ETW: DR1 triggers on <code>EtwEventWrite</code>, VEH sets RAX to <code>STATUS_SUCCESS</code> (0 — "event logged successfully"), returns to caller. The caller believes the event was logged. It wasn't. Behavioural engine sees nothing.</p>
+
+    <div class="concept-box">
+        <h4>Why "zero writes"</h4>
+        <p>The memory patch writes to executable pages. <code>VirtualProtect</code> is called. Integrity checks can verify function preambles. ETW logs the protection change. All of that is detectable.</p>
+        <p>The HWBP technique writes only to <code>context.Dr0</code>, <code>context.Dr1</code>, and <code>context.Dr7</code> — CPU register fields in a thread context struct on the stack. No write to executable memory. No <code>VirtualProtect</code> call. No page permission change. Nothing for integrity checking tools to find. PatchGuard doesn't monitor user-mode debug registers on non-protected processes.</p>
+    </div>
+
+    <h2>The "Dark Room" — Both Watchers Blind Simultaneously</h2>
+
+    <p>Running both together creates what we call the Dark Room: AMSI can't see what's in the script buffer, ETW can't see what the process is doing. A payload executing inside the Dark Room leaves no telemetry trail. Defender's static scanner checked the file — but there's no file. Defender's AMSI scanner checked the script — but got E_INVALIDARG. Defender's behavioural engine checked ETW — but got silence.</p>
+
+    <div class="success-box">
+        <h4>Validated result — vader-rootkit Phase DELTA + FOXTROT</h4>
+        <p>Both bypasses confirmed operational on Windows 11 Home Build 26200 (24H2), Defender RTP enabled, standard user context. AMSI blind: PowerShell executes flagged payloads without alert. ETW blind: process injection, shellcode execution, thread creation — no behavioural events reach Defender's cloud engine. Zero memory writes to executable regions. Zero NtProtectVirtualMemory calls.</p>
+    </div>
+
+    <h2>VULN-195458 — Filed MSRC 2026-06-16</h2>
+
+    <p>Submitted to Microsoft Security Response Center with full reproduction steps, proof-of-concept code, and impact analysis.</p>
+
+    <p>MSRC response: <strong>"does not meet the bar for security servicing."</strong> Their reasoning: debug registers doing what debug registers are designed to do is not a security vulnerability in Windows. The bypass is an intended capability of a CPU debugging mechanism being applied to a non-debugging use case.</p>
+
+    <div class="amber-box">
+        <h4>What this means operationally</h4>
+        <p>Microsoft won't patch this at the OS level because the fix would break every legitimate debugger. The correct defence is detection at the application layer — monitoring for VEH registration on threads that subsequently call into amsi.dll, or EDR instrumentation of <code>SetThreadContext</code> calls that write to DR0-DR3. Most consumer-grade Defender does neither. Enterprise EDRs are better but still inconsistent on this specific technique.</p>
+    </div>
+
+    <h2>Detection</h2>
+
+    <table>
+        <thead>
+            <tr><th>Signal</th><th>Where</th><th>Reliability</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>VEH registration on thread accessing AMSI</td>
+                <td>User-mode EDR hooks on AddVectoredExceptionHandler</td>
+                <td style="color:var(--amber);">Medium</td>
+                <td>VEH registration is common for legitimate code. Signal is context — VEH + subsequent AMSI call + suspicious payload = suspicious. Not a standalone indicator.</td>
+            </tr>
+            <tr>
+                <td>SetThreadContext writing non-zero DR values</td>
+                <td>Kernel ETW / EDR driver callbacks</td>
+                <td style="color:var(--amber);">Medium</td>
+                <td>Legitimate code rarely calls SetThreadContext on its own threads. Kernel-mode EDRs monitoring thread context changes can flag DR0-DR3 writes. Not universal coverage.</td>
+            </tr>
+            <tr>
+                <td>AMSI returning E_INVALIDARG repeatedly</td>
+                <td>In-process AMSI monitoring</td>
+                <td style="color:var(--red);">Low</td>
+                <td>Some EDRs instrument AmsiScanBuffer itself. If the hook fires after the HWBP diverts execution, it never fires — the VEH returns to the caller before the function executes.</td>
+            </tr>
+            <tr>
+                <td>Memory integrity: AmsiScanBuffer preamble unchanged</td>
+                <td>Periodic integrity check by AV</td>
+                <td style="color:var(--red);">Not applicable</td>
+                <td>This technique makes zero changes to AmsiScanBuffer's code. Integrity checks of the function preamble will pass clean every time.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Defensive Recommendations</h2>
+
+    <ul>
+        <li><strong>Enterprise EDR with kernel-mode thread monitoring:</strong> Kernel callbacks on SetThreadContext that flag DR register modifications outside debugger processes.</li>
+        <li><strong>AMSI provider in kernel mode (not user mode):</strong> Moving the scan point to kernel space removes the same-privilege attack surface. Microsoft's long-term direction but not deployed on consumer Windows.</li>
+        <li><strong>ETW kernel sessions with Secure Boot attestation:</strong> ETW providers protected by kernel-mode authentication can survive user-mode VEH hijacking. Standard ETW sessions cannot.</li>
+        <li><strong>Process isolation for script execution:</strong> Running PowerShell in a sandboxed process with a fresh thread context limits the attack surface, but does not eliminate it — the VEH is registered in the same process as the AMSI DLL.</li>
+    </ul>
+
+    <h2>Further Reading</h2>
+
+    <ul>
+        <li><a href="/learn/#syscalllattice">Ch11: The Syscall Lattice</a> — Hell's Gate and direct syscalls — the next layer when AMSI is blind but system calls are watched</li>
+        <li><a href="/writeups/writeup-byovd-ring0.html">BYOVD Ring 0: Kernel Callback Zeroing</a> — complements this technique by blinding the EDR at the kernel level</li>
+        <li><a href="/writeups/writeup-av-evasion.html">AV Evasion Fundamentals</a> — sandbox detection and static evasion — the layer before this technique fires</li>
+    </ul>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/learn/">Learn</a>
+        <a href="/writeups/">Research</a>
+    </div>
+    <div class="footer-copy">22nd Survey Division &mdash; Vidimus Omnia</div>
+</footer>
+</body>
+</html>

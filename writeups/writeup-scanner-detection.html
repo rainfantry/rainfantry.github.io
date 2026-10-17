@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner Detection & Honeypot Defense | 22nd Survey Division</title>
+    <meta name="description" content="Detecting and redirecting internet scanners (Shodan, Censys, Infrawatch) from production infrastructure using iptables, IP range matching, payload signatures, and WHOIS enrichment.">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --text: #ffffff;
+            --dim: #888888;
+            --border: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+        }
+        .back-link {
+            display: inline-block;
+            color: var(--dim);
+            font-size: 0.75rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--text); }
+        .tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        .meta {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem;
+            color: var(--text);
+        }
+        p {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        code {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        .highlight {
+            color: var(--text);
+            font-weight: 500;
+        }
+        .scanner-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            margin-bottom: 1.5rem;
+        }
+        .scanner-table th {
+            text-align: left;
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+        }
+        .scanner-table td {
+            color: var(--dim);
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.72rem;
+        }
+        .arch-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            font-size: 0.78rem;
+            color: var(--text);
+        }
+        .detection-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid var(--dim);
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .detection-box h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .mitre {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .layman-box { background: rgba(255,255,255,0.03); border-left: 3px solid rgba(255,255,255,0.2); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .layman-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .layman-tldr { font-size: 0.85rem; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+        .layman-box p { font-size: 0.82rem; color: var(--dim); margin: 0; }
+        .detect-widget { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; overflow: hidden; }
+        .dw-header { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0.4rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .dw-dots { display: flex; gap: 4px; flex-shrink: 0; }
+        .dw-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dw-dot.r { background: #ff5f56; } .dw-dot.y { background: #ffbd2e; } .dw-dot.g { background: #27c93f; }
+        .dw-title { font-size: 0.6rem; color: #6a737d; flex: 1; margin-left: 4px; min-width: 100px; }
+        .dw-btref { font-size: 0.55rem; color: var(--dim); text-decoration: none; padding: 0.15rem 0.5rem; border: 1px solid var(--border); white-space: nowrap; }
+        .dw-btref:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-actions { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; flex-shrink: 0; }
+        .detect-widget pre { font-size: 0.72rem; line-height: 1.6; padding: 0.75rem 1rem; margin: 0; color: #c9d1d9; overflow-x: auto; }
+        .dw-flag { border-top: 1px solid rgba(255,255,255,0.06); padding: 0.5rem 1rem; font-size: 0.65rem; color: var(--dim); }
+        .dw-flag strong { color: var(--text); }
+        .dw-copy { font-size: 0.55rem; color: var(--dim); background: transparent; border: 1px solid var(--border); padding: 0.15rem 0.4rem; cursor: pointer; white-space: nowrap; }
+        .dw-copy:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-copy.copied { color: #27c93f; border-color: #00ff88; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/writeups/" class="back-link">&larr; Back to writeups</a>
+
+        <span class="tag">Infrastructure Defense</span>
+        <h1>Scanner Detection &amp; Honeypot Redirection</h1>
+        <p class="meta">Identifying internet scanners by IP range and payload signature — then redirecting them transparently to a honeypot</p>
+
+        <div class="layman-box">
+            <div class="layman-label">// What is this?</div>
+            <div class="layman-tldr">Recognising automated internet probes by their source IP and fingerprint — then redirecting them to a decoy.</div>
+            <p>Internet scanners (Shodan, Censys, botnets) constantly sweep public IPs for open ports and vulnerable services. By analysing their source IP ranges and probe payloads, you can fingerprint them automatically. Instead of blocking them outright, redirect them transparently to a fake honeypot that looks vulnerable — gathering intelligence on what they're looking for while hiding your real services.</p>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">Bash — Scanner Detection</span>
+                <div class="dw-actions">
+                    <a href="/blueteam-ref.html#network" class="dw-btref">&rarr; Blue Team</a>
+                    <button class="dw-copy" onclick="copyDetectWidget(this)" title="Copy to clipboard">Copy</button>
+                </div>
+            </div>
+            <pre># Current inbound connections
+ss -tnp | grep ESTAB | awk '{print $5}'
+
+# Failed SSH attempts
+sudo grep "Failed password" /var/log/auth.log | tail -20
+
+# fail2ban status
+sudo fail2ban-client status sshd
+
+# Recent login attempts
+last -20
+who -a
+
+# Listening services (attack surface)
+ss -tlnp</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> High volume of failed SSH = brute force. Check fail2ban bans. Listening services you don't recognize are backdoors. Use <code>last</code> for login history.</div>
+        </div>
+
+
+        <p>Internet scanners (Shodan, Censys, Infrawatch, Shadowserver) continuously probe every public IP on every port. For production infrastructure running non-standard services, this creates noise that obscures legitimate connection attempts and exposes service fingerprints. This writeup covers a detection and redirection system that identifies scanner probes, redirects them transparently to a honeypot listener, and alerts with enriched WHOIS context — while allowing legitimate connections through unchanged.</p>
+
+        <h2>The Problem: You Can't Stop the Scan</h2>
+        <p>Shodan scans the entire IPv4 address space in roughly 5 minutes. Censys completes a full scan in under an hour. These services are commercially operated, have static IP ranges, and do not honor <code>robots.txt</code> equivalents for network services. Firewall rules that block their ranges are effective but brittle — ranges change, and blocking by IP is reactive.</p>
+
+        <p>A more useful approach: let scanner probes connect, identify them, serve a response from a honeypot, and log everything — while simultaneously ensuring legitimate connections reach the real service unmodified.</p>
+
+        <h2>Architecture</h2>
+
+        <div class="arch-box">
+<pre style="font-size:0.78rem;line-height:1.8;margin:0;background:none;">Scanner IP (Infrawatch, Shodan, Censys, etc.)
+    │
+    ▼
+iptables PREROUTING REDIRECT
+    │  (IP range match → redirect to honeypot port)
+    ▼
+Honeypot Listener
+    │  Sends custom response, logs connection details
+    ▼
+Discord/Webhook Alert
+    │  IP, scanner type, org name (WHOIS), timestamp
+    ▼
+Connection dropped
+
+────────────────────────────
+
+Legitimate IP (whitelisted)
+    │
+    ▼
+Direct to service (unchanged)
+    │
+    ▼
+Normal operation</pre>
+        </div>
+
+        <h2>Detection Methods</h2>
+        <p>Two methods are used in combination. IP range matching is fast and catches known scanners. Payload signature matching catches unknown scanners that share characteristics with their vendor.</p>
+
+        <h3 style="font-size:0.9rem;margin:1.5rem 0 0.5rem;color:var(--text);">1. IP Range Matching</h3>
+        <p>Each major scanner operates from a fixed or semi-fixed CIDR range. These ranges are publicly documented (Shodan publishes its own IP list; others are identified from scan data and WHOIS records).</p>
+
+        <table class="scanner-table">
+            <tr><th>Scanner</th><th>Published Ranges (sample)</th><th>Detection Reliability</th></tr>
+            <tr><td>Shodan</td><td>66.240.192.0/24, 71.6.135.0/24, 71.6.165.0/24, 185.142.236.0/24</td><td>High — publishes ranges</td></tr>
+            <tr><td>Censys</td><td>162.142.125.0/24, 167.94.138.0/24, 167.94.145.0/24, 167.94.146.0/24</td><td>High — publishes ranges</td></tr>
+            <tr><td>Infrawatch</td><td>5.226.140.0/24, 69.5.169.0/24, 89.37.172.128/27, 194.88.98.0/24</td><td>Medium — ranges change</td></tr>
+            <tr><td>Shadowserver</td><td>74.82.47.0/24, 184.105.139.0/24, 184.105.247.0/24</td><td>High — nonprofit, documented</td></tr>
+            <tr><td>BinaryEdge</td><td>37.19.221.0/24, 143.42.56.0/24</td><td>Medium</td></tr>
+            <tr><td>Stretchoid</td><td>198.96.95.0/24</td><td>Medium</td></tr>
+            <tr><td>Palo Alto Networks</td><td>198.235.24.0/24</td><td>High — security research</td></tr>
+        </table>
+
+        <h3 style="font-size:0.9rem;margin:1.5rem 0 0.5rem;color:var(--text);">2. Payload Signature Matching</h3>
+        <p>Many scanners send identifiable strings in their initial probe or banner-grab payload. Matching on payload content catches scanners from IP ranges not yet in the blocklist.</p>
+
+        <div class="code-block" style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);padding:1rem;margin:1rem 0;overflow-x:auto;">
+<pre style="font-size:0.78rem;line-height:1.6;margin:0;"><span style="color:#8b949e;"># Known payload signatures (partial list)</span>
+SCANNER_SIGNATURES = {
+    <span style="color:#a5d6ff;">"Censys"</span>:      <span style="color:#a5d6ff;">b"Censys"</span>,
+    <span style="color:#a5d6ff;">"Shodan"</span>:       <span style="color:#a5d6ff;">b"masscan"</span>,
+    <span style="color:#a5d6ff;">"Stretchoid"</span>:  <span style="color:#a5d6ff;">b"MGLNDD"</span>,     <span style="color:#8b949e;"># Stretchoid fingerprint</span>
+    <span style="color:#a5d6ff;">"zgrab"</span>:        <span style="color:#a5d6ff;">b"zgrab"</span>,
+    <span style="color:#a5d6ff;">"nmap"</span>:         <span style="color:#a5d6ff;">b"Nmap"</span>,
+}
+
+<span style="color:#ff7b72;">def</span> <span style="color:#d2a8ff;">identify_scanner</span>(src_ip, payload):
+    <span style="color:#8b949e;"># Check IP ranges first (faster, no payload parse needed)</span>
+    <span style="color:#ff7b72;">for</span> scanner, ranges <span style="color:#ff7b72;">in</span> SCANNER_RANGES.items():
+        <span style="color:#ff7b72;">for</span> cidr <span style="color:#ff7b72;">in</span> ranges:
+            <span style="color:#ff7b72;">if</span> ipaddress.ip_address(src_ip) <span style="color:#ff7b72;">in</span> ipaddress.ip_network(cidr):
+                <span style="color:#ff7b72;">return</span> scanner
+    <span style="color:#8b949e;"># Fallback: payload signature match</span>
+    <span style="color:#ff7b72;">for</span> scanner, sig <span style="color:#ff7b72;">in</span> SCANNER_SIGNATURES.items():
+        <span style="color:#ff7b72;">if</span> sig <span style="color:#ff7b72;">in</span> payload:
+            <span style="color:#ff7b72;">return</span> scanner
+    <span style="color:#ff7b72;">return</span> <span style="color:#79c0ff;">None</span></pre>
+        </div>
+
+        <h2>iptables Redirect Rules</h2>
+        <p>When a scanner IP is identified, <code>iptables PREROUTING REDIRECT</code> transparently redirects all further connections from that IP to a honeypot port. The scanner receives a complete TCP handshake and a custom response — it appears to be a real service. The redirect happens before the packet reaches userspace, so the main service never sees it.</p>
+
+        <div class="code-block" style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);padding:1rem;margin:1rem 0;overflow-x:auto;">
+<pre style="font-size:0.78rem;line-height:1.6;margin:0;"><span style="color:#8b949e;"># Add scanner to redirect: map service port to honeypot port</span>
+<span style="color:#8b949e;"># Real service on :8080 → honeypot on :18080</span>
+iptables -t nat -A PREROUTING \
+    -s [SCANNER_IP] \
+    -p tcp --dport [SERVICE_PORT] \
+    -j REDIRECT --to-port [HONEYPOT_PORT]
+
+<span style="color:#8b949e;"># Verify rule applied</span>
+iptables -t nat -L PREROUTING -n | grep REDIRECT
+
+<span style="color:#8b949e;"># Existing TCP connections survive — redirect applies to new connections only</span>
+<span style="color:#8b949e;"># Use --syn to restrict to SYN packets if needed</span></pre>
+        </div>
+
+        <p>Whitelist rules are inserted at higher priority (<code>-I</code> instead of <code>-A</code>) and use <code>ACCEPT</code> to ensure legitimate IPs bypass the redirect. The whitelist check runs before any redirect rule.</p>
+
+        <h2>Honeypot Listener</h2>
+        <p>The honeypot listens on redirect ports and handles every incoming connection. For each connection: receive the probe payload, identify the scanner type, send a tailored response (a plausible service banner, an error, or a static response), log the full interaction, and alert.</p>
+
+        <div class="code-block" style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);padding:1rem;margin:1rem 0;overflow-x:auto;">
+<pre style="font-size:0.78rem;line-height:1.6;margin:0;"><span style="color:#ff7b72;">import</span> socket, threading, ipaddress, subprocess, requests
+
+HONEYPOT_RESPONSES = {
+    <span style="color:#a5d6ff;">"Shodan"</span>:    <span style="color:#a5d6ff;">b"SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.6\r\n"</span>,
+    <span style="color:#a5d6ff;">"Censys"</span>:    <span style="color:#a5d6ff;">b"HTTP/1.1 200 OK\r\nServer: nginx/1.24.0\r\n\r\n"</span>,
+    <span style="color:#a5d6ff;">"default"</span>:   <span style="color:#a5d6ff;">b"Connection refused\r\n"</span>,
+}
+
+<span style="color:#ff7b72;">def</span> <span style="color:#d2a8ff;">handle_scanner</span>(conn, addr):
+    <span style="color:#ff7b72;">try</span>:
+        payload = conn.recv(<span style="color:#79c0ff;">1024</span>)
+        scanner_type = identify_scanner(addr[<span style="color:#79c0ff;">0</span>], payload)
+        response = HONEYPOT_RESPONSES.get(scanner_type, HONEYPOT_RESPONSES[<span style="color:#a5d6ff;">"default"</span>])
+        conn.send(response)
+        whois_info = get_whois(addr[<span style="color:#79c0ff;">0</span>])
+        log_and_alert(addr[<span style="color:#79c0ff;">0</span>], scanner_type, payload, whois_info)
+    <span style="color:#ff7b72;">finally</span>:
+        conn.close()
+
+<span style="color:#ff7b72;">def</span> <span style="color:#d2a8ff;">get_whois</span>(ip):
+    <span style="color:#ff7b72;">try</span>:
+        result = subprocess.run([<span style="color:#a5d6ff;">"whois"</span>, ip], capture_output=<span style="color:#79c0ff;">True</span>, text=<span style="color:#79c0ff;">True</span>, timeout=<span style="color:#79c0ff;">5</span>)
+        <span style="color:#ff7b72;">for</span> line <span style="color:#ff7b72;">in</span> result.stdout.splitlines():
+            <span style="color:#ff7b72;">if</span> <span style="color:#a5d6ff;">"OrgName"</span> <span style="color:#ff7b72;">in</span> line <span style="color:#ff7b72;">or</span> <span style="color:#a5d6ff;">"org-name"</span> <span style="color:#ff7b72;">in</span> line:
+                <span style="color:#ff7b72;">return</span> line.split(<span style="color:#a5d6ff;">":"</span>)[<span style="color:#79c0ff;">1</span>].strip()
+    <span style="color:#ff7b72;">except</span>: <span style="color:#ff7b72;">pass</span>
+    <span style="color:#ff7b72;">return</span> <span style="color:#a5d6ff;">"Unknown"</span></pre>
+        </div>
+
+        <h2>Auto-Detection of New Scanners</h2>
+        <p>Known scanner ranges cover most probes, but new scanners and new IP ranges appear continuously. The auto-detector monitors incoming connections and applies heuristics to identify unknown scanners, automatically adding them to the redirect list.</p>
+
+        <p>Heuristics for auto-detection:</p>
+        <ul>
+            <li><span class="highlight">Port sweep pattern:</span> Same IP probing multiple ports within a short window — not characteristic of legitimate service requests</li>
+            <li><span class="highlight">No prior whitelist match:</span> IP not in any known-legitimate range</li>
+            <li><span class="highlight">Payload fingerprint:</span> Common scan tool banners (<code>masscan</code>, <code>zgrab</code>, <code>nmap</code>) in initial probe</li>
+            <li><span class="highlight">WHOIS org match:</span> WHOIS returns a known security research organization</li>
+            <li><span class="highlight">Connection rate:</span> High connection rate from a single /24 block</li>
+        </ul>
+
+        <p>When the auto-detector identifies a probable scanner, it adds the IP to the redirect list and applies <code>iptables</code> rules immediately — before further probes reach the main service.</p>
+
+        <h2>Alert Format</h2>
+        <p>Each detected scanner generates a webhook alert with full context for triage. The alert includes the source IP, scanner classification, target port, WHOIS organization name, country, and the first 128 bytes of the probe payload.</p>
+
+        <div class="code-block" style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);padding:1rem;margin:1rem 0;overflow-x:auto;">
+<pre style="font-size:0.78rem;line-height:1.6;margin:0;"><span style="color:#8b949e;"># Alert payload (example — all fields populated from live detection)</span>
+{
+  <span style="color:#a5d6ff;">"scanner_ip"</span>:     <span style="color:#a5d6ff;">"[SOURCE_IP]"</span>,
+  <span style="color:#a5d6ff;">"target_port"</span>:    <span style="color:#79c0ff;">8080</span>,
+  <span style="color:#a5d6ff;">"scanner_type"</span>:   <span style="color:#a5d6ff;">"Censys"</span>,
+  <span style="color:#a5d6ff;">"org"</span>:            <span style="color:#a5d6ff;">"Censys, Inc."</span>,
+  <span style="color:#a5d6ff;">"country"</span>:        <span style="color:#a5d6ff;">"US"</span>,
+  <span style="color:#a5d6ff;">"action"</span>:         <span style="color:#a5d6ff;">"redirected to honeypot"</span>,
+  <span style="color:#a5d6ff;">"probe_payload"</span>:  <span style="color:#a5d6ff;">"[first 128 bytes, hex-escaped]"</span>,
+  <span style="color:#a5d6ff;">"timestamp"</span>:      <span style="color:#a5d6ff;">"2026-08-29T14:32:11Z"</span>
+}</pre>
+        </div>
+
+        <h2>Operational Notes</h2>
+        <ul>
+            <li>Scanner redirects apply per-IP, per-port. A scanner probing port 80 is redirected on port 80 — its probes to other ports are handled separately.</li>
+            <li>iptables redirect rules persist until explicitly removed or the host reboots. Persist them with <code>iptables-save</code> / <code>iptables-restore</code> or <code>netfilter-persistent</code>.</li>
+            <li>The whitelist must be populated before deploying. A false positive that redirects a legitimate IP causes complete service loss for that IP with no visible error.</li>
+            <li>WHOIS lookups are rate-limited by ARIN/RIPE. Cache results by /24 to avoid throttling on high-volume scan days.</li>
+            <li>Honeypot response content (service banner) should match what the real service would return — a convincing mismatch (HTTP banner on a port expected to be SSH) draws more probes, not fewer.</li>
+        </ul>
+
+        <div class="detection-box">
+            <h3>What This Defends Against</h3>
+            <p><span class="highlight">Service fingerprinting:</span> Scanners mapping exposed services by banner never reach the real service — they receive a controlled honeypot response. Your real service version and configuration stay unknown to scanner databases.</p>
+            <p><span class="highlight">Reconnaissance visibility:</span> Every probe is logged with timestamp, source IP, probe payload, and organization. This data is intelligence: attack surface exposure, which organizations are actively scanning, and whether specific IPs return repeatedly (targeted vs. broad scan).</p>
+            <p><span class="highlight">Log noise reduction:</span> Application-level logs stop being polluted by scanner traffic. Legitimate connection anomalies become visible against a clean baseline.</p>
+        </div>
+
+        <h2>Limitations</h2>
+        <ul>
+            <li>Does not protect against targeted scans from unlisted IPs — only known scanner ranges are auto-redirected; unknown IPs require heuristic detection</li>
+            <li>iptables rules at scale (thousands of individual IPs) reduce forwarding performance — use <code>ipset</code> for large blocklists instead of individual rules</li>
+            <li>IPv6 requires separate <code>ip6tables</code> rules — many scanner operators now scan IPv6 space</li>
+            <li>Cloud hosting NAT (AWS, GCP, Azure) may prevent iptables PREROUTING REDIRECT from working as expected — verify against your hosting provider's network architecture</li>
+        </ul>
+
+        <h2>Demo</h2>
+        <p>ICMP packet capture: IP header decode showing scanner probe structure. NFQUEUE intercept classifying by source IP range.</p>
+        <div style="background:#0d1117;border:1px solid rgba(255,255,255,0.08);margin:1rem 0;overflow:hidden;">
+            <video controls playsinline preload="none" style="width:100%;display:block;max-height:480px;">
+                <source src="/videos/ICMP_sniffer.mp4" type="video/mp4">
+                Your browser does not support video playback.
+            </video>
+        </div>
+
+        <p class="mitre">MITRE ATT&CK (Defender): Detect T1595 (Active Scanning), T1592 (Gather Victim Host Information), T1046 (Network Service Discovery)</p>
+    </div>
+
+<script>
+function copyDetectWidget(btn) {
+    const pre = btn.closest('.detect-widget').querySelector('pre');
+    // Use textContent and normalize line endings for mobile compatibility
+    const text = pre.textContent.replace(/\r\n/g, '\n').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_1901m3ndae6tecqa74rbmz86n7j3"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

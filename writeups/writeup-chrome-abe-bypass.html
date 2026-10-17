@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChromElevator: Chrome ABE Bypass via COM Injection | 22nd Survey Division</title>
+    <meta name="description" content="ChromElevator: process hollowing + reflective DLL injection + direct syscalls to bypass Chrome App-Bound Encryption. No admin, no debug port. Chrome 144, Brave, Edge, Avast confirmed.">
+    <meta property="og:title" content="ChromElevator: Chrome ABE COM Injection Bypass | 22nd Survey Division">
+    <meta property="og:description" content="ChromElevator bypasses Chrome ABE via target-context COM invocation. Process hollowing, Hell's Gate syscalls, ChaCha20 payload. Chrome 144 IElevator2 analysis.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://rainfantry.github.io/writeups/writeup-chrome-abe-bypass.html">
+    <meta name="author" content="George Wu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --card: #0d1117;
+            --border: rgba(255, 255, 255, 0.12);
+            --text: #ffffff;
+            --dim: #888888;
+            --link: #58a6ff;
+            --green: #00ff88;
+            --red: #ff4757;
+            --orange: #ffa657;
+            --purple: #a78bfa;
+            --cyan: #00d4ff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            padding: 0;
+        }
+        .navbar {
+            background: rgba(10,14,20,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .logo-group { display: flex; align-items: center; gap: 0.5rem; }
+        .logo { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .logo-sep { color: var(--dim); }
+        .logo-name { color: var(--dim); font-size: 0.75rem; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { color: var(--dim); text-decoration: none; font-size: 0.8rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-social { display: flex; gap: 0.75rem; margin-left: 1rem; }
+        .nav-social a { color: var(--dim); }
+        .nav-social a:hover { color: var(--text); }
+        .hamburger { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; }
+        .nav-mobile { display: none; flex-direction: column; gap: 1rem; padding: 1rem 0; }
+        .nav-mobile.open { display: flex; }
+        .nav-mobile a { color: var(--dim); text-decoration: none; font-size: 0.9rem; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: block; }
+            .nav-mobile.open { display: flex; }
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+        .tag {
+            display: inline-block;
+            background: rgba(88,166,255,0.1);
+            color: var(--link);
+            padding: 0.2rem 0.6rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+        .meta {
+            color: var(--dim);
+            font-size: 0.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin: 2.5rem 0 1rem;
+            color: var(--text);
+        }
+        h3 {
+            font-size: 1.1rem;
+            margin: 2rem 0 0.75rem;
+            color: var(--text);
+        }
+        p {
+            margin-bottom: 1rem;
+            color: var(--dim);
+            font-size: 0.9rem;
+        }
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255,255,255,0.05);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+        pre {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            margin: 1rem 0;
+            color: #c9d1d9;
+        }
+        .code-comment { color: #6a737d; }
+        .code-string { color: var(--green); }
+        .code-keyword { color: var(--purple); }
+        .code-var { color: var(--orange); }
+        ul, ol {
+            margin: 1rem 0 1rem 1.5rem;
+            color: var(--dim);
+            font-size: 0.9rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        .concept-box {
+            background: rgba(88,166,255,0.05);
+            border-left: 3px solid var(--link);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .concept-box h4 {
+            color: var(--link);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .concept-box p { margin-bottom: 0.5rem; }
+        .concept-box p:last-child { margin-bottom: 0; }
+        .warning-box {
+            background: rgba(255,71,87,0.1);
+            border-left: 3px solid var(--red);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .warning-box h4 {
+            color: var(--red);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .diagram {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+            color: var(--dim);
+        }
+        .highlight { color: var(--green); }
+        .mitre-tag {
+            display: inline-block;
+            background: rgba(167,139,250,0.15);
+            color: var(--purple);
+            padding: 0.15rem 0.5rem;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.8rem;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            color: var(--text);
+        }
+        td { color: var(--dim); }
+        .layman-box {
+            background: rgba(0,212,255,0.05);
+            border-left: 3px solid var(--cyan);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .layman-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .layman-tldr { font-size: 0.85rem; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+        .layman-box p { font-size: 0.82rem; color: var(--dim); margin: 0; }
+        .detect-widget { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; overflow: hidden; }
+        .dw-header { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0.4rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .dw-dots { display: flex; gap: 4px; flex-shrink: 0; }
+        .dw-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dw-dot.r { background: #ff5f56; } .dw-dot.y { background: #ffbd2e; } .dw-dot.g { background: #27c93f; }
+        .dw-title { font-size: 0.6rem; color: #6a737d; flex: 1; margin-left: 4px; min-width: 100px; }
+        .dw-btref { font-size: 0.55rem; color: var(--dim); text-decoration: none; padding: 0.15rem 0.5rem; border: 1px solid var(--border); white-space: nowrap; }
+        .dw-btref:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-actions { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; flex-shrink: 0; }
+        .detect-widget pre { font-size: 0.72rem; line-height: 1.6; padding: 0.75rem 1rem; margin: 0; color: #c9d1d9; overflow-x: auto; }
+        .dw-flag { border-top: 1px solid rgba(255,255,255,0.06); padding: 0.5rem 1rem; font-size: 0.65rem; color: var(--dim); }
+        .dw-flag strong { color: var(--text); }
+        .dw-copy { font-size: 0.55rem; color: var(--dim); background: transparent; border: 1px solid var(--border); padding: 0.15rem 0.4rem; cursor: pointer; white-space: nowrap; }
+        .screenshot { width: 100%; max-width: 100%; border: 1px solid var(--border); margin: 1.5rem 0; display: block; }
+        .screenshot-caption { font-size: 0.7rem; color: var(--dim); text-align: center; margin-top: -1rem; margin-bottom: 1.5rem; font-style: italic; }
+        .dw-copy:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-copy.copied { color: #27c93f; border-color: #00ff88; }
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; }
+        .footer-links a { color: var(--dim); font-size: 0.8rem; }
+        .footer-copy { color: var(--dim); font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-inner">
+        <div class="logo-group">
+            <a href="/" class="logo">22nd Survey Division</a>
+            <span class="logo-sep">-</span>
+            <span class="logo-name">Open-Source Software Development</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/">Tools</a>
+            <a href="/writeups/">Writeups</a>
+            <a href="/writeups/">Research</a>
+            <a href="https://github.com/rainfantry" target="_blank">GitHub</a>
+            <div class="nav-social">
+                <a href="https://github.com/rainfantry" target="_blank" rel="noopener" aria-label="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                <a href="https://www.linkedin.com/in/george-wu-6927a5251/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+            </div>
+        </div>
+        <button class="hamburger" id="menuBtn" aria-label="Menu">&#9776;</button>
+    </div>
+    <div class="nav-mobile" id="navMenu">
+        <a href="/">Home</a>
+        <a href="/">Tools</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/writeups/">Research</a>
+        <a href="https://github.com/rainfantry" target="_blank">GitHub</a>
+    </div>
+</nav>
+
+    <div class="container">
+        <span class="tag">Browser Security</span>
+        <span class="tag">Credential Access</span>
+        <span class="tag">Process Hollowing</span>
+        <span class="tag">COM Injection</span>
+        <h1>ChromElevator: ABE Bypass via Target-Context COM Injection</h1>
+        <p class="meta">
+            <span>Research: Chrome ABE COM Injection</span>
+            <span>Author: George Wu</span>
+            <span>Updated: October 2026</span>
+        </p>
+
+        <p class="mitre-tag">T1539 — Steal Web Session Cookie</p>
+        <p class="mitre-tag">T1555.003 — Credentials from Web Browsers</p>
+        <p class="mitre-tag">T1055 — Process Injection</p>
+
+        <div class="layman-box">
+            <div class="layman-label">// What is this?</div>
+            <div class="layman-tldr">Chrome's App-Bound Encryption has a guard that only hands the vault key to Chrome itself. ChromElevator doesn't break the guard &mdash; it runs <em>as Chrome</em>.</div>
+            <p>In July 2024, Google deployed ABE to make browser credential theft impossible without admin rights. The old DPAPI approach broke overnight. The naive CDP workaround (debug port) is noisy and leaves a detectable network socket open. ChromElevator takes the opposite path: process hollowing + reflective injection + direct syscalls. The COM service validates the caller path, sees Chrome, and hands over the AES master key. No debug ports. No admin required. No disk writes. Confirmed working: Chrome 144, Brave, Edge, Avast.</p>
+        </div>
+
+        <!-- ─── Background ─── -->
+        <h2>What App-Bound Encryption Actually Does</h2>
+
+        <p>Before July 2024, stealing Chrome credentials required three steps: copy the SQLite cookie database, call Windows's DPAPI decryption API, read the plaintext. Any program running as the logged-in user could do it. That's why infostealers were so effective.</p>
+
+        <p>Google's fix introduced a security guard. Imagine Chrome's AES master key is locked in a vault. A COM service — a separate Windows process called the Chrome Elevation Service — holds the combination. Its rule: <em>I only open the vault for processes that can prove they are the real Chrome browser.</em></p>
+
+        <p>The proof is path validation. When a process asks the Elevation Service to decrypt the key, the service checks: "What executable file is making this request? Does its install path match Chrome?" If the path normalises to <code>C:\Program Files\Google\Chrome\Application</code>, the key is returned. Any other path gets rejected.</p>
+
+        <div class="concept-box">
+            <h4>// Why DPAPI-in-DPAPI</h4>
+            <p>The ABE key is actually wrapped in two layers of DPAPI encryption simultaneously: one using the calling user's credentials, one using the Windows SYSTEM account. Both layers are only unwrapped by the Elevation Service — which runs as SYSTEM and can impersonate the current user. A regular user-level process can't replicate this without cracking SYSTEM first.</p>
+        </div>
+
+        <!-- ─── The Two Approaches ─── -->
+        <h2>Two Ways Past the Guard</h2>
+
+        <p>Once ABE shipped, researchers found two categories of bypass:</p>
+
+        <div class="diagram">Approach 1 — CDP (Debug Port):
+  Don't touch the vault. Make Chrome unlock it for you.
+  Launch Chrome with --remote-debugging-port=9222
+  Connect via WebSocket
+  Send Storage.getCookies()
+  Chrome decrypts its own data, returns plaintext
+  ──────────────────────────────────────────
+  Detection: network socket on 9222, Chrome killed &amp; relaunched,
+             hidden window at -32000,-32000, non-explorer parent
+
+Approach 2 — COM Injection (ChromElevator):
+  Become Chrome. Ask the guard directly.
+  Hollow a new chrome.exe process
+  Inject encrypted payload via reflective DLL
+  Payload calls IElevator::DecryptData from inside Chrome's address space
+  Guard checks path → sees Chrome → returns AES key
+  ──────────────────────────────────────────
+  Detection: COM call from unexpected chrome.exe instance,
+             process creation with suspended flag, unusual thread origin</div>
+
+        <p>CDP is the simpler technique and widely documented. ChromElevator is the surgical approach: no debug ports, no Chrome restart, no localhost socket. The attack surface for defenders is narrower and the COM call looks like normal browser behaviour.</p>
+
+        <!-- ─── ChromElevator Walkthrough ─── -->
+        <h2>ChromElevator: How It Works (Layman)</h2>
+
+        <h3>Step 1 — The Hollow Shell</h3>
+        <p>ChromElevator creates a new <code>chrome.exe</code> process in a suspended state before any Chrome code runs. At this point Windows has already loaded the legitimate Chrome executable and set the process's identity — path, headers, everything. From Windows's perspective, this <em>is</em> Chrome.</p>
+        <p>The tool then unmaps Chrome's actual code from the process's memory and writes its own payload into that space. When the process resumes, it runs the payload. The process still shows as <code>chrome.exe</code> at the correct install path.</p>
+
+        <h3>Step 2 — The Encrypted Payload</h3>
+        <p>The DLL that performs the credential extraction is never stored on disk. It lives inside the main binary as an encrypted blob, encrypted with ChaCha20 at compile time. There are no readable strings, no recognisable API names, no patterns that signature-based detection can match against. The payload is decrypted into memory at runtime only.</p>
+
+        <h3>Step 3 — Hell's Gate</h3>
+        <p>Normal Windows programs call system functions like <code>CreateProcess</code> or <code>VirtualAllocEx</code> through Windows's official library (ntdll.dll). Security software instruments these calls to log and alert on suspicious behaviour.</p>
+        <p>ChromElevator uses a technique called Hell's Gate: instead of calling ntdll's functions by name, it reads ntdll's memory to find the actual syscall numbers, then calls the kernel directly. EDR hooks in ntdll are completely skipped. The calls are invisible to most endpoint security tools.</p>
+
+        <h3>Step 4 — Reflective DLL Injection</h3>
+        <p>The payload loads itself. Rather than using Windows's standard DLL loader (which creates filesystem traces and is monitored by security tools), the DLL contains its own mini-loader that maps it into Chrome's memory from scratch. After it runs, the DLL destroys its own PE headers in memory — so even a memory-scanning tool looking for loaded modules has less to find.</p>
+
+        <h3>Step 5 — The COM Call</h3>
+        <p>Now running inside a process that Windows identifies as <code>chrome.exe</code> at Chrome's real install path, the payload calls the Chrome Elevation Service's <code>IElevator::DecryptData</code> COM method. The Elevation Service performs path validation, normalises the caller's path, compares it — and finds Chrome. The 32-byte AES master key is returned.</p>
+
+        <p>With the master key, every <code>v20</code>-prefixed value in Chrome's databases is AES-256-GCM decryptable: session cookies, saved passwords, payment card data.</p>
+
+        <!-- ─── Screenshots ─── -->
+        <h2>Research Output</h2>
+
+        <img src="/assets/chrome-abe/image.png" alt="ChromElevator tool output showing extracted browser credentials" class="screenshot">
+        <p class="screenshot-caption">ChromElevator extraction output — AES master key recovered, credential databases decrypted</p>
+
+        <img src="/assets/chrome-abe/image_1.png" alt="ChromElevator showing multi-browser support across Chrome Brave Edge and Avast" class="screenshot">
+        <p class="screenshot-caption">Multi-browser run — same COM injection technique, different CLSIDs/IIDs per vendor</p>
+
+        <img src="/assets/chrome-abe/image_3.png" alt="ChromElevator process hollowing and injection flow" class="screenshot">
+        <p class="screenshot-caption">Process hollowing chain — suspended chrome.exe, payload mapped, COM call issued from within Chrome's address space</p>
+
+        <!-- ─── Validated callout ─── -->
+        <div class="concept-box">
+            <h4>// Validated — October 2026</h4>
+            <p>Confirmed working across all Chromium-based browsers that implement ABE:</p>
+            <ul style="margin-top: 0.5rem;">
+                <li><strong>Google Chrome 144.0.7559.133</strong> — IElevator2Chrome (Chrome 144+ interface)</li>
+                <li><strong>Brave 1.86.148</strong> — IElevatorBrave CLSID</li>
+                <li><strong>Microsoft Edge 145.0.3800.36</strong> — IEdgeElevatorFinal (extra vtable layer, different inheritance chain)</li>
+                <li><strong>Avast Secure Browser 143.0.33371.147</strong> — IElevatorChrome IID (Avast uses Chrome's own interface)</li>
+            </ul>
+            <p style="margin-top: 0.75rem;">No administrator privileges required on any of the above. x64 and ARM64 verified.</p>
+        </div>
+
+        <!-- ─── IElevator2 Chrome 144 ─── -->
+        <h2>Chrome 144: The Guard Gets a Promotion</h2>
+
+        <p>In November 2025, Chromium commit <code>49620496b8f0b7c0c63e2666a82e01180df3f4c3</code> landed: <em>"Add two new interfaces on IElevator."</em> Chrome 144 ships with a second interface family — <code>IElevator2</code> alongside the original <code>IElevator</code>.</p>
+
+        <p>The original <code>IElevator</code> chain had six interfaces: one base, five browser-specific flavours (Chrome Stable, Beta, Dev, Canary, Chromium). Chrome 144 doubles this to twelve by adding a parallel <code>IElevator2</code> tree, each member inheriting the two new methods <code>RunIsolatedChrome</code> and <code>AcceptInvitation</code>.</p>
+
+        <div class="diagram">IElevator (original — Chrome 127-143):
+  IUnknown
+  └─ IElevator          ← DecryptData at vtable slot 5
+     ├─ IElevatorChrome
+     ├─ IElevatorChromeBeta
+     └─ IElevatorChromeCanary
+
+IElevator2 (new — Chrome 144+):
+  IUnknown
+  └─ IElevator          ← DecryptData still at slot 5
+     └─ IElevator2      ← RunIsolatedChrome slot 6, AcceptInvitation slot 7
+        ├─ IElevator2Chrome  (IID: {1BF5208B-295F-4992-B5F4-3A9BB6494838})
+        ├─ IElevator2ChromeBeta
+        └─ IElevator2ChromeCanary</div>
+
+        <p>The important detail: <code>DecryptData</code> is still at the same vtable offset in <code>IElevator2</code>. The inheritance chain is <code>IUnknown → IElevator → IElevator2 → IElevator2Chrome</code>, so the first six method slots are identical to the old interface. Tools that statically hardcode the <code>IElevatorChrome</code> IID fail on Chrome 144 — not because the vtable layout changed, but because the registered interface has changed. Tools that dynamically resolve the CLSID and IID from the type library, or detect the Chrome 144 boundary and switch IIDs, continue to work.</p>
+
+        <p>The <code>RunIsolatedChrome</code> and <code>AcceptInvitation</code> methods appear to be groundwork for Mojo-based communication between elevated and non-elevated Chrome processes — a signal that future ABE hardening may involve verifying the calling process through Mojo IPC rather than path string matching alone.</p>
+
+        <!-- ─── Comparison table ─── -->
+        <h2>Bypass Approaches Compared</h2>
+
+        <table>
+            <tr>
+                <th>Method</th>
+                <th>Admin Required</th>
+                <th>Network Artefacts</th>
+                <th>Disk Writes</th>
+                <th>EDR Visibility</th>
+            </tr>
+            <tr>
+                <td><strong>DPAPI direct</strong><br><em>Pre-Chrome 127</em></td>
+                <td>No</td>
+                <td>None</td>
+                <td>None</td>
+                <td>Low — API call only</td>
+            </tr>
+            <tr>
+                <td><strong>CDP debug port</strong><br><em>Chrome 127+</em></td>
+                <td>No</td>
+                <td>TCP 9222 on loopback, WebSocket</td>
+                <td>None</td>
+                <td>High — process args, port, parent chain</td>
+            </tr>
+            <tr>
+                <td><strong>COM injection (ChromElevator)</strong><br><em>Chrome 127–144+</em></td>
+                <td>No</td>
+                <td>None</td>
+                <td>None</td>
+                <td>Medium — process hollowing detectable if telemetry covers it</td>
+            </tr>
+            <tr>
+                <td><strong>Admin SYSTEM DPAPI</strong><br><em>Requires elevation</em></td>
+                <td>Yes</td>
+                <td>None</td>
+                <td>None</td>
+                <td>Low — standard system call</td>
+            </tr>
+        </table>
+
+        <!-- ─── Detection ─── -->
+        <h2>Detection</h2>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — COM Injection Detection (ChromElevator)</span>
+                <div class="dw-actions">
+                    <a href="/blueteam-ref.html#process" class="dw-btref">&rarr; Blue Team</a>
+                    <button class="dw-copy" onclick="copyDetectWidget(this)" title="Copy to clipboard">Copy</button>
+                </div>
+            </div>
+            <pre># Chrome processes created in SUSPENDED state (hollowing indicator)
+# Look for chrome.exe with unusual parent (not explorer, not chrome itself)
+Get-CimInstance Win32_Process -Filter "Name='chrome.exe'" | ForEach-Object {
+  $parent = Get-CimInstance Win32_Process -Filter "ProcessId=$($_.ParentProcessId)"
+  if ($parent.Name -notmatch "explorer|chrome|GoogleUpdate") {
+    [PSCustomObject]@{
+      ChromePID   = $_.ProcessId
+      Parent      = $parent.Name
+      ParentPID   = $_.ParentProcessId
+      CommandLine = $_.CommandLine
+    }
+  }
+}
+
+# COM calls to ChromeElevationService from unexpected callers
+# Event ID 4688 with ProcessName=elevation_service.exe + unusual parent
+Get-WinEvent -FilterHashtable @{LogName='Security';Id=4688} -MaxEvents 500 |
+  Where-Object { $_.Message -match 'elevation_service' } |
+  Select-Object TimeCreated, Message</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> A chrome.exe process with a non-browser parent is a strong hollowing indicator. Elevation Service calls from unexpectedly-created chrome.exe instances confirm COM injection. Cross-reference with Sysmon Event ID 8 (CreateRemoteThread) or Event ID 25 (ProcessTampering) for memory injection confirmation.</div>
+        </div>
+
+        <table>
+            <tr>
+                <th>Detection Type</th>
+                <th>Indicator</th>
+                <th>Applies To</th>
+            </tr>
+            <tr>
+                <td>Process</td>
+                <td>chrome.exe with non-browser parent (not explorer.exe, not chrome.exe)</td>
+                <td>COM injection + CDP</td>
+            </tr>
+            <tr>
+                <td>Process</td>
+                <td>chrome.exe created with <code>CREATE_SUSPENDED</code> flag (Sysmon)</td>
+                <td>COM injection</td>
+            </tr>
+            <tr>
+                <td>Memory</td>
+                <td>chrome.exe with no PE headers mapped (Sysmon Event 25)</td>
+                <td>COM injection (post-hollow)</td>
+            </tr>
+            <tr>
+                <td>COM</td>
+                <td>elevation_service.exe serving DecryptData to unusual chrome.exe instance</td>
+                <td>COM injection</td>
+            </tr>
+            <tr>
+                <td>Process</td>
+                <td>chrome.exe with <code>--remote-debugging-port</code> flag</td>
+                <td>CDP only</td>
+            </tr>
+            <tr>
+                <td>Network</td>
+                <td>TCP 9222 listening on loopback</td>
+                <td>CDP only</td>
+            </tr>
+            <tr>
+                <td>Behavioral</td>
+                <td>Chrome killed → Chrome relaunched hidden → localhost WebSocket</td>
+                <td>CDP only</td>
+            </tr>
+        </table>
+
+        <div class="warning-box">
+            <h4>What Doesn't Catch It</h4>
+            <p>Signature-based AV scanning the ChromElevator binary sees only a ChaCha20-encrypted blob. No recognisable API names, no plaintext strings, no known shellcode patterns. The syscalls bypass ntdll hooks, so user-mode EDR telemetry misses the allocation and injection calls unless the EDR instruments at kernel level (minifilter or ETW kernel provider). The COM call to the Elevation Service looks identical to a legitimate Chrome startup sequence.</p>
+        </div>
+
+        <h2>Defensive Recommendations</h2>
+
+        <div class="concept-box">
+            <h4>For Endpoint Security Teams</h4>
+            <ul>
+                <li>Deploy Sysmon with rules covering Event ID 25 (ProcessTampering — image replaced) and Event ID 8 (CreateRemoteThread into chrome.exe)</li>
+                <li>Monitor the Chrome Elevation Service (elevation_service.exe) with COM audit logging — Windows ETW <code>Microsoft-Windows-RPC</code> provider</li>
+                <li>Alert on chrome.exe processes whose parent is not explorer.exe, an existing chrome.exe, or GoogleUpdate.exe</li>
+                <li>Enable Credential Guard — while it doesn't protect browser data, it signals the policy posture that treats credential theft as a priority</li>
+                <li>On Chrome 127+: alert on any process launching Chrome with <code>--remote-debugging-port</code> argument</li>
+            </ul>
+        </div>
+
+        <div class="concept-box">
+            <h4>For Web Application Developers</h4>
+            <ul>
+                <li>Implement device-bound session credentials (DBSC) — Chrome's next layer beyond ABE, ties the session to a TPM-backed key that can't be extracted</li>
+                <li>Require re-authentication from a new IP or user agent for sensitive operations</li>
+                <li>Treat any session token presented from an unfamiliar device fingerprint as suspicious, not merely different</li>
+            </ul>
+        </div>
+
+        <h2>Related Research</h2>
+        <ul>
+            <li><a href="https://security.googleblog.com/2024/07/improving-security-of-chrome-cookies-on.html" target="_blank" rel="noopener">Google Security Blog: Improving the security of Chrome cookies on Windows (Jul 2024)</a></li>
+            <li><a href="https://github.com/xaitax/Chrome-App-Bound-Encryption-Decryption" target="_blank" rel="noopener">xaitax / Chrome-App-Bound-Encryption-Decryption — public reference implementation</a></li>
+            <li><a href="/learn/#zerowrites">Learn: Ch7 — Zero Writes (HWBP/VEH, direct syscalls in detection evasion context)</a></li>
+            <li><a href="/learn/#kernel">Learn: Ch6 — Blinding the Sensor Array (how kernel-level defences respond)</a></li>
+            <li><a href="https://attack.mitre.org/techniques/T1055/" target="_blank" rel="noopener">MITRE ATT&CK T1055 — Process Injection</a></li>
+            <li><a href="https://attack.mitre.org/techniques/T1539/" target="_blank" rel="noopener">MITRE ATT&CK T1539 — Steal Web Session Cookie</a></li>
+        </ul>
+
+        <p style="margin-top: 3rem; color: var(--dim); font-size: 0.75rem; font-style: italic;">
+            Research conducted for defensive purposes. All testing on owned infrastructure. Understanding injection-based credential access enables detection engineers to build telemetry that catches the technique rather than its artefacts.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/privacy.html">Privacy</a>
+            <a href="/terms.html">Terms</a>
+            <a href="https://github.com/rainfantry" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 22nd Survey Division. Sydney, Australia.</p>
+    </footer>
+
+<script>
+const menuBtn = document.getElementById('menuBtn');
+const navMenu = document.getElementById('navMenu');
+if (menuBtn && navMenu) {
+    menuBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
+    navMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => navMenu.classList.remove('open'));
+    });
+    document.addEventListener('click', (e) => {
+        if (!navMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+            navMenu.classList.remove('open');
+        }
+    });
+}
+
+function copyDetectWidget(btn) {
+    const pre = btn.closest('.detect-widget').querySelector('pre');
+    // Use textContent and normalize line endings for mobile compatibility
+    const text = pre.textContent.replace(/\r\n/g, '\n').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_1901m3ndae6tecqa74rbmz86n7j3"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

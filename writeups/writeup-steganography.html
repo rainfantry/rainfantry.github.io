@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steganography: Covert Payload Delivery via LSB PNG + Zero-Width Unicode | 22nd Survey Division</title>
+    <meta name="description" content="How payloads travel as invisible data inside legitimate-looking files. LSB PNG steganography and zero-width Unicode channels — both bypassing AV during transit. ring-stack Phase 8, ghost-encoder validated.">
+    <meta property="og:title" content="Steganography Payload Delivery | 22nd Survey Division">
+    <meta property="og:type" content="article">
+    <meta name="author" content="George Wu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0a0a0a;--card:#0d1117;--border:rgba(255,255,255,0.12);--text:#fff;--dim:#888;--link:#58a6ff;--green:#00ff88;--red:#ff4757;--orange:#ffa657;--purple:#a78bfa;--cyan:#00d4ff;--amber:#e3b341; }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.7;}
+        .navbar{background:rgba(10,14,20,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;position:sticky;top:0;z-index:100;}
+        .navbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+        .logo{color:var(--text);text-decoration:none;font-weight:600;font-size:.9rem;}
+        .logo-sep{color:var(--dim);margin:0 .5rem;}
+        .logo-name{color:var(--dim);font-size:.75rem;}
+        .nav-links{display:flex;gap:1.5rem;}
+        .nav-links a{color:var(--dim);text-decoration:none;font-size:.8rem;}
+        .nav-links a:hover{color:var(--text);}
+        .hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;}
+        .nav-mobile{display:none;flex-direction:column;gap:1rem;padding:1rem 0;}
+        .nav-mobile.open{display:flex;}
+        .nav-mobile a{color:var(--dim);text-decoration:none;font-size:.9rem;}
+        @media(max-width:768px){.nav-links{display:none;}.hamburger{display:block;}}
+        .container{max-width:900px;margin:0 auto;padding:3rem 1.5rem;}
+        .tag{display:inline-block;background:rgba(88,166,255,.1);color:var(--link);padding:.2rem .6rem;font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-right:.5rem;margin-bottom:1rem;}
+        h1{font-size:2rem;font-weight:700;margin-bottom:.75rem;line-height:1.2;}
+        .meta{color:var(--dim);font-size:.8rem;margin-bottom:2rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+        h2{font-size:1.3rem;margin:2.5rem 0 1rem;}
+        h3{font-size:1.1rem;margin:2rem 0 .75rem;}
+        p{margin-bottom:1rem;color:var(--dim);font-size:.9rem;}
+        a{color:var(--link);text-decoration:none;}
+        a:hover{text-decoration:underline;}
+        code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.05);padding:.15rem .4rem;font-size:.8rem;border-radius:3px;}
+        pre{background:var(--card);border:1px solid var(--border);padding:1rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.6;margin:1rem 0;color:#c9d1d9;}
+        ul,ol{margin:1rem 0 1rem 1.5rem;color:var(--dim);font-size:.9rem;}
+        li{margin-bottom:.5rem;}
+        .concept-box{background:rgba(88,166,255,.05);border-left:3px solid var(--link);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .concept-box h4{color:var(--link);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
+        .concept-box p{margin-bottom:.5rem;}
+        .concept-box p:last-child{margin-bottom:0;}
+        .success-box{background:rgba(0,255,136,.06);border-left:3px solid var(--green);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .success-box h4{color:var(--green);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
+        .success-box p{margin-bottom:.5rem;}
+        .success-box p:last-child{margin-bottom:0;}
+        .amber-box{background:rgba(227,179,65,.07);border-left:3px solid var(--amber);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .amber-box h4{color:var(--amber);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
+        .amber-box p{margin-bottom:0;}
+        .diagram{background:var(--card);border:1px solid var(--border);padding:1.5rem;margin:1.5rem 0;font-family:'JetBrains Mono',monospace;font-size:.7rem;line-height:1.5;overflow-x:auto;white-space:pre;color:var(--dim);}
+        .highlight{color:var(--green);}.highlight-amber{color:var(--amber);}.highlight-red{color:var(--red);}
+        .mitre-tag{display:inline-block;background:rgba(167,139,250,.15);color:var(--purple);padding:.15rem .5rem;font-size:.65rem;font-family:'JetBrains Mono',monospace;margin-right:.5rem;margin-bottom:.5rem;}
+        table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.8rem;}
+        th,td{border:1px solid var(--border);padding:.75rem;text-align:left;}
+        th{background:rgba(255,255,255,.03);font-weight:600;}
+        td{color:var(--dim);}
+        .layman-box{background:rgba(0,212,255,.05);border-left:3px solid var(--cyan);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .layman-label{font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;}
+        .layman-tldr{font-size:.85rem;color:var(--text);font-weight:500;margin-bottom:.4rem;}
+        .layman-box p{font-size:.82rem;color:var(--dim);margin:0;}
+        .status-badge{display:inline-block;padding:.2rem .6rem;font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-right:.5rem;}
+        .badge-validated{background:rgba(0,255,136,.15);color:var(--green);}
+        .step-num-block{display:flex;gap:1rem;margin:1rem 0;align-items:flex-start;}
+        .step-num-circle{width:2rem;height:2rem;border-radius:50%;border:1px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--green);flex-shrink:0;margin-top:.1rem;}
+        .step-num-body{flex:1;}
+        .step-num-title{font-weight:600;font-size:.9rem;margin-bottom:.3rem;}
+        .step-num-body p{margin:0;font-size:.85rem;}
+        .footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;margin-top:4rem;}
+        .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:1rem;}
+        .footer-links a{color:var(--dim);font-size:.8rem;}
+        .footer-copy{color:var(--dim);font-size:.7rem;}
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-inner">
+        <div style="display:flex;align-items:center;">
+            <a href="/" class="logo">22nd Survey Division</a>
+            <span class="logo-sep">-</span>
+            <span class="logo-name">Open-Source Software Development</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/">Tools</a>
+            <a href="/writeups/">Writeups</a>
+            <a href="/writeups/">Research</a>
+            <a href="/learn/">Learn</a>
+        </div>
+        <button class="hamburger" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    </div>
+    <div class="nav-mobile">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/learn/">Learn</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <span class="tag">Static Evasion</span>
+    <span class="tag">Steganography</span>
+    <span class="tag">Covert Channel</span>
+    <span class="tag">Payload Delivery</span>
+
+    <h1>Steganography: Covert Payload Delivery via LSB PNG + Zero-Width Unicode</h1>
+
+    <div class="meta">
+        <span>George Wu</span>
+        <span>June–July 2026</span>
+        <span>22nd Survey Division</span>
+        <span>ring-stack Phase 8 / ghost-encoder</span>
+    </div>
+
+    <div class="mitre-tag">T1027.003</div>
+    <div class="mitre-tag">T1027.009</div>
+    <div class="mitre-tag">T1132</div>
+
+    <div class="layman-box" style="margin-top:1.5rem;">
+        <div class="layman-label">Plain English</div>
+        <div class="layman-tldr">A weapon has to travel from attacker to target somehow. If it looks like a weapon, it gets caught. Steganography makes it look like something innocent — a picture, a piece of text. The scanner checks the file, sees nothing suspicious, lets it through. The receiver unpacks the hidden payload on the other side.</div>
+    </div>
+
+    <p>
+        <span class="status-badge badge-validated">Validated</span> LSB PNG — XOR-encrypted shellcode embedded in image, Defender CLEAN, ring-stack Phase 8 confirmed.<br>
+        <span class="status-badge badge-validated">Validated</span> SSH pipe delivery — extractor never touches disk, AMSI never fires on file, calc.exe spawned.<br>
+        <span class="status-badge badge-validated">Validated</span> Zero-width Unicode — 0/72 VirusTotal, Kaspersky Premium clean, Discord CDN exfil confirmed June 2026.
+    </p>
+
+    <h2>Why Transit Is the Hardest Part</h2>
+
+    <p>A fully FUD (Fully Undetectable) payload on disk is a solved problem with enough obfuscation. The harder problem is getting the payload from attacker machine to target without it being scanned in transit.</p>
+
+    <p>Email gateways scan attachments. Web proxies scan downloads. Endpoint AV scans anything written to disk. The payload doesn't need to be detected at execution — if it's detected on landing, it never runs.</p>
+
+    <p>Steganography solves the transit problem. The file that crosses the network contains the payload hidden in a legitimate carrier — an image, a text message, a document. The scanner sees the carrier, not the payload.</p>
+
+    <h2>Technique 1: LSB PNG Steganography</h2>
+
+    <div class="concept-box">
+        <h4>Least Significant Bit encoding</h4>
+        <p>Every pixel in a PNG image has three colour channels: Red, Green, Blue. Each channel is one byte (0–255). The <em>least significant bit</em> of a byte contributes a value of 1. Changing a colour value from 200 to 201 — one bit difference — is invisible to the human eye. We use those throwaway bits to store payload data.</p>
+        <p>Capacity: 1 bit per channel × 3 channels = 3 bits per pixel. A 1000×1000 image = 1,000,000 pixels × 3 bits = 375,000 bytes of payload capacity. A typical shellcode is 300–800 bytes. The capacity margin is enormous.</p>
+    </div>
+
+    <div class="diagram"><span class="highlight">PNG PIXEL — BEFORE AND AFTER ENCODING</span>
+────────────────────────────────────────────────────────────────
+  Pixel at (x=0, y=0) — RGB values:
+
+  Before:     R=200  G=150  B=100
+  Binary:     11001000  10010110  01100100
+                     ^         ^         ^
+              LSB=0        LSB=0    LSB=0  (original throwaway bits)
+
+  Payload bit 1 = 1, bit 2 = 0, bit 3 = 1:
+
+  After:      R=201  G=150  B=101
+  Binary:     11001001  10010110  01100101
+                     ^         ^         ^
+              LSB=1        LSB=0    LSB=1  (payload bits embedded)
+────────────────────────────────────────────────────────────────
+  Visible colour change: <span class="highlight">0.4%</span>. Human eye: <span class="highlight">undetectable.</span>
+  AV scanner: <span class="highlight">sees a PNG with normal colour variation.</span></div>
+
+    <p>The first 4 bytes of the encoded data (consuming 32 pixels / 96 channel LSBs) store the payload length as a 32-bit little-endian integer. The extractor reads this first, then reads exactly that many bytes — no guesswork required.</p>
+
+    <p>PNG only — never JPEG. JPEG recompression changes colour values during save, corrupting the LSBs. PNG is lossless. The bits survive transfer intact.</p>
+
+    <h3>Critical: Encrypt before encoding</h3>
+
+    <p>Never embed raw shellcode. <code>msfvenom</code> output contains well-known byte sequences (shellcode stubs, syscall sequences, string constants). Defender will flag the PNG during download if the embedded bytes match signatures — even without understanding the image format.</p>
+
+    <p>XOR-encrypt the shellcode with a key before encoding. The encrypted form has no recognisable signature. Any constant key works; the ring-stack implementation uses <code>0x5A</code>. The matching key is hardcoded in the extractor.</p>
+
+    <h3>Delivery pipeline — ring-stack Phase 8 (validated)</h3>
+
+    <div class="step-num-block">
+        <div class="step-num-circle">1</div>
+        <div class="step-num-body">
+            <div class="step-num-title">Encrypt shellcode</div>
+            <p>XOR each byte of raw shellcode with key <code>0x5A</code>. Output has no AV signatures — statistical distribution looks like noise.</p>
+        </div>
+    </div>
+    <div class="step-num-block">
+        <div class="step-num-circle">2</div>
+        <div class="step-num-body">
+            <div class="step-num-title">Embed into carrier PNG</div>
+            <p>Python + Pillow: write 4-byte length header, then XOR-encrypted payload bytes into LSBs of carrier image pixels. Output: a valid PNG file, readable by any image viewer.</p>
+        </div>
+    </div>
+    <div class="step-num-block">
+        <div class="step-num-circle">3</div>
+        <div class="step-num-body">
+            <div class="step-num-title">Transfer to target</div>
+            <p>SCP over SSH (already open in kill chain). Defender scans the landing: PNG header, valid image structure, no PE magic bytes (<code>MZ</code>), no shellcode signatures. <strong>CLEAN.</strong></p>
+        </div>
+    </div>
+    <div class="step-num-block">
+        <div class="step-num-circle">4</div>
+        <div class="step-num-body">
+            <div class="step-num-title">Extract and execute via SSH pipe — never touch disk</div>
+            <p>Pipe the extractor script via SSH stdin to PowerShell. The script never writes to disk on the target — Defender's file scanner never fires. AMSI bypass (HWBP technique) runs first in the same pipe, then the extractor reads the PNG, XOR-decrypts, allocates memory, and executes in-memory. Shell comes back.</p>
+        </div>
+    </div>
+
+    <div class="success-box">
+        <h4>Validated result — ring-stack Phase 8, Windows 11, Defender RTP enabled</h4>
+        <p>Shellcode extracted from PNG in-memory. XOR-decrypted at key 0x5A. Allocated with VirtualAlloc, executed via CreateThread. calc.exe spawned. Reverse shell came back.</p>
+        <p>Defender scan of PNG during SCP transfer: CLEAN. Defender during in-memory execution (with HWBP AMSI bypass active): CLEAN. Phase 8 marked COMPLETE.</p>
+        <p>Critical fix noted during development: <code>WaitForSingleObject(thread, 0xFFFFFFFF)</code> — use <code>[uint32]::MaxValue</code> in PowerShell, not the literal. PS's Int32 parser overflows on 0xFFFFFFFF, causing PS to exit immediately and kill the shellcode thread before the shell connects.</p>
+    </div>
+
+    <h2>Technique 2: Zero-Width Unicode (ghost-encoder)</h2>
+
+    <p>A completely different carrier: plain text. Unicode contains dozens of zero-width characters — glyphs that render as invisible in every major application (Discord, email, browsers, terminals). They take up bytes in storage and transit but display as nothing to the human eye.</p>
+
+    <div class="concept-box">
+        <h4>The 16-character alphabet</h4>
+        <p>ghost-encoder uses 16 zero-width Unicode characters as an encoding alphabet — zero-width space (U+200B), zero-width non-joiner (U+200C), zero-width joiner (U+200D), zero-width no-break space (U+FEFF), and 12 more variants. Each byte of payload maps to 2 zero-width characters (4 bits each). The encoded payload is interspersed through visible carrier text.</p>
+        <p>Result: the text looks completely normal — but between every visible character there are invisible payload bytes. An observer seeing "Hello, how are you today?" sees 24 visible characters and nothing else. The actual string contains 152 characters. 128 are zero-width payload.</p>
+    </div>
+
+    <div class="diagram"><span class="highlight">VISIBLE:</span>  "Hello, how are you today?"
+<span class="highlight-amber">ACTUAL:</span>   H[ZW1][ZW3][ZW0][ZW2]e[ZW1][ZW1][ZW3][ZW2]l[ZW0][ZW3]...
+           24 visible chars + 128 zero-width chars = 152 total
+
+<span class="highlight">Entropy of output:</span> 0.12  (normal text = 0.10–0.15)
+<span class="highlight">AV heuristic:</span> sees text with near-zero entropy = normal content = CLEAN
+<span class="highlight-red">Raw shellcode entropy:</span> ~7.8  (near-maximum = "definitely encrypted/compressed")</div>
+
+    <p>Entropy is the key metric antivirus uses to decide "does this look suspicious?" High entropy = probably encrypted payload = flag it. Zero-width characters have extremely low entropy from the AV's perspective because they're a limited, predictable alphabet. The combined text file looks like normal Unicode with typical low entropy.</p>
+
+    <h3>Delivery: Discord CDN exfil (validated)</h3>
+
+    <p>The ghost-encoder test delivered payload via a Discord message in a private channel. Discord CDN uploaded the carrier text, attacker downloaded it via CDN URL, extracted the payload — 100% recovery. Because the carrier was posted as text content, not as a file attachment, there was no file-scanning step.</p>
+
+    <div class="success-box">
+        <h4>Validated result — ghost-encoder, Kaspersky Premium 21.25 active, 2026-06-29</h4>
+        <p>64-byte calc.exe shellcode encoded into "Hello, how are you today?" carrier text. Entropy 0.12. Uploaded to Discord CDN. Downloaded and decoded: 64/64 bytes recovered, 100%. Kaspersky: CLEAN. VirusTotal: 0/72. calc.exe spawned after extraction and execution.</p>
+    </div>
+
+    <h2>Comparison: Which Carrier for Which Situation</h2>
+
+    <table>
+        <thead>
+            <tr><th>Property</th><th>LSB PNG</th><th>Zero-Width Unicode</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Payload capacity</td><td style="color:var(--green);">375KB+ (1000×1000 image)</td><td style="color:var(--amber);">~1KB per visible sentence</td></tr>
+            <tr><td>Carrier suspicion</td><td style="color:var(--green);">Image file — normal</td><td style="color:var(--green);">Text message — normal</td></tr>
+            <tr><td>Delivery channel</td><td>File transfer (SCP, HTTP, email attachment)</td><td>Chat, email body, document, comment field</td></tr>
+            <tr><td>Extraction method</td><td>Python Pillow extractor (pipe, no disk)</td><td>Zero-width decoder (any language)</td></tr>
+            <tr><td>AV transit detection</td><td style="color:var(--green);">Zero (no PE bytes, low entropy after XOR)</td><td style="color:var(--green);">Zero (low entropy, no signatures)</td></tr>
+            <tr><td>Use in ring-stack</td><td>Phase 8 — large payload delivery</td><td>ghost_fud — covert exfil/delivery via messaging platforms</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Where This Fits in the Kill Chain</h2>
+
+    <p>Steganography is a transit-layer technique. It doesn't affect runtime detection — once the payload executes, AMSI and ETW are the relevant controls (see <a href="/writeups/writeup-hwbp-zero-write.html">HWBP Zero-Write</a>). What it solves is the gap between the attacker's machine and the target's disk: getting the payload across without triggering network inspection, email gateway scanning, or endpoint AV on file-write.</p>
+
+    <p>In the ring-stack kill chain, steganography (Phase 8) is used specifically with SSH pipe delivery to avoid ever writing the extractor or the payload to disk on the target. The PNG lands, passes the file scan as an image, and is never decompressed by AV. The extractor runs in memory, never as a file.</p>
+
+    <h2>Further Reading</h2>
+    <ul>
+        <li><a href="/learn/#lastmile">Ch9: The Last Mile</a> — delivery architecture including HTML smuggling, LNK stagers, and domain fronting</li>
+        <li><a href="/writeups/writeup-hwbp-zero-write.html">HWBP Zero-Write</a> — runtime bypass once the payload is running</li>
+        <li><a href="/writeups/writeup-av-evasion.html">AV Evasion Fundamentals</a> — sandbox detection and static evasion context</li>
+    </ul>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/learn/">Learn</a>
+        <a href="/writeups/">Research</a>
+    </div>
+    <div class="footer-copy">22nd Survey Division &mdash; Vidimus Omnia</div>
+</footer>
+</body>
+</html>

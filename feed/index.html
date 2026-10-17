@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Feed | 22nd Survey Division</title>
+<meta name="description" content="Live security intelligence — CISA KEV, CVE advisories, and HackerNews security posts. Updated every 6 hours via GitHub Actions.">
+<link rel="canonical" href="https://rainfantry.github.io/feed/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #0a0a0a; --surface: #111; --surface2: #161616;
+        --border: #1e1e1e; --text: #e8e8e8; --dim: #555;
+        --accent: #00ff88; --red: #ff4757; --yellow: #ffa502; --blue: #58a6ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--dim); transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    .page-header { max-width: 1200px; margin: 0 auto; padding: 60px 24px 16px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+    .page-header h1 { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: var(--accent); }
+    .header-sub { color: var(--dim); font-size: 0.85rem; margin-top: 6px; }
+    .live-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 6px 14px; border: 1px solid rgba(0,255,136,0.3); color: var(--accent); border-radius: 4px; display: flex; align-items: center; gap: 8px; }
+    .live-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    #last-updated { color: var(--dim); }
+
+    .filters { max-width: 1200px; margin: 16px auto 0; padding: 0 24px 24px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .filter-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 6px 14px; border: 1px solid var(--border); background: transparent; color: var(--dim); border-radius: 4px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,255,136,0.05); }
+
+    .feed { max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; display: flex; flex-direction: column; gap: 2px; }
+
+    .item { display: flex; gap: 16px; padding: 14px 16px; border-radius: 6px; transition: background 0.15s; border: 1px solid transparent; }
+    .item:hover { background: var(--surface); border-color: var(--border); }
+    .item-icon { font-size: 1.1rem; flex-shrink: 0; width: 24px; text-align: center; margin-top: 2px; }
+    .item-body { flex: 1; min-width: 0; }
+    .item-title { font-size: 0.9rem; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .item-title a { transition: color 0.2s; }
+    .item-title a:hover { color: var(--accent); }
+    .item-meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .item-source { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 0.05em; }
+    .item-time { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--dim); }
+    .item-score { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--yellow); }
+    .tag-kev { color: var(--red); }
+    .tag-hn { color: var(--blue); }
+    .tag-nvd { color: var(--yellow); }
+
+    .explainer { max-width: 1200px; margin: 0 auto; padding: 0 24px 60px; }
+    .explainer-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 32px; }
+    .explainer-box h2 { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--accent); margin-bottom: 20px; }
+    .explainer-box h3 { font-size: 0.9rem; color: var(--text); margin: 20px 0 8px; }
+    .explainer-box p, .explainer-box li { font-size: 0.85rem; color: var(--dim); line-height: 1.8; }
+    .explainer-box ul { padding-left: 20px; }
+    .explainer-box code { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: var(--surface2); padding: 2px 6px; border-radius: 3px; color: var(--accent); }
+    .explainer-box pre { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; overflow-x: auto; margin: 12px 0; }
+    .explainer-box pre code { background: none; padding: 0; font-size: 0.78rem; color: var(--text); }
+
+    #loading { text-align: center; padding: 60px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--dim); }
+
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--dim); }
+
+    @media (max-width: 600px) { .nav-links { display: none; } .page-header { padding-top: 40px; } }
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="logo">22nd Survey Division</a>
+        <div class="nav-links">
+            <a href="/">HOME</a>
+            <a href="/learn/">LEARN</a>
+            <a href="/writeups/">WRITEUPS</a>
+            <a href="/feed/" class="active">FEED</a>
+            <a href="https://rainfantry.github.io/blueteam-ref/" target="_blank">BLUE TEAM</a>
+            <a href="https://rainfantry.github.io/pentest-ref/" target="_blank">PENTEST REF</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div>
+        <h1>// security feed</h1>
+        <p class="header-sub">CISA KEV · CVE advisories · HackerNews security · BleepingComputer</p>
+    </div>
+    <div class="live-badge">
+        <span class="live-dot"></span>
+        <span>AUTO · 6H · <span id="last-updated">loading...</span></span>
+    </div>
+</div>
+
+<div class="filters">
+    <button class="filter-btn active" onclick="filterFeed('all', this)">ALL</button>
+    <button class="filter-btn" onclick="filterFeed('CISA KEV', this)">CISA KEV</button>
+    <button class="filter-btn" onclick="filterFeed('NVD', this)">CVE / NVD</button>
+    <button class="filter-btn" onclick="filterFeed('Hacker News', this)">HACKER NEWS</button>
+    <button class="filter-btn" onclick="filterFeed('BleepingComputer', this)">BLEEPINGCOMPUTER</button>
+</div>
+
+<div class="feed" id="feed">
+    <div id="loading">Loading feed...</div>
+</div>
+
+<div class="explainer">
+    <div class="explainer-box">
+        <h2>// how this works</h2>
+        <p>This feed runs on zero infrastructure. No server, no database, no cron job on a VPS. It uses <strong style="color:var(--text)">GitHub Actions</strong> — a free automation layer built into GitHub — to scrape security data on a schedule and commit the result directly to the repository. The static page you're reading loads that file and renders it.</p>
+
+        <h3>The sources</h3>
+        <ul>
+            <li><strong style="color:var(--text)">CISA KEV</strong> — CISA's Known Exploited Vulnerabilities catalogue. These are CVEs with confirmed in-the-wild exploitation. Highest priority.</li>
+            <li><strong style="color:var(--text)">NVD / CVE</strong> — NIST National Vulnerability Database API. Recent CVE disclosures with CVSS scores.</li>
+            <li><strong style="color:var(--text)">Hacker News</strong> — Algolia's public HN search API, filtered for security/exploit posts with engagement.</li>
+            <li><strong style="color:var(--text)">BleepingComputer</strong> — RSS feed. Reliable, human-written security news. No Cloudflare block on RSS.</li>
+        </ul>
+
+        <h3>The workflow</h3>
+        <p>A GitHub Actions workflow (<code>.github/workflows/scrape.yml</code>) runs a Python script every 6 hours. The script fetches from each source, deduplicates, scores by recency and engagement, and writes a <code>data.json</code> file. It then commits and pushes that file back to the repo. GitHub Pages serves it statically.</p>
+
+        <pre><code># .github/workflows/scrape.yml (simplified)
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch:          # manual trigger anytime
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install requests
+      - run: python feed/scraper.py
+      - run: |
+          git config user.name "feed-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add feed/data.json
+          git diff --staged --quiet || git commit -m "chore: update security feed"
+          git push</code></pre>
+
+        <h3>Why this approach</h3>
+        <p>Most "live" data sites need a backend server running 24/7. This one doesn't. GitHub Actions gives you 2,000 free minutes per month — more than enough to scrape 4 sources every 6 hours. The whole stack is: static HTML + JSON file + a scheduled script. Anyone can fork it and have their own live security feed in 5 minutes.</p>
+
+        <p style="margin-top:16px"><a href="https://github.com/rainfantry/rainfantry.github.io/blob/main/.github/workflows/scrape.yml" target="_blank" style="color:var(--accent)">View the workflow on GitHub →</a></p>
+    </div>
+</div>
+
+<footer>
+    22ND SURVEY DIVISION · GEORGE WU · SYDNEY AU · <a href="https://github.com/rainfantry" style="color:var(--accent)">github.com/rainfantry</a>
+</footer>
+
+<script>
+let allItems = [];
+
+function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    const diff = (Date.now() - d) / 1000;
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+}
+
+function sourceClass(source) {
+    if (source && source.includes('CISA')) return 'tag-kev';
+    if (source && source.includes('Hacker')) return 'tag-hn';
+    if (source && (source.includes('NVD') || source.includes('CVE'))) return 'tag-nvd';
+    return '';
+}
+
+function renderItems(items) {
+    const feed = document.getElementById('feed');
+    if (!items.length) {
+        feed.innerHTML = '<div id="loading">No items match this filter.</div>';
+        return;
+    }
+    feed.innerHTML = items.map(item => `
+        <div class="item" data-source="${item.source || ''}">
+            <div class="item-icon">${item.source_icon || '📰'}</div>
+            <div class="item-body">
+                <div class="item-title"><a href="${item.url || '#'}" target="_blank" rel="noopener">${item.title || 'Untitled'}</a></div>
+                <div class="item-meta">
+                    <span class="item-source ${sourceClass(item.source)}">${item.source || 'UNKNOWN'}</span>
+                    ${item.published ? `<span class="item-time">${timeAgo(item.published)}</span>` : ''}
+                    ${item.points > 0 ? `<span class="item-score">▲ ${item.points}</span>` : ''}
+                    ${item.vendor ? `<span class="item-time">${item.vendor}</span>` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterFeed(source, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = source === 'all' ? allItems : allItems.filter(i => (i.source || '').includes(source));
+    renderItems(filtered);
+}
+
+fetch('/feed/data.json')
+    .then(r => r.json())
+    .then(data => {
+        allItems = data.items || [];
+        renderItems(allItems);
+        if (data.generated_at) {
+            document.getElementById('last-updated').textContent = timeAgo(data.generated_at);
+        }
+    })
+    .catch(() => {
+        document.getElementById('loading').textContent = 'Failed to load feed.';
+    });
+</script>
+
+</body>
+</html>

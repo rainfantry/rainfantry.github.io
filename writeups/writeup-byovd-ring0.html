@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BYOVD: Kernel Callback Zeroing via RTCore64.sys | 22nd Survey Division</title>
+    <meta name="description" content="Bring Your Own Vulnerable Driver: RTCore64.sys arbitrary kernel read/write, PspCreateProcessNotifyRoutine callback zeroing, PatchGuard detonation. Validated July 2026.">
+    <meta property="og:title" content="BYOVD Ring 0: Kernel Callback Zeroing | 22nd Survey Division">
+    <meta property="og:description" content="How a legitimately signed MSI Afterburner driver becomes an arbitrary kernel read/write primitive. EDR callback zeroing, PatchGuard detonation, zero Defender alerts.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://rainfantry.github.io/writeups/writeup-byovd-ring0.html">
+    <meta name="author" content="George Wu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg2: rgba(18, 18, 18, 0.95);
+            --card: #0d1117;
+            --border: rgba(255, 255, 255, 0.12);
+            --text: #ffffff;
+            --dim: #888888;
+            --link: #58a6ff;
+            --green: #00ff88;
+            --red: #ff4757;
+            --orange: #ffa657;
+            --purple: #a78bfa;
+            --cyan: #00d4ff;
+            --amber: #e3b341;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+        }
+        .navbar {
+            background: rgba(10,14,20,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .logo-group { display: flex; align-items: center; gap: 0.5rem; }
+        .logo { color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .logo-sep { color: var(--dim); }
+        .logo-name { color: var(--dim); font-size: 0.75rem; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { color: var(--dim); text-decoration: none; font-size: 0.8rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-social { display: flex; gap: 0.75rem; margin-left: 1rem; }
+        .nav-social a { color: var(--dim); }
+        .hamburger { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; }
+        .nav-mobile { display: none; flex-direction: column; gap: 1rem; padding: 1rem 0; }
+        .nav-mobile.open { display: flex; }
+        .nav-mobile a { color: var(--dim); text-decoration: none; font-size: 0.9rem; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: block; }
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+        .tag {
+            display: inline-block;
+            background: rgba(88,166,255,0.1);
+            color: var(--link);
+            padding: 0.2rem 0.6rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+        .meta {
+            color: var(--dim);
+            font-size: 0.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        h2 {
+            font-size: 1.3rem;
+            margin: 2.5rem 0 1rem;
+            color: var(--text);
+        }
+        h3 {
+            font-size: 1.1rem;
+            margin: 2rem 0 0.75rem;
+            color: var(--text);
+        }
+        p {
+            margin-bottom: 1rem;
+            color: var(--dim);
+            font-size: 0.9rem;
+        }
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255,255,255,0.05);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+        pre {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            margin: 1rem 0;
+            color: #c9d1d9;
+        }
+        .code-comment { color: #6a737d; }
+        ul, ol {
+            margin: 1rem 0 1rem 1.5rem;
+            color: var(--dim);
+            font-size: 0.9rem;
+        }
+        li { margin-bottom: 0.5rem; }
+        .concept-box {
+            background: rgba(88,166,255,0.05);
+            border-left: 3px solid var(--link);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .concept-box h4 { color: var(--link); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .concept-box p { margin-bottom: 0.5rem; }
+        .concept-box p:last-child { margin-bottom: 0; }
+        .warning-box {
+            background: rgba(255,71,87,0.08);
+            border-left: 3px solid var(--red);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .warning-box h4 { color: var(--red); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .warning-box p { margin-bottom: 0; }
+        .success-box {
+            background: rgba(0,255,136,0.06);
+            border-left: 3px solid var(--green);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .success-box h4 { color: var(--green); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .success-box p { margin-bottom: 0; }
+        .amber-box {
+            background: rgba(227,179,65,0.07);
+            border-left: 3px solid var(--amber);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .amber-box h4 { color: var(--amber); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .amber-box p { margin-bottom: 0; }
+        .diagram {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre;
+            color: var(--dim);
+        }
+        .highlight { color: var(--green); }
+        .highlight-amber { color: var(--amber); }
+        .highlight-red { color: var(--red); }
+        .highlight-purple { color: var(--purple); }
+        .mitre-tag {
+            display: inline-block;
+            background: rgba(167,139,250,0.15);
+            color: var(--purple);
+            padding: 0.15rem 0.5rem;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.8rem;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            color: var(--text);
+        }
+        td { color: var(--dim); }
+        .layman-box {
+            background: rgba(0,212,255,0.05);
+            border-left: 3px solid var(--cyan);
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .layman-label { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .layman-tldr { font-size: 0.85rem; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+        .layman-box p { font-size: 0.82rem; color: var(--dim); margin: 0; }
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+        .badge-validated { background: rgba(0,255,136,0.15); color: var(--green); }
+        .badge-research { background: rgba(227,179,65,0.15); color: var(--amber); }
+        .badge-pending { background: rgba(136,136,136,0.15); color: var(--dim); }
+        .step-block {
+            border: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+        .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        .step-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        .step-block p { margin: 0; font-size: 0.85rem; }
+        .detect-widget { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; overflow: hidden; }
+        .dw-header { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0.4rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .dw-dots { display: flex; gap: 4px; }
+        .dw-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .dw-dot.r { background: #ff5f56; } .dw-dot.y { background: #ffbd2e; } .dw-dot.g { background: #27c93f; }
+        .dw-title { font-size: 0.6rem; color: #6a737d; margin-left: 4px; }
+        .detect-widget pre { font-size: 0.72rem; line-height: 1.6; padding: 0.75rem 1rem; margin: 0; color: #c9d1d9; overflow-x: auto; }
+        .dw-flag { border-top: 1px solid rgba(255,255,255,0.06); padding: 0.5rem 1rem; font-size: 0.65rem; color: var(--dim); }
+        .dw-flag strong { color: var(--text); }
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; }
+        .footer-links a { color: var(--dim); font-size: 0.8rem; }
+        .footer-copy { color: var(--dim); font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-inner">
+        <div class="logo-group">
+            <a href="/" class="logo">22nd Survey Division</a>
+            <span class="logo-sep">-</span>
+            <span class="logo-name">Open-Source Software Development</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/">Tools</a>
+            <a href="/writeups/">Writeups</a>
+            <a href="/writeups/">Research</a>
+            <a href="/learn/">Learn</a>
+        </div>
+        <button class="hamburger" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
+    </div>
+    <div class="nav-mobile">
+        <a href="/">Home</a>
+        <a href="/">Tools</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/writeups/">Research</a>
+        <a href="/learn/">Learn</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <span class="tag">Kernel Security</span>
+    <span class="tag">BYOVD</span>
+    <span class="tag">Driver Exploitation</span>
+    <span class="tag">EDR Evasion</span>
+
+    <h1>BYOVD Ring 0: Kernel Callback Zeroing via RTCore64.sys</h1>
+
+    <div class="meta">
+        <span>George Wu</span>
+        <span>July 2026</span>
+        <span>22nd Survey Division</span>
+        <span>ring-stack Phase LIMA / vader-rootkit</span>
+    </div>
+
+    <div class="mitre-tag">T1014</div>
+    <div class="mitre-tag">T1068</div>
+    <div class="mitre-tag">T1562.001</div>
+    <div class="mitre-tag">T1543.003</div>
+
+    <div class="layman-box" style="margin-top: 1.5rem;">
+        <div class="layman-label">Plain English</div>
+        <div class="layman-tldr">Windows trusts certain signed drivers completely. We load one that has a known vulnerability, use it as a master key into the kernel, then erase the entries that tell Defender when a new process starts. Defender goes blind to process creation — no alert fires. PatchGuard catches the modification and BSODs the machine, but by then the damage is done.</div>
+    </div>
+
+    <p>
+        <span class="status-badge badge-validated">Validated</span> Arbitrary kernel read/write via RTCore64.sys, Windows 11, Defender RTP enabled.<br>
+        <span class="status-badge badge-validated">Validated</span> 10 callbacks zeroed in PspCreateProcessNotifyRoutine — confirmed 2026-07-06.<br>
+        <span class="status-badge badge-validated">Validated</span> Zero Defender alerts across all phases of kill chain.<br>
+        <span class="status-badge badge-research">Research</span> EDR blind without BSOD (pool reads + RET-patch still in progress).
+    </p>
+
+    <h2>Background: The Two Worlds Inside Windows</h2>
+
+    <p>Windows splits the processor into two privilege levels. Your browser, your game, your AV agent — they all live in Ring 3 (user mode). The kernel — the part that manages memory, processes, drivers, and the hardware — lives in Ring 0. A user mode program can't just read or write kernel memory. The CPU enforces that boundary in silicon.</p>
+
+    <p>EDRs (Endpoint Detection and Response tools like Defender, CrowdStrike, SentinelOne) register <em>callbacks</em> inside the kernel. Every time a new process starts, the kernel walks a private list of registered callbacks and calls each one — that's how the security product sees what's happening. It's a phone-tap installed directly into the OS nervous system.</p>
+
+    <div class="concept-box">
+        <h4>The structure in question: PspCreateProcessNotifyRoutine</h4>
+        <p>A private kernel array — not exported, not documented — that holds up to 64 callback pointers. When any process starts, ntoskrnl.exe loops through this array and calls each registered function. EDRs register here. Zero their entry and they stop getting called. They go blind to new processes.</p>
+    </div>
+
+    <p>The problem: to write to kernel memory, you need to be running in Ring 0. An attacker in user mode shouldn't be able to do that. This is the wall BYOVD is designed to break.</p>
+
+    <h2>The BYOVD Concept: The Traitor Knight</h2>
+
+    <p>BYOVD — Bring Your Own Vulnerable Driver — is the technique of loading a legitimately signed, Windows-trusted kernel driver that contains a vulnerability allowing arbitrary memory access. You exploit the driver's own bug from user mode. The driver, running in Ring 0, performs the read or write on your behalf.</p>
+
+    <div class="diagram"><span class="highlight">USER MODE (Ring 3)</span>                         <span class="highlight">KERNEL (Ring 0)</span>
+─────────────────────────────────────────────────────────────────────
+                            NORMAL PATH:
+Your program  ───── syscall ────────────────→  ntoskrnl.exe
+              (controlled, validated)           (CPU enforces boundary)
+
+                            BYOVD PATH:
+Your program  ── DeviceIoControl ──→  <span class="highlight-amber">RTCore64.sys (signed, trusted)</span>
+                                              │
+                                              └─→  arbitrary kernel R/W
+                                                   (driver does it, CPU satisfied)
+─────────────────────────────────────────────────────────────────────
+<span class="highlight-red">Result: attacker writes to PspCreateProcessNotifyRoutine from Ring 3.</span>
+<span class="highlight-red">No exploit of Windows itself. Windows trusts the driver.</span></div>
+
+    <p>Windows has no way to distinguish "this driver is being used legitimately by MSI Afterburner" from "this driver is being weaponised." A signed driver is a signed driver. The kernel trusts the signature. The exploit lives inside the driver.</p>
+
+    <h2>The Driver: RTCore64.sys (CVE-2019-16098)</h2>
+
+    <p>RTCore64.sys is a kernel driver shipped with MSI Afterburner — the GPU overclocking tool used by millions of PC gamers. It exposes arbitrary kernel memory read and write from user mode via a device control interface (IOCTL). That's not a bug introduced by attackers. That's literally what the driver does, by design, to let the overclocking software touch hardware registers.</p>
+
+    <div class="concept-box">
+        <h4>CVE-2019-16098 — the vulnerability</h4>
+        <p>The driver does not validate that the memory addresses passed via IOCTL are safe to access. Any process can open the device <code>\\.\RTCore64</code> and send read/write requests targeting arbitrary kernel addresses. The certificate on the driver is valid. Windows loads it without complaint.</p>
+    </div>
+
+    <p>The driver supports two operations via IOCTL:</p>
+    <ul>
+        <li><strong>Read primitive:</strong> IOCTL <code>0x80002048</code> — read a DWORD from any kernel address</li>
+        <li><strong>Write primitive:</strong> IOCTL <code>0x8000204c</code> — write a DWORD to any kernel address</li>
+    </ul>
+
+    <div class="warning-box">
+        <h4>Important: the struct layout matters</h4>
+        <p>Public PoCs for CVE-2019-16098 describe struct layouts based on older driver versions. Our binary (hash <code>01aa278b</code>) has a different layout. Sending the wrong struct returns <code>Error 87 — The parameter is incorrect</code>. The driver silently rejects it. We had to reverse our exact binary in Ghidra to get the correct field offsets before anything worked.</p>
+    </div>
+
+    <h3>Reversing the struct in Ghidra</h3>
+
+    <p>The IOCTL dispatch handler lives at the driver's <code>IRP_MJ_DEVICE_CONTROL</code> major function. In DRIVER_OBJECT, the MajorFunction array starts at offset <code>0x70</code>, each pointer is 8 bytes, so <code>MajorFunction[14]</code> (IOCTL handler) = <code>0x70 + (14 × 8) = 0xE0</code>. The handler was <code>FUN_00011450</code>.</p>
+
+    <p>Inside the handler, the read primitive wrote its result to <code>puVar11[7]</code> — offset 28 in the struct. Reconstructed struct:</p>
+
+    <pre><span class="code-comment">// RTCore64 read request — reversed from binary hash 01aa278b</span>
+typedef struct _RTCore64Read {
+    ULONG64  Address;    <span class="code-comment">// offset  0 — kernel address to read from</span>
+    ULONG32  Offset;     <span class="code-comment">// offset  8 — added to Address</span>
+    ULONG32  _pad1;      <span class="code-comment">// offset 12</span>
+    ULONG64  _pad2;      <span class="code-comment">// offset 16</span>
+    ULONG32  Value;      <span class="code-comment">// offset 28 — result placed here by driver</span>
+} RTCore64Read;</pre>
+
+    <p>The write struct is identical with Value as the input instead of output, sent via IOCTL <code>0x8000204c</code>.</p>
+
+    <h2>Five Steps to Kernel Write</h2>
+
+    <div class="step-block">
+        <div class="step-num">Step 1</div>
+        <div class="step-title">Load the driver</div>
+        <p>Requires SYSTEM or Administrator. Use <code>sc.exe</code> to register and start the driver as a kernel service. Windows checks the Authenticode signature — valid, loads without question. The device <code>\\.\RTCore64</code> becomes available to any process that opens it.</p>
+    </div>
+
+    <div class="step-block">
+        <div class="step-num">Step 2</div>
+        <div class="step-title">Confirm the read primitive works — MZ header test</div>
+        <p>Load ntoskrnl.exe as a flat file to find its base address (the loaded image VA). Read 4 bytes from that address via IOCTL. A valid kernel read returns <code>0x00905A4D</code> — that's <code>MZ\x90\x00</code>, the PE magic bytes at the start of every Windows executable. If you get MZ, the read works. There is no other acceptable proof.</p>
+    </div>
+
+    <div class="success-box">
+        <h4>Kernel read confirmed — validated output</h4>
+        <p>Read at ntoskrnl.exe base returned <code>value=905a4d</code> — little-endian MZ header. Defender RTP on. No alert. No log. The CPU boundary crossed silently through a trusted driver.</p>
+    </div>
+
+    <div class="step-block">
+        <div class="step-num">Step 3</div>
+        <div class="step-title">Find PspCreateProcessNotifyRoutine</div>
+        <p>The callback array is private — not exported, no public symbol. But <code>PsSetCreateProcessNotifyRoutine</code> IS exported, and it references the private array via a RIP-relative <code>LEA</code> instruction. Load ntoskrnl as a flat file, scan its bytes for the LEA pattern in <code>PsSetCreateProcessNotifyRoutine</code>, compute the array's kernel virtual address. No hardcoded addresses — works across kernel updates.</p>
+    </div>
+
+    <div class="step-block">
+        <div class="step-num">Step 4</div>
+        <div class="step-title">Enumerate callback entries</div>
+        <p>Each entry in the array is an <code>EX_FAST_REF</code> structure — a pointer with the low 4 bits used as a reference counter. Read each slot to find registered callbacks. On a standard Windows 11 box: 5 process callbacks registered at <code>PspCreateProcessNotifyRoutine</code>.</p>
+    </div>
+
+    <div class="step-block">
+        <div class="step-num">Step 5</div>
+        <div class="step-title">Zero the callback array — EDR goes blind</div>
+        <p>Use the write primitive (IOCTL <code>0x8000204c</code>) to write zero to each callback slot in the array. After zeroing, when a new process starts, ntoskrnl walks the array and finds nothing registered. Defender's callback never fires. The process appears on disk — but no notification reaches the AV engine.</p>
+    </div>
+
+    <h2>PatchGuard Detonation: Why the BSOD Is a Feature</h2>
+
+    <p>Windows has a second layer of kernel self-defence called PatchGuard (Kernel Patch Protection). It runs in encrypted, randomly-timed kernel threads. Periodically — the timing is intentionally unpredictable — it checksums critical kernel structures. If any checksum fails, it calls <code>KeBugCheckEx(0x109)</code> immediately. The system dies. Blue screen.</p>
+
+    <p><code>PspCreateProcessNotifyRoutine</code> is one of the structures PatchGuard monitors. Zero its entries and PatchGuard will eventually notice the checksum mismatch and fire a BSOD.</p>
+
+    <div class="amber-box">
+        <h4>0x109 CRITICAL_STRUCTURE_CORRUPTION — the proof the write worked</h4>
+        <p>PatchGuard only triggers if the modification landed. If the write had failed, PatchGuard would have found the array intact and done nothing. So a BSOD with bugcheck <code>0x109</code> after zeroing callbacks is not a failure — it is confirmation the write primitive works exactly as expected.</p>
+    </div>
+
+    <div class="success-box">
+        <h4>Validated result — 2026-07-06</h4>
+        <p>strike.exe zeroed 10 callbacks at <code>fffff801240ec1e0</code>. PatchGuard fired <code>0x109 CRITICAL_STRUCTURE_CORRUPTION</code>. VM BSODed. Exfiltration and encryption had already completed before the BSOD detonated. Zero Defender alerts across all phases. The crash interrupted forensics and covered tracks — exactly the design.</p>
+    </div>
+
+    <p>The operational pattern: BYOVD + callback zeroing is not used to keep the machine running indefinitely. It's used to create a window of EDR blindness long enough to complete the objective (exfil, encryption, lateral movement). The BSOD lands afterward. It looks like a driver crash, not an intrusion.</p>
+
+    <h2>What the Full Kill Chain Can Do</h2>
+
+    <p>The validated BYOVD primitive (vader-rootkit Phase LIMA) exposes three separate capabilities via the same RTCore64.sys write primitive:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Command</th>
+                <th>What it does</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>callbacks</code></td>
+                <td>Zero PspCreateProcessNotifyRoutine — EDR blind to process creation</td>
+                <td style="color: var(--green);">Validated</td>
+            </tr>
+            <tr>
+                <td><code>token &lt;PID&gt;</code></td>
+                <td>Walk EPROCESS list, steal SYSTEM token, inject into target process — instant SYSTEM</td>
+                <td style="color: var(--green);">Built</td>
+            </tr>
+            <tr>
+                <td><code>dse</code></td>
+                <td>Disable Driver Signature Enforcement — load unsigned drivers</td>
+                <td style="color: var(--green);">Built</td>
+            </tr>
+            <tr>
+                <td><code>all &lt;PID&gt;</code></td>
+                <td>Full chain: token steal + callback removal in one pass</td>
+                <td style="color: var(--green);">Built</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>Two drivers are supported. RTCore64.sys (CVE-2019-16098, MSI Afterburner) and dbutil_2_3.sys (CVE-2021-21551, Dell BIOS Utility). Same primitives, different IOCTL structs. The codebase handles both.</p>
+
+    <h2>The Next Wall: Staying Alive After the Window</h2>
+
+    <p>PatchGuard monitors the array data — the pointer values in each callback slot. Zeroing the data triggers the checksum failure. The next evolution is to leave the array intact and instead patch the callback function itself.</p>
+
+    <div class="concept-box">
+        <h4>RET-patch approach (in progress)</h4>
+        <p>Instead of zeroing the EX_FAST_REF entry in the array, find the actual callback function the entry points to (which lives in kernel pool memory, not kernel image space). Write a single byte <code>0xC3</code> (RET instruction) at its entry point. The callback gets called — PatchGuard's checksum of the array is intact — but the function immediately returns without executing. EDR blind, no checksum failure, no BSOD.</p>
+        <p>The difficulty: the EX_CALLBACK_ROUTINE_BLOCK lives in kernel pool memory (<code>ffffc40b...</code> addresses). RTCore64's primitives work cleanly against kernel image space (<code>fffff801...</code>) but crash the system when targeting pool addresses — the driver dereferences them in kernel mode with no exception handling. Pool reads require a different approach.</p>
+    </div>
+
+    <p>The RTCore64 + dbutil BYOVD approach is also supported by <code>dbutil_2_3.sys</code> (Dell, CVE-2021-21551), which uses the same general IOCTL pattern but may have different pool access behaviour. This is the current research direction.</p>
+
+    <h2>Detection</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Detection signal</th>
+                <th>Where</th>
+                <th>Reliability</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Sysmon Event ID 6 — driver load</td>
+                <td>Sysmon + Windows Event Log</td>
+                <td style="color: var(--amber);">Medium</td>
+                <td>RTCore64.sys load will be logged. Check SHA256 hash against known vulnerable driver lists (LOLDrivers project).</td>
+            </tr>
+            <tr>
+                <td>Certificate revocation check</td>
+                <td>Network / proxy</td>
+                <td style="color: var(--red);">Low</td>
+                <td>Driver certificate is valid. Revocation requires vendor to revoke it. MSI has not revoked CVE-2019-16098 certs as of 2026.</td>
+            </tr>
+            <tr>
+                <td><code>sc.exe create</code> + <code>sc.exe start</code> for kernel-type service</td>
+                <td>Process creation logs</td>
+                <td style="color: var(--amber);">Medium</td>
+                <td>Unusual for a user to manually load a kernel driver via sc.exe. Alert on kernel service creation outside standard install paths.</td>
+            </tr>
+            <tr>
+                <td>0x109 BSOD crash dump</td>
+                <td>Windows Event Log, crash dump</td>
+                <td style="color: var(--green);">High (post-mortem)</td>
+                <td>CRITICAL_STRUCTURE_CORRUPTION after the fact. Confirms callback modification happened. Dump will show the zeroed array if captured before reboot.</td>
+            </tr>
+            <tr>
+                <td>Microsoft Vulnerable Driver Blocklist</td>
+                <td>Windows Defender Credential Guard / HVCI</td>
+                <td style="color: var(--green);">High</td>
+                <td>HVCI (Hypervisor-Protected Code Integrity) with the blocklist enabled blocks RTCore64.sys entirely. Most enterprise deployments have this. Consumer Windows 11 Home does not enable it by default.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="concept-box">
+        <h4>The effective defence: HVCI + blocklist</h4>
+        <p>Hypervisor-Protected Code Integrity (HVCI) with Microsoft's Vulnerable Driver Blocklist prevents any driver on the list from loading. RTCore64.sys (CVE-2019-16098) is on the blocklist. On a system with HVCI enabled, this entire attack chain fails at Step 1 — the driver load is blocked before it reaches the kernel. The gap: HVCI is off by default on Windows Home. Enterprise is largely covered. Consumer is not.</p>
+    </div>
+
+    <h2>Defensive Recommendations</h2>
+
+    <ul>
+        <li><strong>Enable HVCI:</strong> Settings → Windows Security → Device Security → Core Isolation → Memory Integrity. This is the single most effective control against BYOVD.</li>
+        <li><strong>Enable Sysmon with Event ID 6 alerting:</strong> Driver loads should be logged and hash-checked against the LOLDrivers known-vulnerable driver list.</li>
+        <li><strong>Alert on <code>sc.exe</code> kernel service creation:</strong> Legitimate software doesn't load kernel drivers via manual sc.exe commands at runtime.</li>
+        <li><strong>Monitor for 0x109 BSODs:</strong> Any <code>CRITICAL_STRUCTURE_CORRUPTION</code> crash on an endpoint should be treated as a potential kernel modification event, not a random driver crash.</li>
+    </ul>
+
+    <h2>What's Not Covered Here</h2>
+
+    <p>The BYOVD loader, the IOCTL structs, and the callback enumeration logic are from <a href="https://github.com/rainfantry">rainfantry</a>'s private research (vader-rootkit, ring-stack). No source code is published. The validated results and technique description are shared to enable detection and defence.</p>
+
+    <p>The next phase of this research — pool-safe R/W for RET-patching callback functions — is ongoing. Results will be published when validated.</p>
+
+    <h2>Further Reading</h2>
+
+    <ul>
+        <li><a href="/learn/#syscalllattice">Ch11: The Syscall Lattice</a> — Hell's Gate, direct syscalls, the 0-day development workflow that feeds techniques like this</li>
+        <li><a href="/writeups/writeup-av-evasion.html">AV Evasion Fundamentals</a> — AMSI/ETW bypass, sandbox detection (the layers above Ring 0)</li>
+        <li><a href="/writeups/writeup-chrome-abe-bypass.html">ChromElevator: ABE Bypass via COM Injection</a> — another kernel-adjacent technique using direct syscalls</li>
+        <li><a href="https://github.com/magicsword-io/LOLDrivers" target="_blank" rel="noopener">LOLDrivers project</a> — known vulnerable driver blocklist maintained by community</li>
+    </ul>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/writeups/">Writeups</a>
+        <a href="/learn/">Learn</a>
+        <a href="/writeups/">Research</a>
+    </div>
+    <div class="footer-copy">22nd Survey Division &mdash; Vidimus Omnia</div>
+</footer>
+
+</body>
+</html>
