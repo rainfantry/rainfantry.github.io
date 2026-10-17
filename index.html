@@ -793,6 +793,26 @@
             text-decoration: none;
         }
 
+        /* GitHub section */
+        .github-section { padding: 40px 0 60px; }
+        .github-chart-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); padding: 20px; }
+        .github-chart-wrap img { width: 100%; display: block; border-radius: 4px; }
+        .github-stats-row { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px; align-items: center; }
+        .gh-stat { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--dim); }
+        .gh-stat strong { color: var(--text); font-weight: 600; }
+        .gh-pro { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 3px 8px; border: 1px solid var(--accent); color: var(--accent); border-radius: 3px; letter-spacing: 0.08em; }
+        .ghsa-badge { margin-top: 16px; display: flex; align-items: center; gap: 20px; padding: 18px 22px; border: 1px solid rgba(255,71,87,0.25); border-radius: 8px; background: rgba(255,71,87,0.04); transition: border-color 0.2s; }
+        .ghsa-badge:hover { border-color: rgba(255,71,87,0.5); }
+        .ghsa-icon { font-size: 1.6rem; flex-shrink: 0; }
+        .ghsa-body { flex: 1; min-width: 0; }
+        .ghsa-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--red); letter-spacing: 0.12em; margin-bottom: 5px; }
+        .ghsa-title { font-size: 0.88rem; color: var(--text); font-weight: 500; margin-bottom: 5px; }
+        .ghsa-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: var(--dim); line-height: 1.6; }
+        .ghsa-meta a { color: var(--dim); text-decoration: underline; }
+        .ghsa-link { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--red); white-space: nowrap; flex-shrink: 0; border: 1px solid rgba(255,71,87,0.3); padding: 8px 14px; border-radius: 4px; transition: all 0.2s; }
+        .ghsa-link:hover { background: rgba(255,71,87,0.1); border-color: var(--red); }
+        @media (max-width: 600px) { .ghsa-badge { flex-wrap: wrap; } .ghsa-link { width: 100%; text-align: center; } }
+
         /* Spotlight */
         .spotlight { padding: 40px 0 60px; }
         .spotlight-inner { display: grid; grid-template-columns: 1fr 420px; gap: 48px; align-items: center; }
@@ -1373,6 +1393,29 @@
         </div>
     </section>
 
+    <section class="github-section">
+        <h2 class="section-title">// github</h2>
+        <div class="github-chart-wrap">
+            <img src="https://ghchart.rshah.org/00ff88/rainfantry" alt="rainfantry GitHub contribution graph" loading="lazy">
+        </div>
+        <div class="github-stats-row">
+            <div class="gh-stat"><strong id="gh-repos">47</strong> repos</div>
+            <div class="gh-stat"><strong id="gh-followers">15</strong> followers</div>
+            <div class="gh-stat"><strong>4,326</strong> contributions this year</div>
+            <span class="gh-pro">PRO</span>
+            <div class="gh-stat" style="margin-left:auto;"><a href="https://github.com/rainfantry" target="_blank" style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.72rem;">github.com/rainfantry →</a></div>
+        </div>
+        <a class="ghsa-badge" href="https://github.com/advisories/GHSA-g5r6-gv6m-f5jv" target="_blank" rel="noopener" style="text-decoration:none;">
+            <div class="ghsa-icon">🛡</div>
+            <div class="ghsa-body">
+                <div class="ghsa-label">GitHub Security Advisory · Credited Researcher</div>
+                <div class="ghsa-title">CVE-2026-73498 — mcp-atlassian: Arbitrary File Read via Path Traversal</div>
+                <div class="ghsa-meta">GHSA-g5r6-gv6m-f5jv &nbsp;·&nbsp; CVSS 7.7 High &nbsp;·&nbsp; Patched 0.22.0 &nbsp;·&nbsp; 2026-07-10 &nbsp;·&nbsp; Credit: rainfantry + Samielakkad</div>
+            </div>
+            <div class="ghsa-link">View Advisory →</div>
+        </a>
+    </section>
+
     <section id="contact" class="contact-section">
         <h2>Get In Touch</h2>
         <p>Interested in security research, penetration testing, or vulnerability disclosure? Our team is ready to help.</p>
@@ -1454,6 +1497,14 @@
 
     <!-- Instagram Embeds -->
     <script async src="https://www.instagram.com/embed.js"></script>
+    <script>
+        fetch('https://api.github.com/users/rainfantry')
+            .then(r => r.json())
+            .then(d => {
+                if (d.public_repos) document.getElementById('gh-repos').textContent = d.public_repos;
+                if (d.followers) document.getElementById('gh-followers').textContent = d.followers;
+            }).catch(() => {});
+    </script>
     <script>
         // If an Instagram embed fails (deleted post, blocked by browser privacy),
         // replace the empty block with a clean link button instead of a black void.
