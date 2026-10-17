@@ -793,6 +793,24 @@
             text-decoration: none;
         }
 
+        /* Spotlight */
+        .spotlight { padding: 40px 0 60px; }
+        .spotlight-inner { display: grid; grid-template-columns: 1fr 420px; gap: 48px; align-items: center; }
+        .spotlight-preview { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 0 40px rgba(0,255,136,0.06); }
+        .spotlight-preview img { width: 100%; display: block; }
+        .spotlight-meta .cat { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 12px; }
+        .spotlight-meta h2 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; }
+        .spotlight-meta .desc { color: var(--dim); font-size: 0.9rem; line-height: 1.7; margin-bottom: 24px; }
+        .spotlight-features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 8px; }
+        .spotlight-features li { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--dim); display: flex; align-items: center; gap: 10px; }
+        .spotlight-features li::before { content: '→'; color: var(--accent); }
+        .spotlight-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .spotlight-actions a { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; padding: 10px 20px; border-radius: 4px; transition: all 0.2s; }
+        .spotlight-actions a.primary { background: var(--accent); color: #000; font-weight: 600; }
+        .spotlight-actions a.primary:hover { background: #00cc6a; }
+        .spotlight-actions a.secondary { border: 1px solid var(--border); color: var(--dim); }
+        .spotlight-actions a.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
         /* Mobile */
         @media (max-width: 768px) {
             .hero h1 { font-size: 1.8rem; }
@@ -802,6 +820,8 @@
             .project-card .preview { height: 140px; }
             .contact-form { padding: 0 16px; }
             .hero .btn { display: block; margin: 8px auto; width: fit-content; }
+            .spotlight-inner { grid-template-columns: 1fr; }
+            .spotlight-preview { order: -1; }
         }
     </style>
 </head>
@@ -887,7 +907,40 @@
                 </div>
             </div>
 
+            <div class="demo-card">
+                <div class="instagram-embed">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbNHD0Tzrtr/" data-instgrm-version="14"></blockquote>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-platform">Instagram</div>
+                    <div class="demo-title">Multi-Monitor C2 Setup</div>
+                    <div class="demo-desc">Workspace showing dual/triple monitor setup with terminals and C2 panels</div>
+                </div>
+            </div>
 
+        </div>
+    </section>
+
+    <section class="spotlight">
+        <div class="spotlight-inner">
+            <div class="spotlight-meta">
+                <div class="cat">BLUE TEAM · FEATURED TOOL</div>
+                <h2>blueteam-ref</h2>
+                <p class="desc">Windows incident response command reference. Fill in the triage config once — host, user, process, IP — and every command populates instantly. 60+ copy-paste-ready commands organized by IR phase.</p>
+                <ul class="spotlight-features">
+                    <li>Dynamic placeholder substitution across all commands</li>
+                    <li>Phases: Initial Triage · Persistence · Process · Network · Credentials · Logs · Remediation</li>
+                    <li>AV/EDR status, Defender detections, scheduled tasks, run keys</li>
+                    <li>PowerShell encoder built-in · Case Study mode · No install</li>
+                </ul>
+                <div class="spotlight-actions">
+                    <a href="https://rainfantry.github.io/blueteam-ref/" target="_blank" class="primary">Launch Tool →</a>
+                    <a href="https://github.com/rainfantry/blueteam-ref" target="_blank" class="secondary">View Source</a>
+                </div>
+            </div>
+            <div class="spotlight-preview">
+                <img src="/showcase/blueteam-ref-preview.png" alt="blueteam-ref Windows IR Command Reference">
+            </div>
         </div>
     </section>
 
