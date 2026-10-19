@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T17:54:43.306061+00:00",
+  "generated_at": "2026-10-19T21:50:13.800537+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6711375927494662901",
+      "id": "bc-7355013400629534358",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Nikkei discloses third data breach in a month, 1.8M records exposed",
+      "url": "https://www.bleepingcomputer.com/news/security/nikkei-discloses-third-data-breach-in-a-month-18m-records-exposed/",
+      "points": 0,
+      "published": "2026-10-19T17:49:48-04:00"
+    },
+    {
+      "id": "bc-231579307960772855",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "WordPress SEO plugin Rank Math compromised to backdoor websites",
+      "url": "https://www.bleepingcomputer.com/news/security/wordpress-seo-plugin-rank-math-compromised-to-backdoor-websites/",
+      "points": 0,
+      "published": "2026-10-19T17:24:51-04:00"
+    },
+    {
+      "id": "bc-4203759189867941730",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers hijack AOMEI update servers to secretly spread malware",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-aomei-update-servers-to-secretly-spread-malware/",
+      "points": 0,
+      "published": "2026-10-19T15:40:58-04:00"
+    },
+    {
+      "id": "bc-7751798901143699934",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Bullhorn takes staffing platform offline to contain cyberattack",
+      "url": "https://www.bleepingcomputer.com/news/security/bullhorn-takes-staffing-platform-offline-to-contain-cyberattack/",
+      "points": 0,
+      "published": "2026-10-19T14:51:13-04:00"
+    },
+    {
+      "id": "bc-7665297456366398869",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenCode hack exposes API keys amid AI distillation attacks",
@@ -353,7 +389,7 @@
       "published": "2026-10-19T13:27:15-04:00"
     },
     {
-      "id": "bc-3010211807368472387",
+      "id": "bc-7316013985629495759",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes game, app crashes caused by recent Windows update",
@@ -362,7 +398,7 @@
       "published": "2026-10-19T10:55:23-04:00"
     },
     {
-      "id": "bc-3674846089332919204",
+      "id": "bc-1886292683048397396",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Inside the Underground Market for Know Your Client Services",
@@ -371,7 +407,7 @@
       "published": "2026-10-19T10:00:10-04:00"
     },
     {
-      "id": "bc-8517656009390645406",
+      "id": "bc-5304242498126926929",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "F5 releases out-of-band patches for critical NGINX vulnerabilities",
@@ -380,7 +416,7 @@
       "published": "2026-10-19T09:49:24-04:00"
     },
     {
-      "id": "bc-7601283154294591145",
+      "id": "bc-9220286791145858499",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes classic Outlook bug that hid Copilot buttons",
@@ -389,7 +425,7 @@
       "published": "2026-10-19T08:44:44-04:00"
     },
     {
-      "id": "bc-2455022793804901085",
+      "id": "bc-2108746407843144094",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: October Windows Server updates break Exchange sign-in, mail flow",
@@ -398,7 +434,7 @@
       "published": "2026-10-19T04:58:41-04:00"
     },
     {
-      "id": "bc-5148898316687874845",
+      "id": "bc-9217627451169867666",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit SiteGuard WAF flaw to run commands as admins",
@@ -407,7 +443,7 @@
       "published": "2026-10-18T10:23:16-04:00"
     },
     {
-      "id": "bc-572123710073821664",
+      "id": "bc-7657405826679949567",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers breach Microsoft 365 tenants via ConnectWise supply-chain attack",
@@ -416,7 +452,7 @@
       "published": "2026-10-17T11:18:51-04:00"
     },
     {
-      "id": "bc-4850041112860734797",
+      "id": "bc-375865515875929041",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal patches critical RCE flaws, warns exploits may emerge soon",
@@ -425,7 +461,7 @@
       "published": "2026-10-17T10:32:48-04:00"
     },
     {
-      "id": "bc-8819719120657683066",
+      "id": "bc-4223841888980626489",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical BlockStrap flaw lets hackers run code on Magento servers",
@@ -434,49 +470,13 @@
       "published": "2026-10-16T16:00:59-04:00"
     },
     {
-      "id": "bc-5173191825894888635",
+      "id": "bc-1524949284603133702",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Targeted ads installed Candiru spyware in zero-click attacks",
       "url": "https://www.bleepingcomputer.com/news/security/zero-click-attacks-used-targeted-ads-to-deliver-candiru-spyware/",
       "points": 0,
       "published": "2026-10-16T13:20:03-04:00"
-    },
-    {
-      "id": "bc-9212671819320299719",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Employees using personal ChatGPT at work? Here's what IT admins need to do",
-      "url": "https://www.bleepingcomputer.com/news/security/employees-using-personal-chatgpt-at-work-heres-what-it-admins-need-to-do/",
-      "points": 0,
-      "published": "2026-10-16T09:50:59-04:00"
-    },
-    {
-      "id": "bc-6991530596010750841",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Burger King Japan data breach exposes 11 million customer records",
-      "url": "https://www.bleepingcomputer.com/news/security/burger-king-japan-data-breach-exposes-11-million-customer-records/",
-      "points": 0,
-      "published": "2026-10-16T08:01:29-04:00"
-    },
-    {
-      "id": "bc-3037344548086157756",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft: October Windows update may break Smart App Control",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/kb5127648-windows-security-update-may-break-smart-app-control/",
-      "points": 0,
-      "published": "2026-10-16T04:44:22-04:00"
-    },
-    {
-      "id": "bc-7655870286714746506",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "BAE Systems cyberattack disrupts US federal court operations",
-      "url": "https://www.bleepingcomputer.com/news/security/bae-systems-cyberattack-disrupts-us-federal-court-operations/",
-      "points": 0,
-      "published": "2026-10-16T03:37:35-04:00"
     }
   ]
 }
