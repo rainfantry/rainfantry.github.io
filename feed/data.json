@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T19:49:53.213075+00:00",
+  "generated_at": "2026-10-19T02:16:25.449821+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7613401457512994324",
+      "id": "bc-5978532015121157809",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit SiteGuard WAF flaw to run commands as admins",
@@ -353,7 +353,7 @@
       "published": "2026-10-18T10:23:16-04:00"
     },
     {
-      "id": "bc-6999673018124628079",
+      "id": "bc-8771855946938795983",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers breach Microsoft 365 tenants via ConnectWise supply-chain attack",
@@ -362,7 +362,7 @@
       "published": "2026-10-17T11:18:51-04:00"
     },
     {
-      "id": "bc-7894764002006973652",
+      "id": "bc-8012503176267639818",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal patches critical RCE flaws, warns exploits may emerge soon",
@@ -371,7 +371,7 @@
       "published": "2026-10-17T10:32:48-04:00"
     },
     {
-      "id": "bc-2400709630443208374",
+      "id": "bc-3222780021713500457",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical BlockStrap flaw lets hackers run code on Magento servers",
@@ -380,7 +380,7 @@
       "published": "2026-10-16T16:00:59-04:00"
     },
     {
-      "id": "bc-7138249917732816048",
+      "id": "bc-5708078115878051300",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Targeted ads installed Candiru spyware in zero-click attacks",
@@ -389,7 +389,7 @@
       "published": "2026-10-16T13:20:03-04:00"
     },
     {
-      "id": "bc-8088343769402346362",
+      "id": "bc-741496645637025036",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Employees using personal ChatGPT at work? Here's what IT admins need to do",
@@ -398,7 +398,7 @@
       "published": "2026-10-16T09:50:59-04:00"
     },
     {
-      "id": "bc-6215419862995052218",
+      "id": "bc-489792658021228424",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Burger King Japan data breach exposes 11 million customer records",
@@ -407,7 +407,7 @@
       "published": "2026-10-16T08:01:29-04:00"
     },
     {
-      "id": "bc-1826734204724646383",
+      "id": "bc-4033586279974338471",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: October Windows update may break Smart App Control",
@@ -416,7 +416,7 @@
       "published": "2026-10-16T04:44:22-04:00"
     },
     {
-      "id": "bc-4524631675264433867",
+      "id": "bc-3661000987140224282",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BAE Systems cyberattack disrupts US federal court operations",
@@ -425,7 +425,7 @@
       "published": "2026-10-16T03:37:35-04:00"
     },
     {
-      "id": "bc-8323631612429160729",
+      "id": "bc-7556263739296361050",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BeyondTrust patches zero-day exploited in attacks since August",
@@ -434,7 +434,7 @@
       "published": "2026-10-16T02:18:08-04:00"
     },
     {
-      "id": "bc-1736534209156661828",
+      "id": "bc-6205640436809130993",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit Collabora RCE flaw to backdoor Nextcloud servers",
@@ -443,7 +443,7 @@
       "published": "2026-10-15T16:25:04-04:00"
     },
     {
-      "id": "bc-4415029335164958887",
+      "id": "bc-4978225119742645679",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Android gets AI defenses against messaging scams, fake calls",
@@ -452,7 +452,7 @@
       "published": "2026-10-15T15:48:43-04:00"
     },
     {
-      "id": "bc-7174032590402506990",
+      "id": "bc-5924557551042179054",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack D-Link, Ubiquiti devices to resell your stolen bandwidth",
@@ -461,7 +461,7 @@
       "published": "2026-10-15T14:20:59-04:00"
     },
     {
-      "id": "bc-7065491431104871257",
+      "id": "bc-6968425150765409957",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake Arch Linux packages push malware with root privileges",
@@ -470,7 +470,7 @@
       "published": "2026-10-15T13:12:31-04:00"
     },
     {
-      "id": "bc-7845590139638095973",
+      "id": "bc-8098607525393540186",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Is AI pentesting as good as a human pentester?",
