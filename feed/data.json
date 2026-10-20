@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T15:59:35.779859+00:00",
+  "generated_at": "2026-10-20T20:58:59.805942+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6957686130293789644",
+      "id": "bc-4098483704475503321",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "PHP warns admins of two critical flaws, emergency patches coming tomorrow",
+      "url": "https://www.bleepingcomputer.com/news/security/php-warns-admins-of-two-critical-flaws-emergency-patches-coming-tomorrow/",
+      "points": 0,
+      "published": "2026-10-20T16:56:43-04:00"
+    },
+    {
+      "id": "bc-9124206052586279417",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Zeabur shutting down after second security breach in two months",
+      "url": "https://www.bleepingcomputer.com/news/security/zeabur-shutting-down-after-second-security-breach-in-two-months/",
+      "points": 0,
+      "published": "2026-10-20T15:33:02-04:00"
+    },
+    {
+      "id": "bc-7473267231721017155",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenAI says GPT-6.1 Sol is dramatically better at migrating legacy code",
+      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-says-gpt-61-sol-is-dramatically-better-at-migrating-legacy-code/",
+      "points": 0,
+      "published": "2026-10-20T14:11:03-04:00"
+    },
+    {
+      "id": "bc-3277456932751078962",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DHS bans DeepSeek products across US federal civilian agencies",
@@ -353,7 +380,7 @@
       "published": "2026-10-20T10:19:05-04:00"
     },
     {
-      "id": "bc-869653170776708753",
+      "id": "bc-6202146445486475148",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CJIS v6.1 Compliance: 5 Practical Priorities for Agencies",
@@ -362,7 +389,7 @@
       "published": "2026-10-20T09:51:00-04:00"
     },
     {
-      "id": "bc-1780042211259542439",
+      "id": "bc-4500429660021339743",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hacker gets 8 years for stealing $3.3 million from taxpayers",
@@ -371,7 +398,7 @@
       "published": "2026-10-20T09:18:36-04:00"
     },
     {
-      "id": "bc-8736782444408223294",
+      "id": "bc-71608056617963912",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows Server 2025 gets support for quick machine recovery",
@@ -380,7 +407,7 @@
       "published": "2026-10-20T08:16:32-04:00"
     },
     {
-      "id": "bc-3593507636928881923",
+      "id": "bc-2273215551744875791",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OVHcloud CLI releases backdoored on GitHub to steal developer secrets",
@@ -389,7 +416,7 @@
       "published": "2026-10-20T07:31:22-04:00"
     },
     {
-      "id": "bc-2509718379426090649",
+      "id": "bc-2094700490887848528",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ahold Delhaize: Cyberattack affects services across US and Europe",
@@ -398,7 +425,7 @@
       "published": "2026-10-20T07:18:35-04:00"
     },
     {
-      "id": "bc-5069263053826631476",
+      "id": "bc-1541628213237133348",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Revolut outage disrupts online banking operations worldwide",
@@ -407,7 +434,7 @@
       "published": "2026-10-20T05:46:44-04:00"
     },
     {
-      "id": "bc-4249940792267246319",
+      "id": "bc-162259965250676916",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Nikkei discloses third data breach in a month, 1.8M records exposed",
@@ -416,7 +443,7 @@
       "published": "2026-10-19T17:49:48-04:00"
     },
     {
-      "id": "bc-131417011607180941",
+      "id": "bc-5678354890775406946",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "WordPress SEO plugin Rank Math compromised to backdoor websites",
@@ -425,7 +452,7 @@
       "published": "2026-10-19T17:24:51-04:00"
     },
     {
-      "id": "bc-6528811379754992116",
+      "id": "bc-8626085807407279435",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack AOMEI update servers to secretly spread malware",
@@ -434,7 +461,7 @@
       "published": "2026-10-19T15:40:58-04:00"
     },
     {
-      "id": "bc-8518206144846444068",
+      "id": "bc-9130304912719036357",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Bullhorn takes staffing platform offline to contain cyberattack",
@@ -443,40 +470,13 @@
       "published": "2026-10-19T14:51:13-04:00"
     },
     {
-      "id": "bc-3445106281352477086",
+      "id": "bc-2969189808808315138",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenCode hack exposes API keys amid AI distillation attacks",
       "url": "https://www.bleepingcomputer.com/news/security/opencode-hack-exposes-api-keys-amid-ai-distillation-attacks/",
       "points": 0,
       "published": "2026-10-19T13:27:15-04:00"
-    },
-    {
-      "id": "bc-4818793129249202846",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft fixes game, app crashes caused by recent Windows update",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-game-app-crashes-caused-by-windows-kb5124010-preview-update/",
-      "points": 0,
-      "published": "2026-10-19T10:55:23-04:00"
-    },
-    {
-      "id": "bc-7824969517018200975",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Inside the Underground Market for Know Your Client Services",
-      "url": "https://www.bleepingcomputer.com/news/security/inside-the-underground-market-for-know-your-client-services/",
-      "points": 0,
-      "published": "2026-10-19T10:00:10-04:00"
-    },
-    {
-      "id": "bc-6050865559731976573",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "F5 releases out-of-band patches for critical NGINX vulnerabilities",
-      "url": "https://www.bleepingcomputer.com/news/security/f5-releases-out-of-band-patches-for-critical-nginx-vulnerabilities/",
-      "points": 0,
-      "published": "2026-10-19T09:49:24-04:00"
     }
   ]
 }
