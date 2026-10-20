@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T21:50:13.800537+00:00",
+  "generated_at": "2026-10-20T02:30:53.027574+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7355013400629534358",
+      "id": "bc-6671544437112939237",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Nikkei discloses third data breach in a month, 1.8M records exposed",
@@ -353,7 +353,7 @@
       "published": "2026-10-19T17:49:48-04:00"
     },
     {
-      "id": "bc-231579307960772855",
+      "id": "bc-5505736047260266462",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "WordPress SEO plugin Rank Math compromised to backdoor websites",
@@ -362,7 +362,7 @@
       "published": "2026-10-19T17:24:51-04:00"
     },
     {
-      "id": "bc-4203759189867941730",
+      "id": "bc-2449361261887830248",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack AOMEI update servers to secretly spread malware",
@@ -371,7 +371,7 @@
       "published": "2026-10-19T15:40:58-04:00"
     },
     {
-      "id": "bc-7751798901143699934",
+      "id": "bc-8972446192414798206",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Bullhorn takes staffing platform offline to contain cyberattack",
@@ -380,7 +380,7 @@
       "published": "2026-10-19T14:51:13-04:00"
     },
     {
-      "id": "bc-7665297456366398869",
+      "id": "bc-5248071531093592875",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenCode hack exposes API keys amid AI distillation attacks",
@@ -389,7 +389,7 @@
       "published": "2026-10-19T13:27:15-04:00"
     },
     {
-      "id": "bc-7316013985629495759",
+      "id": "bc-7902822319499207956",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes game, app crashes caused by recent Windows update",
@@ -398,7 +398,7 @@
       "published": "2026-10-19T10:55:23-04:00"
     },
     {
-      "id": "bc-1886292683048397396",
+      "id": "bc-8970485775711156008",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Inside the Underground Market for Know Your Client Services",
@@ -407,7 +407,7 @@
       "published": "2026-10-19T10:00:10-04:00"
     },
     {
-      "id": "bc-5304242498126926929",
+      "id": "bc-1379889690189653303",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "F5 releases out-of-band patches for critical NGINX vulnerabilities",
@@ -416,7 +416,7 @@
       "published": "2026-10-19T09:49:24-04:00"
     },
     {
-      "id": "bc-9220286791145858499",
+      "id": "bc-6809004671070678823",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes classic Outlook bug that hid Copilot buttons",
@@ -425,7 +425,7 @@
       "published": "2026-10-19T08:44:44-04:00"
     },
     {
-      "id": "bc-2108746407843144094",
+      "id": "bc-4591805760045886189",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: October Windows Server updates break Exchange sign-in, mail flow",
@@ -434,7 +434,7 @@
       "published": "2026-10-19T04:58:41-04:00"
     },
     {
-      "id": "bc-9217627451169867666",
+      "id": "bc-8865007403033019697",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit SiteGuard WAF flaw to run commands as admins",
@@ -443,7 +443,7 @@
       "published": "2026-10-18T10:23:16-04:00"
     },
     {
-      "id": "bc-7657405826679949567",
+      "id": "bc-3515913357111674965",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers breach Microsoft 365 tenants via ConnectWise supply-chain attack",
@@ -452,7 +452,7 @@
       "published": "2026-10-17T11:18:51-04:00"
     },
     {
-      "id": "bc-375865515875929041",
+      "id": "bc-1150927280121986820",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal patches critical RCE flaws, warns exploits may emerge soon",
@@ -461,7 +461,7 @@
       "published": "2026-10-17T10:32:48-04:00"
     },
     {
-      "id": "bc-4223841888980626489",
+      "id": "bc-4899175554307180189",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical BlockStrap flaw lets hackers run code on Magento servers",
@@ -470,7 +470,7 @@
       "published": "2026-10-16T16:00:59-04:00"
     },
     {
-      "id": "bc-1524949284603133702",
+      "id": "bc-3884243464535400096",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Targeted ads installed Candiru spyware in zero-click attacks",
