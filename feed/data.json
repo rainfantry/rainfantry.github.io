@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T16:16:04.646576+00:00",
+  "generated_at": "2026-10-21T21:00:19.061580+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8583844274212627761",
+      "id": "bc-6588507443987022638",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Lazarus hackers use post-quantum cryptography for malware delivery",
+      "url": "https://www.bleepingcomputer.com/news/security/lazarus-hackers-use-post-quantum-cryptography-for-malware-delivery/",
+      "points": 0,
+      "published": "2026-10-21T16:31:48-04:00"
+    },
+    {
+      "id": "bc-6029032971723616318",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA: Hackers chain Plex flaws in Plex2Shell attacks to breach servers",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-hackers-chain-plex-flaws-in-plex2shell-attacks-to-breach-servers/",
+      "points": 0,
+      "published": "2026-10-21T14:34:42-04:00"
+    },
+    {
+      "id": "bc-6248464640401208871",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenAI agents disabled safety monitoring, one lied about it",
+      "url": "https://www.bleepingcomputer.com/news/security/openai-agents-disabled-safety-monitoring-one-lied-about-it/",
+      "points": 0,
+      "published": "2026-10-21T12:26:53-04:00"
+    },
+    {
+      "id": "bc-4251867215991365569",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP ships emergency patches for critical PHP2Shell flaws",
@@ -353,7 +380,7 @@
       "published": "2026-10-21T10:07:05-04:00"
     },
     {
-      "id": "bc-6366642940565311544",
+      "id": "bc-3225763465377623709",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ClickFix has never been bigger, and AI tools are its most convincing lure yet",
@@ -362,7 +389,7 @@
       "published": "2026-10-21T10:00:10-04:00"
     },
     {
-      "id": "bc-1480111154286215593",
+      "id": "bc-8947023266523074913",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft PowerToys adds CursorHide, Button Lock mouse tools",
@@ -371,7 +398,7 @@
       "published": "2026-10-21T08:20:34-04:00"
     },
     {
-      "id": "bc-4505593590571177708",
+      "id": "bc-5206528704599677617",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft says October updates didn’t actually fix VPN issues",
@@ -380,7 +407,7 @@
       "published": "2026-10-21T06:14:53-04:00"
     },
     {
-      "id": "bc-3004341872080551338",
+      "id": "bc-589050104495664350",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA: SafePay ransomware hit over 600 critical infrastructure orgs",
@@ -389,7 +416,7 @@
       "published": "2026-10-21T04:36:24-04:00"
     },
     {
-      "id": "bc-2450310284527339387",
+      "id": "bc-3216789132323818647",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Stolen UpdraftCentral keys used to backdoor WordPress sites",
@@ -398,7 +425,7 @@
       "published": "2026-10-20T21:01:50-04:00"
     },
     {
-      "id": "bc-8395080609426054597",
+      "id": "bc-7705816322148758899",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Mozilla, Google, Apple block compromised eMudhra CA certificates",
@@ -407,7 +434,7 @@
       "published": "2026-10-20T20:46:42-04:00"
     },
     {
-      "id": "bc-7851165476686381202",
+      "id": "bc-6833250003501579785",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP warns admins of two critical flaws, emergency patches coming tomorrow",
@@ -416,7 +443,7 @@
       "published": "2026-10-20T16:56:43-04:00"
     },
     {
-      "id": "bc-4579442904989255550",
+      "id": "bc-4840135261870042877",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Zeabur shutting down after second security breach in two months",
@@ -425,7 +452,7 @@
       "published": "2026-10-20T15:33:02-04:00"
     },
     {
-      "id": "bc-2377176772863683613",
+      "id": "bc-761354226644905861",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI says GPT-6.1 Sol is dramatically better at migrating legacy code",
@@ -434,7 +461,7 @@
       "published": "2026-10-20T14:11:03-04:00"
     },
     {
-      "id": "bc-5576348249128727240",
+      "id": "bc-2393029129416921660",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DHS bans DeepSeek products across US federal civilian agencies",
@@ -443,40 +470,13 @@
       "published": "2026-10-20T10:19:05-04:00"
     },
     {
-      "id": "bc-9105990266333935326",
+      "id": "bc-88436309064745280",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CJIS v6.1 Compliance: 5 Practical Priorities for Agencies",
       "url": "https://www.bleepingcomputer.com/news/security/cjis-v61-compliance-5-practical-priorities-for-agencies/",
       "points": 0,
       "published": "2026-10-20T09:51:00-04:00"
-    },
-    {
-      "id": "bc-4199786387138176233",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hacker gets 8 years for stealing $3.3 million from taxpayers",
-      "url": "https://www.bleepingcomputer.com/news/security/hacker-gets-8-years-for-stealing-33-million-from-taxpayers/",
-      "points": 0,
-      "published": "2026-10-20T09:18:36-04:00"
-    },
-    {
-      "id": "bc-9099299177917568999",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Windows Server 2025 gets support for quick machine recovery",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/windows-server-2025-gets-support-for-quick-machine-recovery/",
-      "points": 0,
-      "published": "2026-10-20T08:16:32-04:00"
-    },
-    {
-      "id": "bc-5462613893341067363",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "OVHcloud CLI releases backdoored on GitHub to steal developer secrets",
-      "url": "https://www.bleepingcomputer.com/news/security/ovhcloud-cli-releases-backdoored-on-github-to-steal-developer-secrets/",
-      "points": 0,
-      "published": "2026-10-20T07:31:22-04:00"
     }
   ]
 }
