@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T20:58:59.805942+00:00",
+  "generated_at": "2026-10-21T02:24:44.189305+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,25 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-4098483704475503321",
+      "id": "bc-7631106068349799015",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Stolen UpdraftCentral keys used to backdoor WordPress sites",
+      "url": "https://www.bleepingcomputer.com/news/security/stolen-updraftcentral-keys-used-to-backdoor-wordpress-sites/",
+      "points": 0,
+      "published": "2026-10-20T21:01:50-04:00"
+    },
+    {
+      "id": "bc-6197515549727040036",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Mozilla, Google, Apple block compromised eMudhra CA certificates",
+      "url": "https://www.bleepingcomputer.com/news/security/mozilla-google-apple-block-compromised-emudhra-ca-certificates/",
+      "points": 0,
+      "published": "2026-10-20T20:46:42-04:00"
+    },
+    {
+      "id": "bc-7120798712197793637",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP warns admins of two critical flaws, emergency patches coming tomorrow",
@@ -353,7 +371,7 @@
       "published": "2026-10-20T16:56:43-04:00"
     },
     {
-      "id": "bc-9124206052586279417",
+      "id": "bc-220270894405467130",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Zeabur shutting down after second security breach in two months",
@@ -362,7 +380,7 @@
       "published": "2026-10-20T15:33:02-04:00"
     },
     {
-      "id": "bc-7473267231721017155",
+      "id": "bc-8590887474775267939",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI says GPT-6.1 Sol is dramatically better at migrating legacy code",
@@ -371,7 +389,7 @@
       "published": "2026-10-20T14:11:03-04:00"
     },
     {
-      "id": "bc-3277456932751078962",
+      "id": "bc-5956945360931433418",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DHS bans DeepSeek products across US federal civilian agencies",
@@ -380,7 +398,7 @@
       "published": "2026-10-20T10:19:05-04:00"
     },
     {
-      "id": "bc-6202146445486475148",
+      "id": "bc-4649089150680913348",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CJIS v6.1 Compliance: 5 Practical Priorities for Agencies",
@@ -389,7 +407,7 @@
       "published": "2026-10-20T09:51:00-04:00"
     },
     {
-      "id": "bc-4500429660021339743",
+      "id": "bc-158150782625053526",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hacker gets 8 years for stealing $3.3 million from taxpayers",
@@ -398,7 +416,7 @@
       "published": "2026-10-20T09:18:36-04:00"
     },
     {
-      "id": "bc-71608056617963912",
+      "id": "bc-2122760681352391009",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows Server 2025 gets support for quick machine recovery",
@@ -407,7 +425,7 @@
       "published": "2026-10-20T08:16:32-04:00"
     },
     {
-      "id": "bc-2273215551744875791",
+      "id": "bc-2783103819317369609",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OVHcloud CLI releases backdoored on GitHub to steal developer secrets",
@@ -416,7 +434,7 @@
       "published": "2026-10-20T07:31:22-04:00"
     },
     {
-      "id": "bc-2094700490887848528",
+      "id": "bc-7441341200650933450",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ahold Delhaize: Cyberattack affects services across US and Europe",
@@ -425,7 +443,7 @@
       "published": "2026-10-20T07:18:35-04:00"
     },
     {
-      "id": "bc-1541628213237133348",
+      "id": "bc-3727979216149689743",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Revolut outage disrupts online banking operations worldwide",
@@ -434,7 +452,7 @@
       "published": "2026-10-20T05:46:44-04:00"
     },
     {
-      "id": "bc-162259965250676916",
+      "id": "bc-1373887742662592969",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Nikkei discloses third data breach in a month, 1.8M records exposed",
@@ -443,7 +461,7 @@
       "published": "2026-10-19T17:49:48-04:00"
     },
     {
-      "id": "bc-5678354890775406946",
+      "id": "bc-6613977038160845770",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "WordPress SEO plugin Rank Math compromised to backdoor websites",
@@ -452,31 +470,13 @@
       "published": "2026-10-19T17:24:51-04:00"
     },
     {
-      "id": "bc-8626085807407279435",
+      "id": "bc-4344126873315618665",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack AOMEI update servers to secretly spread malware",
       "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-aomei-update-servers-to-secretly-spread-malware/",
       "points": 0,
       "published": "2026-10-19T15:40:58-04:00"
-    },
-    {
-      "id": "bc-9130304912719036357",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Bullhorn takes staffing platform offline to contain cyberattack",
-      "url": "https://www.bleepingcomputer.com/news/security/bullhorn-takes-staffing-platform-offline-to-contain-cyberattack/",
-      "points": 0,
-      "published": "2026-10-19T14:51:13-04:00"
-    },
-    {
-      "id": "bc-2969189808808315138",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "OpenCode hack exposes API keys amid AI distillation attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/opencode-hack-exposes-api-keys-amid-ai-distillation-attacks/",
-      "points": 0,
-      "published": "2026-10-19T13:27:15-04:00"
     }
   ]
 }
