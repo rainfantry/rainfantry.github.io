@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T16:14:39.444434+00:00",
+  "generated_at": "2026-10-22T20:57:49.010377+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1093587076115322141",
+      "id": "bc-1463388330830818625",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Capcom confirms data breach affecting 11.7 million accounts",
+      "url": "https://www.bleepingcomputer.com/news/security/capcom-confirms-data-breach-affecting-117-million-accounts/",
+      "points": 0,
+      "published": "2026-10-22T16:22:45-04:00"
+    },
+    {
+      "id": "bc-6103535916949122924",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "LiteLLM release pipeline hacked to distribute info-stealer malware",
+      "url": "https://www.bleepingcomputer.com/news/security/litellm-release-pipeline-hacked-to-distribute-info-stealer-malware/",
+      "points": 0,
+      "published": "2026-10-22T15:12:51-04:00"
+    },
+    {
+      "id": "bc-1126467319263854480",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Arista patches new VeloCloud Orchestrator zero-day exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/arista-patches-new-velocloud-orchestrator-zero-day-exploited-in-attacks/",
+      "points": 0,
+      "published": "2026-10-22T13:18:22-04:00"
+    },
+    {
+      "id": "bc-1083110370020654258",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft shares how to fix broken Exchange Online EWS apps",
@@ -353,7 +380,7 @@
       "published": "2026-10-22T11:49:32-04:00"
     },
     {
-      "id": "bc-7285536769364923732",
+      "id": "bc-9068289228461116208",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Machine speed attacks require machine speed detection and response",
@@ -362,7 +389,7 @@
       "published": "2026-10-22T10:02:12-04:00"
     },
     {
-      "id": "bc-8566641882410584740",
+      "id": "bc-7378362482187102565",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Amazon says PHP2Shell exploitation began 4 days before patches",
@@ -371,7 +398,7 @@
       "published": "2026-10-22T09:09:12-04:00"
     },
     {
-      "id": "bc-5863912209126455219",
+      "id": "bc-8516608824740731825",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "GitLab warns of new max severity code execution vulnerability",
@@ -380,7 +407,7 @@
       "published": "2026-10-22T07:41:48-04:00"
     },
     {
-      "id": "bc-6596274417918437483",
+      "id": "bc-6765888108796180225",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Authorities disrupt nearly 11,000 cybercrime networks in Africa",
@@ -389,7 +416,7 @@
       "published": "2026-10-22T04:27:11-04:00"
     },
     {
-      "id": "bc-3574289317123979305",
+      "id": "bc-8433629521066358282",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google Chrome adds Gemini-powered scam detection, warns users of ClickFix attacks",
@@ -398,7 +425,7 @@
       "published": "2026-10-21T18:16:26-04:00"
     },
     {
-      "id": "bc-1660857077980849522",
+      "id": "bc-2882775660857331794",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan's Onamae Desktop Cloud hacked, up to 27,000 servers affected",
@@ -407,7 +434,7 @@
       "published": "2026-10-21T17:43:27-04:00"
     },
     {
-      "id": "bc-421923483904083140",
+      "id": "bc-1810664393536134104",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Lazarus hackers use post-quantum cryptography for malware delivery",
@@ -416,7 +443,7 @@
       "published": "2026-10-21T16:31:48-04:00"
     },
     {
-      "id": "bc-1687190572026755890",
+      "id": "bc-3941482242903073102",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA: Hackers chain Plex flaws in Plex2Shell attacks to breach servers",
@@ -425,7 +452,7 @@
       "published": "2026-10-21T14:34:42-04:00"
     },
     {
-      "id": "bc-7997837494871523175",
+      "id": "bc-4737575635611840932",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI agents disabled safety monitoring, one lied about it",
@@ -434,7 +461,7 @@
       "published": "2026-10-21T12:26:53-04:00"
     },
     {
-      "id": "bc-1080144213355652863",
+      "id": "bc-652436030290311922",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP ships emergency patches for critical PHP2Shell flaws",
@@ -443,40 +470,13 @@
       "published": "2026-10-21T10:07:05-04:00"
     },
     {
-      "id": "bc-3395674573591648739",
+      "id": "bc-5371470808527637099",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ClickFix has never been bigger, and AI tools are its most convincing lure yet",
       "url": "https://www.bleepingcomputer.com/news/security/clickfix-has-never-been-bigger-and-ai-tools-are-its-most-convincing-lure-yet/",
       "points": 0,
       "published": "2026-10-21T10:00:10-04:00"
-    },
-    {
-      "id": "bc-7722008832853141064",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft PowerToys adds CursorHide, Button Lock mouse tools",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-powertoys-adds-cursorhide-button-lock-mouse-tools/",
-      "points": 0,
-      "published": "2026-10-21T08:20:34-04:00"
-    },
-    {
-      "id": "bc-6374259344072809323",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft says October updates didn’t actually fix VPN issues",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-didnt-actually-fix-vpn-issues-caused-by-windows-updates/",
-      "points": 0,
-      "published": "2026-10-21T06:14:53-04:00"
-    },
-    {
-      "id": "bc-1851886192158267678",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA: SafePay ransomware hit over 600 critical infrastructure orgs",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-and-fbi-safepay-ransomware-has-hit-over-600-critical-infrastructure-organizations/",
-      "points": 0,
-      "published": "2026-10-21T04:36:24-04:00"
     }
   ]
 }
