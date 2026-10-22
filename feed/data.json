@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T10:48:36.284178+00:00",
+  "generated_at": "2026-10-22T16:14:39.444434+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6721632059168171952",
+      "id": "bc-1093587076115322141",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft shares how to fix broken Exchange Online EWS apps",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-shares-how-to-fix-broken-exchange-online-ews-apps/",
+      "points": 0,
+      "published": "2026-10-22T11:49:32-04:00"
+    },
+    {
+      "id": "bc-7285536769364923732",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Machine speed attacks require machine speed detection and response",
+      "url": "https://www.bleepingcomputer.com/news/security/machine-speed-attacks-require-machine-speed-detection-and-response/",
+      "points": 0,
+      "published": "2026-10-22T10:02:12-04:00"
+    },
+    {
+      "id": "bc-8566641882410584740",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Amazon says PHP2Shell exploitation began 4 days before patches",
+      "url": "https://www.bleepingcomputer.com/news/security/amazon-says-php2shell-exploitation-began-4-days-before-patches/",
+      "points": 0,
+      "published": "2026-10-22T09:09:12-04:00"
+    },
+    {
+      "id": "bc-5863912209126455219",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "GitLab warns of new max severity code execution vulnerability",
+      "url": "https://www.bleepingcomputer.com/news/security/gitlab-warns-of-new-max-severity-code-execution-vulnerability/",
+      "points": 0,
+      "published": "2026-10-22T07:41:48-04:00"
+    },
+    {
+      "id": "bc-6596274417918437483",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Authorities disrupt nearly 11,000 cybercrime networks in Africa",
@@ -353,7 +389,7 @@
       "published": "2026-10-22T04:27:11-04:00"
     },
     {
-      "id": "bc-1625820251050118980",
+      "id": "bc-3574289317123979305",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google Chrome adds Gemini-powered scam detection, warns users of ClickFix attacks",
@@ -362,7 +398,7 @@
       "published": "2026-10-21T18:16:26-04:00"
     },
     {
-      "id": "bc-3299950305091025195",
+      "id": "bc-1660857077980849522",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan's Onamae Desktop Cloud hacked, up to 27,000 servers affected",
@@ -371,7 +407,7 @@
       "published": "2026-10-21T17:43:27-04:00"
     },
     {
-      "id": "bc-845224943039838217",
+      "id": "bc-421923483904083140",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Lazarus hackers use post-quantum cryptography for malware delivery",
@@ -380,7 +416,7 @@
       "published": "2026-10-21T16:31:48-04:00"
     },
     {
-      "id": "bc-7333258590793950254",
+      "id": "bc-1687190572026755890",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA: Hackers chain Plex flaws in Plex2Shell attacks to breach servers",
@@ -389,7 +425,7 @@
       "published": "2026-10-21T14:34:42-04:00"
     },
     {
-      "id": "bc-6187444096657776975",
+      "id": "bc-7997837494871523175",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI agents disabled safety monitoring, one lied about it",
@@ -398,7 +434,7 @@
       "published": "2026-10-21T12:26:53-04:00"
     },
     {
-      "id": "bc-8316110212584155738",
+      "id": "bc-1080144213355652863",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP ships emergency patches for critical PHP2Shell flaws",
@@ -407,7 +443,7 @@
       "published": "2026-10-21T10:07:05-04:00"
     },
     {
-      "id": "bc-3133328953182828872",
+      "id": "bc-3395674573591648739",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ClickFix has never been bigger, and AI tools are its most convincing lure yet",
@@ -416,7 +452,7 @@
       "published": "2026-10-21T10:00:10-04:00"
     },
     {
-      "id": "bc-7906662453567748059",
+      "id": "bc-7722008832853141064",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft PowerToys adds CursorHide, Button Lock mouse tools",
@@ -425,7 +461,7 @@
       "published": "2026-10-21T08:20:34-04:00"
     },
     {
-      "id": "bc-8523889515990504578",
+      "id": "bc-6374259344072809323",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft says October updates didn’t actually fix VPN issues",
@@ -434,49 +470,13 @@
       "published": "2026-10-21T06:14:53-04:00"
     },
     {
-      "id": "bc-233415612368780955",
+      "id": "bc-1851886192158267678",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA: SafePay ransomware hit over 600 critical infrastructure orgs",
       "url": "https://www.bleepingcomputer.com/news/security/cisa-and-fbi-safepay-ransomware-has-hit-over-600-critical-infrastructure-organizations/",
       "points": 0,
       "published": "2026-10-21T04:36:24-04:00"
-    },
-    {
-      "id": "bc-5456012856578309867",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Stolen UpdraftCentral keys used to backdoor WordPress sites",
-      "url": "https://www.bleepingcomputer.com/news/security/stolen-updraftcentral-keys-used-to-backdoor-wordpress-sites/",
-      "points": 0,
-      "published": "2026-10-20T21:01:50-04:00"
-    },
-    {
-      "id": "bc-7271671583056755459",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Mozilla, Google, Apple block compromised eMudhra CA certificates",
-      "url": "https://www.bleepingcomputer.com/news/security/mozilla-google-apple-block-compromised-emudhra-ca-certificates/",
-      "points": 0,
-      "published": "2026-10-20T20:46:42-04:00"
-    },
-    {
-      "id": "bc-8976520754130335147",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "PHP warns admins of two critical flaws, emergency patches coming tomorrow",
-      "url": "https://www.bleepingcomputer.com/news/security/php-warns-admins-of-two-critical-flaws-emergency-patches-coming-tomorrow/",
-      "points": 0,
-      "published": "2026-10-20T16:56:43-04:00"
-    },
-    {
-      "id": "bc-3142086041926125921",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Zeabur shutting down after second security breach in two months",
-      "url": "https://www.bleepingcomputer.com/news/security/zeabur-shutting-down-after-second-security-breach-in-two-months/",
-      "points": 0,
-      "published": "2026-10-20T15:33:02-04:00"
     }
   ]
 }
