@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T21:00:19.061580+00:00",
+  "generated_at": "2026-10-22T02:20:21.344532+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,25 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6588507443987022638",
+      "id": "bc-3777944086972829262",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Google Chrome adds Gemini-powered scam detection, warns users of ClickFix attacks",
+      "url": "https://www.bleepingcomputer.com/news/google/google-chrome-adds-gemini-powered-scam-detection-warns-users-of-clickfix-attacks/",
+      "points": 0,
+      "published": "2026-10-21T18:16:26-04:00"
+    },
+    {
+      "id": "bc-748331944531083045",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Japan's Onamae Desktop Cloud hacked, up to 27,000 servers affected",
+      "url": "https://www.bleepingcomputer.com/news/security/japans-onamae-desktop-cloud-hacked-up-to-27-000-servers-affected/",
+      "points": 0,
+      "published": "2026-10-21T17:43:27-04:00"
+    },
+    {
+      "id": "bc-9056708524460671061",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Lazarus hackers use post-quantum cryptography for malware delivery",
@@ -353,7 +371,7 @@
       "published": "2026-10-21T16:31:48-04:00"
     },
     {
-      "id": "bc-6029032971723616318",
+      "id": "bc-3356372107479527980",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA: Hackers chain Plex flaws in Plex2Shell attacks to breach servers",
@@ -362,7 +380,7 @@
       "published": "2026-10-21T14:34:42-04:00"
     },
     {
-      "id": "bc-6248464640401208871",
+      "id": "bc-1755014401279703608",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI agents disabled safety monitoring, one lied about it",
@@ -371,7 +389,7 @@
       "published": "2026-10-21T12:26:53-04:00"
     },
     {
-      "id": "bc-4251867215991365569",
+      "id": "bc-942254650951416167",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP ships emergency patches for critical PHP2Shell flaws",
@@ -380,7 +398,7 @@
       "published": "2026-10-21T10:07:05-04:00"
     },
     {
-      "id": "bc-3225763465377623709",
+      "id": "bc-2488963633806212189",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ClickFix has never been bigger, and AI tools are its most convincing lure yet",
@@ -389,7 +407,7 @@
       "published": "2026-10-21T10:00:10-04:00"
     },
     {
-      "id": "bc-8947023266523074913",
+      "id": "bc-4393025716415966877",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft PowerToys adds CursorHide, Button Lock mouse tools",
@@ -398,7 +416,7 @@
       "published": "2026-10-21T08:20:34-04:00"
     },
     {
-      "id": "bc-5206528704599677617",
+      "id": "bc-5281310819933813519",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft says October updates didn’t actually fix VPN issues",
@@ -407,7 +425,7 @@
       "published": "2026-10-21T06:14:53-04:00"
     },
     {
-      "id": "bc-589050104495664350",
+      "id": "bc-1979843859104136492",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA: SafePay ransomware hit over 600 critical infrastructure orgs",
@@ -416,7 +434,7 @@
       "published": "2026-10-21T04:36:24-04:00"
     },
     {
-      "id": "bc-3216789132323818647",
+      "id": "bc-2499017814022568085",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Stolen UpdraftCentral keys used to backdoor WordPress sites",
@@ -425,7 +443,7 @@
       "published": "2026-10-20T21:01:50-04:00"
     },
     {
-      "id": "bc-7705816322148758899",
+      "id": "bc-5479659487339306943",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Mozilla, Google, Apple block compromised eMudhra CA certificates",
@@ -434,7 +452,7 @@
       "published": "2026-10-20T20:46:42-04:00"
     },
     {
-      "id": "bc-6833250003501579785",
+      "id": "bc-1820831029496389898",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP warns admins of two critical flaws, emergency patches coming tomorrow",
@@ -443,7 +461,7 @@
       "published": "2026-10-20T16:56:43-04:00"
     },
     {
-      "id": "bc-4840135261870042877",
+      "id": "bc-5183210562704089074",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Zeabur shutting down after second security breach in two months",
@@ -452,31 +470,13 @@
       "published": "2026-10-20T15:33:02-04:00"
     },
     {
-      "id": "bc-761354226644905861",
+      "id": "bc-620625285257165427",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI says GPT-6.1 Sol is dramatically better at migrating legacy code",
       "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-says-gpt-61-sol-is-dramatically-better-at-migrating-legacy-code/",
       "points": 0,
       "published": "2026-10-20T14:11:03-04:00"
-    },
-    {
-      "id": "bc-2393029129416921660",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "DHS bans DeepSeek products across US federal civilian agencies",
-      "url": "https://www.bleepingcomputer.com/news/security/dhs-bans-deepseek-products-across-us-federal-civilian-agencies/",
-      "points": 0,
-      "published": "2026-10-20T10:19:05-04:00"
-    },
-    {
-      "id": "bc-88436309064745280",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CJIS v6.1 Compliance: 5 Practical Priorities for Agencies",
-      "url": "https://www.bleepingcomputer.com/news/security/cjis-v61-compliance-5-practical-priorities-for-agencies/",
-      "points": 0,
-      "published": "2026-10-20T09:51:00-04:00"
     }
   ]
 }
