@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T02:25:47.786937+00:00",
+  "generated_at": "2026-10-23T10:40:39.445779+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1123447875352534024",
+      "id": "bc-8153532493607898191",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway warns devs to rotate secrets after potential breach",
@@ -353,7 +353,7 @@
       "published": "2026-10-22T17:25:31-04:00"
     },
     {
-      "id": "bc-4604301781200939955",
+      "id": "bc-2294170456472090184",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Capcom confirms data breach affecting 11.7 million accounts",
@@ -362,7 +362,7 @@
       "published": "2026-10-22T16:22:45-04:00"
     },
     {
-      "id": "bc-7801020336530318482",
+      "id": "bc-8726396553909820397",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "LiteLLM release pipeline hacked to distribute info-stealer malware",
@@ -371,7 +371,7 @@
       "published": "2026-10-22T15:12:51-04:00"
     },
     {
-      "id": "bc-7031530509279912476",
+      "id": "bc-8285726185436275657",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Arista patches new VeloCloud Orchestrator zero-day exploited in attacks",
@@ -380,7 +380,7 @@
       "published": "2026-10-22T13:18:22-04:00"
     },
     {
-      "id": "bc-7679846994383790031",
+      "id": "bc-1787749460644682466",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft shares how to fix broken Exchange Online EWS apps",
@@ -389,7 +389,7 @@
       "published": "2026-10-22T11:49:32-04:00"
     },
     {
-      "id": "bc-8121903931151536760",
+      "id": "bc-1976135736281721783",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Machine speed attacks require machine speed detection and response",
@@ -398,7 +398,7 @@
       "published": "2026-10-22T10:02:12-04:00"
     },
     {
-      "id": "bc-7784558025360325905",
+      "id": "bc-4290879069334252870",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Amazon says PHP2Shell exploitation began 4 days before patches",
@@ -407,7 +407,7 @@
       "published": "2026-10-22T09:09:12-04:00"
     },
     {
-      "id": "bc-3971202857878423551",
+      "id": "bc-8607562626415856914",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "GitLab warns of new max severity code execution vulnerability",
@@ -416,7 +416,7 @@
       "published": "2026-10-22T07:41:48-04:00"
     },
     {
-      "id": "bc-5385517402359414463",
+      "id": "bc-1184248987109670561",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Authorities disrupt nearly 11,000 cybercrime networks in Africa",
@@ -425,7 +425,7 @@
       "published": "2026-10-22T04:27:11-04:00"
     },
     {
-      "id": "bc-4830773033203952964",
+      "id": "bc-2386606479493926143",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google Chrome adds Gemini-powered scam detection, warns users of ClickFix attacks",
@@ -434,7 +434,7 @@
       "published": "2026-10-21T18:16:26-04:00"
     },
     {
-      "id": "bc-128086553324251280",
+      "id": "bc-4970421421123388613",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan's Onamae Desktop Cloud hacked, up to 27,000 servers affected",
@@ -443,7 +443,7 @@
       "published": "2026-10-21T17:43:27-04:00"
     },
     {
-      "id": "bc-2539375647397817292",
+      "id": "bc-2455224172980100639",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Lazarus hackers use post-quantum cryptography for malware delivery",
@@ -452,7 +452,7 @@
       "published": "2026-10-21T16:31:48-04:00"
     },
     {
-      "id": "bc-1718588728963677335",
+      "id": "bc-4449876721502344546",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA: Hackers chain Plex flaws in Plex2Shell attacks to breach servers",
@@ -461,7 +461,7 @@
       "published": "2026-10-21T14:34:42-04:00"
     },
     {
-      "id": "bc-2004113360054105405",
+      "id": "bc-7561417891555417149",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI agents disabled safety monitoring, one lied about it",
@@ -470,7 +470,7 @@
       "published": "2026-10-21T12:26:53-04:00"
     },
     {
-      "id": "bc-8742982010424943305",
+      "id": "bc-2338872354355672631",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP ships emergency patches for critical PHP2Shell flaws",
