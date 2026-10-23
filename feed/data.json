@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T16:04:28.354305+00:00",
+  "generated_at": "2026-10-23T20:46:14.698912+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8288724465199271370",
+      "id": "bc-5883672266621380073",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft Teams to get AI-powered, context-aware phishing detection",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-teams-to-get-ai-powered-context-aware-phishing-detection/",
+      "points": 0,
+      "published": "2026-10-23T14:54:41-04:00"
+    },
+    {
+      "id": "bc-6270907428632322187",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft: Windows Server 2016 reaches end of support in January",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-windows-server-2016-reaches-end-of-support-in-january/",
+      "points": 0,
+      "published": "2026-10-23T13:05:07-04:00"
+    },
+    {
+      "id": "bc-8300533470270551453",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Quest Diagnostics confirms data breach exposed patient records",
+      "url": "https://www.bleepingcomputer.com/news/security/quest-diagnostics-confirms-data-breach-exposed-patient-records/",
+      "points": 0,
+      "published": "2026-10-23T12:40:07-04:00"
+    },
+    {
+      "id": "bc-8783406267331182536",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP shares mitigation for new RCE vulnerability with no patch",
@@ -353,7 +380,7 @@
       "published": "2026-10-23T11:38:05-04:00"
     },
     {
-      "id": "bc-6717786404769206861",
+      "id": "bc-1068214524929909436",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "You gave your AI agent access, but who is giving it orders?",
@@ -362,7 +389,7 @@
       "published": "2026-10-23T10:00:10-04:00"
     },
     {
-      "id": "bc-4319004582425487785",
+      "id": "bc-8627899605376528136",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "HPE patches eight max severity RCE and auth bypass AOS flaws",
@@ -371,7 +398,7 @@
       "published": "2026-10-23T08:48:00-04:00"
     },
     {
-      "id": "bc-4262246076438028700",
+      "id": "bc-1593144918308726721",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway warns devs to rotate secrets after potential breach",
@@ -380,7 +407,7 @@
       "published": "2026-10-22T17:25:31-04:00"
     },
     {
-      "id": "bc-5159051039490472069",
+      "id": "bc-3076340391362660295",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Capcom confirms data breach affecting 11.7 million accounts",
@@ -389,7 +416,7 @@
       "published": "2026-10-22T16:22:45-04:00"
     },
     {
-      "id": "bc-8815925136592329918",
+      "id": "bc-9109805327913594200",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "LiteLLM release pipeline hacked to distribute info-stealer malware",
@@ -398,7 +425,7 @@
       "published": "2026-10-22T15:12:51-04:00"
     },
     {
-      "id": "bc-5838696463564798041",
+      "id": "bc-8167203540553246823",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Arista patches new VeloCloud Orchestrator zero-day exploited in attacks",
@@ -407,7 +434,7 @@
       "published": "2026-10-22T13:18:22-04:00"
     },
     {
-      "id": "bc-383057223445601796",
+      "id": "bc-8197973663160966391",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft shares how to fix broken Exchange Online EWS apps",
@@ -416,7 +443,7 @@
       "published": "2026-10-22T11:49:32-04:00"
     },
     {
-      "id": "bc-7148837174422096158",
+      "id": "bc-8418572035920861595",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Machine speed attacks require machine speed detection and response",
@@ -425,7 +452,7 @@
       "published": "2026-10-22T10:02:12-04:00"
     },
     {
-      "id": "bc-9196750395629317094",
+      "id": "bc-3648645138056646077",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Amazon says PHP2Shell exploitation began 4 days before patches",
@@ -434,7 +461,7 @@
       "published": "2026-10-22T09:09:12-04:00"
     },
     {
-      "id": "bc-7602840952304959111",
+      "id": "bc-4994891224077047896",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "GitLab warns of new max severity code execution vulnerability",
@@ -443,40 +470,13 @@
       "published": "2026-10-22T07:41:48-04:00"
     },
     {
-      "id": "bc-5828375487640496152",
+      "id": "bc-5810490090469861542",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Authorities disrupt nearly 11,000 cybercrime networks in Africa",
       "url": "https://www.bleepingcomputer.com/news/security/authorities-disrupt-nearly-11-000-cybercrime-networks-in-africa/",
       "points": 0,
       "published": "2026-10-22T04:27:11-04:00"
-    },
-    {
-      "id": "bc-8162840838689835921",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google Chrome adds Gemini-powered scam detection, warns users of ClickFix attacks",
-      "url": "https://www.bleepingcomputer.com/news/google/google-chrome-adds-gemini-powered-scam-detection-warns-users-of-clickfix-attacks/",
-      "points": 0,
-      "published": "2026-10-21T18:16:26-04:00"
-    },
-    {
-      "id": "bc-7008544751421533085",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Japan's Onamae Desktop Cloud hacked, up to 27,000 servers affected",
-      "url": "https://www.bleepingcomputer.com/news/security/japans-onamae-desktop-cloud-hacked-up-to-27-000-servers-affected/",
-      "points": 0,
-      "published": "2026-10-21T17:43:27-04:00"
-    },
-    {
-      "id": "bc-7372813981827187886",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Lazarus hackers use post-quantum cryptography for malware delivery",
-      "url": "https://www.bleepingcomputer.com/news/security/lazarus-hackers-use-post-quantum-cryptography-for-malware-delivery/",
-      "points": 0,
-      "published": "2026-10-21T16:31:48-04:00"
     }
   ]
 }
