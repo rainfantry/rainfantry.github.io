@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T10:40:39.445779+00:00",
+  "generated_at": "2026-10-23T16:04:28.354305+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8153532493607898191",
+      "id": "bc-8288724465199271370",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "PHP shares mitigation for new RCE vulnerability with no patch",
+      "url": "https://www.bleepingcomputer.com/news/security/php-shares-mitigation-for-new-and-unpatched-rce-vulnerability/",
+      "points": 0,
+      "published": "2026-10-23T11:38:05-04:00"
+    },
+    {
+      "id": "bc-6717786404769206861",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "You gave your AI agent access, but who is giving it orders?",
+      "url": "https://www.bleepingcomputer.com/news/security/you-gave-your-ai-agent-access-but-who-is-giving-it-orders/",
+      "points": 0,
+      "published": "2026-10-23T10:00:10-04:00"
+    },
+    {
+      "id": "bc-4319004582425487785",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "HPE patches eight max severity RCE and auth bypass AOS flaws",
+      "url": "https://www.bleepingcomputer.com/news/security/hpe-patches-eight-max-severity-rce-and-auth-bypass-aos-flaws/",
+      "points": 0,
+      "published": "2026-10-23T08:48:00-04:00"
+    },
+    {
+      "id": "bc-4262246076438028700",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway warns devs to rotate secrets after potential breach",
@@ -353,7 +380,7 @@
       "published": "2026-10-22T17:25:31-04:00"
     },
     {
-      "id": "bc-2294170456472090184",
+      "id": "bc-5159051039490472069",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Capcom confirms data breach affecting 11.7 million accounts",
@@ -362,7 +389,7 @@
       "published": "2026-10-22T16:22:45-04:00"
     },
     {
-      "id": "bc-8726396553909820397",
+      "id": "bc-8815925136592329918",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "LiteLLM release pipeline hacked to distribute info-stealer malware",
@@ -371,7 +398,7 @@
       "published": "2026-10-22T15:12:51-04:00"
     },
     {
-      "id": "bc-8285726185436275657",
+      "id": "bc-5838696463564798041",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Arista patches new VeloCloud Orchestrator zero-day exploited in attacks",
@@ -380,7 +407,7 @@
       "published": "2026-10-22T13:18:22-04:00"
     },
     {
-      "id": "bc-1787749460644682466",
+      "id": "bc-383057223445601796",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft shares how to fix broken Exchange Online EWS apps",
@@ -389,7 +416,7 @@
       "published": "2026-10-22T11:49:32-04:00"
     },
     {
-      "id": "bc-1976135736281721783",
+      "id": "bc-7148837174422096158",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Machine speed attacks require machine speed detection and response",
@@ -398,7 +425,7 @@
       "published": "2026-10-22T10:02:12-04:00"
     },
     {
-      "id": "bc-4290879069334252870",
+      "id": "bc-9196750395629317094",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Amazon says PHP2Shell exploitation began 4 days before patches",
@@ -407,7 +434,7 @@
       "published": "2026-10-22T09:09:12-04:00"
     },
     {
-      "id": "bc-8607562626415856914",
+      "id": "bc-7602840952304959111",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "GitLab warns of new max severity code execution vulnerability",
@@ -416,7 +443,7 @@
       "published": "2026-10-22T07:41:48-04:00"
     },
     {
-      "id": "bc-1184248987109670561",
+      "id": "bc-5828375487640496152",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Authorities disrupt nearly 11,000 cybercrime networks in Africa",
@@ -425,7 +452,7 @@
       "published": "2026-10-22T04:27:11-04:00"
     },
     {
-      "id": "bc-2386606479493926143",
+      "id": "bc-8162840838689835921",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google Chrome adds Gemini-powered scam detection, warns users of ClickFix attacks",
@@ -434,7 +461,7 @@
       "published": "2026-10-21T18:16:26-04:00"
     },
     {
-      "id": "bc-4970421421123388613",
+      "id": "bc-7008544751421533085",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan's Onamae Desktop Cloud hacked, up to 27,000 servers affected",
@@ -443,40 +470,13 @@
       "published": "2026-10-21T17:43:27-04:00"
     },
     {
-      "id": "bc-2455224172980100639",
+      "id": "bc-7372813981827187886",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Lazarus hackers use post-quantum cryptography for malware delivery",
       "url": "https://www.bleepingcomputer.com/news/security/lazarus-hackers-use-post-quantum-cryptography-for-malware-delivery/",
       "points": 0,
       "published": "2026-10-21T16:31:48-04:00"
-    },
-    {
-      "id": "bc-4449876721502344546",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA: Hackers chain Plex flaws in Plex2Shell attacks to breach servers",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-hackers-chain-plex-flaws-in-plex2shell-attacks-to-breach-servers/",
-      "points": 0,
-      "published": "2026-10-21T14:34:42-04:00"
-    },
-    {
-      "id": "bc-7561417891555417149",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "OpenAI agents disabled safety monitoring, one lied about it",
-      "url": "https://www.bleepingcomputer.com/news/security/openai-agents-disabled-safety-monitoring-one-lied-about-it/",
-      "points": 0,
-      "published": "2026-10-21T12:26:53-04:00"
-    },
-    {
-      "id": "bc-2338872354355672631",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "PHP ships emergency patches for critical PHP2Shell flaws",
-      "url": "https://www.bleepingcomputer.com/news/security/php-ships-emergency-patches-for-critical-php2shell-flaws/",
-      "points": 0,
-      "published": "2026-10-21T10:07:05-04:00"
     }
   ]
 }
