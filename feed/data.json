@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T20:46:14.698912+00:00",
+  "generated_at": "2026-10-24T02:23:29.692177+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,16 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-5883672266621380073",
+      "id": "bc-9109320520092624998",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Abandoned Popcorn Time app exposed millions of devices to RCE attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/abandoned-popcorn-time-app-exposed-millions-of-device-to-rce-attacks/",
+      "points": 0,
+      "published": "2026-10-23T16:55:05-04:00"
+    },
+    {
+      "id": "bc-3310524616878992109",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Teams to get AI-powered, context-aware phishing detection",
@@ -353,7 +362,7 @@
       "published": "2026-10-23T14:54:41-04:00"
     },
     {
-      "id": "bc-6270907428632322187",
+      "id": "bc-3546879792636982667",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: Windows Server 2016 reaches end of support in January",
@@ -362,7 +371,7 @@
       "published": "2026-10-23T13:05:07-04:00"
     },
     {
-      "id": "bc-8300533470270551453",
+      "id": "bc-2395225933170553206",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Quest Diagnostics confirms data breach exposed patient records",
@@ -371,7 +380,7 @@
       "published": "2026-10-23T12:40:07-04:00"
     },
     {
-      "id": "bc-8783406267331182536",
+      "id": "bc-6508817175634586452",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP shares mitigation for new RCE vulnerability with no patch",
@@ -380,7 +389,7 @@
       "published": "2026-10-23T11:38:05-04:00"
     },
     {
-      "id": "bc-1068214524929909436",
+      "id": "bc-6245788956409592488",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "You gave your AI agent access, but who is giving it orders?",
@@ -389,7 +398,7 @@
       "published": "2026-10-23T10:00:10-04:00"
     },
     {
-      "id": "bc-8627899605376528136",
+      "id": "bc-6733790645826557086",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "HPE patches eight max severity RCE and auth bypass AOS flaws",
@@ -398,7 +407,7 @@
       "published": "2026-10-23T08:48:00-04:00"
     },
     {
-      "id": "bc-1593144918308726721",
+      "id": "bc-6722804477882137814",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway warns devs to rotate secrets after potential breach",
@@ -407,7 +416,7 @@
       "published": "2026-10-22T17:25:31-04:00"
     },
     {
-      "id": "bc-3076340391362660295",
+      "id": "bc-3881607865666443954",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Capcom confirms data breach affecting 11.7 million accounts",
@@ -416,7 +425,7 @@
       "published": "2026-10-22T16:22:45-04:00"
     },
     {
-      "id": "bc-9109805327913594200",
+      "id": "bc-3927083004208126911",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "LiteLLM release pipeline hacked to distribute info-stealer malware",
@@ -425,7 +434,7 @@
       "published": "2026-10-22T15:12:51-04:00"
     },
     {
-      "id": "bc-8167203540553246823",
+      "id": "bc-7916478578884040321",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Arista patches new VeloCloud Orchestrator zero-day exploited in attacks",
@@ -434,7 +443,7 @@
       "published": "2026-10-22T13:18:22-04:00"
     },
     {
-      "id": "bc-8197973663160966391",
+      "id": "bc-1816748923797739851",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft shares how to fix broken Exchange Online EWS apps",
@@ -443,7 +452,7 @@
       "published": "2026-10-22T11:49:32-04:00"
     },
     {
-      "id": "bc-8418572035920861595",
+      "id": "bc-3199523867273622405",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Machine speed attacks require machine speed detection and response",
@@ -452,7 +461,7 @@
       "published": "2026-10-22T10:02:12-04:00"
     },
     {
-      "id": "bc-3648645138056646077",
+      "id": "bc-2834856815588804282",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Amazon says PHP2Shell exploitation began 4 days before patches",
@@ -461,22 +470,13 @@
       "published": "2026-10-22T09:09:12-04:00"
     },
     {
-      "id": "bc-4994891224077047896",
+      "id": "bc-982013256174602968",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "GitLab warns of new max severity code execution vulnerability",
       "url": "https://www.bleepingcomputer.com/news/security/gitlab-warns-of-new-max-severity-code-execution-vulnerability/",
       "points": 0,
       "published": "2026-10-22T07:41:48-04:00"
-    },
-    {
-      "id": "bc-5810490090469861542",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Authorities disrupt nearly 11,000 cybercrime networks in Africa",
-      "url": "https://www.bleepingcomputer.com/news/security/authorities-disrupt-nearly-11-000-cybercrime-networks-in-africa/",
-      "points": 0,
-      "published": "2026-10-22T04:27:11-04:00"
     }
   ]
 }
