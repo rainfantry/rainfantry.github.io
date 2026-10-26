@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T11:48:47.303023+00:00",
+  "generated_at": "2026-10-26T17:50:29.092846+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8134736515565981479",
+      "id": "bc-8019561387177393651",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Critical 'HTTP2Shell' Brotli vulnerability triggers emergency patches",
+      "url": "https://www.bleepingcomputer.com/news/security/critical-http2shell-brotli-vulnerability-triggers-emergency-patches/",
+      "points": 0,
+      "published": "2026-10-26T12:27:57-04:00"
+    },
+    {
+      "id": "bc-4558168946765887435",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft releases emergency .NET patches for critical Brotli flaw",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-emergency-net-patches-for-critical-brotli-flaw/",
+      "points": 0,
+      "published": "2026-10-26T11:38:24-04:00"
+    },
+    {
+      "id": "bc-2793104662801557261",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "When an AI Agent Is the Incident, the Identity Record Is the Evidence",
+      "url": "https://www.bleepingcomputer.com/news/security/when-an-ai-agent-is-the-incident-the-identity-record-is-the-evidence/",
+      "points": 0,
+      "published": "2026-10-26T10:00:10-04:00"
+    },
+    {
+      "id": "bc-8365890930677631466",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Chinese man extradited for role in $36 million cryptocurrency scam",
+      "url": "https://www.bleepingcomputer.com/news/security/chinese-man-extradited-for-role-in-36-million-cryptocurrency-scam/",
+      "points": 0,
+      "published": "2026-10-26T09:56:44-04:00"
+    },
+    {
+      "id": "bc-3580861219260379911",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Kali Linux 2026.3 released with 6 new tools, desktop updates",
@@ -353,7 +389,7 @@
       "published": "2026-10-26T06:26:52-04:00"
     },
     {
-      "id": "bc-2272931398941916942",
+      "id": "bc-5025166434121326747",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP2Shell security flaws now sucessfully exploited in the wild",
@@ -362,7 +398,7 @@
       "published": "2026-10-26T05:19:57-04:00"
     },
     {
-      "id": "bc-6139215460903625180",
+      "id": "bc-3573585262187796501",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "AI coding agents hijacked using AGENTS.md file in Downloads folder",
@@ -371,7 +407,7 @@
       "published": "2026-10-25T11:49:38-04:00"
     },
     {
-      "id": "bc-1407208952127965719",
+      "id": "bc-643726395766960744",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BlackX UEFI bootkit exploits Baton Drop flaw to bypass Secure Boot",
@@ -380,7 +416,7 @@
       "published": "2026-10-24T10:17:32-04:00"
     },
     {
-      "id": "bc-1133868749422175241",
+      "id": "bc-7160948086523850994",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Abandoned Popcorn Time app exposed millions of devices to RCE attacks",
@@ -389,7 +425,7 @@
       "published": "2026-10-23T16:55:05-04:00"
     },
     {
-      "id": "bc-2931709941963321209",
+      "id": "bc-5112587007230078546",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Teams to get AI-powered, context-aware phishing detection",
@@ -398,7 +434,7 @@
       "published": "2026-10-23T14:54:41-04:00"
     },
     {
-      "id": "bc-5047200801555442527",
+      "id": "bc-4117456433648320931",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: Windows Server 2016 reaches end of support in January",
@@ -407,7 +443,7 @@
       "published": "2026-10-23T13:05:07-04:00"
     },
     {
-      "id": "bc-719421349520775596",
+      "id": "bc-8690765216325762260",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Quest Diagnostics confirms data breach exposed patient records",
@@ -416,7 +452,7 @@
       "published": "2026-10-23T12:40:07-04:00"
     },
     {
-      "id": "bc-9042753512307957536",
+      "id": "bc-5523750886213983528",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP shares mitigation for new RCE vulnerability with no patch",
@@ -425,7 +461,7 @@
       "published": "2026-10-23T11:38:05-04:00"
     },
     {
-      "id": "bc-3102884186492379676",
+      "id": "bc-2846492841895503904",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "You gave your AI agent access, but who is giving it orders?",
@@ -434,49 +470,13 @@
       "published": "2026-10-23T10:00:10-04:00"
     },
     {
-      "id": "bc-3541338178873362894",
+      "id": "bc-7770420299604502648",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "HPE patches eight max severity RCE and auth bypass AOS flaws",
       "url": "https://www.bleepingcomputer.com/news/security/hpe-patches-eight-max-severity-rce-and-auth-bypass-aos-flaws/",
       "points": 0,
       "published": "2026-10-23T08:48:00-04:00"
-    },
-    {
-      "id": "bc-8317212656354515102",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Railway warns devs to rotate secrets after potential breach",
-      "url": "https://www.bleepingcomputer.com/news/security/railway-warns-devs-to-rotate-secrets-after-potential-breach/",
-      "points": 0,
-      "published": "2026-10-22T17:25:31-04:00"
-    },
-    {
-      "id": "bc-6816956667870028029",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Capcom confirms data breach affecting 11.7 million accounts",
-      "url": "https://www.bleepingcomputer.com/news/security/capcom-confirms-data-breach-affecting-117-million-accounts/",
-      "points": 0,
-      "published": "2026-10-22T16:22:45-04:00"
-    },
-    {
-      "id": "bc-5320825434178265210",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "LiteLLM release pipeline hacked to distribute info-stealer malware",
-      "url": "https://www.bleepingcomputer.com/news/security/litellm-release-pipeline-hacked-to-distribute-info-stealer-malware/",
-      "points": 0,
-      "published": "2026-10-22T15:12:51-04:00"
-    },
-    {
-      "id": "bc-8410196296617385141",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Arista patches new VeloCloud Orchestrator zero-day exploited in attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/arista-patches-new-velocloud-orchestrator-zero-day-exploited-in-attacks/",
-      "points": 0,
-      "published": "2026-10-22T13:18:22-04:00"
     }
   ]
 }
