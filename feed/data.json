@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T16:59:18.007854+00:00",
+  "generated_at": "2026-10-27T21:34:14.223465+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,25 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-2423357924759962703",
+      "id": "bc-6819341695088936155",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers hijack Convertr analytics script to steal payment card data",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-convertr-analytics-script-to-steal-payment-card-data/",
+      "points": 0,
+      "published": "2026-10-27T16:57:25-04:00"
+    },
+    {
+      "id": "bc-2449010641493696428",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft releases Windows OOB updates to distrust eMudhra certificates",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-windows-oob-updates-to-distrust-emudhra-certificates/",
+      "points": 0,
+      "published": "2026-10-27T14:20:28-04:00"
+    },
+    {
+      "id": "bc-4633026394057605406",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Warp discloses breach exposing AI agent logs, user telemetry data",
@@ -353,7 +371,7 @@
       "published": "2026-10-27T12:15:39-04:00"
     },
     {
-      "id": "bc-7763969624272763307",
+      "id": "bc-4670866478814761779",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Tailscale warns of SSH flaws allowing root privilege escalation",
@@ -362,7 +380,7 @@
       "published": "2026-10-27T10:09:46-04:00"
     },
     {
-      "id": "bc-4764475342259444241",
+      "id": "bc-6999807445552424888",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "The Huntress Tragic Quadrant: Ranking Threats Hitting Businesses Hardest",
@@ -371,7 +389,7 @@
       "published": "2026-10-27T10:01:11-04:00"
     },
     {
-      "id": "bc-6614709904991298265",
+      "id": "bc-4405829888158955662",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apple backports CoreGraphics zero-day patches to older iPhones",
@@ -380,7 +398,7 @@
       "published": "2026-10-27T06:36:12-04:00"
     },
     {
-      "id": "bc-40364790638241576",
+      "id": "bc-3620632689222855756",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Energy giant ENGIE discloses data breach affecting customers",
@@ -389,7 +407,7 @@
       "published": "2026-10-27T05:25:50-04:00"
     },
     {
-      "id": "bc-3494030374445768868",
+      "id": "bc-2882922152993965033",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA confirms PHP2Shell vulnerabilities now exploited in attacks",
@@ -398,7 +416,7 @@
       "published": "2026-10-27T04:20:54-04:00"
     },
     {
-      "id": "bc-1171654321155603898",
+      "id": "bc-3588082924982958779",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "University of Copenhagen data breach exposes data of 525,000 people",
@@ -407,7 +425,7 @@
       "published": "2026-10-26T18:20:36-04:00"
     },
     {
-      "id": "bc-6224896637096790117",
+      "id": "bc-5040755207597767520",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Former pentester used ARTEX AI to steal 8.2 million data records",
@@ -416,7 +434,7 @@
       "published": "2026-10-26T17:08:28-04:00"
     },
     {
-      "id": "bc-7959528015793359716",
+      "id": "bc-2030647276901718644",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI launches GPT-6.1 Terra with 3x faster AI agents, 50% lower pricing",
@@ -425,7 +443,7 @@
       "published": "2026-10-26T16:46:49-04:00"
     },
     {
-      "id": "bc-2266020132417665414",
+      "id": "bc-2987165611877272435",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DreamHost forces password resets in ongoing \"incident\"",
@@ -434,7 +452,7 @@
       "published": "2026-10-26T15:26:20-04:00"
     },
     {
-      "id": "bc-7497060037474143919",
+      "id": "bc-5381746337174754775",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical 'HTTP2Shell' Brotli vulnerability triggers emergency patches",
@@ -443,7 +461,7 @@
       "published": "2026-10-26T12:27:57-04:00"
     },
     {
-      "id": "bc-3271619936159407794",
+      "id": "bc-8500441597861072496",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases emergency .NET patches for critical Brotli flaw",
@@ -452,31 +470,13 @@
       "published": "2026-10-26T11:38:24-04:00"
     },
     {
-      "id": "bc-1569292523637803381",
+      "id": "bc-6746900867483947161",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "When an AI Agent Is the Incident, the Identity Record Is the Evidence",
       "url": "https://www.bleepingcomputer.com/news/security/when-an-ai-agent-is-the-incident-the-identity-record-is-the-evidence/",
       "points": 0,
       "published": "2026-10-26T10:00:10-04:00"
-    },
-    {
-      "id": "bc-3870266166392884054",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Chinese man extradited for role in $36 million cryptocurrency scam",
-      "url": "https://www.bleepingcomputer.com/news/security/chinese-man-extradited-for-role-in-36-million-cryptocurrency-scam/",
-      "points": 0,
-      "published": "2026-10-26T09:56:44-04:00"
-    },
-    {
-      "id": "bc-3251002573019478318",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Kali Linux 2026.3 released with 6 new tools, desktop updates",
-      "url": "https://www.bleepingcomputer.com/news/linux/kali-linux-20263-released-with-6-new-tools-desktop-updates/",
-      "points": 0,
-      "published": "2026-10-26T06:26:52-04:00"
     }
   ]
 }
