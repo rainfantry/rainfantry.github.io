@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T11:13:55.075717+00:00",
+  "generated_at": "2026-10-27T16:59:18.007854+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1501036491841201009",
+      "id": "bc-2423357924759962703",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Warp discloses breach exposing AI agent logs, user telemetry data",
+      "url": "https://www.bleepingcomputer.com/news/security/warp-discloses-breach-exposing-ai-agent-logs-user-telemetry-data/",
+      "points": 0,
+      "published": "2026-10-27T12:15:39-04:00"
+    },
+    {
+      "id": "bc-7763969624272763307",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Tailscale warns of SSH flaws allowing root privilege escalation",
+      "url": "https://www.bleepingcomputer.com/news/security/tailscale-warns-of-serious-ssh-flaws-allowing-root-privilege-escalation/",
+      "points": 0,
+      "published": "2026-10-27T10:09:46-04:00"
+    },
+    {
+      "id": "bc-4764475342259444241",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "The Huntress Tragic Quadrant: Ranking Threats Hitting Businesses Hardest",
+      "url": "https://www.bleepingcomputer.com/news/security/the-huntress-tragic-quadrant-ranking-threats-hitting-businesses-hardest/",
+      "points": 0,
+      "published": "2026-10-27T10:01:11-04:00"
+    },
+    {
+      "id": "bc-6614709904991298265",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apple backports CoreGraphics zero-day patches to older iPhones",
@@ -353,7 +380,7 @@
       "published": "2026-10-27T06:36:12-04:00"
     },
     {
-      "id": "bc-3670899014347194818",
+      "id": "bc-40364790638241576",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Energy giant ENGIE discloses data breach affecting customers",
@@ -362,7 +389,7 @@
       "published": "2026-10-27T05:25:50-04:00"
     },
     {
-      "id": "bc-8747119655843257086",
+      "id": "bc-3494030374445768868",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA confirms PHP2Shell vulnerabilities now exploited in attacks",
@@ -371,7 +398,7 @@
       "published": "2026-10-27T04:20:54-04:00"
     },
     {
-      "id": "bc-7072554543276281301",
+      "id": "bc-1171654321155603898",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "University of Copenhagen data breach exposes data of 525,000 people",
@@ -380,7 +407,7 @@
       "published": "2026-10-26T18:20:36-04:00"
     },
     {
-      "id": "bc-4837495955288864246",
+      "id": "bc-6224896637096790117",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Former pentester used ARTEX AI to steal 8.2 million data records",
@@ -389,7 +416,7 @@
       "published": "2026-10-26T17:08:28-04:00"
     },
     {
-      "id": "bc-7211250108742014452",
+      "id": "bc-7959528015793359716",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI launches GPT-6.1 Terra with 3x faster AI agents, 50% lower pricing",
@@ -398,7 +425,7 @@
       "published": "2026-10-26T16:46:49-04:00"
     },
     {
-      "id": "bc-5072648116161983686",
+      "id": "bc-2266020132417665414",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DreamHost forces password resets in ongoing \"incident\"",
@@ -407,7 +434,7 @@
       "published": "2026-10-26T15:26:20-04:00"
     },
     {
-      "id": "bc-3192486927801203084",
+      "id": "bc-7497060037474143919",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical 'HTTP2Shell' Brotli vulnerability triggers emergency patches",
@@ -416,7 +443,7 @@
       "published": "2026-10-26T12:27:57-04:00"
     },
     {
-      "id": "bc-7720404390858657994",
+      "id": "bc-3271619936159407794",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases emergency .NET patches for critical Brotli flaw",
@@ -425,7 +452,7 @@
       "published": "2026-10-26T11:38:24-04:00"
     },
     {
-      "id": "bc-9038466217202713595",
+      "id": "bc-1569292523637803381",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "When an AI Agent Is the Incident, the Identity Record Is the Evidence",
@@ -434,7 +461,7 @@
       "published": "2026-10-26T10:00:10-04:00"
     },
     {
-      "id": "bc-4027720001203964345",
+      "id": "bc-3870266166392884054",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chinese man extradited for role in $36 million cryptocurrency scam",
@@ -443,40 +470,13 @@
       "published": "2026-10-26T09:56:44-04:00"
     },
     {
-      "id": "bc-4025712432184473145",
+      "id": "bc-3251002573019478318",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Kali Linux 2026.3 released with 6 new tools, desktop updates",
       "url": "https://www.bleepingcomputer.com/news/linux/kali-linux-20263-released-with-6-new-tools-desktop-updates/",
       "points": 0,
       "published": "2026-10-26T06:26:52-04:00"
-    },
-    {
-      "id": "bc-8492473075560342563",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "PHP2Shell security flaws now sucessfully exploited in the wild",
-      "url": "https://www.bleepingcomputer.com/news/security/php2shell-security-flaws-now-sucessfully-exploited-in-the-wild/",
-      "points": 0,
-      "published": "2026-10-26T05:19:57-04:00"
-    },
-    {
-      "id": "bc-6650277815464375129",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "AI coding agents hijacked using AGENTS.md file in Downloads folder",
-      "url": "https://www.bleepingcomputer.com/news/security/ai-coding-agents-hijacked-using-agentsmd-file-in-downloads-folder/",
-      "points": 0,
-      "published": "2026-10-25T11:49:38-04:00"
-    },
-    {
-      "id": "bc-4814133168591177701",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "BlackX UEFI bootkit exploits Baton Drop flaw to bypass Secure Boot",
-      "url": "https://www.bleepingcomputer.com/news/security/blackx-uefi-bootkit-exploits-baton-drop-flaw-to-bypass-secure-boot/",
-      "points": 0,
-      "published": "2026-10-24T10:17:32-04:00"
     }
   ]
 }
