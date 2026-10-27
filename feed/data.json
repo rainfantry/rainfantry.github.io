@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T02:47:58.722499+00:00",
+  "generated_at": "2026-10-27T11:13:55.075717+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-2979800139498282214",
+      "id": "bc-1501036491841201009",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Apple backports CoreGraphics zero-day patches to older iPhones",
+      "url": "https://www.bleepingcomputer.com/news/apple/apple-backports-coregraphics-zero-day-patches-to-older-iphones/",
+      "points": 0,
+      "published": "2026-10-27T06:36:12-04:00"
+    },
+    {
+      "id": "bc-3670899014347194818",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Energy giant ENGIE discloses data breach affecting customers",
+      "url": "https://www.bleepingcomputer.com/news/security/energy-giant-engie-discloses-data-breach-affecting-customers/",
+      "points": 0,
+      "published": "2026-10-27T05:25:50-04:00"
+    },
+    {
+      "id": "bc-8747119655843257086",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA confirms PHP2Shell vulnerabilities now exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-confirms-php2shell-vulnerabilities-now-exploited-in-attacks/",
+      "points": 0,
+      "published": "2026-10-27T04:20:54-04:00"
+    },
+    {
+      "id": "bc-7072554543276281301",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "University of Copenhagen data breach exposes data of 525,000 people",
@@ -353,7 +380,7 @@
       "published": "2026-10-26T18:20:36-04:00"
     },
     {
-      "id": "bc-3116985608462612561",
+      "id": "bc-4837495955288864246",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Former pentester used ARTEX AI to steal 8.2 million data records",
@@ -362,7 +389,7 @@
       "published": "2026-10-26T17:08:28-04:00"
     },
     {
-      "id": "bc-340343446633062152",
+      "id": "bc-7211250108742014452",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI launches GPT-6.1 Terra with 3x faster AI agents, 50% lower pricing",
@@ -371,7 +398,7 @@
       "published": "2026-10-26T16:46:49-04:00"
     },
     {
-      "id": "bc-5471820194477613643",
+      "id": "bc-5072648116161983686",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DreamHost forces password resets in ongoing \"incident\"",
@@ -380,7 +407,7 @@
       "published": "2026-10-26T15:26:20-04:00"
     },
     {
-      "id": "bc-7982636180335195211",
+      "id": "bc-3192486927801203084",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical 'HTTP2Shell' Brotli vulnerability triggers emergency patches",
@@ -389,7 +416,7 @@
       "published": "2026-10-26T12:27:57-04:00"
     },
     {
-      "id": "bc-6373993994480527844",
+      "id": "bc-7720404390858657994",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases emergency .NET patches for critical Brotli flaw",
@@ -398,7 +425,7 @@
       "published": "2026-10-26T11:38:24-04:00"
     },
     {
-      "id": "bc-3725717155747554605",
+      "id": "bc-9038466217202713595",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "When an AI Agent Is the Incident, the Identity Record Is the Evidence",
@@ -407,7 +434,7 @@
       "published": "2026-10-26T10:00:10-04:00"
     },
     {
-      "id": "bc-9001655572778465531",
+      "id": "bc-4027720001203964345",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chinese man extradited for role in $36 million cryptocurrency scam",
@@ -416,7 +443,7 @@
       "published": "2026-10-26T09:56:44-04:00"
     },
     {
-      "id": "bc-7129061946362277253",
+      "id": "bc-4025712432184473145",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Kali Linux 2026.3 released with 6 new tools, desktop updates",
@@ -425,7 +452,7 @@
       "published": "2026-10-26T06:26:52-04:00"
     },
     {
-      "id": "bc-7050024720247451300",
+      "id": "bc-8492473075560342563",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP2Shell security flaws now sucessfully exploited in the wild",
@@ -434,7 +461,7 @@
       "published": "2026-10-26T05:19:57-04:00"
     },
     {
-      "id": "bc-987308642966699531",
+      "id": "bc-6650277815464375129",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "AI coding agents hijacked using AGENTS.md file in Downloads folder",
@@ -443,40 +470,13 @@
       "published": "2026-10-25T11:49:38-04:00"
     },
     {
-      "id": "bc-3224184723177623077",
+      "id": "bc-4814133168591177701",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BlackX UEFI bootkit exploits Baton Drop flaw to bypass Secure Boot",
       "url": "https://www.bleepingcomputer.com/news/security/blackx-uefi-bootkit-exploits-baton-drop-flaw-to-bypass-secure-boot/",
       "points": 0,
       "published": "2026-10-24T10:17:32-04:00"
-    },
-    {
-      "id": "bc-74659163143181064",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Abandoned Popcorn Time app exposed millions of devices to RCE attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/abandoned-popcorn-time-app-exposed-millions-of-device-to-rce-attacks/",
-      "points": 0,
-      "published": "2026-10-23T16:55:05-04:00"
-    },
-    {
-      "id": "bc-9192900477047356432",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft Teams to get AI-powered, context-aware phishing detection",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-teams-to-get-ai-powered-context-aware-phishing-detection/",
-      "points": 0,
-      "published": "2026-10-23T14:54:41-04:00"
-    },
-    {
-      "id": "bc-7681775305192601659",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft: Windows Server 2016 reaches end of support in January",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-windows-server-2016-reaches-end-of-support-in-january/",
-      "points": 0,
-      "published": "2026-10-23T13:05:07-04:00"
     }
   ]
 }
