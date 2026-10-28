@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T21:34:14.223465+00:00",
+  "generated_at": "2026-10-28T02:55:49.077956+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6819341695088936155",
+      "id": "bc-3653813021216372810",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Japan's GMO urges customers to shut down PCs amid ransomware threat",
+      "url": "https://www.bleepingcomputer.com/news/security/japans-gmo-urges-customers-to-shut-down-pcs-amid-ransomware-threat/",
+      "points": 0,
+      "published": "2026-10-27T19:35:51-04:00"
+    },
+    {
+      "id": "bc-2850149767454785585",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenAI's GPT-6.1 Terra is safer overall, but shows more destructive-action flags in tests",
+      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openais-gpt-61-terra-is-safer-overall-but-shows-more-destructive-action-flags-in-tests/",
+      "points": 0,
+      "published": "2026-10-27T18:43:27-04:00"
+    },
+    {
+      "id": "bc-8008797775009953217",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "UNM Health ransomware attack disrupts patient care, surgeries",
+      "url": "https://www.bleepingcomputer.com/news/security/unm-health-ransomware-attack-disrupts-patient-care-surgeries/",
+      "points": 0,
+      "published": "2026-10-27T18:07:34-04:00"
+    },
+    {
+      "id": "bc-3291370345751740718",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack Convertr analytics script to steal payment card data",
@@ -353,7 +380,7 @@
       "published": "2026-10-27T16:57:25-04:00"
     },
     {
-      "id": "bc-2449010641493696428",
+      "id": "bc-5459594095092604325",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases Windows OOB updates to distrust eMudhra certificates",
@@ -362,7 +389,7 @@
       "published": "2026-10-27T14:20:28-04:00"
     },
     {
-      "id": "bc-4633026394057605406",
+      "id": "bc-8299054440099187987",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Warp discloses breach exposing AI agent logs, user telemetry data",
@@ -371,7 +398,7 @@
       "published": "2026-10-27T12:15:39-04:00"
     },
     {
-      "id": "bc-4670866478814761779",
+      "id": "bc-5274722125555673400",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Tailscale warns of SSH flaws allowing root privilege escalation",
@@ -380,7 +407,7 @@
       "published": "2026-10-27T10:09:46-04:00"
     },
     {
-      "id": "bc-6999807445552424888",
+      "id": "bc-5000123437711738923",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "The Huntress Tragic Quadrant: Ranking Threats Hitting Businesses Hardest",
@@ -389,7 +416,7 @@
       "published": "2026-10-27T10:01:11-04:00"
     },
     {
-      "id": "bc-4405829888158955662",
+      "id": "bc-5241574072460595710",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apple backports CoreGraphics zero-day patches to older iPhones",
@@ -398,7 +425,7 @@
       "published": "2026-10-27T06:36:12-04:00"
     },
     {
-      "id": "bc-3620632689222855756",
+      "id": "bc-2455835203004034862",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Energy giant ENGIE discloses data breach affecting customers",
@@ -407,7 +434,7 @@
       "published": "2026-10-27T05:25:50-04:00"
     },
     {
-      "id": "bc-2882922152993965033",
+      "id": "bc-8674541406764709543",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA confirms PHP2Shell vulnerabilities now exploited in attacks",
@@ -416,7 +443,7 @@
       "published": "2026-10-27T04:20:54-04:00"
     },
     {
-      "id": "bc-3588082924982958779",
+      "id": "bc-1128080582434810557",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "University of Copenhagen data breach exposes data of 525,000 people",
@@ -425,7 +452,7 @@
       "published": "2026-10-26T18:20:36-04:00"
     },
     {
-      "id": "bc-5040755207597767520",
+      "id": "bc-81121891539422672",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Former pentester used ARTEX AI to steal 8.2 million data records",
@@ -434,7 +461,7 @@
       "published": "2026-10-26T17:08:28-04:00"
     },
     {
-      "id": "bc-2030647276901718644",
+      "id": "bc-7473847209581165610",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI launches GPT-6.1 Terra with 3x faster AI agents, 50% lower pricing",
@@ -443,40 +470,13 @@
       "published": "2026-10-26T16:46:49-04:00"
     },
     {
-      "id": "bc-2987165611877272435",
+      "id": "bc-3183812226604823274",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DreamHost forces password resets in ongoing \"incident\"",
       "url": "https://www.bleepingcomputer.com/news/security/dreamhost-forces-email-ftp-sftp-password-resets-in-ongoing-incident/",
       "points": 0,
       "published": "2026-10-26T15:26:20-04:00"
-    },
-    {
-      "id": "bc-5381746337174754775",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Critical 'HTTP2Shell' Brotli vulnerability triggers emergency patches",
-      "url": "https://www.bleepingcomputer.com/news/security/critical-http2shell-brotli-vulnerability-triggers-emergency-patches/",
-      "points": 0,
-      "published": "2026-10-26T12:27:57-04:00"
-    },
-    {
-      "id": "bc-8500441597861072496",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft releases emergency .NET patches for critical Brotli flaw",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-emergency-net-patches-for-critical-brotli-flaw/",
-      "points": 0,
-      "published": "2026-10-26T11:38:24-04:00"
-    },
-    {
-      "id": "bc-6746900867483947161",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "When an AI Agent Is the Incident, the Identity Record Is the Evidence",
-      "url": "https://www.bleepingcomputer.com/news/security/when-an-ai-agent-is-the-incident-the-identity-record-is-the-evidence/",
-      "points": 0,
-      "published": "2026-10-26T10:00:10-04:00"
     }
   ]
 }
