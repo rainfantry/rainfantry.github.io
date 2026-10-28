@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T02:55:49.077956+00:00",
+  "generated_at": "2026-10-28T11:48:16.004664+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,25 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-3653813021216372810",
+      "id": "bc-6653362636236988710",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA warns of hackers now exploiting critical Node2Shell flaw",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-now-exploiting-critical-node2shell-flaw/",
+      "points": 0,
+      "published": "2026-10-28T06:46:23-04:00"
+    },
+    {
+      "id": "bc-4278551332229208642",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Nefilim and Hive ransomware affiliate gets 70 months in prison",
+      "url": "https://www.bleepingcomputer.com/news/security/nefilim-and-hive-ransomware-affiliate-gets-70-months-in-prison/",
+      "points": 0,
+      "published": "2026-10-28T05:43:15-04:00"
+    },
+    {
+      "id": "bc-2811952136917325642",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan's GMO urges customers to shut down PCs amid ransomware threat",
@@ -353,7 +371,7 @@
       "published": "2026-10-27T19:35:51-04:00"
     },
     {
-      "id": "bc-2850149767454785585",
+      "id": "bc-4717318897100552770",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI's GPT-6.1 Terra is safer overall, but shows more destructive-action flags in tests",
@@ -362,7 +380,7 @@
       "published": "2026-10-27T18:43:27-04:00"
     },
     {
-      "id": "bc-8008797775009953217",
+      "id": "bc-8452577537687396850",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "UNM Health ransomware attack disrupts patient care, surgeries",
@@ -371,7 +389,7 @@
       "published": "2026-10-27T18:07:34-04:00"
     },
     {
-      "id": "bc-3291370345751740718",
+      "id": "bc-8541811997442871535",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack Convertr analytics script to steal payment card data",
@@ -380,7 +398,7 @@
       "published": "2026-10-27T16:57:25-04:00"
     },
     {
-      "id": "bc-5459594095092604325",
+      "id": "bc-5409798759919474285",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases Windows OOB updates to distrust eMudhra certificates",
@@ -389,7 +407,7 @@
       "published": "2026-10-27T14:20:28-04:00"
     },
     {
-      "id": "bc-8299054440099187987",
+      "id": "bc-6730500719538135552",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Warp discloses breach exposing AI agent logs, user telemetry data",
@@ -398,7 +416,7 @@
       "published": "2026-10-27T12:15:39-04:00"
     },
     {
-      "id": "bc-5274722125555673400",
+      "id": "bc-370244312425450314",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Tailscale warns of SSH flaws allowing root privilege escalation",
@@ -407,7 +425,7 @@
       "published": "2026-10-27T10:09:46-04:00"
     },
     {
-      "id": "bc-5000123437711738923",
+      "id": "bc-4675938915218036630",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "The Huntress Tragic Quadrant: Ranking Threats Hitting Businesses Hardest",
@@ -416,7 +434,7 @@
       "published": "2026-10-27T10:01:11-04:00"
     },
     {
-      "id": "bc-5241574072460595710",
+      "id": "bc-8292162272950550163",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apple backports CoreGraphics zero-day patches to older iPhones",
@@ -425,7 +443,7 @@
       "published": "2026-10-27T06:36:12-04:00"
     },
     {
-      "id": "bc-2455835203004034862",
+      "id": "bc-1193381222935399632",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Energy giant ENGIE discloses data breach affecting customers",
@@ -434,7 +452,7 @@
       "published": "2026-10-27T05:25:50-04:00"
     },
     {
-      "id": "bc-8674541406764709543",
+      "id": "bc-2348047315382458352",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA confirms PHP2Shell vulnerabilities now exploited in attacks",
@@ -443,7 +461,7 @@
       "published": "2026-10-27T04:20:54-04:00"
     },
     {
-      "id": "bc-1128080582434810557",
+      "id": "bc-7805018565413639584",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "University of Copenhagen data breach exposes data of 525,000 people",
@@ -452,31 +470,13 @@
       "published": "2026-10-26T18:20:36-04:00"
     },
     {
-      "id": "bc-81121891539422672",
+      "id": "bc-4388511826493405391",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Former pentester used ARTEX AI to steal 8.2 million data records",
       "url": "https://www.bleepingcomputer.com/news/security/former-pentester-used-artex-ai-to-steal-82-million-data-records/",
       "points": 0,
       "published": "2026-10-26T17:08:28-04:00"
-    },
-    {
-      "id": "bc-7473847209581165610",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "OpenAI launches GPT-6.1 Terra with 3x faster AI agents, 50% lower pricing",
-      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-launches-gpt-61-terra-with-3x-faster-ai-agents-50-percent-lower-pricing/",
-      "points": 0,
-      "published": "2026-10-26T16:46:49-04:00"
-    },
-    {
-      "id": "bc-3183812226604823274",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "DreamHost forces password resets in ongoing \"incident\"",
-      "url": "https://www.bleepingcomputer.com/news/security/dreamhost-forces-email-ftp-sftp-password-resets-in-ongoing-incident/",
-      "points": 0,
-      "published": "2026-10-26T15:26:20-04:00"
     }
   ]
 }
