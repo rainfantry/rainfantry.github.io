@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T21:58:40.283628+00:00",
+  "generated_at": "2026-10-29T03:21:29.941385+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-9112636864368463736",
+      "id": "bc-3900467831374038851",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police seize Virtualine bulletproof service tied to ransowmare, cybercrime",
@@ -353,7 +353,7 @@
       "published": "2026-10-28T16:47:22-04:00"
     },
     {
-      "id": "bc-82110682873591722",
+      "id": "bc-3630422940413167538",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Discord to let search engines index public server messages",
@@ -362,7 +362,7 @@
       "published": "2026-10-28T14:44:16-04:00"
     },
     {
-      "id": "bc-5959435489726888543",
+      "id": "bc-4924053128696720168",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Sony ISP subsidiary data breach exposes 2.5 million customer records",
@@ -371,7 +371,7 @@
       "published": "2026-10-28T12:45:47-04:00"
     },
     {
-      "id": "bc-2287120325815882162",
+      "id": "bc-7267845155947431981",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Volt Typhoon hides zero-day attacks using 'Silent Train' framework",
@@ -380,7 +380,7 @@
       "published": "2026-10-28T12:00:00-04:00"
     },
     {
-      "id": "bc-5553638339791645798",
+      "id": "bc-886085398857931668",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft urges Entra ID admins to migrate users to passkeys",
@@ -389,7 +389,7 @@
       "published": "2026-10-28T10:48:32-04:00"
     },
     {
-      "id": "bc-7651582431814841383",
+      "id": "bc-3387948541354242375",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "InfraTrust report warns of exploited flaws in critical network infrastructure",
@@ -398,7 +398,7 @@
       "published": "2026-10-28T10:00:00-04:00"
     },
     {
-      "id": "bc-7482833956027591926",
+      "id": "bc-6151086753586193352",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Even after PHP2Shell, blast radius matters more than a CVSS score",
@@ -407,7 +407,7 @@
       "published": "2026-10-28T09:50:59-04:00"
     },
     {
-      "id": "bc-2013647847006019789",
+      "id": "bc-1959720822866218630",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers now scanning systems for recently-patched Oracle flaw",
@@ -416,7 +416,7 @@
       "published": "2026-10-28T08:19:57-04:00"
     },
     {
-      "id": "bc-4999435703595690705",
+      "id": "bc-3368293912456851161",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA warns of hackers now exploiting critical Node2Shell flaw",
@@ -425,7 +425,7 @@
       "published": "2026-10-28T06:46:23-04:00"
     },
     {
-      "id": "bc-7215845000354432117",
+      "id": "bc-5089818381273180850",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Nefilim and Hive ransomware affiliate gets 70 months in prison",
@@ -434,7 +434,7 @@
       "published": "2026-10-28T05:43:15-04:00"
     },
     {
-      "id": "bc-6542950705565342605",
+      "id": "bc-7018871607543097234",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan's GMO urges customers to shut down PCs amid ransomware threat",
@@ -443,7 +443,7 @@
       "published": "2026-10-27T19:35:51-04:00"
     },
     {
-      "id": "bc-1272020169219912955",
+      "id": "bc-725141789477560152",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI's GPT-6.1 Terra is safer overall, but shows more destructive-action flags in tests",
@@ -452,7 +452,7 @@
       "published": "2026-10-27T18:43:27-04:00"
     },
     {
-      "id": "bc-3025500419106931224",
+      "id": "bc-1675205045652583801",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "UNM Health ransomware attack disrupts patient care, surgeries",
@@ -461,7 +461,7 @@
       "published": "2026-10-27T18:07:34-04:00"
     },
     {
-      "id": "bc-329496723638134758",
+      "id": "bc-4741143881478259747",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack Convertr analytics script to steal payment card data",
@@ -470,7 +470,7 @@
       "published": "2026-10-27T16:57:25-04:00"
     },
     {
-      "id": "bc-1450794266754616427",
+      "id": "bc-6012888974253816369",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases Windows OOB updates to distrust eMudhra certificates",
