@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T17:48:50.204476+00:00",
+  "generated_at": "2026-10-29T22:11:19.905899+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,52 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6287934262079680476",
+      "id": "bc-5516568690387691083",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hugging Face malware campaign returns to hijack GPUs for crypto mining",
+      "url": "https://www.bleepingcomputer.com/news/security/hugging-face-malware-campaign-returns-to-hijack-gpus-for-crypto-mining/",
+      "points": 0,
+      "published": "2026-10-29T18:09:24-04:00"
+    },
+    {
+      "id": "bc-5369874019466334011",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Japan Airlines suffers third-party data breach exposing passenger info",
+      "url": "https://www.bleepingcomputer.com/news/security/japan-airlines-suffers-third-party-data-breach-exposing-passenger-info/",
+      "points": 0,
+      "published": "2026-10-29T18:08:04-04:00"
+    },
+    {
+      "id": "bc-2108049064669551502",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Polymarket halts trading after crypto-draining script breach, $2.5M traced",
+      "url": "https://www.bleepingcomputer.com/news/security/polymarket-halts-trading-after-crypto-draining-script-breach-25m-traced/",
+      "points": 0,
+      "published": "2026-10-29T17:47:25-04:00"
+    },
+    {
+      "id": "bc-3512352548275566097",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Fake crypto app on Apple App Store linked to $23K wallet theft",
+      "url": "https://www.bleepingcomputer.com/news/security/fake-crypto-app-on-apple-app-store-linked-to-23k-wallet-theft/",
+      "points": 0,
+      "published": "2026-10-29T15:23:41-04:00"
+    },
+    {
+      "id": "bc-7363880162942229675",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers exploit Cisco SD-WAN flaw to deploy custom KeyDrift malware",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-cisco-sd-wan-flaw-to-deploy-custom-keydrift-malware/",
+      "points": 0,
+      "published": "2026-10-29T14:38:26-04:00"
+    },
+    {
+      "id": "bc-9033703970947902176",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chrome extensions with 13.4 million installs caught hijacking searches",
@@ -353,7 +398,7 @@
       "published": "2026-10-29T12:10:31-04:00"
     },
     {
-      "id": "bc-542987985070527692",
+      "id": "bc-7226111880561901778",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes Remote Desktop failures caused by recent Windows updates",
@@ -362,7 +407,7 @@
       "published": "2026-10-29T10:35:40-04:00"
     },
     {
-      "id": "bc-5844268347522511697",
+      "id": "bc-6720987376640932750",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "3 Ways AI Agents Already Operate in Your Browser",
@@ -371,7 +416,7 @@
       "published": "2026-10-29T10:00:10-04:00"
     },
     {
-      "id": "bc-6322157468407773868",
+      "id": "bc-7818482856922757310",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA warns of Fragnesia Linux flaw chained in PHP2Shell attacks",
@@ -380,7 +425,7 @@
       "published": "2026-10-29T09:59:48-04:00"
     },
     {
-      "id": "bc-8368085618820851981",
+      "id": "bc-4938285067144169805",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5127936 update released with 41 changes and fixes",
@@ -389,7 +434,7 @@
       "published": "2026-10-29T08:00:07-04:00"
     },
     {
-      "id": "bc-2858789610107027437",
+      "id": "bc-3326230345652771712",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Cisco firewall zero-day exploited to crash SSL VPN devices",
@@ -398,7 +443,7 @@
       "published": "2026-10-29T07:10:13-04:00"
     },
     {
-      "id": "bc-6169765302238111027",
+      "id": "bc-8622097345655811573",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police seize Virtualine bulletproof service tied to ransowmare, cybercrime",
@@ -407,7 +452,7 @@
       "published": "2026-10-28T16:47:22-04:00"
     },
     {
-      "id": "bc-1805135621004405281",
+      "id": "bc-5797082781430228931",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Discord to let search engines index public server messages",
@@ -416,7 +461,7 @@
       "published": "2026-10-28T14:44:16-04:00"
     },
     {
-      "id": "bc-1087438926602756932",
+      "id": "bc-5297063369473202517",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Sony ISP subsidiary data breach exposes 2.5 million customer records",
@@ -425,58 +470,13 @@
       "published": "2026-10-28T12:45:47-04:00"
     },
     {
-      "id": "bc-6084751414785629188",
+      "id": "bc-7734962565550856311",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Volt Typhoon hides zero-day attacks using 'Silent Train' framework",
       "url": "https://www.bleepingcomputer.com/news/security/volt-typhoon-hides-zero-day-attacks-using-silent-train-framework/",
       "points": 0,
       "published": "2026-10-28T12:00:00-04:00"
-    },
-    {
-      "id": "bc-432849045788357959",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft urges Entra ID admins to migrate users to passkeys",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-reminds-entra-id-admins-to-migrate-users-to-passkeys/",
-      "points": 0,
-      "published": "2026-10-28T10:48:32-04:00"
-    },
-    {
-      "id": "bc-7774516642698454061",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "InfraTrust report warns of exploited flaws in critical network infrastructure",
-      "url": "https://www.bleepingcomputer.com/news/security/infratrust-report-warns-of-exploited-flaws-in-critical-network-infrastructure/",
-      "points": 0,
-      "published": "2026-10-28T10:00:00-04:00"
-    },
-    {
-      "id": "bc-5078539535404802089",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Even after PHP2Shell, blast radius matters more than a CVSS score",
-      "url": "https://www.bleepingcomputer.com/news/security/even-after-php2shell-blast-radius-matters-more-than-a-cvss-score/",
-      "points": 0,
-      "published": "2026-10-28T09:50:59-04:00"
-    },
-    {
-      "id": "bc-5722241618814032236",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers now scanning systems for recently-patched Oracle flaw",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-now-scanning-systems-for-recently-patched-oracle-flaw/",
-      "points": 0,
-      "published": "2026-10-28T08:19:57-04:00"
-    },
-    {
-      "id": "bc-2206236621874535577",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA warns of hackers now exploiting critical Node2Shell flaw",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-now-exploiting-critical-node2shell-flaw/",
-      "points": 0,
-      "published": "2026-10-28T06:46:23-04:00"
     }
   ]
 }
