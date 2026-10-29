@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T11:55:57.898901+00:00",
+  "generated_at": "2026-10-29T17:48:50.204476+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,52 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6110394683885692359",
+      "id": "bc-6287934262079680476",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Chrome extensions with 13.4 million installs caught hijacking searches",
+      "url": "https://www.bleepingcomputer.com/news/security/chrome-extensions-with-134-million-installs-caught-hijacking-searches/",
+      "points": 0,
+      "published": "2026-10-29T12:10:31-04:00"
+    },
+    {
+      "id": "bc-542987985070527692",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft fixes Remote Desktop failures caused by recent Windows updates",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-remote-desktop-failures-caused-by-recent-windows-updates/",
+      "points": 0,
+      "published": "2026-10-29T10:35:40-04:00"
+    },
+    {
+      "id": "bc-5844268347522511697",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "3 Ways AI Agents Already Operate in Your Browser",
+      "url": "https://www.bleepingcomputer.com/news/security/3-ways-ai-agents-already-operate-in-your-browser/",
+      "points": 0,
+      "published": "2026-10-29T10:00:10-04:00"
+    },
+    {
+      "id": "bc-6322157468407773868",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA warns of Fragnesia Linux flaw chained in PHP2Shell attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-fragnesia-linux-flaw-chained-in-php2shell-attacks/",
+      "points": 0,
+      "published": "2026-10-29T09:59:48-04:00"
+    },
+    {
+      "id": "bc-8368085618820851981",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Windows 11 KB5127936 update released with 41 changes and fixes",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5127936-update-released-with-41-changes-and-fixes/",
+      "points": 0,
+      "published": "2026-10-29T08:00:07-04:00"
+    },
+    {
+      "id": "bc-2858789610107027437",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Cisco firewall zero-day exploited to crash SSL VPN devices",
@@ -353,7 +398,7 @@
       "published": "2026-10-29T07:10:13-04:00"
     },
     {
-      "id": "bc-2340821044172296356",
+      "id": "bc-6169765302238111027",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police seize Virtualine bulletproof service tied to ransowmare, cybercrime",
@@ -362,7 +407,7 @@
       "published": "2026-10-28T16:47:22-04:00"
     },
     {
-      "id": "bc-4148994697908382879",
+      "id": "bc-1805135621004405281",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Discord to let search engines index public server messages",
@@ -371,7 +416,7 @@
       "published": "2026-10-28T14:44:16-04:00"
     },
     {
-      "id": "bc-8909035537048030059",
+      "id": "bc-1087438926602756932",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Sony ISP subsidiary data breach exposes 2.5 million customer records",
@@ -380,7 +425,7 @@
       "published": "2026-10-28T12:45:47-04:00"
     },
     {
-      "id": "bc-4928816169914335525",
+      "id": "bc-6084751414785629188",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Volt Typhoon hides zero-day attacks using 'Silent Train' framework",
@@ -389,7 +434,7 @@
       "published": "2026-10-28T12:00:00-04:00"
     },
     {
-      "id": "bc-682668241699812960",
+      "id": "bc-432849045788357959",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft urges Entra ID admins to migrate users to passkeys",
@@ -398,7 +443,7 @@
       "published": "2026-10-28T10:48:32-04:00"
     },
     {
-      "id": "bc-7974703456656208288",
+      "id": "bc-7774516642698454061",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "InfraTrust report warns of exploited flaws in critical network infrastructure",
@@ -407,7 +452,7 @@
       "published": "2026-10-28T10:00:00-04:00"
     },
     {
-      "id": "bc-1139596361550475688",
+      "id": "bc-5078539535404802089",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Even after PHP2Shell, blast radius matters more than a CVSS score",
@@ -416,7 +461,7 @@
       "published": "2026-10-28T09:50:59-04:00"
     },
     {
-      "id": "bc-4245320136547337349",
+      "id": "bc-5722241618814032236",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers now scanning systems for recently-patched Oracle flaw",
@@ -425,58 +470,13 @@
       "published": "2026-10-28T08:19:57-04:00"
     },
     {
-      "id": "bc-3979149312569950381",
+      "id": "bc-2206236621874535577",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA warns of hackers now exploiting critical Node2Shell flaw",
       "url": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-now-exploiting-critical-node2shell-flaw/",
       "points": 0,
       "published": "2026-10-28T06:46:23-04:00"
-    },
-    {
-      "id": "bc-1127601212090073404",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Nefilim and Hive ransomware affiliate gets 70 months in prison",
-      "url": "https://www.bleepingcomputer.com/news/security/nefilim-and-hive-ransomware-affiliate-gets-70-months-in-prison/",
-      "points": 0,
-      "published": "2026-10-28T05:43:15-04:00"
-    },
-    {
-      "id": "bc-2107446846814251650",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Japan's GMO urges customers to shut down PCs amid ransomware threat",
-      "url": "https://www.bleepingcomputer.com/news/security/japans-gmo-urges-customers-to-shut-down-pcs-amid-ransomware-threat/",
-      "points": 0,
-      "published": "2026-10-27T19:35:51-04:00"
-    },
-    {
-      "id": "bc-6471427445957646430",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "OpenAI's GPT-6.1 Terra is safer overall, but shows more destructive-action flags in tests",
-      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openais-gpt-61-terra-is-safer-overall-but-shows-more-destructive-action-flags-in-tests/",
-      "points": 0,
-      "published": "2026-10-27T18:43:27-04:00"
-    },
-    {
-      "id": "bc-8639779239854947012",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "UNM Health ransomware attack disrupts patient care, surgeries",
-      "url": "https://www.bleepingcomputer.com/news/security/unm-health-ransomware-attack-disrupts-patient-care-surgeries/",
-      "points": 0,
-      "published": "2026-10-27T18:07:34-04:00"
-    },
-    {
-      "id": "bc-8613916261192800944",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers hijack Convertr analytics script to steal payment card data",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-convertr-analytics-script-to-steal-payment-card-data/",
-      "points": 0,
-      "published": "2026-10-27T16:57:25-04:00"
     }
   ]
 }
