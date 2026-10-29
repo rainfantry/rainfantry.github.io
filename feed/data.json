@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T03:21:29.941385+00:00",
+  "generated_at": "2026-10-29T11:55:57.898901+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,16 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-3900467831374038851",
+      "id": "bc-6110394683885692359",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New Cisco firewall zero-day exploited to crash SSL VPN devices",
+      "url": "https://www.bleepingcomputer.com/news/security/cisco-warns-of-firewall-zero-day-exploited-to-crash-ssl-vpn-devices/",
+      "points": 0,
+      "published": "2026-10-29T07:10:13-04:00"
+    },
+    {
+      "id": "bc-2340821044172296356",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police seize Virtualine bulletproof service tied to ransowmare, cybercrime",
@@ -353,7 +362,7 @@
       "published": "2026-10-28T16:47:22-04:00"
     },
     {
-      "id": "bc-3630422940413167538",
+      "id": "bc-4148994697908382879",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Discord to let search engines index public server messages",
@@ -362,7 +371,7 @@
       "published": "2026-10-28T14:44:16-04:00"
     },
     {
-      "id": "bc-4924053128696720168",
+      "id": "bc-8909035537048030059",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Sony ISP subsidiary data breach exposes 2.5 million customer records",
@@ -371,7 +380,7 @@
       "published": "2026-10-28T12:45:47-04:00"
     },
     {
-      "id": "bc-7267845155947431981",
+      "id": "bc-4928816169914335525",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Volt Typhoon hides zero-day attacks using 'Silent Train' framework",
@@ -380,7 +389,7 @@
       "published": "2026-10-28T12:00:00-04:00"
     },
     {
-      "id": "bc-886085398857931668",
+      "id": "bc-682668241699812960",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft urges Entra ID admins to migrate users to passkeys",
@@ -389,7 +398,7 @@
       "published": "2026-10-28T10:48:32-04:00"
     },
     {
-      "id": "bc-3387948541354242375",
+      "id": "bc-7974703456656208288",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "InfraTrust report warns of exploited flaws in critical network infrastructure",
@@ -398,7 +407,7 @@
       "published": "2026-10-28T10:00:00-04:00"
     },
     {
-      "id": "bc-6151086753586193352",
+      "id": "bc-1139596361550475688",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Even after PHP2Shell, blast radius matters more than a CVSS score",
@@ -407,7 +416,7 @@
       "published": "2026-10-28T09:50:59-04:00"
     },
     {
-      "id": "bc-1959720822866218630",
+      "id": "bc-4245320136547337349",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers now scanning systems for recently-patched Oracle flaw",
@@ -416,7 +425,7 @@
       "published": "2026-10-28T08:19:57-04:00"
     },
     {
-      "id": "bc-3368293912456851161",
+      "id": "bc-3979149312569950381",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA warns of hackers now exploiting critical Node2Shell flaw",
@@ -425,7 +434,7 @@
       "published": "2026-10-28T06:46:23-04:00"
     },
     {
-      "id": "bc-5089818381273180850",
+      "id": "bc-1127601212090073404",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Nefilim and Hive ransomware affiliate gets 70 months in prison",
@@ -434,7 +443,7 @@
       "published": "2026-10-28T05:43:15-04:00"
     },
     {
-      "id": "bc-7018871607543097234",
+      "id": "bc-2107446846814251650",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan's GMO urges customers to shut down PCs amid ransomware threat",
@@ -443,7 +452,7 @@
       "published": "2026-10-27T19:35:51-04:00"
     },
     {
-      "id": "bc-725141789477560152",
+      "id": "bc-6471427445957646430",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI's GPT-6.1 Terra is safer overall, but shows more destructive-action flags in tests",
@@ -452,7 +461,7 @@
       "published": "2026-10-27T18:43:27-04:00"
     },
     {
-      "id": "bc-1675205045652583801",
+      "id": "bc-8639779239854947012",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "UNM Health ransomware attack disrupts patient care, surgeries",
@@ -461,22 +470,13 @@
       "published": "2026-10-27T18:07:34-04:00"
     },
     {
-      "id": "bc-4741143881478259747",
+      "id": "bc-8613916261192800944",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack Convertr analytics script to steal payment card data",
       "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-convertr-analytics-script-to-steal-payment-card-data/",
       "points": 0,
       "published": "2026-10-27T16:57:25-04:00"
-    },
-    {
-      "id": "bc-6012888974253816369",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft releases Windows OOB updates to distrust eMudhra certificates",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-windows-oob-updates-to-distrust-emudhra-certificates/",
-      "points": 0,
-      "published": "2026-10-27T14:20:28-04:00"
     }
   ]
 }
