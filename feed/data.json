@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T11:49:31.061604+00:00",
+  "generated_at": "2026-10-30T17:24:56.099577+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1566911941446654221",
+      "id": "bc-3932575057374034902",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Trezor warns of suspected crypto-theft implant in hardware wallet",
+      "url": "https://www.bleepingcomputer.com/news/security/trezor-warns-of-suspected-crypto-theft-implant-in-hardware-wallet/",
+      "points": 0,
+      "published": "2026-10-30T11:58:20-04:00"
+    },
+    {
+      "id": "bc-738573597975958967",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Malicious Claude Code extension on Cursor planted SSH backdoors",
+      "url": "https://www.bleepingcomputer.com/news/security/malicious-claude-code-extension-on-cursor-planted-ssh-backdoors/",
+      "points": 0,
+      "published": "2026-10-30T10:36:54-04:00"
+    },
+    {
+      "id": "bc-4481639989939081458",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": " SS7 and Diameter Attacks: How Signaling Flaws Expose Your Phone",
+      "url": "https://www.bleepingcomputer.com/news/security/ss7-and-diameter-attacks-how-signaling-flaws-expose-your-phone/",
+      "points": 0,
+      "published": "2026-10-30T10:00:10-04:00"
+    },
+    {
+      "id": "bc-7294744916184571563",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA says max severity GitLab flaw now exploited in the wild",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-now-exploiting-max-severity-gitlab-flaw-in-attacks/",
+      "points": 0,
+      "published": "2026-10-30T09:00:32-04:00"
+    },
+    {
+      "id": "bc-8246681471690328848",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft finally fixes VPN issues caused by September updates",
@@ -353,7 +389,7 @@
       "published": "2026-10-30T07:20:26-04:00"
     },
     {
-      "id": "bc-2124861880712628193",
+      "id": "bc-6143820278885598997",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal warns of critical Commerce Core flaw exploited in attacks",
@@ -362,7 +398,7 @@
       "published": "2026-10-30T06:16:07-04:00"
     },
     {
-      "id": "bc-232108712237484239",
+      "id": "bc-6807042568334227684",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance links $6.3 billion crypto theft to compromised DevOps laptop",
@@ -371,7 +407,7 @@
       "published": "2026-10-30T05:18:13-04:00"
     },
     {
-      "id": "bc-2263794077439776512",
+      "id": "bc-512296975669396109",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI doubles ChatGPT Pro usage limits after backlash over planned 50% cut",
@@ -380,7 +416,7 @@
       "published": "2026-10-29T19:35:52-04:00"
     },
     {
-      "id": "bc-435630549338748136",
+      "id": "bc-3270080775679273942",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance probes potential $5.8 billion crypto-theft hack",
@@ -389,7 +425,7 @@
       "published": "2026-10-29T18:45:23-04:00"
     },
     {
-      "id": "bc-4095881476851311148",
+      "id": "bc-1224997671052552727",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hugging Face malware campaign returns to hijack GPUs for crypto mining",
@@ -398,7 +434,7 @@
       "published": "2026-10-29T18:09:24-04:00"
     },
     {
-      "id": "bc-1902167174207881446",
+      "id": "bc-6263905912503383627",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan Airlines suffers third-party data breach exposing passenger info",
@@ -407,7 +443,7 @@
       "published": "2026-10-29T18:08:04-04:00"
     },
     {
-      "id": "bc-8274196903820310276",
+      "id": "bc-6132497814001072719",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Polymarket halts trading after crypto-draining script breach, $2.5M traced",
@@ -416,7 +452,7 @@
       "published": "2026-10-29T17:47:25-04:00"
     },
     {
-      "id": "bc-4360102239633246771",
+      "id": "bc-8928983078141196895",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake crypto app on Apple App Store linked to $23K wallet theft",
@@ -425,7 +461,7 @@
       "published": "2026-10-29T15:23:41-04:00"
     },
     {
-      "id": "bc-8518464473976326204",
+      "id": "bc-6930583535715336672",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit Cisco SD-WAN flaw to deploy custom KeyDrift malware",
@@ -434,49 +470,13 @@
       "published": "2026-10-29T14:38:26-04:00"
     },
     {
-      "id": "bc-753643786898757457",
+      "id": "bc-409494626649579181",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chrome extensions with 13.4 million installs caught hijacking searches",
       "url": "https://www.bleepingcomputer.com/news/security/chrome-extensions-with-134-million-installs-caught-hijacking-searches/",
       "points": 0,
       "published": "2026-10-29T12:10:31-04:00"
-    },
-    {
-      "id": "bc-4076193682934621178",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft fixes Remote Desktop failures caused by recent Windows updates",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-remote-desktop-failures-caused-by-recent-windows-updates/",
-      "points": 0,
-      "published": "2026-10-29T10:35:40-04:00"
-    },
-    {
-      "id": "bc-8953057412699750198",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "3 Ways AI Agents Already Operate in Your Browser",
-      "url": "https://www.bleepingcomputer.com/news/security/3-ways-ai-agents-already-operate-in-your-browser/",
-      "points": 0,
-      "published": "2026-10-29T10:00:10-04:00"
-    },
-    {
-      "id": "bc-5083654332409356587",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA warns of Fragnesia Linux flaw chained in PHP2Shell attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-fragnesia-linux-flaw-chained-in-php2shell-attacks/",
-      "points": 0,
-      "published": "2026-10-29T09:59:48-04:00"
-    },
-    {
-      "id": "bc-5188551081853229270",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Windows 11 KB5127936 update released with 41 changes and fixes",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5127936-update-released-with-41-changes-and-fixes/",
-      "points": 0,
-      "published": "2026-10-29T08:00:07-04:00"
     }
   ]
 }
