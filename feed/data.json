@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T22:11:19.905899+00:00",
+  "generated_at": "2026-10-30T03:23:21.564840+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,25 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-5516568690387691083",
+      "id": "bc-6542815955688792258",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenAI doubles ChatGPT Pro usage limits after backlash over planned 50% cut",
+      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-doubles-chatgpt-pro-usage-limits-after-backlash-over-planned-50-percent-cut/",
+      "points": 0,
+      "published": "2026-10-29T19:35:52-04:00"
+    },
+    {
+      "id": "bc-7607546770778877296",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Binance probes potential $5.8 billion crypto-theft hack",
+      "url": "https://www.bleepingcomputer.com/news/security/binance-probes-potential-58-billion-crypto-theft-hack/",
+      "points": 0,
+      "published": "2026-10-29T18:45:23-04:00"
+    },
+    {
+      "id": "bc-486134589063394855",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hugging Face malware campaign returns to hijack GPUs for crypto mining",
@@ -353,7 +371,7 @@
       "published": "2026-10-29T18:09:24-04:00"
     },
     {
-      "id": "bc-5369874019466334011",
+      "id": "bc-6929224360531305717",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan Airlines suffers third-party data breach exposing passenger info",
@@ -362,7 +380,7 @@
       "published": "2026-10-29T18:08:04-04:00"
     },
     {
-      "id": "bc-2108049064669551502",
+      "id": "bc-2902094840868559039",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Polymarket halts trading after crypto-draining script breach, $2.5M traced",
@@ -371,7 +389,7 @@
       "published": "2026-10-29T17:47:25-04:00"
     },
     {
-      "id": "bc-3512352548275566097",
+      "id": "bc-338879983796482780",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake crypto app on Apple App Store linked to $23K wallet theft",
@@ -380,7 +398,7 @@
       "published": "2026-10-29T15:23:41-04:00"
     },
     {
-      "id": "bc-7363880162942229675",
+      "id": "bc-8540175095076160238",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit Cisco SD-WAN flaw to deploy custom KeyDrift malware",
@@ -389,7 +407,7 @@
       "published": "2026-10-29T14:38:26-04:00"
     },
     {
-      "id": "bc-9033703970947902176",
+      "id": "bc-7733149634148954576",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chrome extensions with 13.4 million installs caught hijacking searches",
@@ -398,7 +416,7 @@
       "published": "2026-10-29T12:10:31-04:00"
     },
     {
-      "id": "bc-7226111880561901778",
+      "id": "bc-8569288397999725821",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes Remote Desktop failures caused by recent Windows updates",
@@ -407,7 +425,7 @@
       "published": "2026-10-29T10:35:40-04:00"
     },
     {
-      "id": "bc-6720987376640932750",
+      "id": "bc-2183954108862304032",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "3 Ways AI Agents Already Operate in Your Browser",
@@ -416,7 +434,7 @@
       "published": "2026-10-29T10:00:10-04:00"
     },
     {
-      "id": "bc-7818482856922757310",
+      "id": "bc-8333948989517451228",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA warns of Fragnesia Linux flaw chained in PHP2Shell attacks",
@@ -425,7 +443,7 @@
       "published": "2026-10-29T09:59:48-04:00"
     },
     {
-      "id": "bc-4938285067144169805",
+      "id": "bc-2453745329243420352",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5127936 update released with 41 changes and fixes",
@@ -434,7 +452,7 @@
       "published": "2026-10-29T08:00:07-04:00"
     },
     {
-      "id": "bc-3326230345652771712",
+      "id": "bc-6746255876877861318",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Cisco firewall zero-day exploited to crash SSL VPN devices",
@@ -443,7 +461,7 @@
       "published": "2026-10-29T07:10:13-04:00"
     },
     {
-      "id": "bc-8622097345655811573",
+      "id": "bc-852812700913739312",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police seize Virtualine bulletproof service tied to ransowmare, cybercrime",
@@ -452,31 +470,13 @@
       "published": "2026-10-28T16:47:22-04:00"
     },
     {
-      "id": "bc-5797082781430228931",
+      "id": "bc-6724825404786631070",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Discord to let search engines index public server messages",
       "url": "https://www.bleepingcomputer.com/news/security/discord-to-let-search-engines-index-public-server-messages/",
       "points": 0,
       "published": "2026-10-28T14:44:16-04:00"
-    },
-    {
-      "id": "bc-5297063369473202517",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Sony ISP subsidiary data breach exposes 2.5 million customer records",
-      "url": "https://www.bleepingcomputer.com/news/security/sony-isp-subsidiary-data-breach-exposes-25-million-customer-records/",
-      "points": 0,
-      "published": "2026-10-28T12:45:47-04:00"
-    },
-    {
-      "id": "bc-7734962565550856311",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Volt Typhoon hides zero-day attacks using 'Silent Train' framework",
-      "url": "https://www.bleepingcomputer.com/news/security/volt-typhoon-hides-zero-day-attacks-using-silent-train-framework/",
-      "points": 0,
-      "published": "2026-10-28T12:00:00-04:00"
     }
   ]
 }
