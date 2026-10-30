@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T03:23:21.564840+00:00",
+  "generated_at": "2026-10-30T11:49:31.061604+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6542815955688792258",
+      "id": "bc-1566911941446654221",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft finally fixes VPN issues caused by September updates",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-finally-fixes-vpn-issues-caused-by-september-updates/",
+      "points": 0,
+      "published": "2026-10-30T07:20:26-04:00"
+    },
+    {
+      "id": "bc-2124861880712628193",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Drupal warns of critical Commerce Core flaw exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/drupal-warns-of-critical-commerce-core-flaw-exploited-in-attacks/",
+      "points": 0,
+      "published": "2026-10-30T06:16:07-04:00"
+    },
+    {
+      "id": "bc-232108712237484239",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Binance links $6.3 billion crypto theft to compromised DevOps laptop",
+      "url": "https://www.bleepingcomputer.com/news/security/binance-links-63-billion-crypto-theft-to-compromised-devops-laptop/",
+      "points": 0,
+      "published": "2026-10-30T05:18:13-04:00"
+    },
+    {
+      "id": "bc-2263794077439776512",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI doubles ChatGPT Pro usage limits after backlash over planned 50% cut",
@@ -353,7 +380,7 @@
       "published": "2026-10-29T19:35:52-04:00"
     },
     {
-      "id": "bc-7607546770778877296",
+      "id": "bc-435630549338748136",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance probes potential $5.8 billion crypto-theft hack",
@@ -362,7 +389,7 @@
       "published": "2026-10-29T18:45:23-04:00"
     },
     {
-      "id": "bc-486134589063394855",
+      "id": "bc-4095881476851311148",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hugging Face malware campaign returns to hijack GPUs for crypto mining",
@@ -371,7 +398,7 @@
       "published": "2026-10-29T18:09:24-04:00"
     },
     {
-      "id": "bc-6929224360531305717",
+      "id": "bc-1902167174207881446",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan Airlines suffers third-party data breach exposing passenger info",
@@ -380,7 +407,7 @@
       "published": "2026-10-29T18:08:04-04:00"
     },
     {
-      "id": "bc-2902094840868559039",
+      "id": "bc-8274196903820310276",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Polymarket halts trading after crypto-draining script breach, $2.5M traced",
@@ -389,7 +416,7 @@
       "published": "2026-10-29T17:47:25-04:00"
     },
     {
-      "id": "bc-338879983796482780",
+      "id": "bc-4360102239633246771",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake crypto app on Apple App Store linked to $23K wallet theft",
@@ -398,7 +425,7 @@
       "published": "2026-10-29T15:23:41-04:00"
     },
     {
-      "id": "bc-8540175095076160238",
+      "id": "bc-8518464473976326204",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit Cisco SD-WAN flaw to deploy custom KeyDrift malware",
@@ -407,7 +434,7 @@
       "published": "2026-10-29T14:38:26-04:00"
     },
     {
-      "id": "bc-7733149634148954576",
+      "id": "bc-753643786898757457",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chrome extensions with 13.4 million installs caught hijacking searches",
@@ -416,7 +443,7 @@
       "published": "2026-10-29T12:10:31-04:00"
     },
     {
-      "id": "bc-8569288397999725821",
+      "id": "bc-4076193682934621178",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes Remote Desktop failures caused by recent Windows updates",
@@ -425,7 +452,7 @@
       "published": "2026-10-29T10:35:40-04:00"
     },
     {
-      "id": "bc-2183954108862304032",
+      "id": "bc-8953057412699750198",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "3 Ways AI Agents Already Operate in Your Browser",
@@ -434,7 +461,7 @@
       "published": "2026-10-29T10:00:10-04:00"
     },
     {
-      "id": "bc-8333948989517451228",
+      "id": "bc-5083654332409356587",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA warns of Fragnesia Linux flaw chained in PHP2Shell attacks",
@@ -443,40 +470,13 @@
       "published": "2026-10-29T09:59:48-04:00"
     },
     {
-      "id": "bc-2453745329243420352",
+      "id": "bc-5188551081853229270",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5127936 update released with 41 changes and fixes",
       "url": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5127936-update-released-with-41-changes-and-fixes/",
       "points": 0,
       "published": "2026-10-29T08:00:07-04:00"
-    },
-    {
-      "id": "bc-6746255876877861318",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "New Cisco firewall zero-day exploited to crash SSL VPN devices",
-      "url": "https://www.bleepingcomputer.com/news/security/cisco-warns-of-firewall-zero-day-exploited-to-crash-ssl-vpn-devices/",
-      "points": 0,
-      "published": "2026-10-29T07:10:13-04:00"
-    },
-    {
-      "id": "bc-852812700913739312",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Police seize Virtualine bulletproof service tied to ransowmare, cybercrime",
-      "url": "https://www.bleepingcomputer.com/news/security/police-seize-virtualine-bulletproof-service-tied-to-ransowmare-cybercrime/",
-      "points": 0,
-      "published": "2026-10-28T16:47:22-04:00"
-    },
-    {
-      "id": "bc-6724825404786631070",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Discord to let search engines index public server messages",
-      "url": "https://www.bleepingcomputer.com/news/security/discord-to-let-search-engines-index-public-server-messages/",
-      "points": 0,
-      "published": "2026-10-28T14:44:16-04:00"
     }
   ]
 }
