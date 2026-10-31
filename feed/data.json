@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T16:28:37.079024+00:00",
+  "generated_at": "2026-10-31T20:46:35.592655+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,16 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-569692256132571693",
+      "id": "bc-8012237433011666056",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Northflank security breach leads to abuse of customers' AI API keys",
+      "url": "https://www.bleepingcomputer.com/news/security/northflank-security-breach-leads-to-abuse-of-customers-ai-api-keys/",
+      "points": 0,
+      "published": "2026-10-31T14:01:12-04:00"
+    },
+    {
+      "id": "bc-1402146822874657493",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Android SMS of Death exploit can remotely crash unpatched phones",
@@ -353,7 +362,7 @@
       "published": "2026-10-31T11:35:11-04:00"
     },
     {
-      "id": "bc-5915006108830012802",
+      "id": "bc-2418034591040857772",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Reddit to lock content behind logins to fight scrapers",
@@ -362,7 +371,7 @@
       "published": "2026-10-31T10:05:15-04:00"
     },
     {
-      "id": "bc-5477650302101250914",
+      "id": "bc-5151635624741792399",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "From Beginner to Bug Hunter: Learning Cybersecurity in the AI Era.",
@@ -371,7 +380,7 @@
       "published": "2026-10-31T09:10:19-04:00"
     },
     {
-      "id": "bc-2077587405519937612",
+      "id": "bc-6411150121663428592",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chainalysis discloses data breach from \"offensive agentic techniques\"",
@@ -380,7 +389,7 @@
       "published": "2026-10-31T08:50:09-04:00"
     },
     {
-      "id": "bc-5816892568614204871",
+      "id": "bc-6101893439710588185",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Linux kernel flaw allows remote root attacks on MPTCP servers",
@@ -389,7 +398,7 @@
       "published": "2026-10-30T17:09:46-04:00"
     },
     {
-      "id": "bc-6749555557688738202",
+      "id": "bc-1111613663599884593",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Trezor warns of suspected crypto-theft implant in hardware wallet",
@@ -398,7 +407,7 @@
       "published": "2026-10-30T11:58:20-04:00"
     },
     {
-      "id": "bc-998998591353137544",
+      "id": "bc-7898245776448293448",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Malicious Claude Code extension on Cursor planted SSH backdoors",
@@ -407,7 +416,7 @@
       "published": "2026-10-30T10:36:54-04:00"
     },
     {
-      "id": "bc-7888817473602000509",
+      "id": "bc-7044613915741463242",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": " SS7 and Diameter Attacks: How Signaling Flaws Expose Your Phone",
@@ -416,7 +425,7 @@
       "published": "2026-10-30T10:00:10-04:00"
     },
     {
-      "id": "bc-6114837871449691284",
+      "id": "bc-5845675731643429269",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA says max severity GitLab flaw now exploited in the wild",
@@ -425,7 +434,7 @@
       "published": "2026-10-30T09:00:32-04:00"
     },
     {
-      "id": "bc-8582602198901223994",
+      "id": "bc-7213343830671512006",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft finally fixes VPN issues caused by September updates",
@@ -434,7 +443,7 @@
       "published": "2026-10-30T07:20:26-04:00"
     },
     {
-      "id": "bc-2968306661117669951",
+      "id": "bc-27599233028358044",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal warns of critical Commerce Core flaw exploited in attacks",
@@ -443,7 +452,7 @@
       "published": "2026-10-30T06:16:07-04:00"
     },
     {
-      "id": "bc-4435096904128626616",
+      "id": "bc-5064207295298975058",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance links $6.3 billion crypto theft to compromised DevOps laptop",
@@ -452,7 +461,7 @@
       "published": "2026-10-30T05:18:13-04:00"
     },
     {
-      "id": "bc-5976418171008903092",
+      "id": "bc-2029609514458411948",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI doubles ChatGPT Pro usage limits after backlash over planned 50% cut",
@@ -461,22 +470,13 @@
       "published": "2026-10-29T19:35:52-04:00"
     },
     {
-      "id": "bc-6164320902465387670",
+      "id": "bc-1885996860518170942",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance probes potential $5.8 billion crypto-theft hack",
       "url": "https://www.bleepingcomputer.com/news/security/binance-probes-potential-58-billion-crypto-theft-hack/",
       "points": 0,
       "published": "2026-10-29T18:45:23-04:00"
-    },
-    {
-      "id": "bc-3081534313520861687",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hugging Face malware campaign returns to hijack GPUs for crypto mining",
-      "url": "https://www.bleepingcomputer.com/news/security/hugging-face-malware-campaign-returns-to-hijack-gpus-for-crypto-mining/",
-      "points": 0,
-      "published": "2026-10-29T18:09:24-04:00"
     }
   ]
 }
