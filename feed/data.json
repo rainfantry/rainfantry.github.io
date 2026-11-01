@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T12:15:18.061930+00:00",
+  "generated_at": "2026-11-01T21:27:54.547060+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8638756897988914404",
+      "id": "bc-1412430907491879599",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "FBI links $6.3 billion Binance crypto heist to North Korean hackers",
+      "url": "https://www.bleepingcomputer.com/news/security/fbi-links-63-billion-binance-crypto-heist-to-north-korean-hackers/",
+      "points": 0,
+      "published": "2026-11-01T14:57:53-05:00"
+    },
+    {
+      "id": "bc-6931508797407612675",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Alpine Linux rebuilds GitLab after attempted RCE attack",
+      "url": "https://www.bleepingcomputer.com/news/security/alpine-linux-rebuilds-gitlab-after-attempted-rce-attack/",
+      "points": 0,
+      "published": "2026-11-01T10:11:21-05:00"
+    },
+    {
+      "id": "bc-8098377109021818602",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenAI says it's doubling Pro usage limits and bringing Work features to Chat",
+      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-says-its-doubling-pro-usage-limits-and-bringing-work-features-to-chat/",
+      "points": 0,
+      "published": "2026-11-01T08:53:11-05:00"
+    },
+    {
+      "id": "bc-3913565836162925576",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Northflank security breach leads to abuse of customers' AI API keys",
@@ -353,7 +380,7 @@
       "published": "2026-10-31T14:01:12-04:00"
     },
     {
-      "id": "bc-3937432336671072700",
+      "id": "bc-63347086634972978",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Android SMS of Death exploit can remotely crash unpatched phones",
@@ -362,7 +389,7 @@
       "published": "2026-10-31T11:35:11-04:00"
     },
     {
-      "id": "bc-1514514079306155036",
+      "id": "bc-7380891844051089121",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Reddit to lock content behind logins to fight scrapers",
@@ -371,7 +398,7 @@
       "published": "2026-10-31T10:05:15-04:00"
     },
     {
-      "id": "bc-1085825609033856074",
+      "id": "bc-7256144664663042731",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "From Beginner to Bug Hunter: Learning Cybersecurity in the AI Era.",
@@ -380,7 +407,7 @@
       "published": "2026-10-31T09:10:19-04:00"
     },
     {
-      "id": "bc-2424337908853885247",
+      "id": "bc-3694751324340279630",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chainalysis discloses data breach from \"offensive agentic techniques\"",
@@ -389,7 +416,7 @@
       "published": "2026-10-31T08:50:09-04:00"
     },
     {
-      "id": "bc-272658683216794049",
+      "id": "bc-5705918273492248250",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Linux kernel flaw allows remote root attacks on MPTCP servers",
@@ -398,7 +425,7 @@
       "published": "2026-10-30T17:09:46-04:00"
     },
     {
-      "id": "bc-7317868782513054342",
+      "id": "bc-4404382024967995790",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Trezor warns of suspected crypto-theft implant in hardware wallet",
@@ -407,7 +434,7 @@
       "published": "2026-10-30T11:58:20-04:00"
     },
     {
-      "id": "bc-4880509811877997034",
+      "id": "bc-3146699408868003378",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Malicious Claude Code extension on Cursor planted SSH backdoors",
@@ -416,7 +443,7 @@
       "published": "2026-10-30T10:36:54-04:00"
     },
     {
-      "id": "bc-8710140379289407600",
+      "id": "bc-1209527983824276453",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": " SS7 and Diameter Attacks: How Signaling Flaws Expose Your Phone",
@@ -425,7 +452,7 @@
       "published": "2026-10-30T10:00:10-04:00"
     },
     {
-      "id": "bc-98840854250862334",
+      "id": "bc-5544087418162802515",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA says max severity GitLab flaw now exploited in the wild",
@@ -434,7 +461,7 @@
       "published": "2026-10-30T09:00:32-04:00"
     },
     {
-      "id": "bc-6929584158437096926",
+      "id": "bc-7002575791387459831",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft finally fixes VPN issues caused by September updates",
@@ -443,40 +470,13 @@
       "published": "2026-10-30T07:20:26-04:00"
     },
     {
-      "id": "bc-5276021653117639208",
+      "id": "bc-7330036338488361815",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal warns of critical Commerce Core flaw exploited in attacks",
       "url": "https://www.bleepingcomputer.com/news/security/drupal-warns-of-critical-commerce-core-flaw-exploited-in-attacks/",
       "points": 0,
       "published": "2026-10-30T06:16:07-04:00"
-    },
-    {
-      "id": "bc-8949765914633402077",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Binance links $6.3 billion crypto theft to compromised DevOps laptop",
-      "url": "https://www.bleepingcomputer.com/news/security/binance-links-63-billion-crypto-theft-to-compromised-devops-laptop/",
-      "points": 0,
-      "published": "2026-10-30T05:18:13-04:00"
-    },
-    {
-      "id": "bc-799719816485031022",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "OpenAI doubles ChatGPT Pro usage limits after backlash over planned 50% cut",
-      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-doubles-chatgpt-pro-usage-limits-after-backlash-over-planned-50-percent-cut/",
-      "points": 0,
-      "published": "2026-10-29T19:35:52-04:00"
-    },
-    {
-      "id": "bc-3518196767802988507",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Binance probes potential $5.8 billion crypto-theft hack",
-      "url": "https://www.bleepingcomputer.com/news/security/binance-probes-potential-58-billion-crypto-theft-hack/",
-      "points": 0,
-      "published": "2026-10-29T18:45:23-04:00"
     }
   ]
 }
