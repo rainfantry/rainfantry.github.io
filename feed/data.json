@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T03:02:49.999125+00:00",
+  "generated_at": "2026-11-01T12:15:18.061930+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-2188396541232273612",
+      "id": "bc-8638756897988914404",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Northflank security breach leads to abuse of customers' AI API keys",
@@ -353,7 +353,7 @@
       "published": "2026-10-31T14:01:12-04:00"
     },
     {
-      "id": "bc-6505450005559225380",
+      "id": "bc-3937432336671072700",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Android SMS of Death exploit can remotely crash unpatched phones",
@@ -362,7 +362,7 @@
       "published": "2026-10-31T11:35:11-04:00"
     },
     {
-      "id": "bc-8155224381621867656",
+      "id": "bc-1514514079306155036",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Reddit to lock content behind logins to fight scrapers",
@@ -371,7 +371,7 @@
       "published": "2026-10-31T10:05:15-04:00"
     },
     {
-      "id": "bc-9203738690796028921",
+      "id": "bc-1085825609033856074",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "From Beginner to Bug Hunter: Learning Cybersecurity in the AI Era.",
@@ -380,7 +380,7 @@
       "published": "2026-10-31T09:10:19-04:00"
     },
     {
-      "id": "bc-3638408756830517886",
+      "id": "bc-2424337908853885247",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chainalysis discloses data breach from \"offensive agentic techniques\"",
@@ -389,7 +389,7 @@
       "published": "2026-10-31T08:50:09-04:00"
     },
     {
-      "id": "bc-2489914873332920108",
+      "id": "bc-272658683216794049",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Linux kernel flaw allows remote root attacks on MPTCP servers",
@@ -398,7 +398,7 @@
       "published": "2026-10-30T17:09:46-04:00"
     },
     {
-      "id": "bc-3734469623540022026",
+      "id": "bc-7317868782513054342",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Trezor warns of suspected crypto-theft implant in hardware wallet",
@@ -407,7 +407,7 @@
       "published": "2026-10-30T11:58:20-04:00"
     },
     {
-      "id": "bc-1266841038249582638",
+      "id": "bc-4880509811877997034",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Malicious Claude Code extension on Cursor planted SSH backdoors",
@@ -416,7 +416,7 @@
       "published": "2026-10-30T10:36:54-04:00"
     },
     {
-      "id": "bc-8097701696928155392",
+      "id": "bc-8710140379289407600",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": " SS7 and Diameter Attacks: How Signaling Flaws Expose Your Phone",
@@ -425,7 +425,7 @@
       "published": "2026-10-30T10:00:10-04:00"
     },
     {
-      "id": "bc-9071074481486612377",
+      "id": "bc-98840854250862334",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA says max severity GitLab flaw now exploited in the wild",
@@ -434,7 +434,7 @@
       "published": "2026-10-30T09:00:32-04:00"
     },
     {
-      "id": "bc-9202319259987778660",
+      "id": "bc-6929584158437096926",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft finally fixes VPN issues caused by September updates",
@@ -443,7 +443,7 @@
       "published": "2026-10-30T07:20:26-04:00"
     },
     {
-      "id": "bc-8750997419231435512",
+      "id": "bc-5276021653117639208",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal warns of critical Commerce Core flaw exploited in attacks",
@@ -452,7 +452,7 @@
       "published": "2026-10-30T06:16:07-04:00"
     },
     {
-      "id": "bc-3994226496787592009",
+      "id": "bc-8949765914633402077",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance links $6.3 billion crypto theft to compromised DevOps laptop",
@@ -461,7 +461,7 @@
       "published": "2026-10-30T05:18:13-04:00"
     },
     {
-      "id": "bc-7121953285354309377",
+      "id": "bc-799719816485031022",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI doubles ChatGPT Pro usage limits after backlash over planned 50% cut",
@@ -470,7 +470,7 @@
       "published": "2026-10-29T19:35:52-04:00"
     },
     {
-      "id": "bc-5764885469462297115",
+      "id": "bc-3518196767802988507",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance probes potential $5.8 billion crypto-theft hack",
