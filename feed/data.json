@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T03:13:56.437835+00:00",
+  "generated_at": "2026-11-02T14:06:38.807362+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-218093570614396741",
+      "id": "bc-1987654465316036188",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Over 1,000 GitLab servers vulnerable to ongoing RCE attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/over-1-000-gitlab-servers-vulnerable-to-code-execution-attacks/",
+      "points": 0,
+      "published": "2026-11-02T07:47:00-05:00"
+    },
+    {
+      "id": "bc-1411359347643203669",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Synology warns of C3RB3R ransomware attacks targeting NAS devices",
+      "url": "https://www.bleepingcomputer.com/news/security/synology-warns-customers-of-ongoing-c3rb3r-ransomware-attacks/",
+      "points": 0,
+      "published": "2026-11-02T06:28:42-05:00"
+    },
+    {
+      "id": "bc-5393467474999291886",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Ivanti patches two more Connect Secure zero-days chained in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/ivanti-patches-two-more-connect-secure-zero-days-chained-in-attacks/",
+      "points": 0,
+      "published": "2026-11-02T04:33:26-05:00"
+    },
+    {
+      "id": "bc-4557112089221290692",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI links $6.3 billion Binance crypto heist to North Korean hackers",
@@ -353,7 +380,7 @@
       "published": "2026-11-01T14:57:53-05:00"
     },
     {
-      "id": "bc-2448844184260438803",
+      "id": "bc-3137276112213061135",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Alpine Linux rebuilds GitLab after attempted RCE attack",
@@ -362,7 +389,7 @@
       "published": "2026-11-01T10:11:21-05:00"
     },
     {
-      "id": "bc-8787155222730477856",
+      "id": "bc-8765802463298731669",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI says it's doubling Pro usage limits and bringing Work features to Chat",
@@ -371,7 +398,7 @@
       "published": "2026-11-01T08:53:11-05:00"
     },
     {
-      "id": "bc-3266016694397852857",
+      "id": "bc-2503705453415100912",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Northflank security breach leads to abuse of customers' AI API keys",
@@ -380,7 +407,7 @@
       "published": "2026-10-31T14:01:12-04:00"
     },
     {
-      "id": "bc-8775721866657527225",
+      "id": "bc-1397080648847328288",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Android SMS of Death exploit can remotely crash unpatched phones",
@@ -389,7 +416,7 @@
       "published": "2026-10-31T11:35:11-04:00"
     },
     {
-      "id": "bc-7285552652950248889",
+      "id": "bc-3554757402193630007",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Reddit to lock content behind logins to fight scrapers",
@@ -398,7 +425,7 @@
       "published": "2026-10-31T10:05:15-04:00"
     },
     {
-      "id": "bc-6708936005208603104",
+      "id": "bc-3443002246748764707",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "From Beginner to Bug Hunter: Learning Cybersecurity in the AI Era.",
@@ -407,7 +434,7 @@
       "published": "2026-10-31T09:10:19-04:00"
     },
     {
-      "id": "bc-8215614297785555788",
+      "id": "bc-5086811538409454153",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chainalysis discloses data breach from \"offensive agentic techniques\"",
@@ -416,7 +443,7 @@
       "published": "2026-10-31T08:50:09-04:00"
     },
     {
-      "id": "bc-8086275185574315905",
+      "id": "bc-2145203834134010546",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Linux kernel flaw allows remote root attacks on MPTCP servers",
@@ -425,7 +452,7 @@
       "published": "2026-10-30T17:09:46-04:00"
     },
     {
-      "id": "bc-6803613054138326798",
+      "id": "bc-8008568056893583567",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Trezor warns of suspected crypto-theft implant in hardware wallet",
@@ -434,7 +461,7 @@
       "published": "2026-10-30T11:58:20-04:00"
     },
     {
-      "id": "bc-3957763481917615767",
+      "id": "bc-3476827968499708524",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Malicious Claude Code extension on Cursor planted SSH backdoors",
@@ -443,40 +470,13 @@
       "published": "2026-10-30T10:36:54-04:00"
     },
     {
-      "id": "bc-4695711843778457748",
+      "id": "bc-5812522574945299018",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": " SS7 and Diameter Attacks: How Signaling Flaws Expose Your Phone",
       "url": "https://www.bleepingcomputer.com/news/security/ss7-and-diameter-attacks-how-signaling-flaws-expose-your-phone/",
       "points": 0,
       "published": "2026-10-30T10:00:10-04:00"
-    },
-    {
-      "id": "bc-1033564335153229023",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA says max severity GitLab flaw now exploited in the wild",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-now-exploiting-max-severity-gitlab-flaw-in-attacks/",
-      "points": 0,
-      "published": "2026-10-30T09:00:32-04:00"
-    },
-    {
-      "id": "bc-4356983259109663898",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft finally fixes VPN issues caused by September updates",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-finally-fixes-vpn-issues-caused-by-september-updates/",
-      "points": 0,
-      "published": "2026-10-30T07:20:26-04:00"
-    },
-    {
-      "id": "bc-4065430140401496440",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Drupal warns of critical Commerce Core flaw exploited in attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/drupal-warns-of-critical-commerce-core-flaw-exploited-in-attacks/",
-      "points": 0,
-      "published": "2026-10-30T06:16:07-04:00"
     }
   ]
 }
