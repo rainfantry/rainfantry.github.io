@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T14:06:38.807362+00:00",
+  "generated_at": "2026-11-03T00:09:55.515836+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,70 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1987654465316036188",
+      "id": "bc-8571906501307245380",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Chinese hackers use ARTEX AI in automated attacks against 200 orgs",
+      "url": "https://www.bleepingcomputer.com/news/security/chinese-hackers-use-artex-ai-in-automated-attacks-against-200-orgs/",
+      "points": 0,
+      "published": "2026-11-02T16:40:14-05:00"
+    },
+    {
+      "id": "bc-2665272296746612365",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Fintech platform Sageworks taken offline after suspected cyberattack",
+      "url": "https://www.bleepingcomputer.com/news/security/fintech-platform-sageworks-taken-offline-after-suspected-cyberattack/",
+      "points": 0,
+      "published": "2026-11-02T14:00:45-05:00"
+    },
+    {
+      "id": "bc-8126934310936956118",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Google disrupts million-device XCPE Android malware botnet, bans TV box maker",
+      "url": "https://www.bleepingcomputer.com/news/security/google-disrupts-million-device-xcpe-android-malware-botnet-bans-tv-box-maker/",
+      "points": 0,
+      "published": "2026-11-02T13:16:34-05:00"
+    },
+    {
+      "id": "bc-8950072212905071719",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "BTCPay Server warns of hot wallet crypto thefts on outdated instances",
+      "url": "https://www.bleepingcomputer.com/news/security/btcpay-server-warns-of-hot-wallet-thefts-targeting-outdated-instances/",
+      "points": 0,
+      "published": "2026-11-02T10:03:07-05:00"
+    },
+    {
+      "id": "bc-8962009082619382715",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Your Mobile Carrier Stores Your Call Logs for Years",
+      "url": "https://www.bleepingcomputer.com/news/security/your-mobile-carrier-stores-your-call-logs-for-years/",
+      "points": 0,
+      "published": "2026-11-02T10:01:11-05:00"
+    },
+    {
+      "id": "bc-3709364523211756260",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers disrupt refrigeration systems at European supermarkets",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-disrupt-refrigeration-systems-at-european-supermarkets/",
+      "points": 0,
+      "published": "2026-11-02T09:28:39-05:00"
+    },
+    {
+      "id": "bc-6932833495276401151",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft fixes Smart App Control broken by October Windows update",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-smart-app-control-broken-by-october-windows-update/",
+      "points": 0,
+      "published": "2026-11-02T08:57:29-05:00"
+    },
+    {
+      "id": "bc-818778028182133013",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Over 1,000 GitLab servers vulnerable to ongoing RCE attacks",
@@ -353,7 +416,7 @@
       "published": "2026-11-02T07:47:00-05:00"
     },
     {
-      "id": "bc-1411359347643203669",
+      "id": "bc-1680226602906848887",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Synology warns of C3RB3R ransomware attacks targeting NAS devices",
@@ -362,7 +425,7 @@
       "published": "2026-11-02T06:28:42-05:00"
     },
     {
-      "id": "bc-5393467474999291886",
+      "id": "bc-8353524006307596257",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ivanti patches two more Connect Secure zero-days chained in attacks",
@@ -371,7 +434,7 @@
       "published": "2026-11-02T04:33:26-05:00"
     },
     {
-      "id": "bc-4557112089221290692",
+      "id": "bc-2192271125999053748",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI links $6.3 billion Binance crypto heist to North Korean hackers",
@@ -380,7 +443,7 @@
       "published": "2026-11-01T14:57:53-05:00"
     },
     {
-      "id": "bc-3137276112213061135",
+      "id": "bc-7971685248943919987",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Alpine Linux rebuilds GitLab after attempted RCE attack",
@@ -389,7 +452,7 @@
       "published": "2026-11-01T10:11:21-05:00"
     },
     {
-      "id": "bc-8765802463298731669",
+      "id": "bc-4472488407430190545",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI says it's doubling Pro usage limits and bringing Work features to Chat",
@@ -398,7 +461,7 @@
       "published": "2026-11-01T08:53:11-05:00"
     },
     {
-      "id": "bc-2503705453415100912",
+      "id": "bc-2763056014447813806",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Northflank security breach leads to abuse of customers' AI API keys",
@@ -407,76 +470,13 @@
       "published": "2026-10-31T14:01:12-04:00"
     },
     {
-      "id": "bc-1397080648847328288",
+      "id": "bc-1662772953854485012",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Android SMS of Death exploit can remotely crash unpatched phones",
       "url": "https://www.bleepingcomputer.com/news/security/new-android-sms-of-death-exploit-can-remotely-crash-unpatched-phones/",
       "points": 0,
       "published": "2026-10-31T11:35:11-04:00"
-    },
-    {
-      "id": "bc-3554757402193630007",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Reddit to lock content behind logins to fight scrapers",
-      "url": "https://www.bleepingcomputer.com/news/security/reddit-to-lock-content-behind-logins-to-fight-scrapers/",
-      "points": 0,
-      "published": "2026-10-31T10:05:15-04:00"
-    },
-    {
-      "id": "bc-3443002246748764707",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "From Beginner to Bug Hunter: Learning Cybersecurity in the AI Era.",
-      "url": "https://www.bleepingcomputer.com/news/security/from-beginner-to-bug-hunter-learning-cybersecurity-in-the-ai-era/",
-      "points": 0,
-      "published": "2026-10-31T09:10:19-04:00"
-    },
-    {
-      "id": "bc-5086811538409454153",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Chainalysis discloses data breach from \"offensive agentic techniques\"",
-      "url": "https://www.bleepingcomputer.com/news/security/chainalysis-discloses-data-breach-from-offensive-agentic-techniques/",
-      "points": 0,
-      "published": "2026-10-31T08:50:09-04:00"
-    },
-    {
-      "id": "bc-2145203834134010546",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Critical Linux kernel flaw allows remote root attacks on MPTCP servers",
-      "url": "https://www.bleepingcomputer.com/news/security/critical-linux-kernel-flaw-allows-remote-root-attacks-on-mptcp-servers/",
-      "points": 0,
-      "published": "2026-10-30T17:09:46-04:00"
-    },
-    {
-      "id": "bc-8008568056893583567",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Trezor warns of suspected crypto-theft implant in hardware wallet",
-      "url": "https://www.bleepingcomputer.com/news/security/trezor-warns-of-suspected-crypto-theft-implant-in-hardware-wallet/",
-      "points": 0,
-      "published": "2026-10-30T11:58:20-04:00"
-    },
-    {
-      "id": "bc-3476827968499708524",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Malicious Claude Code extension on Cursor planted SSH backdoors",
-      "url": "https://www.bleepingcomputer.com/news/security/malicious-claude-code-extension-on-cursor-planted-ssh-backdoors/",
-      "points": 0,
-      "published": "2026-10-30T10:36:54-04:00"
-    },
-    {
-      "id": "bc-5812522574945299018",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": " SS7 and Diameter Attacks: How Signaling Flaws Expose Your Phone",
-      "url": "https://www.bleepingcomputer.com/news/security/ss7-and-diameter-attacks-how-signaling-flaws-expose-your-phone/",
-      "points": 0,
-      "published": "2026-10-30T10:00:10-04:00"
     }
   ]
 }
