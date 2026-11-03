@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T00:09:55.515836+00:00",
+  "generated_at": "2026-11-03T13:12:52.509145+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,25 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8571906501307245380",
+      "id": "bc-2322982946601264851",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Google adds new $250,000 Cloud VRP reward for Root-in-Cloud bugs",
+      "url": "https://www.bleepingcomputer.com/news/google/google-adds-new-250-000-cloud-vrp-reward-for-root-in-cloud-bugs/",
+      "points": 0,
+      "published": "2026-11-03T07:05:52-05:00"
+    },
+    {
+      "id": "bc-6459798301738356223",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Harvard University data breach exposed info of 851,000 accounts",
+      "url": "https://www.bleepingcomputer.com/news/security/harvard-university-data-breach-exposed-info-of-851-000-accounts/",
+      "points": 0,
+      "published": "2026-11-03T05:53:25-05:00"
+    },
+    {
+      "id": "bc-1180956803800894936",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chinese hackers use ARTEX AI in automated attacks against 200 orgs",
@@ -353,7 +371,7 @@
       "published": "2026-11-02T16:40:14-05:00"
     },
     {
-      "id": "bc-2665272296746612365",
+      "id": "bc-1341824344009458170",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fintech platform Sageworks taken offline after suspected cyberattack",
@@ -362,7 +380,7 @@
       "published": "2026-11-02T14:00:45-05:00"
     },
     {
-      "id": "bc-8126934310936956118",
+      "id": "bc-7498467072316596455",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google disrupts million-device XCPE Android malware botnet, bans TV box maker",
@@ -371,7 +389,7 @@
       "published": "2026-11-02T13:16:34-05:00"
     },
     {
-      "id": "bc-8950072212905071719",
+      "id": "bc-8207227993874949916",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BTCPay Server warns of hot wallet crypto thefts on outdated instances",
@@ -380,7 +398,7 @@
       "published": "2026-11-02T10:03:07-05:00"
     },
     {
-      "id": "bc-8962009082619382715",
+      "id": "bc-2092403853938934443",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Your Mobile Carrier Stores Your Call Logs for Years",
@@ -389,7 +407,7 @@
       "published": "2026-11-02T10:01:11-05:00"
     },
     {
-      "id": "bc-3709364523211756260",
+      "id": "bc-1096823972846355723",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers disrupt refrigeration systems at European supermarkets",
@@ -398,7 +416,7 @@
       "published": "2026-11-02T09:28:39-05:00"
     },
     {
-      "id": "bc-6932833495276401151",
+      "id": "bc-1915282933817820388",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes Smart App Control broken by October Windows update",
@@ -407,7 +425,7 @@
       "published": "2026-11-02T08:57:29-05:00"
     },
     {
-      "id": "bc-818778028182133013",
+      "id": "bc-3209648953022298511",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Over 1,000 GitLab servers vulnerable to ongoing RCE attacks",
@@ -416,7 +434,7 @@
       "published": "2026-11-02T07:47:00-05:00"
     },
     {
-      "id": "bc-1680226602906848887",
+      "id": "bc-1667022105199550642",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Synology warns of C3RB3R ransomware attacks targeting NAS devices",
@@ -425,7 +443,7 @@
       "published": "2026-11-02T06:28:42-05:00"
     },
     {
-      "id": "bc-8353524006307596257",
+      "id": "bc-885036672087917861",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ivanti patches two more Connect Secure zero-days chained in attacks",
@@ -434,7 +452,7 @@
       "published": "2026-11-02T04:33:26-05:00"
     },
     {
-      "id": "bc-2192271125999053748",
+      "id": "bc-4990532165401458216",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI links $6.3 billion Binance crypto heist to North Korean hackers",
@@ -443,7 +461,7 @@
       "published": "2026-11-01T14:57:53-05:00"
     },
     {
-      "id": "bc-7971685248943919987",
+      "id": "bc-4424237277931477444",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Alpine Linux rebuilds GitLab after attempted RCE attack",
@@ -452,31 +470,13 @@
       "published": "2026-11-01T10:11:21-05:00"
     },
     {
-      "id": "bc-4472488407430190545",
+      "id": "bc-9090596643922507947",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI says it's doubling Pro usage limits and bringing Work features to Chat",
       "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-says-its-doubling-pro-usage-limits-and-bringing-work-features-to-chat/",
       "points": 0,
       "published": "2026-11-01T08:53:11-05:00"
-    },
-    {
-      "id": "bc-2763056014447813806",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Northflank security breach leads to abuse of customers' AI API keys",
-      "url": "https://www.bleepingcomputer.com/news/security/northflank-security-breach-leads-to-abuse-of-customers-ai-api-keys/",
-      "points": 0,
-      "published": "2026-10-31T14:01:12-04:00"
-    },
-    {
-      "id": "bc-1662772953854485012",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "New Android SMS of Death exploit can remotely crash unpatched phones",
-      "url": "https://www.bleepingcomputer.com/news/security/new-android-sms-of-death-exploit-can-remotely-crash-unpatched-phones/",
-      "points": 0,
-      "published": "2026-10-31T11:35:11-04:00"
     }
   ]
 }
