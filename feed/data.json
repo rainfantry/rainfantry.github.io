@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T03:47:56.994975+00:00",
+  "generated_at": "2026-11-04T13:26:21.282337+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -299,15 +299,6 @@
       "published": "1990-10-03T04:00:00.000"
     },
     {
-      "id": "hn-50353072",
-      "source": "Hacker News",
-      "source_icon": "🔶",
-      "title": "Only 0.5% of 383,000 CVEs are ever exploited in real-world attacks",
-      "url": "https://www.microsoft.com/en-us/security/blog/2026/11/02/exploited-vulnerabilities-common-data-driven-analysis-real-world-attacks/",
-      "points": 15,
-      "published": "2026-11-03T15:17:02Z"
-    },
-    {
       "id": "hn-48609231",
       "source": "Hacker News",
       "source_icon": "🔶",
@@ -353,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-4244388448704347525",
+      "id": "bc-3923914408891134560",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "US charges two Canadians accused of hacking US universities",
+      "url": "https://www.bleepingcomputer.com/news/security/us-charges-two-canadians-accused-of-hacking-us-universities/",
+      "points": 0,
+      "published": "2026-11-04T08:13:20-05:00"
+    },
+    {
+      "id": "bc-636728774104911257",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA flags WordPress RCE flaw as actively exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-flags-wordpress-rce-flaw-as-actively-exploited-in-attacks/",
+      "points": 0,
+      "published": "2026-11-04T07:11:05-05:00"
+    },
+    {
+      "id": "bc-8936378019562752304",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers use n-day exploits in zero-click attacks on iOS, Android devices",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-use-n-day-exploits-in-zero-click-attacks-on-ios-android-devices/",
+      "points": 0,
+      "published": "2026-11-04T04:39:54-05:00"
+    },
+    {
+      "id": "bc-318993251737199046",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack cPGuard autoupdate to deploy backdoor, steal data",
@@ -362,7 +380,7 @@
       "published": "2026-11-03T17:18:50-05:00"
     },
     {
-      "id": "bc-8426505340433138091",
+      "id": "bc-7913617809774385312",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "WorkOS says attacker used ARTEX AI to breach internal sales app",
@@ -371,7 +389,7 @@
       "published": "2026-11-03T16:28:44-05:00"
     },
     {
-      "id": "bc-1825525387921546761",
+      "id": "bc-7727984155411740747",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance says fake job interview led to $6.3 billion crypto heist",
@@ -380,7 +398,7 @@
       "published": "2026-11-03T15:05:50-05:00"
     },
     {
-      "id": "bc-2302050418882648421",
+      "id": "bc-2378425995765042868",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google: LLMjacking attacks rack up $1 million in cloud AI charges",
@@ -389,7 +407,7 @@
       "published": "2026-11-03T13:51:04-05:00"
     },
     {
-      "id": "bc-1508838890192638249",
+      "id": "bc-2334003170042775333",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Barracuda warns of critical flaws allowing root access to devices",
@@ -398,7 +416,7 @@
       "published": "2026-11-03T10:06:16-05:00"
     },
     {
-      "id": "bc-373506731685827781",
+      "id": "bc-3603920806045637571",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Gartner Predicts SOCs Will Have 50% More Engineers Than Analysts by 2028",
@@ -407,7 +425,7 @@
       "published": "2026-11-03T10:00:10-05:00"
     },
     {
-      "id": "bc-4721888899264051970",
+      "id": "bc-7574497066737227289",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "UK school estate hit by 3AM ransomware in suspected AI-assisted attack",
@@ -416,7 +434,7 @@
       "published": "2026-11-03T09:00:00-05:00"
     },
     {
-      "id": "bc-3158451953200443700",
+      "id": "bc-112361971840696623",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police seizes over 100 servers in investment scam crackdown",
@@ -425,7 +443,7 @@
       "published": "2026-11-03T08:33:49-05:00"
     },
     {
-      "id": "bc-5342825069959943150",
+      "id": "bc-5081688762761361132",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google adds new $250,000 Cloud VRP reward for Root-in-Cloud bugs",
@@ -434,7 +452,7 @@
       "published": "2026-11-03T07:05:52-05:00"
     },
     {
-      "id": "bc-2552385414076248824",
+      "id": "bc-3428463252753246520",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Harvard University data breach exposed info of 851,000 accounts",
@@ -443,7 +461,7 @@
       "published": "2026-11-03T05:53:25-05:00"
     },
     {
-      "id": "bc-1388548028630282068",
+      "id": "bc-44571433834942729",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chinese hackers use ARTEX AI in automated attacks against 200 orgs",
@@ -452,31 +470,13 @@
       "published": "2026-11-02T16:40:14-05:00"
     },
     {
-      "id": "bc-2121422236738515828",
+      "id": "bc-96604845285066354",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fintech platform Sageworks taken offline after suspected cyberattack",
       "url": "https://www.bleepingcomputer.com/news/security/fintech-platform-sageworks-taken-offline-after-suspected-cyberattack/",
       "points": 0,
       "published": "2026-11-02T14:00:45-05:00"
-    },
-    {
-      "id": "bc-6664167279768191316",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google disrupts million-device XCPE Android malware botnet, bans TV box maker",
-      "url": "https://www.bleepingcomputer.com/news/security/google-disrupts-million-device-xcpe-android-malware-botnet-bans-tv-box-maker/",
-      "points": 0,
-      "published": "2026-11-02T13:16:34-05:00"
-    },
-    {
-      "id": "bc-6252844408724542422",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "BTCPay Server warns of hot wallet crypto thefts on outdated instances",
-      "url": "https://www.bleepingcomputer.com/news/security/btcpay-server-warns-of-hot-wallet-thefts-targeting-outdated-instances/",
-      "points": 0,
-      "published": "2026-11-02T10:03:07-05:00"
     }
   ]
 }
