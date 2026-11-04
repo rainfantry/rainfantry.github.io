@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T13:26:21.282337+00:00",
+  "generated_at": "2026-11-04T22:58:38.347148+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,79 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-3923914408891134560",
+      "id": "bc-5146707930266252540",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Vercel rolls out new protection against stolen session cookie attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/vercel-rolls-out-new-protection-against-stolen-session-cookie-attacks/",
+      "points": 0,
+      "published": "2026-11-04T16:31:18-05:00"
+    },
+    {
+      "id": "bc-1084727554130511433",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Zyxel fixes zero-day exploited to hack nearly 1,000 network switches",
+      "url": "https://www.bleepingcomputer.com/news/security/zyxel-fixes-zero-day-exploited-to-hack-nearly-1-000-network-switches/",
+      "points": 0,
+      "published": "2026-11-04T15:58:19-05:00"
+    },
+    {
+      "id": "bc-434871073184128219",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "DreamHost confirms data breach exposed FTP logins and webmail sessions",
+      "url": "https://www.bleepingcomputer.com/news/security/dreamhost-confirms-data-breach-exposed-ftp-logins-and-webmail-sessions/",
+      "points": 0,
+      "published": "2026-11-04T14:05:19-05:00"
+    },
+    {
+      "id": "bc-6603379558553627625",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Cyberattack disrupts blood storage refrigeration systems in France",
+      "url": "https://www.bleepingcomputer.com/news/security/cyberattack-disrupts-blood-storage-refrigeration-systems-in-france/",
+      "points": 0,
+      "published": "2026-11-04T13:02:56-05:00"
+    },
+    {
+      "id": "bc-284626762320222175",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "NIKKE PC game launcher hacked to spread remote access, data-stealing malware",
+      "url": "https://www.bleepingcomputer.com/news/security/nikke-pc-game-launcher-hacked-to-spread-remote-access-data-stealing-malware/",
+      "points": 0,
+      "published": "2026-11-04T11:58:46-05:00"
+    },
+    {
+      "id": "bc-7874167090444279543",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "mSecure password manager hack prompts password reset warnings",
+      "url": "https://www.bleepingcomputer.com/news/security/msecure-password-manager-hack-prompts-password-reset-warnings/",
+      "points": 0,
+      "published": "2026-11-04T11:00:18-05:00"
+    },
+    {
+      "id": "bc-8568371658600501009",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Google Calendar phishing campaign hijacks sessions, bypasses MFA",
+      "url": "https://www.bleepingcomputer.com/news/security/google-calendar-phishing-campaign-hijacks-sessions-bypasses-mfa/",
+      "points": 0,
+      "published": "2026-11-04T10:00:10-05:00"
+    },
+    {
+      "id": "bc-1187093060297635349",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "SonicWall warns of unpatched flaws in end-of-life GMS software",
+      "url": "https://www.bleepingcomputer.com/news/security/sonicwall-warns-of-unpatched-flaws-in-end-of-life-gms-software/",
+      "points": 0,
+      "published": "2026-11-04T09:42:25-05:00"
+    },
+    {
+      "id": "bc-9035716101005280303",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "US charges two Canadians accused of hacking US universities",
@@ -353,7 +425,7 @@
       "published": "2026-11-04T08:13:20-05:00"
     },
     {
-      "id": "bc-636728774104911257",
+      "id": "bc-2260376240856834285",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA flags WordPress RCE flaw as actively exploited in attacks",
@@ -362,7 +434,7 @@
       "published": "2026-11-04T07:11:05-05:00"
     },
     {
-      "id": "bc-8936378019562752304",
+      "id": "bc-6593411046836464066",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use n-day exploits in zero-click attacks on iOS, Android devices",
@@ -371,7 +443,7 @@
       "published": "2026-11-04T04:39:54-05:00"
     },
     {
-      "id": "bc-318993251737199046",
+      "id": "bc-1530226080653275674",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack cPGuard autoupdate to deploy backdoor, steal data",
@@ -380,7 +452,7 @@
       "published": "2026-11-03T17:18:50-05:00"
     },
     {
-      "id": "bc-7913617809774385312",
+      "id": "bc-682617377347298553",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "WorkOS says attacker used ARTEX AI to breach internal sales app",
@@ -389,7 +461,7 @@
       "published": "2026-11-03T16:28:44-05:00"
     },
     {
-      "id": "bc-7727984155411740747",
+      "id": "bc-3268518394691352367",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance says fake job interview led to $6.3 billion crypto heist",
@@ -398,85 +470,13 @@
       "published": "2026-11-03T15:05:50-05:00"
     },
     {
-      "id": "bc-2378425995765042868",
+      "id": "bc-1601060077634880326",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google: LLMjacking attacks rack up $1 million in cloud AI charges",
       "url": "https://www.bleepingcomputer.com/news/security/google-llmjacking-attacks-rack-up-1-million-in-cloud-ai-charges/",
       "points": 0,
       "published": "2026-11-03T13:51:04-05:00"
-    },
-    {
-      "id": "bc-2334003170042775333",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Barracuda warns of critical flaws allowing root access to devices",
-      "url": "https://www.bleepingcomputer.com/news/security/barracuda-warns-of-critical-flaws-allowing-root-access-to-devices/",
-      "points": 0,
-      "published": "2026-11-03T10:06:16-05:00"
-    },
-    {
-      "id": "bc-3603920806045637571",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Gartner Predicts SOCs Will Have 50% More Engineers Than Analysts by 2028",
-      "url": "https://www.bleepingcomputer.com/news/security/gartner-predicts-socs-will-have-50-percent-more-engineers-than-analysts-by-2028/",
-      "points": 0,
-      "published": "2026-11-03T10:00:10-05:00"
-    },
-    {
-      "id": "bc-7574497066737227289",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "UK school estate hit by 3AM ransomware in suspected AI-assisted attack",
-      "url": "https://www.bleepingcomputer.com/news/security/uk-school-estate-hit-by-3am-ransomware-in-suspected-ai-assisted-attack/",
-      "points": 0,
-      "published": "2026-11-03T09:00:00-05:00"
-    },
-    {
-      "id": "bc-112361971840696623",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Police seizes over 100 servers in investment scam crackdown",
-      "url": "https://www.bleepingcomputer.com/news/security/police-seizes-over-100-servers-in-investment-scam-crackdown/",
-      "points": 0,
-      "published": "2026-11-03T08:33:49-05:00"
-    },
-    {
-      "id": "bc-5081688762761361132",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google adds new $250,000 Cloud VRP reward for Root-in-Cloud bugs",
-      "url": "https://www.bleepingcomputer.com/news/google/google-adds-new-250-000-cloud-vrp-reward-for-root-in-cloud-bugs/",
-      "points": 0,
-      "published": "2026-11-03T07:05:52-05:00"
-    },
-    {
-      "id": "bc-3428463252753246520",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Harvard University data breach exposed info of 851,000 accounts",
-      "url": "https://www.bleepingcomputer.com/news/security/harvard-university-data-breach-exposed-info-of-851-000-accounts/",
-      "points": 0,
-      "published": "2026-11-03T05:53:25-05:00"
-    },
-    {
-      "id": "bc-44571433834942729",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Chinese hackers use ARTEX AI in automated attacks against 200 orgs",
-      "url": "https://www.bleepingcomputer.com/news/security/chinese-hackers-use-artex-ai-in-automated-attacks-against-200-orgs/",
-      "points": 0,
-      "published": "2026-11-02T16:40:14-05:00"
-    },
-    {
-      "id": "bc-96604845285066354",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Fintech platform Sageworks taken offline after suspected cyberattack",
-      "url": "https://www.bleepingcomputer.com/news/security/fintech-platform-sageworks-taken-offline-after-suspected-cyberattack/",
-      "points": 0,
-      "published": "2026-11-02T14:00:45-05:00"
     }
   ]
 }
