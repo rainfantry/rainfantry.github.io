@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T22:40:10.958402+00:00",
+  "generated_at": "2026-11-04T03:47:56.994975+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -304,7 +304,7 @@
       "source_icon": "🔶",
       "title": "Only 0.5% of 383,000 CVEs are ever exploited in real-world attacks",
       "url": "https://www.microsoft.com/en-us/security/blog/2026/11/02/exploited-vulnerabilities-common-data-driven-analysis-real-world-attacks/",
-      "points": 14,
+      "points": 15,
       "published": "2026-11-03T15:17:02Z"
     },
     {
@@ -353,7 +353,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-9135850079860041129",
+      "id": "bc-4244388448704347525",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack cPGuard autoupdate to deploy backdoor, steal data",
@@ -362,7 +362,7 @@
       "published": "2026-11-03T17:18:50-05:00"
     },
     {
-      "id": "bc-3976169486610439869",
+      "id": "bc-8426505340433138091",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "WorkOS says attacker used ARTEX AI to breach internal sales app",
@@ -371,7 +371,7 @@
       "published": "2026-11-03T16:28:44-05:00"
     },
     {
-      "id": "bc-7393176829348012211",
+      "id": "bc-1825525387921546761",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance says fake job interview led to $6.3 billion crypto heist",
@@ -380,7 +380,7 @@
       "published": "2026-11-03T15:05:50-05:00"
     },
     {
-      "id": "bc-3091489371902911797",
+      "id": "bc-2302050418882648421",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google: LLMjacking attacks rack up $1 million in cloud AI charges",
@@ -389,7 +389,7 @@
       "published": "2026-11-03T13:51:04-05:00"
     },
     {
-      "id": "bc-637016389502047644",
+      "id": "bc-1508838890192638249",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Barracuda warns of critical flaws allowing root access to devices",
@@ -398,7 +398,7 @@
       "published": "2026-11-03T10:06:16-05:00"
     },
     {
-      "id": "bc-8288977686769582826",
+      "id": "bc-373506731685827781",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Gartner Predicts SOCs Will Have 50% More Engineers Than Analysts by 2028",
@@ -407,7 +407,7 @@
       "published": "2026-11-03T10:00:10-05:00"
     },
     {
-      "id": "bc-6643895970716899701",
+      "id": "bc-4721888899264051970",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "UK school estate hit by 3AM ransomware in suspected AI-assisted attack",
@@ -416,7 +416,7 @@
       "published": "2026-11-03T09:00:00-05:00"
     },
     {
-      "id": "bc-7899073425930486689",
+      "id": "bc-3158451953200443700",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police seizes over 100 servers in investment scam crackdown",
@@ -425,7 +425,7 @@
       "published": "2026-11-03T08:33:49-05:00"
     },
     {
-      "id": "bc-3375036684735216686",
+      "id": "bc-5342825069959943150",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google adds new $250,000 Cloud VRP reward for Root-in-Cloud bugs",
@@ -434,7 +434,7 @@
       "published": "2026-11-03T07:05:52-05:00"
     },
     {
-      "id": "bc-9213380594136684412",
+      "id": "bc-2552385414076248824",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Harvard University data breach exposed info of 851,000 accounts",
@@ -443,7 +443,7 @@
       "published": "2026-11-03T05:53:25-05:00"
     },
     {
-      "id": "bc-8385907683825180292",
+      "id": "bc-1388548028630282068",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chinese hackers use ARTEX AI in automated attacks against 200 orgs",
@@ -452,7 +452,7 @@
       "published": "2026-11-02T16:40:14-05:00"
     },
     {
-      "id": "bc-4942602492360762684",
+      "id": "bc-2121422236738515828",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fintech platform Sageworks taken offline after suspected cyberattack",
@@ -461,7 +461,7 @@
       "published": "2026-11-02T14:00:45-05:00"
     },
     {
-      "id": "bc-9205725866560718974",
+      "id": "bc-6664167279768191316",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google disrupts million-device XCPE Android malware botnet, bans TV box maker",
@@ -470,7 +470,7 @@
       "published": "2026-11-02T13:16:34-05:00"
     },
     {
-      "id": "bc-6219142227472835923",
+      "id": "bc-6252844408724542422",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BTCPay Server warns of hot wallet crypto thefts on outdated instances",
