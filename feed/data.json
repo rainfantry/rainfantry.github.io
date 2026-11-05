@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T13:40:38.047818+00:00",
+  "generated_at": "2026-11-05T23:00:00.132188+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -299,6 +299,15 @@
       "published": "1990-10-03T04:00:00.000"
     },
     {
+      "id": "hn-50353072",
+      "source": "Hacker News",
+      "source_icon": "🔶",
+      "title": "Only 0.5% of 383,000 CVEs are ever exploited in real-world attacks",
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/11/02/exploited-vulnerabilities-common-data-driven-analysis-real-world-attacks/",
+      "points": 16,
+      "published": "2026-11-03T15:17:02Z"
+    },
+    {
       "id": "hn-48609231",
       "source": "Hacker News",
       "source_icon": "🔶",
@@ -344,7 +353,70 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-4314150156211814804",
+      "id": "bc-7118739069291139267",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Fake OpenAI, SpaceX events used to steal Microsoft, Google accounts",
+      "url": "https://www.bleepingcomputer.com/news/security/fake-openai-spacex-events-used-to-steal-microsoft-google-accounts/",
+      "points": 0,
+      "published": "2026-11-05T16:30:30-05:00"
+    },
+    {
+      "id": "bc-5686039237611523004",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Nearly 1.5 million exposed secrets targeted in new revocation program",
+      "url": "https://www.bleepingcomputer.com/news/security/truffle-security-launches-program-to-revoke-14-million-live-secrets/",
+      "points": 0,
+      "published": "2026-11-05T15:15:08-05:00"
+    },
+    {
+      "id": "bc-4562874608850515596",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenAI’s GPT-6 Astra silently obstructed safety research tasks",
+      "url": "https://www.bleepingcomputer.com/news/security/openais-gpt-6-astra-silently-obstructed-safety-research-tasks/",
+      "points": 0,
+      "published": "2026-11-05T14:24:26-05:00"
+    },
+    {
+      "id": "bc-1146053609678247900",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenSSH flaw lets attackers log into password-disabled Linux accounts",
+      "url": "https://www.bleepingcomputer.com/news/security/openssh-flaw-lets-attackers-log-into-password-disabled-linux-accounts/",
+      "points": 0,
+      "published": "2026-11-05T12:45:29-05:00"
+    },
+    {
+      "id": "bc-5880103232819067121",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers backdoor Linux servers using trojanized CWP web server",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-backdoor-linux-servers-using-trojanized-cwp-web-server/",
+      "points": 0,
+      "published": "2026-11-05T11:24:26-05:00"
+    },
+    {
+      "id": "bc-227638631248591449",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "DigiCert data breach exposes customer information, identity documents",
+      "url": "https://www.bleepingcomputer.com/news/security/digicert-data-breach-exposes-customer-information-identity-documents/",
+      "points": 0,
+      "published": "2026-11-05T11:12:46-05:00"
+    },
+    {
+      "id": "bc-4704637161165032837",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Closing the Identity Gap at the Service Desk",
+      "url": "https://www.bleepingcomputer.com/news/security/closing-the-identity-gap-at-the-service-desk/",
+      "points": 0,
+      "published": "2026-11-05T10:00:10-05:00"
+    },
+    {
+      "id": "bc-3062077535283021097",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "GhostMap Android flaw lets malicious app trigger persistent boot loop",
@@ -353,7 +425,7 @@
       "published": "2026-11-05T04:18:29-05:00"
     },
     {
-      "id": "bc-5581426741494549869",
+      "id": "bc-5575646554715503863",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vercel rolls out new protection against stolen session cookie attacks",
@@ -362,7 +434,7 @@
       "published": "2026-11-04T16:31:18-05:00"
     },
     {
-      "id": "bc-3901543897436989606",
+      "id": "bc-8044930361323006893",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Zyxel fixes zero-day exploited to hack nearly 1,000 network switches",
@@ -371,7 +443,7 @@
       "published": "2026-11-04T15:58:19-05:00"
     },
     {
-      "id": "bc-6512494155600793804",
+      "id": "bc-4816979327904856401",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DreamHost confirms data breach exposed FTP logins and webmail sessions",
@@ -380,7 +452,7 @@
       "published": "2026-11-04T14:05:19-05:00"
     },
     {
-      "id": "bc-6416881370183008024",
+      "id": "bc-6942816358853839664",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cyberattack disrupts blood storage refrigeration systems in France",
@@ -389,7 +461,7 @@
       "published": "2026-11-04T13:02:56-05:00"
     },
     {
-      "id": "bc-8774235619253988164",
+      "id": "bc-6508221779686056649",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "NIKKE PC game launcher hacked to spread remote access, data-stealing malware",
@@ -398,85 +470,13 @@
       "published": "2026-11-04T11:58:46-05:00"
     },
     {
-      "id": "bc-2096531450226646204",
+      "id": "bc-448307430070091895",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "mSecure password manager hack prompts password reset warnings",
       "url": "https://www.bleepingcomputer.com/news/security/msecure-password-manager-hack-prompts-password-reset-warnings/",
       "points": 0,
       "published": "2026-11-04T11:00:18-05:00"
-    },
-    {
-      "id": "bc-1548507629916784880",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google Calendar phishing campaign hijacks sessions, bypasses MFA",
-      "url": "https://www.bleepingcomputer.com/news/security/google-calendar-phishing-campaign-hijacks-sessions-bypasses-mfa/",
-      "points": 0,
-      "published": "2026-11-04T10:00:10-05:00"
-    },
-    {
-      "id": "bc-1997120327548173686",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "SonicWall warns of unpatched flaws in end-of-life GMS software",
-      "url": "https://www.bleepingcomputer.com/news/security/sonicwall-warns-of-unpatched-flaws-in-end-of-life-gms-software/",
-      "points": 0,
-      "published": "2026-11-04T09:42:25-05:00"
-    },
-    {
-      "id": "bc-6097173314715178033",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "US charges two Canadians accused of hacking US universities",
-      "url": "https://www.bleepingcomputer.com/news/security/us-charges-two-canadians-accused-of-hacking-us-universities/",
-      "points": 0,
-      "published": "2026-11-04T08:13:20-05:00"
-    },
-    {
-      "id": "bc-2324599604866238052",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA flags WordPress RCE flaw as actively exploited in attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-flags-wordpress-rce-flaw-as-actively-exploited-in-attacks/",
-      "points": 0,
-      "published": "2026-11-04T07:11:05-05:00"
-    },
-    {
-      "id": "bc-6573660800809074308",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers use n-day exploits in zero-click attacks on iOS, Android devices",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-use-n-day-exploits-in-zero-click-attacks-on-ios-android-devices/",
-      "points": 0,
-      "published": "2026-11-04T04:39:54-05:00"
-    },
-    {
-      "id": "bc-2275586868676231433",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers hijack cPGuard autoupdate to deploy backdoor, steal data",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-hijack-cpguard-autoupdate-to-deploy-backdoor-steal-data/",
-      "points": 0,
-      "published": "2026-11-03T17:18:50-05:00"
-    },
-    {
-      "id": "bc-1211172471946361688",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "WorkOS says attacker used ARTEX AI to breach internal sales app",
-      "url": "https://www.bleepingcomputer.com/news/security/workos-says-attacker-used-artex-ai-to-breach-internal-sales-app/",
-      "points": 0,
-      "published": "2026-11-03T16:28:44-05:00"
-    },
-    {
-      "id": "bc-3482245554251638503",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Binance says fake job interview led to $6.3 billion crypto heist",
-      "url": "https://www.bleepingcomputer.com/news/security/binance-says-fake-job-interview-led-to-63-billion-crypto-heist/",
-      "points": 0,
-      "published": "2026-11-03T15:05:50-05:00"
     }
   ]
 }
