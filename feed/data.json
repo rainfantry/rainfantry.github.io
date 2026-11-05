@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-05T04:06:13.695045+00:00",
-  "item_count": 40,
+  "generated_at": "2026-11-05T13:40:38.047818+00:00",
+  "item_count": 50,
   "sources": [
     "cisa_kev",
     "nvd",
@@ -209,6 +209,96 @@
       "published": "2022-05-03"
     },
     {
+      "id": "nvd-CVE-1999-0095",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0095: The debug command in Sendmail is enabled, allowing attackers to execute commands as root.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0095",
+      "points": 100,
+      "published": "1988-10-01T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-0082",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0082: CWD ~root command in ftpd allows root access.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0082",
+      "points": 100,
+      "published": "1988-11-11T05:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1471",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1471: Buffer overflow in passwd in BSD based operating systems 4.3 and earlier allows local users to gain root privileges by s...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1471",
+      "points": 72,
+      "published": "1989-01-01T05:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1122",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1122: Vulnerability in restore in SunOS 4.0.3 and earlier allows local users to gain privileges.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1122",
+      "points": 46,
+      "published": "1989-07-26T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1467",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1467: Vulnerability in rcp on SunOS 4.0.x allows remote attackers from trusted hosts to execute arbitrary commands as root, po...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1467",
+      "points": 100,
+      "published": "1989-10-26T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1506",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1506: Vulnerability in SMI Sendmail 4.0 and earlier, on SunOS up to 4.0.3, allows remote attackers to access user bin.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1506",
+      "points": 75,
+      "published": "1990-01-29T05:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-0084",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0084: Certain NFS servers allow users to use mknod to gain privileges by creating a writable kmem device and setting the UID t...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0084",
+      "points": 84,
+      "published": "1990-05-01T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-2000-0388",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-2000-0388: Buffer overflow in FreeBSD libmytinfo library allows local users to execute commands via a long TERMCAP environmental va...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-2000-0388",
+      "points": 75,
+      "published": "1990-05-09T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-0209",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0209: The SunView (SunTools) selection_svc facility allows remote users to read files.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0209",
+      "points": 50,
+      "published": "1990-08-14T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1198",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1198: BuildDisk program on NeXT systems before 2.0 does not prompt users for the root password, which allows local users to ga...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1198",
+      "points": 72,
+      "published": "1990-10-03T04:00:00.000"
+    },
+    {
       "id": "hn-48609231",
       "source": "Hacker News",
       "source_icon": "🔶",
@@ -254,7 +344,16 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1227526452376947001",
+      "id": "bc-4314150156211814804",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "GhostMap Android flaw lets malicious app trigger persistent boot loop",
+      "url": "https://www.bleepingcomputer.com/news/security/ghostmap-android-flaw-lets-malicious-app-trigger-persistent-boot-loop/",
+      "points": 0,
+      "published": "2026-11-05T04:18:29-05:00"
+    },
+    {
+      "id": "bc-5581426741494549869",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vercel rolls out new protection against stolen session cookie attacks",
@@ -263,7 +362,7 @@
       "published": "2026-11-04T16:31:18-05:00"
     },
     {
-      "id": "bc-9109435749877776031",
+      "id": "bc-3901543897436989606",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Zyxel fixes zero-day exploited to hack nearly 1,000 network switches",
@@ -272,7 +371,7 @@
       "published": "2026-11-04T15:58:19-05:00"
     },
     {
-      "id": "bc-8934202432387741408",
+      "id": "bc-6512494155600793804",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "DreamHost confirms data breach exposed FTP logins and webmail sessions",
@@ -281,7 +380,7 @@
       "published": "2026-11-04T14:05:19-05:00"
     },
     {
-      "id": "bc-3593839550762800683",
+      "id": "bc-6416881370183008024",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cyberattack disrupts blood storage refrigeration systems in France",
@@ -290,7 +389,7 @@
       "published": "2026-11-04T13:02:56-05:00"
     },
     {
-      "id": "bc-4489034132468764327",
+      "id": "bc-8774235619253988164",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "NIKKE PC game launcher hacked to spread remote access, data-stealing malware",
@@ -299,7 +398,7 @@
       "published": "2026-11-04T11:58:46-05:00"
     },
     {
-      "id": "bc-6665407909343331195",
+      "id": "bc-2096531450226646204",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "mSecure password manager hack prompts password reset warnings",
@@ -308,7 +407,7 @@
       "published": "2026-11-04T11:00:18-05:00"
     },
     {
-      "id": "bc-8746462525397715112",
+      "id": "bc-1548507629916784880",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google Calendar phishing campaign hijacks sessions, bypasses MFA",
@@ -317,7 +416,7 @@
       "published": "2026-11-04T10:00:10-05:00"
     },
     {
-      "id": "bc-3108841053333482755",
+      "id": "bc-1997120327548173686",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SonicWall warns of unpatched flaws in end-of-life GMS software",
@@ -326,7 +425,7 @@
       "published": "2026-11-04T09:42:25-05:00"
     },
     {
-      "id": "bc-463290191109140950",
+      "id": "bc-6097173314715178033",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "US charges two Canadians accused of hacking US universities",
@@ -335,7 +434,7 @@
       "published": "2026-11-04T08:13:20-05:00"
     },
     {
-      "id": "bc-8772885520099669329",
+      "id": "bc-2324599604866238052",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA flags WordPress RCE flaw as actively exploited in attacks",
@@ -344,7 +443,7 @@
       "published": "2026-11-04T07:11:05-05:00"
     },
     {
-      "id": "bc-2054981807924491374",
+      "id": "bc-6573660800809074308",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use n-day exploits in zero-click attacks on iOS, Android devices",
@@ -353,7 +452,7 @@
       "published": "2026-11-04T04:39:54-05:00"
     },
     {
-      "id": "bc-3773898089305770668",
+      "id": "bc-2275586868676231433",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers hijack cPGuard autoupdate to deploy backdoor, steal data",
@@ -362,7 +461,7 @@
       "published": "2026-11-03T17:18:50-05:00"
     },
     {
-      "id": "bc-2349628188176404193",
+      "id": "bc-1211172471946361688",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "WorkOS says attacker used ARTEX AI to breach internal sales app",
@@ -371,22 +470,13 @@
       "published": "2026-11-03T16:28:44-05:00"
     },
     {
-      "id": "bc-3920920485597467486",
+      "id": "bc-3482245554251638503",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance says fake job interview led to $6.3 billion crypto heist",
       "url": "https://www.bleepingcomputer.com/news/security/binance-says-fake-job-interview-led-to-63-billion-crypto-heist/",
       "points": 0,
       "published": "2026-11-03T15:05:50-05:00"
-    },
-    {
-      "id": "bc-6226332041376611346",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google: LLMjacking attacks rack up $1 million in cloud AI charges",
-      "url": "https://www.bleepingcomputer.com/news/security/google-llmjacking-attacks-rack-up-1-million-in-cloud-ai-charges/",
-      "points": 0,
-      "published": "2026-11-03T13:51:04-05:00"
     }
   ]
 }
