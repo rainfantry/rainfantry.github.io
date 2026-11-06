@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T13:24:32.534500+00:00",
+  "generated_at": "2026-11-06T22:29:48.790523+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,70 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7148289298663063246",
+      "id": "bc-7626677230295880188",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Runaway AI hacking agent behind WorkOS breach after escaping sandbox",
+      "url": "https://www.bleepingcomputer.com/news/security/runaway-ai-hacking-agent-behind-workos-breach-after-escaping-sandbox/",
+      "points": 0,
+      "published": "2026-11-06T17:27:25-05:00"
+    },
+    {
+      "id": "bc-5899473760111480478",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenAI's new GPT-6 Cyber AI finds 81 Firefox flaws, 948 Linux bugs",
+      "url": "https://www.bleepingcomputer.com/news/security/openais-new-gpt-6-cyber-ai-finds-81-firefox-flaws-948-linux-bugs/",
+      "points": 0,
+      "published": "2026-11-06T15:24:19-05:00"
+    },
+    {
+      "id": "bc-4332252134042102317",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Fake security tools on GitHub push backdoors and infostealers",
+      "url": "https://www.bleepingcomputer.com/news/security/fake-security-tools-on-github-push-backdoors-and-infostealers/",
+      "points": 0,
+      "published": "2026-11-06T13:46:52-05:00"
+    },
+    {
+      "id": "bc-3935396636913871055",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "QNAP says hackers breaching NAS devices in Plex2Shell attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/qnap-says-hackers-breaching-nas-devices-in-plex2shell-attacks/",
+      "points": 0,
+      "published": "2026-11-06T12:04:23-05:00"
+    },
+    {
+      "id": "bc-1733777027589429689",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Veeam warns of Software Appliance boot failures on AMD EPYC hosts",
+      "url": "https://www.bleepingcomputer.com/news/security/veeam-software-appliance-vms-fail-to-boot-on-amd-epyc-hosts/",
+      "points": 0,
+      "published": "2026-11-06T10:25:31-05:00"
+    },
+    {
+      "id": "bc-7591824663412443157",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "IMSI vs IMEI: What Your Phone Broadcasts and Who Can Read It",
+      "url": "https://www.bleepingcomputer.com/news/security/imsi-vs-imei-what-your-phone-broadcasts-and-who-can-read-it/",
+      "points": 0,
+      "published": "2026-11-06T10:00:10-05:00"
+    },
+    {
+      "id": "bc-8463400213548131572",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Chainalysis says breach exposed credentials for all customers",
+      "url": "https://www.bleepingcomputer.com/news/security/chainalysis-says-breach-exposed-credentials-for-all-customers/",
+      "points": 0,
+      "published": "2026-11-06T09:17:07-05:00"
+    },
+    {
+      "id": "bc-4101771018171541421",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "D-Link warns of multiple zero-days in DGS-3130 Series switches",
@@ -353,7 +416,7 @@
       "published": "2026-11-06T07:37:22-05:00"
     },
     {
-      "id": "bc-3553163321628117188",
+      "id": "bc-4628137818841107120",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "MetaMask says recent attack didn't affect wallet infrastructure",
@@ -362,7 +425,7 @@
       "published": "2026-11-06T04:22:28-05:00"
     },
     {
-      "id": "bc-7625557104464325816",
+      "id": "bc-153471403947505570",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI, CISA warn of cyberattacks targeting refrigeration systems",
@@ -371,7 +434,7 @@
       "published": "2026-11-05T19:56:44-05:00"
     },
     {
-      "id": "bc-3770166679321862425",
+      "id": "bc-1879826158846877032",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake OpenAI, SpaceX events used to steal Microsoft, Google accounts",
@@ -380,7 +443,7 @@
       "published": "2026-11-05T16:30:30-05:00"
     },
     {
-      "id": "bc-6325998153644238485",
+      "id": "bc-2885344469726945759",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Nearly 1.5 million exposed secrets targeted in new revocation program",
@@ -389,7 +452,7 @@
       "published": "2026-11-05T15:15:08-05:00"
     },
     {
-      "id": "bc-8342295074948016147",
+      "id": "bc-2064125443542531719",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI’s GPT-6 Astra silently obstructed safety research tasks",
@@ -398,7 +461,7 @@
       "published": "2026-11-05T14:24:26-05:00"
     },
     {
-      "id": "bc-6362869860622628598",
+      "id": "bc-6864596394310272536",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenSSH flaw lets attackers log into password-disabled Linux accounts",
@@ -407,76 +470,13 @@
       "published": "2026-11-05T12:45:29-05:00"
     },
     {
-      "id": "bc-5943223346420320415",
+      "id": "bc-4934970149953035987",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers backdoor Linux servers using trojanized CWP web server",
       "url": "https://www.bleepingcomputer.com/news/security/hackers-backdoor-linux-servers-using-trojanized-cwp-web-server/",
       "points": 0,
       "published": "2026-11-05T11:24:26-05:00"
-    },
-    {
-      "id": "bc-9091579582537992430",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "DigiCert data breach exposes customer information, identity documents",
-      "url": "https://www.bleepingcomputer.com/news/security/digicert-data-breach-exposes-customer-information-identity-documents/",
-      "points": 0,
-      "published": "2026-11-05T11:12:46-05:00"
-    },
-    {
-      "id": "bc-2886510946573668452",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Closing the Identity Gap at the Service Desk",
-      "url": "https://www.bleepingcomputer.com/news/security/closing-the-identity-gap-at-the-service-desk/",
-      "points": 0,
-      "published": "2026-11-05T10:00:10-05:00"
-    },
-    {
-      "id": "bc-6276353128290730517",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "GhostMap Android flaw lets malicious app trigger persistent boot loop",
-      "url": "https://www.bleepingcomputer.com/news/security/ghostmap-android-flaw-lets-malicious-app-trigger-persistent-boot-loop/",
-      "points": 0,
-      "published": "2026-11-05T04:18:29-05:00"
-    },
-    {
-      "id": "bc-7906526723700096309",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Vercel rolls out new protection against stolen session cookie attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/vercel-rolls-out-new-protection-against-stolen-session-cookie-attacks/",
-      "points": 0,
-      "published": "2026-11-04T16:31:18-05:00"
-    },
-    {
-      "id": "bc-8208696512871286394",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Zyxel fixes zero-day exploited to hack nearly 1,000 network switches",
-      "url": "https://www.bleepingcomputer.com/news/security/zyxel-fixes-zero-day-exploited-to-hack-nearly-1-000-network-switches/",
-      "points": 0,
-      "published": "2026-11-04T15:58:19-05:00"
-    },
-    {
-      "id": "bc-8637462405196076317",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "DreamHost confirms data breach exposed FTP logins and webmail sessions",
-      "url": "https://www.bleepingcomputer.com/news/security/dreamhost-confirms-data-breach-exposed-ftp-logins-and-webmail-sessions/",
-      "points": 0,
-      "published": "2026-11-04T14:05:19-05:00"
-    },
-    {
-      "id": "bc-9204516568555133993",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Cyberattack disrupts blood storage refrigeration systems in France",
-      "url": "https://www.bleepingcomputer.com/news/security/cyberattack-disrupts-blood-storage-refrigeration-systems-in-france/",
-      "points": 0,
-      "published": "2026-11-04T13:02:56-05:00"
     }
   ]
 }
