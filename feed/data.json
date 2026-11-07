@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T03:38:36.888265+00:00",
+  "generated_at": "2026-11-07T12:02:52.158971+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8093136051675164203",
+      "id": "bc-5770078969477327651",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SonicWall warns of new SSL-VPN MFA bypass flaw exploited in attacks",
@@ -353,7 +353,7 @@
       "published": "2026-11-06T19:00:55-05:00"
     },
     {
-      "id": "bc-399910867405112618",
+      "id": "bc-5150915206126094197",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Runaway AI hacking agent behind WorkOS breach after escaping sandbox",
@@ -362,7 +362,7 @@
       "published": "2026-11-06T17:27:25-05:00"
     },
     {
-      "id": "bc-4778896597092019732",
+      "id": "bc-5630141107370169378",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI's new GPT-6 Cyber AI finds 81 Firefox flaws, 948 Linux bugs",
@@ -371,7 +371,7 @@
       "published": "2026-11-06T15:24:19-05:00"
     },
     {
-      "id": "bc-6270212532926201158",
+      "id": "bc-6645948147906061075",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake security tools on GitHub push backdoors and infostealers",
@@ -380,7 +380,7 @@
       "published": "2026-11-06T13:46:52-05:00"
     },
     {
-      "id": "bc-826421929699923548",
+      "id": "bc-4845203207392163256",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "QNAP says hackers breaching NAS devices in Plex2Shell attacks",
@@ -389,7 +389,7 @@
       "published": "2026-11-06T12:04:23-05:00"
     },
     {
-      "id": "bc-3903968868231805444",
+      "id": "bc-3129323973924233343",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Veeam warns of Software Appliance boot failures on AMD EPYC hosts",
@@ -398,7 +398,7 @@
       "published": "2026-11-06T10:25:31-05:00"
     },
     {
-      "id": "bc-4509304600677591938",
+      "id": "bc-7316531292500481419",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "IMSI vs IMEI: What Your Phone Broadcasts and Who Can Read It",
@@ -407,7 +407,7 @@
       "published": "2026-11-06T10:00:10-05:00"
     },
     {
-      "id": "bc-8923457304663814153",
+      "id": "bc-8599956745831660126",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chainalysis says breach exposed credentials for all customers",
@@ -416,7 +416,7 @@
       "published": "2026-11-06T09:17:07-05:00"
     },
     {
-      "id": "bc-6403634890110493876",
+      "id": "bc-7977752159734771055",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "D-Link warns of multiple zero-days in DGS-3130 Series switches",
@@ -425,7 +425,7 @@
       "published": "2026-11-06T07:37:22-05:00"
     },
     {
-      "id": "bc-2416982176379773918",
+      "id": "bc-2459275770402227046",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "MetaMask says recent attack didn't affect wallet infrastructure",
@@ -434,7 +434,7 @@
       "published": "2026-11-06T04:22:28-05:00"
     },
     {
-      "id": "bc-778554703732943000",
+      "id": "bc-4167938395927656452",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI, CISA warn of cyberattacks targeting refrigeration systems",
@@ -443,7 +443,7 @@
       "published": "2026-11-05T19:56:44-05:00"
     },
     {
-      "id": "bc-2267780954839630297",
+      "id": "bc-2031293545568891915",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake OpenAI, SpaceX events used to steal Microsoft, Google accounts",
@@ -452,7 +452,7 @@
       "published": "2026-11-05T16:30:30-05:00"
     },
     {
-      "id": "bc-6917899862654226068",
+      "id": "bc-1795795678937177149",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Nearly 1.5 million exposed secrets targeted in new revocation program",
@@ -461,7 +461,7 @@
       "published": "2026-11-05T15:15:08-05:00"
     },
     {
-      "id": "bc-4846076515314008564",
+      "id": "bc-8805918696663510255",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI’s GPT-6 Astra silently obstructed safety research tasks",
@@ -470,7 +470,7 @@
       "published": "2026-11-05T14:24:26-05:00"
     },
     {
-      "id": "bc-2826526528175406212",
+      "id": "bc-8172583226384837819",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenSSH flaw lets attackers log into password-disabled Linux accounts",
