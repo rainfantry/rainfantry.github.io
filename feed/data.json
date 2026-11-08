@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T12:24:02.034691+00:00",
+  "generated_at": "2026-11-08T21:27:01.692232+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,16 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-6830537901701752511",
+      "id": "bc-7112763762926240715",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Iris Ohyama data cloud breach exposes info of 7.7 million customers",
+      "url": "https://www.bleepingcomputer.com/news/security/iris-ohyama-data-cloud-breach-exposes-info-of-77-million-customers/",
+      "points": 0,
+      "published": "2026-11-08T10:43:08-05:00"
+    },
+    {
+      "id": "bc-6255107851191033481",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers pull off $133 million French bank heist via service provider",
@@ -353,7 +362,7 @@
       "published": "2026-11-07T10:25:35-05:00"
     },
     {
-      "id": "bc-8956196805039842939",
+      "id": "bc-2838601543501463122",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": " CTM360 Exposes Fake Gift Card Scams Exploiting Trusted Brands",
@@ -362,7 +371,7 @@
       "published": "2026-11-07T09:10:19-05:00"
     },
     {
-      "id": "bc-7984731216543979877",
+      "id": "bc-8638873632753459371",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SonicWall warns of new SSL-VPN MFA bypass flaw exploited in attacks",
@@ -371,7 +380,7 @@
       "published": "2026-11-06T19:00:55-05:00"
     },
     {
-      "id": "bc-5887720300142619954",
+      "id": "bc-1879284806448036506",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Runaway AI hacking agent behind WorkOS breach after escaping sandbox",
@@ -380,7 +389,7 @@
       "published": "2026-11-06T17:27:25-05:00"
     },
     {
-      "id": "bc-4712014053620087933",
+      "id": "bc-8765851958350185804",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI's new GPT-6 Cyber AI finds 81 Firefox flaws, 948 Linux bugs",
@@ -389,7 +398,7 @@
       "published": "2026-11-06T15:24:19-05:00"
     },
     {
-      "id": "bc-3725094532957755185",
+      "id": "bc-5530044828572957438",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake security tools on GitHub push backdoors and infostealers",
@@ -398,7 +407,7 @@
       "published": "2026-11-06T13:46:52-05:00"
     },
     {
-      "id": "bc-6252874771452559625",
+      "id": "bc-8045582823272383797",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "QNAP says hackers breaching NAS devices in Plex2Shell attacks",
@@ -407,7 +416,7 @@
       "published": "2026-11-06T12:04:23-05:00"
     },
     {
-      "id": "bc-4423560082100627994",
+      "id": "bc-543461715049480691",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Veeam warns of Software Appliance boot failures on AMD EPYC hosts",
@@ -416,7 +425,7 @@
       "published": "2026-11-06T10:25:31-05:00"
     },
     {
-      "id": "bc-3562612213826589845",
+      "id": "bc-1568990096157044615",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "IMSI vs IMEI: What Your Phone Broadcasts and Who Can Read It",
@@ -425,7 +434,7 @@
       "published": "2026-11-06T10:00:10-05:00"
     },
     {
-      "id": "bc-7298050244567450210",
+      "id": "bc-6271789065399097419",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Chainalysis says breach exposed credentials for all customers",
@@ -434,7 +443,7 @@
       "published": "2026-11-06T09:17:07-05:00"
     },
     {
-      "id": "bc-2458738631346774947",
+      "id": "bc-4687743246058336679",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "D-Link warns of multiple zero-days in DGS-3130 Series switches",
@@ -443,7 +452,7 @@
       "published": "2026-11-06T07:37:22-05:00"
     },
     {
-      "id": "bc-956795302018391035",
+      "id": "bc-1112224581159570180",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "MetaMask says recent attack didn't affect wallet infrastructure",
@@ -452,7 +461,7 @@
       "published": "2026-11-06T04:22:28-05:00"
     },
     {
-      "id": "bc-1089876873979727684",
+      "id": "bc-7097659172821282926",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI, CISA warn of cyberattacks targeting refrigeration systems",
@@ -461,22 +470,13 @@
       "published": "2026-11-05T19:56:44-05:00"
     },
     {
-      "id": "bc-3391281310161049224",
+      "id": "bc-5624693055259018764",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake OpenAI, SpaceX events used to steal Microsoft, Google accounts",
       "url": "https://www.bleepingcomputer.com/news/security/fake-openai-spacex-events-used-to-steal-microsoft-google-accounts/",
       "points": 0,
       "published": "2026-11-05T16:30:30-05:00"
-    },
-    {
-      "id": "bc-4233110296160985841",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Nearly 1.5 million exposed secrets targeted in new revocation program",
-      "url": "https://www.bleepingcomputer.com/news/security/truffle-security-launches-program-to-revoke-14-million-live-secrets/",
-      "points": 0,
-      "published": "2026-11-05T15:15:08-05:00"
     }
   ]
 }
