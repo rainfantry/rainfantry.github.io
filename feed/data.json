@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T13:55:26.200229+00:00",
+  "generated_at": "2026-11-10T22:38:14.556623+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,88 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8521419116881427028",
+      "id": "bc-2810198635600023131",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Railway breach leads to $740,000 in fraudulent AI charges",
+      "url": "https://www.bleepingcomputer.com/news/apple/railway-breach-leads-to-740-000-in-fraudulent-ai-charges/",
+      "points": 0,
+      "published": "2026-11-10T17:20:19-05:00"
+    },
+    {
+      "id": "bc-7824873569428462056",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Japanese furniture giant Nitori says hackers stole 37.6M customer records",
+      "url": "https://www.bleepingcomputer.com/news/security/japanese-furniture-giant-nitori-says-hackers-stole-376m-customer-records/",
+      "points": 0,
+      "published": "2026-11-10T15:54:55-05:00"
+    },
+    {
+      "id": "bc-1826957445860119952",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft releases Windows 10 KB5131096 extended security update",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-windows-10-kb5131096-extended-security-update/",
+      "points": 0,
+      "published": "2026-11-10T15:04:36-05:00"
+    },
+    {
+      "id": "bc-2612562443871539179",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers exploit trusted AWS access to breach multiple cloud environments",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-trusted-aws-access-to-breach-multiple-cloud-environments/",
+      "points": 0,
+      "published": "2026-11-10T14:31:11-05:00"
+    },
+    {
+      "id": "bc-8963188904369822326",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft November 2026 Patch Tuesday fixes 1,235 flaws, Outlook zero-day",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-november-2026-patch-tuesday-fixes-1-235-flaws-outlook-zero-day/",
+      "points": 0,
+      "published": "2026-11-10T14:07:36-05:00"
+    },
+    {
+      "id": "bc-181831869932091307",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Windows 11 KB5132061 & KB5131087 cumulative updates released",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5132061-and-kb5131087-cumulative-updates-released/",
+      "points": 0,
+      "published": "2026-11-10T13:33:26-05:00"
+    },
+    {
+      "id": "bc-7245352568901126466",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Critical Xen Orchestra auth bypass flaw exploited to hijack VM servers",
+      "url": "https://www.bleepingcomputer.com/news/security/critical-xen-orchestra-auth-bypass-flaw-exploited-to-hijack-vm-servers/",
+      "points": 0,
+      "published": "2026-11-10T11:17:16-05:00"
+    },
+    {
+      "id": "bc-8286964544337491744",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Binance warns of iOS flaw that could leak crypto wallet secrets",
+      "url": "https://www.bleepingcomputer.com/news/security/binance-warns-of-ios-flaw-that-could-leak-crypto-wallet-secrets/",
+      "points": 0,
+      "published": "2026-11-10T10:59:19-05:00"
+    },
+    {
+      "id": "bc-3911852364124969170",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Ransomware recovery is now a client retention metric",
+      "url": "https://www.bleepingcomputer.com/news/security/ransomware-recovery-is-now-a-client-retention-metric/",
+      "points": 0,
+      "published": "2026-11-10T10:01:11-05:00"
+    },
+    {
+      "id": "bc-7867817527257207845",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SAP patches ICM2SHELL and PROXYGATE maximum severity flaws",
@@ -353,7 +434,7 @@
       "published": "2026-11-10T07:07:03-05:00"
     },
     {
-      "id": "bc-2742085739670535620",
+      "id": "bc-4509418453063384294",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers now exploit critical Barracuda ESG flaws to gain root access",
@@ -362,7 +443,7 @@
       "published": "2026-11-10T05:10:20-05:00"
     },
     {
-      "id": "bc-3401682682066823563",
+      "id": "bc-6711951822853098724",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Turla hackers use new Cereal malware to spy on govt Exchange servers",
@@ -371,7 +452,7 @@
       "published": "2026-11-10T05:04:32-05:00"
     },
     {
-      "id": "bc-1251142838971207115",
+      "id": "bc-2610730057621085268",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google patches eighth Chrome zero-day exploited in attacks this year",
@@ -380,7 +461,7 @@
       "published": "2026-11-10T03:51:25-05:00"
     },
     {
-      "id": "bc-6936558081255036260",
+      "id": "bc-8067296566732969647",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fireworks AI discloses new breach after cloud provider hack",
@@ -389,94 +470,13 @@
       "published": "2026-11-10T02:49:58-05:00"
     },
     {
-      "id": "bc-5716977831898137766",
+      "id": "bc-43133449526121272",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vanderbilt University hit in BYOD ransomware attack, data theft claimed",
       "url": "https://www.bleepingcomputer.com/news/security/vanderbilt-university-hit-in-byod-ransomware-attack-data-theft-claimed/",
       "points": 0,
       "published": "2026-11-09T18:52:12-05:00"
-    },
-    {
-      "id": "bc-1299559476896089389",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "SEGA newsletter data breach exposes 2.2 million email addresses",
-      "url": "https://www.bleepingcomputer.com/news/security/sega-newsletter-data-breach-exposes-22-million-email-addresses/",
-      "points": 0,
-      "published": "2026-11-09T17:09:33-05:00"
-    },
-    {
-      "id": "bc-932245124985347386",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "N-able takes cloud platform offline after 30+ \"zero-days\" published",
-      "url": "https://www.bleepingcomputer.com/news/security/n-able-takes-cloud-platform-offline-after-30-plus-zero-days-published/",
-      "points": 0,
-      "published": "2026-11-09T16:26:25-05:00"
-    },
-    {
-      "id": "bc-7785051013202039691",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "York University breach exposed personal information dating to 2007",
-      "url": "https://www.bleepingcomputer.com/news/security/york-university-breach-exposed-personal-information-dating-to-2007/",
-      "points": 0,
-      "published": "2026-11-09T16:22:31-05:00"
-    },
-    {
-      "id": "bc-1624843785469003353",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "France blames Iranian hackers for supermarket attacks that sparked fires",
-      "url": "https://www.bleepingcomputer.com/news/security/france-blames-iranian-hackers-for-supermarket-attacks-that-sparked-fires/",
-      "points": 0,
-      "published": "2026-11-09T13:32:42-05:00"
-    },
-    {
-      "id": "bc-4017290398132072685",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Russian cloud firm Beget rebuilds from scratch after data wiper attack",
-      "url": "https://www.bleepingcomputer.com/news/security/russian-cloud-firm-beget-rebuilds-from-scratch-after-data-wiper-attack/",
-      "points": 0,
-      "published": "2026-11-09T12:50:32-05:00"
-    },
-    {
-      "id": "bc-8753916608415910816",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Binance denies data breach after alleged ShinyHunters claims",
-      "url": "https://www.bleepingcomputer.com/news/security/binance-denies-data-breach-after-alleged-shinyhunters-claims/",
-      "points": 0,
-      "published": "2026-11-09T11:12:39-05:00"
-    },
-    {
-      "id": "bc-7019393168117729903",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers exploit SSHole OpenSSH flaw to breach Linux systems",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-sshole-openssh-flaw-to-breach-linux-systems/",
-      "points": 0,
-      "published": "2026-11-09T11:04:57-05:00"
-    },
-    {
-      "id": "bc-1699310470985513880",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "The Biggest Threat to Your GRC Job Isn’t AI. It’s Ignoring AI.",
-      "url": "https://www.bleepingcomputer.com/news/security/the-biggest-threat-to-your-grc-job-isnt-ai-its-ignoring-ai/",
-      "points": 0,
-      "published": "2026-11-09T10:05:15-05:00"
-    },
-    {
-      "id": "bc-5617541352652529720",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "FBI agent stole $2.5 million in crypto from hackers under investigation",
-      "url": "https://www.bleepingcomputer.com/news/security/fbi-agent-stole-25-million-in-crypto-from-hackers-fraud-victims/",
-      "points": 0,
-      "published": "2026-11-09T09:34:03-05:00"
     }
   ]
 }
