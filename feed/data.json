@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T00:57:21.268324+00:00",
+  "generated_at": "2026-11-10T13:55:26.200229+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,52 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1800853578180428094",
+      "id": "bc-8521419116881427028",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "SAP patches ICM2SHELL and PROXYGATE maximum severity flaws",
+      "url": "https://www.bleepingcomputer.com/news/security/sap-patches-four-maximum-severity-security-vulnerabilities/",
+      "points": 0,
+      "published": "2026-11-10T07:07:03-05:00"
+    },
+    {
+      "id": "bc-2742085739670535620",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers now exploit critical Barracuda ESG flaws to gain root access",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-barracuda-email-security-gateway-flaws-to-get-root-access/",
+      "points": 0,
+      "published": "2026-11-10T05:10:20-05:00"
+    },
+    {
+      "id": "bc-3401682682066823563",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Turla hackers use new Cereal malware to spy on govt Exchange servers",
+      "url": "https://www.bleepingcomputer.com/news/security/turla-hackers-use-new-ceral-malware-to-spy-on-govt-exchange-servers/",
+      "points": 0,
+      "published": "2026-11-10T05:04:32-05:00"
+    },
+    {
+      "id": "bc-1251142838971207115",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Google patches eighth Chrome zero-day exploited in attacks this year",
+      "url": "https://www.bleepingcomputer.com/news/security/google-patches-eighth-chrome-zero-day-exploited-in-attacks-this-year/",
+      "points": 0,
+      "published": "2026-11-10T03:51:25-05:00"
+    },
+    {
+      "id": "bc-6936558081255036260",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Fireworks AI discloses new breach after cloud provider hack",
+      "url": "https://www.bleepingcomputer.com/news/security/fireworks-ai-discloses-new-breach-after-cloud-provider-hack/",
+      "points": 0,
+      "published": "2026-11-10T02:49:58-05:00"
+    },
+    {
+      "id": "bc-5716977831898137766",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vanderbilt University hit in BYOD ransomware attack, data theft claimed",
@@ -353,7 +398,7 @@
       "published": "2026-11-09T18:52:12-05:00"
     },
     {
-      "id": "bc-6438747273939349102",
+      "id": "bc-1299559476896089389",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SEGA newsletter data breach exposes 2.2 million email addresses",
@@ -362,7 +407,7 @@
       "published": "2026-11-09T17:09:33-05:00"
     },
     {
-      "id": "bc-4849902955090276039",
+      "id": "bc-932245124985347386",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "N-able takes cloud platform offline after 30+ \"zero-days\" published",
@@ -371,7 +416,7 @@
       "published": "2026-11-09T16:26:25-05:00"
     },
     {
-      "id": "bc-6411312335661152604",
+      "id": "bc-7785051013202039691",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "York University breach exposed personal information dating to 2007",
@@ -380,7 +425,7 @@
       "published": "2026-11-09T16:22:31-05:00"
     },
     {
-      "id": "bc-8392260746939358858",
+      "id": "bc-1624843785469003353",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "France blames Iranian hackers for supermarket attacks that sparked fires",
@@ -389,7 +434,7 @@
       "published": "2026-11-09T13:32:42-05:00"
     },
     {
-      "id": "bc-4761777650048914865",
+      "id": "bc-4017290398132072685",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Russian cloud firm Beget rebuilds from scratch after data wiper attack",
@@ -398,7 +443,7 @@
       "published": "2026-11-09T12:50:32-05:00"
     },
     {
-      "id": "bc-2783332462717807184",
+      "id": "bc-8753916608415910816",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance denies data breach after alleged ShinyHunters claims",
@@ -407,7 +452,7 @@
       "published": "2026-11-09T11:12:39-05:00"
     },
     {
-      "id": "bc-1918029783382680301",
+      "id": "bc-7019393168117729903",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit SSHole OpenSSH flaw to breach Linux systems",
@@ -416,7 +461,7 @@
       "published": "2026-11-09T11:04:57-05:00"
     },
     {
-      "id": "bc-5248408483659227223",
+      "id": "bc-1699310470985513880",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "The Biggest Threat to Your GRC Job Isn’t AI. It’s Ignoring AI.",
@@ -425,58 +470,13 @@
       "published": "2026-11-09T10:05:15-05:00"
     },
     {
-      "id": "bc-6656375501090822575",
+      "id": "bc-5617541352652529720",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI agent stole $2.5 million in crypto from hackers under investigation",
       "url": "https://www.bleepingcomputer.com/news/security/fbi-agent-stole-25-million-in-crypto-from-hackers-fraud-victims/",
       "points": 0,
       "published": "2026-11-09T09:34:03-05:00"
-    },
-    {
-      "id": "bc-1520339356810297664",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "US bans MEXC crypto exchange over sanctions evasion, cybercrime links",
-      "url": "https://www.bleepingcomputer.com/news/security/us-bans-mexc-crypto-exchange-over-sanctions-evasion-cybercrime-links/",
-      "points": 0,
-      "published": "2026-11-09T08:28:56-05:00"
-    },
-    {
-      "id": "bc-2194645262632129932",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Ukraine dismantles crypto scam network that stole €4.3 million",
-      "url": "https://www.bleepingcomputer.com/news/security/ukraine-dismantles-crypto-scam-network-that-stole-43-million/",
-      "points": 0,
-      "published": "2026-11-09T07:16:13-05:00"
-    },
-    {
-      "id": "bc-1309182030737142399",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Iris Ohyama data cloud breach exposes info of 7.7 million customers",
-      "url": "https://www.bleepingcomputer.com/news/security/iris-ohyama-data-cloud-breach-exposes-info-of-77-million-customers/",
-      "points": 0,
-      "published": "2026-11-08T10:43:08-05:00"
-    },
-    {
-      "id": "bc-7003932618945682611",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers pull off $133 million French bank heist via service provider",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-pull-off-133-million-french-bank-heist-via-service-provider/",
-      "points": 0,
-      "published": "2026-11-07T10:25:35-05:00"
-    },
-    {
-      "id": "bc-543337692338903849",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": " CTM360 Exposes Fake Gift Card Scams Exploiting Trusted Brands",
-      "url": "https://www.bleepingcomputer.com/news/security/ctm360-exposes-fake-gift-card-scams-exploiting-trusted-brands/",
-      "points": 0,
-      "published": "2026-11-07T09:10:19-05:00"
     }
   ]
 }
