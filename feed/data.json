@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T22:38:14.556623+00:00",
+  "generated_at": "2026-11-11T03:39:38.286626+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-2810198635600023131",
+      "id": "bc-3991078571373139491",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway breach leads to $740,000 in fraudulent AI charges",
@@ -353,7 +353,7 @@
       "published": "2026-11-10T17:20:19-05:00"
     },
     {
-      "id": "bc-7824873569428462056",
+      "id": "bc-1664034991211523355",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japanese furniture giant Nitori says hackers stole 37.6M customer records",
@@ -362,7 +362,7 @@
       "published": "2026-11-10T15:54:55-05:00"
     },
     {
-      "id": "bc-1826957445860119952",
+      "id": "bc-5841551089881424274",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases Windows 10 KB5131096 extended security update",
@@ -371,7 +371,7 @@
       "published": "2026-11-10T15:04:36-05:00"
     },
     {
-      "id": "bc-2612562443871539179",
+      "id": "bc-3563790580540565622",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit trusted AWS access to breach multiple cloud environments",
@@ -380,7 +380,7 @@
       "published": "2026-11-10T14:31:11-05:00"
     },
     {
-      "id": "bc-8963188904369822326",
+      "id": "bc-1017678883249620309",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft November 2026 Patch Tuesday fixes 1,235 flaws, Outlook zero-day",
@@ -389,7 +389,7 @@
       "published": "2026-11-10T14:07:36-05:00"
     },
     {
-      "id": "bc-181831869932091307",
+      "id": "bc-8894414710940910093",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5132061 & KB5131087 cumulative updates released",
@@ -398,7 +398,7 @@
       "published": "2026-11-10T13:33:26-05:00"
     },
     {
-      "id": "bc-7245352568901126466",
+      "id": "bc-6280794325685722362",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Xen Orchestra auth bypass flaw exploited to hijack VM servers",
@@ -407,7 +407,7 @@
       "published": "2026-11-10T11:17:16-05:00"
     },
     {
-      "id": "bc-8286964544337491744",
+      "id": "bc-2830790227026051826",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance warns of iOS flaw that could leak crypto wallet secrets",
@@ -416,7 +416,7 @@
       "published": "2026-11-10T10:59:19-05:00"
     },
     {
-      "id": "bc-3911852364124969170",
+      "id": "bc-6165778772121647978",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ransomware recovery is now a client retention metric",
@@ -425,7 +425,7 @@
       "published": "2026-11-10T10:01:11-05:00"
     },
     {
-      "id": "bc-7867817527257207845",
+      "id": "bc-2861887596046125559",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SAP patches ICM2SHELL and PROXYGATE maximum severity flaws",
@@ -434,7 +434,7 @@
       "published": "2026-11-10T07:07:03-05:00"
     },
     {
-      "id": "bc-4509418453063384294",
+      "id": "bc-3576689588272718773",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers now exploit critical Barracuda ESG flaws to gain root access",
@@ -443,7 +443,7 @@
       "published": "2026-11-10T05:10:20-05:00"
     },
     {
-      "id": "bc-6711951822853098724",
+      "id": "bc-1752100154416827231",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Turla hackers use new Cereal malware to spy on govt Exchange servers",
@@ -452,7 +452,7 @@
       "published": "2026-11-10T05:04:32-05:00"
     },
     {
-      "id": "bc-2610730057621085268",
+      "id": "bc-5896798131429217765",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google patches eighth Chrome zero-day exploited in attacks this year",
@@ -461,7 +461,7 @@
       "published": "2026-11-10T03:51:25-05:00"
     },
     {
-      "id": "bc-8067296566732969647",
+      "id": "bc-4783443655322222443",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fireworks AI discloses new breach after cloud provider hack",
@@ -470,7 +470,7 @@
       "published": "2026-11-10T02:49:58-05:00"
     },
     {
-      "id": "bc-43133449526121272",
+      "id": "bc-718980074344178038",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vanderbilt University hit in BYOD ransomware attack, data theft claimed",
