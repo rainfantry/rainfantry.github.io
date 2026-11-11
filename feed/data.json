@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T03:39:38.286626+00:00",
+  "generated_at": "2026-11-11T13:09:00.991979+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-3991078571373139491",
+      "id": "bc-6320301271614475371",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "N-able releases security hotfixes for zero-day vulnerabilities",
+      "url": "https://www.bleepingcomputer.com/news/security/n-able-releases-security-hotfixes-for-zero-day-vulnerabilities/",
+      "points": 0,
+      "published": "2026-11-11T07:32:27-05:00"
+    },
+    {
+      "id": "bc-6090987881801711280",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft fixes audio issues caused by September security updates",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-usb-audio-issues-caused-by-september-security-updates/",
+      "points": 0,
+      "published": "2026-11-11T06:18:36-05:00"
+    },
+    {
+      "id": "bc-6877336323434084303",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA flags Cisco BroadWorks flaw as actively exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-flags-cisco-broadworks-flaw-as-actively-exploited-in-attacks/",
+      "points": 0,
+      "published": "2026-11-11T05:12:08-05:00"
+    },
+    {
+      "id": "bc-1479950981102301075",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft fixes Exchange sign-ins broken by Windows Server updates",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-exchange-sign-ins-broken-by-october-windows-server-updates/",
+      "points": 0,
+      "published": "2026-11-11T04:07:27-05:00"
+    },
+    {
+      "id": "bc-745251932519514390",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway breach leads to $740,000 in fraudulent AI charges",
@@ -353,7 +389,7 @@
       "published": "2026-11-10T17:20:19-05:00"
     },
     {
-      "id": "bc-1664034991211523355",
+      "id": "bc-970085339143840259",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japanese furniture giant Nitori says hackers stole 37.6M customer records",
@@ -362,7 +398,7 @@
       "published": "2026-11-10T15:54:55-05:00"
     },
     {
-      "id": "bc-5841551089881424274",
+      "id": "bc-991293835876828050",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases Windows 10 KB5131096 extended security update",
@@ -371,7 +407,7 @@
       "published": "2026-11-10T15:04:36-05:00"
     },
     {
-      "id": "bc-3563790580540565622",
+      "id": "bc-8877773549568768944",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit trusted AWS access to breach multiple cloud environments",
@@ -380,7 +416,7 @@
       "published": "2026-11-10T14:31:11-05:00"
     },
     {
-      "id": "bc-1017678883249620309",
+      "id": "bc-8472607267572466225",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft November 2026 Patch Tuesday fixes 1,235 flaws, Outlook zero-day",
@@ -389,7 +425,7 @@
       "published": "2026-11-10T14:07:36-05:00"
     },
     {
-      "id": "bc-8894414710940910093",
+      "id": "bc-2907050123544092199",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5132061 & KB5131087 cumulative updates released",
@@ -398,7 +434,7 @@
       "published": "2026-11-10T13:33:26-05:00"
     },
     {
-      "id": "bc-6280794325685722362",
+      "id": "bc-5901039239216931080",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Xen Orchestra auth bypass flaw exploited to hijack VM servers",
@@ -407,7 +443,7 @@
       "published": "2026-11-10T11:17:16-05:00"
     },
     {
-      "id": "bc-2830790227026051826",
+      "id": "bc-3482492778396559837",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Binance warns of iOS flaw that could leak crypto wallet secrets",
@@ -416,7 +452,7 @@
       "published": "2026-11-10T10:59:19-05:00"
     },
     {
-      "id": "bc-6165778772121647978",
+      "id": "bc-6518680910804951974",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ransomware recovery is now a client retention metric",
@@ -425,7 +461,7 @@
       "published": "2026-11-10T10:01:11-05:00"
     },
     {
-      "id": "bc-2861887596046125559",
+      "id": "bc-1612817173584898782",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SAP patches ICM2SHELL and PROXYGATE maximum severity flaws",
@@ -434,49 +470,13 @@
       "published": "2026-11-10T07:07:03-05:00"
     },
     {
-      "id": "bc-3576689588272718773",
+      "id": "bc-8256091598178840578",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers now exploit critical Barracuda ESG flaws to gain root access",
       "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-barracuda-email-security-gateway-flaws-to-get-root-access/",
       "points": 0,
       "published": "2026-11-10T05:10:20-05:00"
-    },
-    {
-      "id": "bc-1752100154416827231",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Turla hackers use new Cereal malware to spy on govt Exchange servers",
-      "url": "https://www.bleepingcomputer.com/news/security/turla-hackers-use-new-ceral-malware-to-spy-on-govt-exchange-servers/",
-      "points": 0,
-      "published": "2026-11-10T05:04:32-05:00"
-    },
-    {
-      "id": "bc-5896798131429217765",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google patches eighth Chrome zero-day exploited in attacks this year",
-      "url": "https://www.bleepingcomputer.com/news/security/google-patches-eighth-chrome-zero-day-exploited-in-attacks-this-year/",
-      "points": 0,
-      "published": "2026-11-10T03:51:25-05:00"
-    },
-    {
-      "id": "bc-4783443655322222443",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Fireworks AI discloses new breach after cloud provider hack",
-      "url": "https://www.bleepingcomputer.com/news/security/fireworks-ai-discloses-new-breach-after-cloud-provider-hack/",
-      "points": 0,
-      "published": "2026-11-10T02:49:58-05:00"
-    },
-    {
-      "id": "bc-718980074344178038",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Vanderbilt University hit in BYOD ransomware attack, data theft claimed",
-      "url": "https://www.bleepingcomputer.com/news/security/vanderbilt-university-hit-in-byod-ransomware-attack-data-theft-claimed/",
-      "points": 0,
-      "published": "2026-11-09T18:52:12-05:00"
     }
   ]
 }
