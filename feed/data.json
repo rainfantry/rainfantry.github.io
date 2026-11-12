@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T14:11:47.978339+00:00",
+  "generated_at": "2026-11-12T22:57:33.715800+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,88 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1940545288433511271",
+      "id": "bc-6703620783968710051",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New worm-like 'SCKit' malware targets MSPs in ScreenConnect attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/new-worm-like-sckit-malware-targets-msps-in-screenconnect-attacks/",
+      "points": 0,
+      "published": "2026-11-12T17:53:10-05:00"
+    },
+    {
+      "id": "bc-1450125934728208728",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers compromise 4,800 GitHub accounts to steal cloud credentials",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-compromise-4-800-github-accounts-to-steal-cloud-credentials/",
+      "points": 0,
+      "published": "2026-11-12T17:25:30-05:00"
+    },
+    {
+      "id": "bc-3776790881712610611",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Massive Microsoft 365 outage disrupts Outlook, Teams, Copilot worldwide",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/massive-microsoft-365-outage-disrupts-outlook-teams-copilot-worldwide/",
+      "points": 0,
+      "published": "2026-11-12T15:15:16-05:00"
+    },
+    {
+      "id": "bc-7477233802090022323",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New N-able \"4EverAble2Shell\" zero-day exploited hours after PoC released",
+      "url": "https://www.bleepingcomputer.com/news/security/new-n-able-4everable2shell-zero-day-exploited-hours-after-poc-released/",
+      "points": 0,
+      "published": "2026-11-12T14:51:16-05:00"
+    },
+    {
+      "id": "bc-4819622098437100790",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Apache HTTP Server patches critical HTTP/2 remote code execution flaw",
+      "url": "https://www.bleepingcomputer.com/news/security/apache-http-server-patches-critical-http-2-remote-code-execution-flaw/",
+      "points": 0,
+      "published": "2026-11-12T14:12:55-05:00"
+    },
+    {
+      "id": "bc-3385074654581092734",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New Windows SignDrop zero-day gives hackers SYSTEM privileges",
+      "url": "https://www.bleepingcomputer.com/news/security/new-windows-signdrop-zero-day-gives-hackers-system-privileges/",
+      "points": 0,
+      "published": "2026-11-12T11:04:00-05:00"
+    },
+    {
+      "id": "bc-3645070322101158535",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Police dismantle Gootloader, CastleRAT, StealC malware infrastructure",
+      "url": "https://www.bleepingcomputer.com/news/security/police-dismantles-gootloader-castlerat-stealc-malware-infrastructure/",
+      "points": 0,
+      "published": "2026-11-12T10:07:20-05:00"
+    },
+    {
+      "id": "bc-4706227280213055689",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Your Endpoint Management Platform Could Be Your Biggest Security Risk",
+      "url": "https://www.bleepingcomputer.com/news/security/your-endpoint-management-platform-could-be-your-biggest-security-risk/",
+      "points": 0,
+      "published": "2026-11-12T10:00:10-05:00"
+    },
+    {
+      "id": "bc-1039913976870331037",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Apify rotates API tokens, prompts 2FA resets after breach",
+      "url": "https://www.bleepingcomputer.com/news/security/apify-rotates-api-tokens-prompts-2fa-resets-after-breach/",
+      "points": 0,
+      "published": "2026-11-12T09:36:47-05:00"
+    },
+    {
+      "id": "bc-8334018588396215215",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: Recent Windows updates cause SQL Server performance issues",
@@ -353,7 +434,7 @@
       "published": "2026-11-12T07:11:11-05:00"
     },
     {
-      "id": "bc-3439341175355106151",
+      "id": "bc-5848973040726570655",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft confirms Windows security updates installation issues",
@@ -362,7 +443,7 @@
       "published": "2026-11-12T05:24:07-05:00"
     },
     {
-      "id": "bc-6444124306641583493",
+      "id": "bc-6426963855910977326",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers plant GSocket on Linux servers for persistent access",
@@ -371,7 +452,7 @@
       "published": "2026-11-12T04:38:00-05:00"
     },
     {
-      "id": "bc-100463513089643732",
+      "id": "bc-5035646372050093991",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Baker Tilly notifies clients of data breach at third-party provider",
@@ -380,7 +461,7 @@
       "published": "2026-11-11T18:01:31-05:00"
     },
     {
-      "id": "bc-5698298912576905761",
+      "id": "bc-7390031426048477444",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Active ScreenConnect attacks breach MSPs, impact dozens of organizations",
@@ -389,94 +470,13 @@
       "published": "2026-11-11T17:56:21-05:00"
     },
     {
-      "id": "bc-7018164905832671719",
+      "id": "bc-4752038246442891449",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "eMudhra revokes 8 more CA certificates after private key mishap",
       "url": "https://www.bleepingcomputer.com/news/security/emudhra-revokes-8-more-ca-certificates-after-private-key-mishap/",
       "points": 0,
       "published": "2026-11-11T16:27:40-05:00"
-    },
-    {
-      "id": "bc-4601443207958431127",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Notion says Fireworks breach exposed customer AI chat transcripts",
-      "url": "https://www.bleepingcomputer.com/news/security/notion-says-fireworks-breach-exposed-customer-ai-chat-transcripts/",
-      "points": 0,
-      "published": "2026-11-11T15:54:20-05:00"
-    },
-    {
-      "id": "bc-7800667070877255773",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Maersk confirms data breach as WhiteArmor ransomware demands $5 million",
-      "url": "https://www.bleepingcomputer.com/news/security/maersk-confirms-data-breach-as-whitearmor-ransomware-demands-5-million/",
-      "points": 0,
-      "published": "2026-11-11T11:24:18-05:00"
-    },
-    {
-      "id": "bc-6396282801019972184",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers use AntiFox AI agents in AWS credential-theft attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-use-antifox-ai-agents-in-aws-credential-theft-attacks/",
-      "points": 0,
-      "published": "2026-11-11T10:12:59-05:00"
-    },
-    {
-      "id": "bc-619108547854289452",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "eBPF Rootkits: Why Underground Actors Are Taking Notice",
-      "url": "https://www.bleepingcomputer.com/news/security/ebpf-rootkits-why-underground-actors-are-taking-notice/",
-      "points": 0,
-      "published": "2026-11-11T10:01:11-05:00"
-    },
-    {
-      "id": "bc-3282106017306434560",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "N-able releases security hotfixes for zero-day vulnerabilities",
-      "url": "https://www.bleepingcomputer.com/news/security/n-able-releases-security-hotfixes-for-zero-day-vulnerabilities/",
-      "points": 0,
-      "published": "2026-11-11T07:32:27-05:00"
-    },
-    {
-      "id": "bc-5998278270461169044",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft fixes audio issues caused by September security updates",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-usb-audio-issues-caused-by-september-security-updates/",
-      "points": 0,
-      "published": "2026-11-11T06:18:36-05:00"
-    },
-    {
-      "id": "bc-6916207487574324992",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA flags Cisco BroadWorks flaw as actively exploited in attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-flags-cisco-broadworks-flaw-as-actively-exploited-in-attacks/",
-      "points": 0,
-      "published": "2026-11-11T05:12:08-05:00"
-    },
-    {
-      "id": "bc-9090344260052005900",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft fixes Exchange sign-ins broken by Windows Server updates",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-exchange-sign-ins-broken-by-october-windows-server-updates/",
-      "points": 0,
-      "published": "2026-11-11T04:07:27-05:00"
-    },
-    {
-      "id": "bc-5284487758944374791",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Railway breach leads to $740,000 in fraudulent AI charges",
-      "url": "https://www.bleepingcomputer.com/news/apple/railway-breach-leads-to-740-000-in-fraudulent-ai-charges/",
-      "points": 0,
-      "published": "2026-11-10T17:20:19-05:00"
     }
   ]
 }
