@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T04:47:50.384046+00:00",
+  "generated_at": "2026-11-12T14:11:47.978339+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7264987703543410149",
+      "id": "bc-1940545288433511271",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft: Recent Windows updates cause SQL Server performance issues",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-recent-windows-updates-cause-sql-server-performance-issues/",
+      "points": 0,
+      "published": "2026-11-12T07:11:11-05:00"
+    },
+    {
+      "id": "bc-3439341175355106151",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft confirms Windows security updates installation issues",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-confirms-kb5132061-installation-issues-0x80070306-0x800f0989-0x800f0993-errors/",
+      "points": 0,
+      "published": "2026-11-12T05:24:07-05:00"
+    },
+    {
+      "id": "bc-6444124306641583493",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers plant GSocket on Linux servers for persistent access",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-plant-gsocket-on-linux-servers-for-persistent-access/",
+      "points": 0,
+      "published": "2026-11-12T04:38:00-05:00"
+    },
+    {
+      "id": "bc-100463513089643732",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Baker Tilly notifies clients of data breach at third-party provider",
@@ -353,7 +380,7 @@
       "published": "2026-11-11T18:01:31-05:00"
     },
     {
-      "id": "bc-5988112315298581502",
+      "id": "bc-5698298912576905761",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Active ScreenConnect attacks breach MSPs, impact dozens of organizations",
@@ -362,7 +389,7 @@
       "published": "2026-11-11T17:56:21-05:00"
     },
     {
-      "id": "bc-3567699745652088306",
+      "id": "bc-7018164905832671719",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "eMudhra revokes 8 more CA certificates after private key mishap",
@@ -371,7 +398,7 @@
       "published": "2026-11-11T16:27:40-05:00"
     },
     {
-      "id": "bc-2717804150173449947",
+      "id": "bc-4601443207958431127",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Notion says Fireworks breach exposed customer AI chat transcripts",
@@ -380,7 +407,7 @@
       "published": "2026-11-11T15:54:20-05:00"
     },
     {
-      "id": "bc-7363911710597823676",
+      "id": "bc-7800667070877255773",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Maersk confirms data breach as WhiteArmor ransomware demands $5 million",
@@ -389,7 +416,7 @@
       "published": "2026-11-11T11:24:18-05:00"
     },
     {
-      "id": "bc-4026850727231775636",
+      "id": "bc-6396282801019972184",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use AntiFox AI agents in AWS credential-theft attacks",
@@ -398,7 +425,7 @@
       "published": "2026-11-11T10:12:59-05:00"
     },
     {
-      "id": "bc-5710083913967354953",
+      "id": "bc-619108547854289452",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "eBPF Rootkits: Why Underground Actors Are Taking Notice",
@@ -407,7 +434,7 @@
       "published": "2026-11-11T10:01:11-05:00"
     },
     {
-      "id": "bc-734996961904705274",
+      "id": "bc-3282106017306434560",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "N-able releases security hotfixes for zero-day vulnerabilities",
@@ -416,7 +443,7 @@
       "published": "2026-11-11T07:32:27-05:00"
     },
     {
-      "id": "bc-2907356189375169958",
+      "id": "bc-5998278270461169044",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes audio issues caused by September security updates",
@@ -425,7 +452,7 @@
       "published": "2026-11-11T06:18:36-05:00"
     },
     {
-      "id": "bc-4829343065577854821",
+      "id": "bc-6916207487574324992",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA flags Cisco BroadWorks flaw as actively exploited in attacks",
@@ -434,7 +461,7 @@
       "published": "2026-11-11T05:12:08-05:00"
     },
     {
-      "id": "bc-4683909877520743485",
+      "id": "bc-9090344260052005900",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes Exchange sign-ins broken by Windows Server updates",
@@ -443,40 +470,13 @@
       "published": "2026-11-11T04:07:27-05:00"
     },
     {
-      "id": "bc-417245968360168798",
+      "id": "bc-5284487758944374791",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway breach leads to $740,000 in fraudulent AI charges",
       "url": "https://www.bleepingcomputer.com/news/apple/railway-breach-leads-to-740-000-in-fraudulent-ai-charges/",
       "points": 0,
       "published": "2026-11-10T17:20:19-05:00"
-    },
-    {
-      "id": "bc-936918068971541630",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Japanese furniture giant Nitori says hackers stole 37.6M customer records",
-      "url": "https://www.bleepingcomputer.com/news/security/japanese-furniture-giant-nitori-says-hackers-stole-376m-customer-records/",
-      "points": 0,
-      "published": "2026-11-10T15:54:55-05:00"
-    },
-    {
-      "id": "bc-6521817788096332629",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft releases Windows 10 KB5131096 extended security update",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-windows-10-kb5131096-extended-security-update/",
-      "points": 0,
-      "published": "2026-11-10T15:04:36-05:00"
-    },
-    {
-      "id": "bc-2099329688109413645",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers exploit trusted AWS access to breach multiple cloud environments",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-trusted-aws-access-to-breach-multiple-cloud-environments/",
-      "points": 0,
-      "published": "2026-11-10T14:31:11-05:00"
     }
   ]
 }
