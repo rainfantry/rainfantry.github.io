@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T23:48:56.963076+00:00",
+  "generated_at": "2026-11-12T04:47:50.384046+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-4403285097698539197",
+      "id": "bc-7264987703543410149",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Baker Tilly notifies clients of data breach at third-party provider",
@@ -353,7 +353,7 @@
       "published": "2026-11-11T18:01:31-05:00"
     },
     {
-      "id": "bc-3257571748407882319",
+      "id": "bc-5988112315298581502",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Active ScreenConnect attacks breach MSPs, impact dozens of organizations",
@@ -362,7 +362,7 @@
       "published": "2026-11-11T17:56:21-05:00"
     },
     {
-      "id": "bc-8601399163206144895",
+      "id": "bc-3567699745652088306",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "eMudhra revokes 8 more CA certificates after private key mishap",
@@ -371,7 +371,7 @@
       "published": "2026-11-11T16:27:40-05:00"
     },
     {
-      "id": "bc-3371331829660902058",
+      "id": "bc-2717804150173449947",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Notion says Fireworks breach exposed customer AI chat transcripts",
@@ -380,7 +380,7 @@
       "published": "2026-11-11T15:54:20-05:00"
     },
     {
-      "id": "bc-3173949711740553297",
+      "id": "bc-7363911710597823676",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Maersk confirms data breach as WhiteArmor ransomware demands $5 million",
@@ -389,7 +389,7 @@
       "published": "2026-11-11T11:24:18-05:00"
     },
     {
-      "id": "bc-4718468049318241685",
+      "id": "bc-4026850727231775636",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use AntiFox AI agents in AWS credential-theft attacks",
@@ -398,7 +398,7 @@
       "published": "2026-11-11T10:12:59-05:00"
     },
     {
-      "id": "bc-4673792003788300784",
+      "id": "bc-5710083913967354953",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "eBPF Rootkits: Why Underground Actors Are Taking Notice",
@@ -407,7 +407,7 @@
       "published": "2026-11-11T10:01:11-05:00"
     },
     {
-      "id": "bc-3832547090427121088",
+      "id": "bc-734996961904705274",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "N-able releases security hotfixes for zero-day vulnerabilities",
@@ -416,7 +416,7 @@
       "published": "2026-11-11T07:32:27-05:00"
     },
     {
-      "id": "bc-2728089034936365270",
+      "id": "bc-2907356189375169958",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes audio issues caused by September security updates",
@@ -425,7 +425,7 @@
       "published": "2026-11-11T06:18:36-05:00"
     },
     {
-      "id": "bc-2422888747612226833",
+      "id": "bc-4829343065577854821",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA flags Cisco BroadWorks flaw as actively exploited in attacks",
@@ -434,7 +434,7 @@
       "published": "2026-11-11T05:12:08-05:00"
     },
     {
-      "id": "bc-3204487244390339205",
+      "id": "bc-4683909877520743485",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes Exchange sign-ins broken by Windows Server updates",
@@ -443,7 +443,7 @@
       "published": "2026-11-11T04:07:27-05:00"
     },
     {
-      "id": "bc-3443349157417406734",
+      "id": "bc-417245968360168798",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Railway breach leads to $740,000 in fraudulent AI charges",
@@ -452,7 +452,7 @@
       "published": "2026-11-10T17:20:19-05:00"
     },
     {
-      "id": "bc-1880838559496637413",
+      "id": "bc-936918068971541630",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japanese furniture giant Nitori says hackers stole 37.6M customer records",
@@ -461,7 +461,7 @@
       "published": "2026-11-10T15:54:55-05:00"
     },
     {
-      "id": "bc-3567018855047546582",
+      "id": "bc-6521817788096332629",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft releases Windows 10 KB5131096 extended security update",
@@ -470,7 +470,7 @@
       "published": "2026-11-10T15:04:36-05:00"
     },
     {
-      "id": "bc-7027991857400795012",
+      "id": "bc-2099329688109413645",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit trusted AWS access to breach multiple cloud environments",
