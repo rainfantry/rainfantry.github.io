@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T13:35:54.906551+00:00",
+  "generated_at": "2026-11-13T23:00:02.349588+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7393994155453027877",
+      "id": "bc-5917130838842331919",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Trezor confirms crypto-stealing implants in three wallets, releases fix",
+      "url": "https://www.bleepingcomputer.com/news/cryptocurrency/trezor-confirms-crypto-stealing-implants-in-three-wallets-releases-fix/",
+      "points": 0,
+      "published": "2026-11-13T14:38:36-05:00"
+    },
+    {
+      "id": "bc-3147389452837639708",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "German military drone operations disrupted by cyberattack",
+      "url": "https://www.bleepingcomputer.com/news/security/german-military-drone-operations-disrupted-by-cyberattack/",
+      "points": 0,
+      "published": "2026-11-13T12:31:56-05:00"
+    },
+    {
+      "id": "bc-5224542864559392766",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Check Point gateways hacked via PHP2Shell to deploy VMware ESXi wiper",
+      "url": "https://www.bleepingcomputer.com/news/security/check-point-gateways-hacked-via-php2shell-to-deploy-vmware-esxi-wiper/",
+      "points": 0,
+      "published": "2026-11-13T11:21:43-05:00"
+    },
+    {
+      "id": "bc-2793556725832346605",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "How one AI agent exposed five critical enterprise security gaps",
+      "url": "https://www.bleepingcomputer.com/news/security/how-one-ai-agent-exposed-five-critical-enterprise-security-gaps/",
+      "points": 0,
+      "published": "2026-11-13T10:01:11-05:00"
+    },
+    {
+      "id": "bc-6119266524649817333",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft says November security updates cause printing issues",
@@ -353,7 +389,7 @@
       "published": "2026-11-13T07:27:40-05:00"
     },
     {
-      "id": "bc-1761231854955621610",
+      "id": "bc-526218901266631987",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Check Point warns of zero-day flaw exploited for root access",
@@ -362,7 +398,7 @@
       "published": "2026-11-13T05:44:22-05:00"
     },
     {
-      "id": "bc-5737459633159511616",
+      "id": "bc-818593483953681265",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft confirms Windows activation failures after November updates",
@@ -371,7 +407,7 @@
       "published": "2026-11-13T04:36:18-05:00"
     },
     {
-      "id": "bc-7516481491636143016",
+      "id": "bc-4373036757267173672",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police arrest 354 suspects in dark web cybercrime crackdown",
@@ -380,7 +416,7 @@
       "published": "2026-11-13T03:34:20-05:00"
     },
     {
-      "id": "bc-1430525039385376645",
+      "id": "bc-6692113522060521269",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New worm-like 'SCKit' malware targets MSPs in ScreenConnect attacks",
@@ -389,7 +425,7 @@
       "published": "2026-11-12T17:53:10-05:00"
     },
     {
-      "id": "bc-1283878407736061494",
+      "id": "bc-2016433951661253697",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers compromise 4,800 GitHub accounts to steal cloud credentials",
@@ -398,7 +434,7 @@
       "published": "2026-11-12T17:25:30-05:00"
     },
     {
-      "id": "bc-7202496349251084775",
+      "id": "bc-180948761356113441",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Massive Microsoft 365 outage disrupts Outlook, Teams, Copilot worldwide",
@@ -407,7 +443,7 @@
       "published": "2026-11-12T15:15:16-05:00"
     },
     {
-      "id": "bc-3739728711718838249",
+      "id": "bc-589836109676300554",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New N-able \"4EverAble2Shell\" zero-day exploited hours after PoC released",
@@ -416,7 +452,7 @@
       "published": "2026-11-12T14:51:16-05:00"
     },
     {
-      "id": "bc-6844709441295034667",
+      "id": "bc-1442064425471606508",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apache HTTP Server patches critical HTTP/2 remote code execution flaw",
@@ -425,7 +461,7 @@
       "published": "2026-11-12T14:12:55-05:00"
     },
     {
-      "id": "bc-2836937176038657440",
+      "id": "bc-5175547397815466578",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Windows SignDrop zero-day gives hackers SYSTEM privileges",
@@ -434,49 +470,13 @@
       "published": "2026-11-12T11:04:00-05:00"
     },
     {
-      "id": "bc-253587414281723336",
+      "id": "bc-5776193914957790333",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police dismantle Gootloader, CastleRAT, StealC malware infrastructure",
       "url": "https://www.bleepingcomputer.com/news/security/police-dismantles-gootloader-castlerat-stealc-malware-infrastructure/",
       "points": 0,
       "published": "2026-11-12T10:07:20-05:00"
-    },
-    {
-      "id": "bc-131336590764147304",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Your Endpoint Management Platform Could Be Your Biggest Security Risk",
-      "url": "https://www.bleepingcomputer.com/news/security/your-endpoint-management-platform-could-be-your-biggest-security-risk/",
-      "points": 0,
-      "published": "2026-11-12T10:00:10-05:00"
-    },
-    {
-      "id": "bc-7859626433124037353",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Apify rotates API tokens, prompts 2FA resets after breach",
-      "url": "https://www.bleepingcomputer.com/news/security/apify-rotates-api-tokens-prompts-2fa-resets-after-breach/",
-      "points": 0,
-      "published": "2026-11-12T09:36:47-05:00"
-    },
-    {
-      "id": "bc-8562919721858164426",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft: Recent Windows updates cause SQL Server performance issues",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-recent-windows-updates-cause-sql-server-performance-issues/",
-      "points": 0,
-      "published": "2026-11-12T07:11:11-05:00"
-    },
-    {
-      "id": "bc-7429190424246248124",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft confirms Windows security updates installation issues",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-confirms-kb5132061-installation-issues-0x80070306-0x800f0989-0x800f0993-errors/",
-      "points": 0,
-      "published": "2026-11-12T05:24:07-05:00"
     }
   ]
 }
