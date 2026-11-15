@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-15T13:07:14.511503+00:00",
-  "item_count": 40,
+  "generated_at": "2026-11-15T22:15:28.110108+00:00",
+  "item_count": 50,
   "sources": [
     "cisa_kev",
     "nvd",
@@ -209,6 +209,96 @@
       "published": "2022-05-03"
     },
     {
+      "id": "nvd-CVE-1999-0095",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0095: The debug command in Sendmail is enabled, allowing attackers to execute commands as root.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0095",
+      "points": 100,
+      "published": "1988-10-01T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-0082",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0082: CWD ~root command in ftpd allows root access.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0082",
+      "points": 100,
+      "published": "1988-11-11T05:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1471",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1471: Buffer overflow in passwd in BSD based operating systems 4.3 and earlier allows local users to gain root privileges by s...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1471",
+      "points": 72,
+      "published": "1989-01-01T05:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1122",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1122: Vulnerability in restore in SunOS 4.0.3 and earlier allows local users to gain privileges.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1122",
+      "points": 46,
+      "published": "1989-07-26T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1467",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1467: Vulnerability in rcp on SunOS 4.0.x allows remote attackers from trusted hosts to execute arbitrary commands as root, po...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1467",
+      "points": 100,
+      "published": "1989-10-26T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1506",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1506: Vulnerability in SMI Sendmail 4.0 and earlier, on SunOS up to 4.0.3, allows remote attackers to access user bin.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1506",
+      "points": 75,
+      "published": "1990-01-29T05:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-0084",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0084: Certain NFS servers allow users to use mknod to gain privileges by creating a writable kmem device and setting the UID t...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0084",
+      "points": 84,
+      "published": "1990-05-01T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-2000-0388",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-2000-0388: Buffer overflow in FreeBSD libmytinfo library allows local users to execute commands via a long TERMCAP environmental va...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-2000-0388",
+      "points": 75,
+      "published": "1990-05-09T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-0209",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-0209: The SunView (SunTools) selection_svc facility allows remote users to read files.",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-0209",
+      "points": 50,
+      "published": "1990-08-14T04:00:00.000"
+    },
+    {
+      "id": "nvd-CVE-1999-1198",
+      "source": "NVD",
+      "source_icon": "🛡️",
+      "title": "CVE-1999-1198: BuildDisk program on NeXT systems before 2.0 does not prompt users for the root password, which allows local users to ga...",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-1999-1198",
+      "points": 72,
+      "published": "1990-10-03T04:00:00.000"
+    },
+    {
       "id": "hn-48609231",
       "source": "Hacker News",
       "source_icon": "🔶",
@@ -254,7 +344,25 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-4826290436426962704",
+      "id": "bc-7500339562324549581",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "FBI warns ARTEX AI hacking tool is powering global cyberattacks",
+      "url": "https://www.bleepingcomputer.com/news/security/fbi-warns-artex-ai-hacking-tool-is-powering-global-cyberattacks/",
+      "points": 0,
+      "published": "2026-11-15T13:29:53-05:00"
+    },
+    {
+      "id": "bc-4652789969976591083",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "TSMC employee data breach linked to cloud provider",
+      "url": "https://www.bleepingcomputer.com/news/security/tsmc-employee-data-breach-linked-to-cloud-provider/",
+      "points": 0,
+      "published": "2026-11-15T10:23:48-05:00"
+    },
+    {
+      "id": "bc-7294628486714137897",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cursor confirms security breach led to malicious Claude Code extension",
@@ -263,7 +371,7 @@
       "published": "2026-11-14T12:27:25-05:00"
     },
     {
-      "id": "bc-121008005896768077",
+      "id": "bc-1683685155290590309",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "US disrupts North Korean campaign behind $400 million crypto theft",
@@ -272,7 +380,7 @@
       "published": "2026-11-14T10:15:49-05:00"
     },
     {
-      "id": "bc-1445099476994440955",
+      "id": "bc-5464977305091139194",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Trezor confirms crypto-stealing implants in three wallets, releases fix",
@@ -281,7 +389,7 @@
       "published": "2026-11-13T14:38:36-05:00"
     },
     {
-      "id": "bc-4013998581521471900",
+      "id": "bc-8108891382669209616",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "German military drone operations disrupted by cyberattack",
@@ -290,7 +398,7 @@
       "published": "2026-11-13T12:31:56-05:00"
     },
     {
-      "id": "bc-1938266210092651574",
+      "id": "bc-2618968380111939052",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Check Point gateways hacked via PHP2Shell to deploy VMware ESXi wiper",
@@ -299,7 +407,7 @@
       "published": "2026-11-13T11:21:43-05:00"
     },
     {
-      "id": "bc-705305810866626626",
+      "id": "bc-1697051447621972671",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "How one AI agent exposed five critical enterprise security gaps",
@@ -308,7 +416,7 @@
       "published": "2026-11-13T10:01:11-05:00"
     },
     {
-      "id": "bc-4394766116102745339",
+      "id": "bc-1867917625644635951",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft says November security updates cause printing issues",
@@ -317,7 +425,7 @@
       "published": "2026-11-13T07:27:40-05:00"
     },
     {
-      "id": "bc-243524501036638797",
+      "id": "bc-2907738410956871385",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Check Point warns of zero-day flaw exploited for root access",
@@ -326,7 +434,7 @@
       "published": "2026-11-13T05:44:22-05:00"
     },
     {
-      "id": "bc-1229606055343992173",
+      "id": "bc-5023047936253480918",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft confirms Windows activation failures after November updates",
@@ -335,7 +443,7 @@
       "published": "2026-11-13T04:36:18-05:00"
     },
     {
-      "id": "bc-1089030587412699697",
+      "id": "bc-5276023870123259180",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police arrest 354 suspects in dark web cybercrime crackdown",
@@ -344,7 +452,7 @@
       "published": "2026-11-13T03:34:20-05:00"
     },
     {
-      "id": "bc-417344638177932885",
+      "id": "bc-6192489720324546169",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New worm-like 'SCKit' malware targets MSPs in ScreenConnect attacks",
@@ -353,7 +461,7 @@
       "published": "2026-11-12T17:53:10-05:00"
     },
     {
-      "id": "bc-5427856387231910166",
+      "id": "bc-5326229608246171888",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers compromise 4,800 GitHub accounts to steal cloud credentials",
@@ -362,31 +470,13 @@
       "published": "2026-11-12T17:25:30-05:00"
     },
     {
-      "id": "bc-2039266459822100140",
+      "id": "bc-4502637555490804019",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Massive Microsoft 365 outage disrupts Outlook, Teams, Copilot worldwide",
       "url": "https://www.bleepingcomputer.com/news/microsoft/massive-microsoft-365-outage-disrupts-outlook-teams-copilot-worldwide/",
       "points": 0,
       "published": "2026-11-12T15:15:16-05:00"
-    },
-    {
-      "id": "bc-8059983995920840941",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "New N-able \"4EverAble2Shell\" zero-day exploited hours after PoC released",
-      "url": "https://www.bleepingcomputer.com/news/security/new-n-able-4everable2shell-zero-day-exploited-hours-after-poc-released/",
-      "points": 0,
-      "published": "2026-11-12T14:51:16-05:00"
-    },
-    {
-      "id": "bc-6095716937989769997",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Apache HTTP Server patches critical HTTP/2 remote code execution flaw",
-      "url": "https://www.bleepingcomputer.com/news/security/apache-http-server-patches-critical-http-2-remote-code-execution-flaw/",
-      "points": 0,
-      "published": "2026-11-12T14:12:55-05:00"
     }
   ]
 }
