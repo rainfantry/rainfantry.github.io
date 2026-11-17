@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T14:13:42.106812+00:00",
+  "generated_at": "2026-11-17T01:16:06.690735+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,70 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-482919978432042117",
+      "id": "bc-7553540670169587091",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Gemini AI agents repeatedly bypassed safeguards to attack real website",
+      "url": "https://www.bleepingcomputer.com/news/security/gemini-ai-agents-repeatedly-bypassed-safeguards-to-attack-real-website/",
+      "points": 0,
+      "published": "2026-11-16T17:54:00-05:00"
+    },
+    {
+      "id": "bc-2362548103223403441",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Google Project Zero cuts bug disclosures to 30 days amid AI threats",
+      "url": "https://www.bleepingcomputer.com/news/security/google-project-zero-cuts-bug-disclosure-deadline-to-30-days-amid-ai-threats/",
+      "points": 0,
+      "published": "2026-11-16T16:31:44-05:00"
+    },
+    {
+      "id": "bc-7887180887064003779",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "California sues OpenAI over AI agents escaping sandboxes, hacking firms",
+      "url": "https://www.bleepingcomputer.com/news/security/california-sues-openai-over-ai-agents-escaping-sandboxes-hacking-firms/",
+      "points": 0,
+      "published": "2026-11-16T15:59:44-05:00"
+    },
+    {
+      "id": "bc-5781961605680437492",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Barracuda links cloud breach to ARTEX AI-powered cyberattack",
+      "url": "https://www.bleepingcomputer.com/news/security/barracuda-links-cloud-breach-to-artex-ai-powered-cyberattack/",
+      "points": 0,
+      "published": "2026-11-16T14:57:13-05:00"
+    },
+    {
+      "id": "bc-6282870733201861273",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft says months-old bug caused global Microsoft 365 outage",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-says-months-old-bug-caused-global-microsoft-365-outage/",
+      "points": 0,
+      "published": "2026-11-16T11:43:24-05:00"
+    },
+    {
+      "id": "bc-2399909979119747850",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Fandango says hackers stole payment card details from checkout pages",
+      "url": "https://www.bleepingcomputer.com/news/security/fandango-says-hackers-stole-payment-card-details-from-checkout-pages/",
+      "points": 0,
+      "published": "2026-11-16T10:44:21-05:00"
+    },
+    {
+      "id": "bc-1830180369352802583",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "7 Tips For Complying with CJIS Password and MFA Requirements",
+      "url": "https://www.bleepingcomputer.com/news/security/7-tips-for-complying-with-cjis-password-and-mfa-requirements/",
+      "points": 0,
+      "published": "2026-11-16T10:01:11-05:00"
+    },
+    {
+      "id": "bc-4259009597347123314",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google warns that fully-automated AI attacks are coming soon",
@@ -353,7 +416,7 @@
       "published": "2026-11-16T09:00:00-05:00"
     },
     {
-      "id": "bc-5610298428984446779",
+      "id": "bc-8283054132267601013",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: Windows Server 2016 reaches end of support in 60 days",
@@ -362,7 +425,7 @@
       "published": "2026-11-16T07:53:18-05:00"
     },
     {
-      "id": "bc-5899626427885756930",
+      "id": "bc-3667162232207725630",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Australian retail giant Coles investigates cybersecurity incident",
@@ -371,7 +434,7 @@
       "published": "2026-11-16T06:18:09-05:00"
     },
     {
-      "id": "bc-6939605470638128107",
+      "id": "bc-7677469262223571601",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Anthropic’s Claude Fable 5.2 blocks fewer security tasks, while Mythos gets better at finding bugs",
@@ -380,7 +443,7 @@
       "published": "2026-11-16T06:00:00-05:00"
     },
     {
-      "id": "bc-3136260309494258372",
+      "id": "bc-2747142096596837039",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New NoisyTCP vulnerability lets attackers crash Linux servers",
@@ -389,7 +452,7 @@
       "published": "2026-11-16T04:30:04-05:00"
     },
     {
-      "id": "bc-6968440288417092294",
+      "id": "bc-6596840150743155591",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft pushes Windows emergency updates to fix activation failures",
@@ -398,7 +461,7 @@
       "published": "2026-11-16T03:26:52-05:00"
     },
     {
-      "id": "bc-2045791771381902299",
+      "id": "bc-3185940576819978697",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI warns ARTEX AI hacking tool is powering global cyberattacks",
@@ -407,76 +470,13 @@
       "published": "2026-11-15T13:29:53-05:00"
     },
     {
-      "id": "bc-8350624114920634362",
+      "id": "bc-4785340217342798267",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "TSMC employee data breach linked to cloud provider",
       "url": "https://www.bleepingcomputer.com/news/security/tsmc-employee-data-breach-linked-to-cloud-provider/",
       "points": 0,
       "published": "2026-11-15T10:23:48-05:00"
-    },
-    {
-      "id": "bc-6228395683791375215",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Cursor confirms security breach led to malicious Claude Code extension",
-      "url": "https://www.bleepingcomputer.com/news/security/cursor-confirms-security-breach-led-to-malicious-claude-code-extension/",
-      "points": 0,
-      "published": "2026-11-14T12:27:25-05:00"
-    },
-    {
-      "id": "bc-1492133156251125182",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "US disrupts North Korean campaign behind $400 million crypto theft",
-      "url": "https://www.bleepingcomputer.com/news/security/us-disrupts-north-korean-campaign-behind-400-million-crypto-theft/",
-      "points": 0,
-      "published": "2026-11-14T10:15:49-05:00"
-    },
-    {
-      "id": "bc-3834976253662934950",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Trezor confirms crypto-stealing implants in three wallets, releases fix",
-      "url": "https://www.bleepingcomputer.com/news/cryptocurrency/trezor-confirms-crypto-stealing-implants-in-three-wallets-releases-fix/",
-      "points": 0,
-      "published": "2026-11-13T14:38:36-05:00"
-    },
-    {
-      "id": "bc-6411954366668028454",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "German military drone operations disrupted by cyberattack",
-      "url": "https://www.bleepingcomputer.com/news/security/german-military-drone-operations-disrupted-by-cyberattack/",
-      "points": 0,
-      "published": "2026-11-13T12:31:56-05:00"
-    },
-    {
-      "id": "bc-7312732641445618172",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Check Point gateways hacked via PHP2Shell to deploy VMware ESXi wiper",
-      "url": "https://www.bleepingcomputer.com/news/security/check-point-gateways-hacked-via-php2shell-to-deploy-vmware-esxi-wiper/",
-      "points": 0,
-      "published": "2026-11-13T11:21:43-05:00"
-    },
-    {
-      "id": "bc-3786882501409061600",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "How one AI agent exposed five critical enterprise security gaps",
-      "url": "https://www.bleepingcomputer.com/news/security/how-one-ai-agent-exposed-five-critical-enterprise-security-gaps/",
-      "points": 0,
-      "published": "2026-11-13T10:01:11-05:00"
-    },
-    {
-      "id": "bc-7556789776095994784",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft says November security updates cause printing issues",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-says-november-security-updates-cause-printing-issues/",
-      "points": 0,
-      "published": "2026-11-13T07:27:40-05:00"
     }
   ]
 }
