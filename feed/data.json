@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T01:16:06.690735+00:00",
+  "generated_at": "2026-11-17T15:06:32.356728+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,52 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7553540670169587091",
+      "id": "bc-4296531806360600069",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft testing Remote Lock for lost or stolen Windows devices",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-testing-remote-lock-for-lost-or-stolen-windows-devices/",
+      "points": 0,
+      "published": "2026-11-17T06:19:51-05:00"
+    },
+    {
+      "id": "bc-749062109504951694",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Court clears brothers of $25 million Ethereum crypto heist charges",
+      "url": "https://www.bleepingcomputer.com/news/security/court-clears-brothers-of-25-million-ethereum-crypto-heist-charges/",
+      "points": 0,
+      "published": "2026-11-17T04:44:22-05:00"
+    },
+    {
+      "id": "bc-5699005600197620409",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Uber notifies drivers of data breach affecting nearly 150,000 people",
+      "url": "https://www.bleepingcomputer.com/news/security/uber-notifies-drivers-of-data-breach-affecting-nearly-150-000-people/",
+      "points": 0,
+      "published": "2026-11-17T03:35:42-05:00"
+    },
+    {
+      "id": "bc-1126606592847529662",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Ransomware affiliate suspect extradited to US, faces 27 years in prison",
+      "url": "https://www.bleepingcomputer.com/news/security/alleged-inc-lynx-ransomware-affiliate-extradited-to-us-faces-27-years-in-prison/",
+      "points": 0,
+      "published": "2026-11-17T02:25:44-05:00"
+    },
+    {
+      "id": "bc-322016559510784919",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Optimizely hack infected CNN, Fox News, BBC, Salesforce sites with malware",
+      "url": "https://www.bleepingcomputer.com/news/security/optimizely-supply-chain-attack-delivers-malware-to-cnn-fox-news-bbc-salesforce-sites/",
+      "points": 0,
+      "published": "2026-11-16T21:12:17-05:00"
+    },
+    {
+      "id": "bc-4473226791386970932",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Gemini AI agents repeatedly bypassed safeguards to attack real website",
@@ -353,7 +398,7 @@
       "published": "2026-11-16T17:54:00-05:00"
     },
     {
-      "id": "bc-2362548103223403441",
+      "id": "bc-2855272044002825033",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google Project Zero cuts bug disclosures to 30 days amid AI threats",
@@ -362,7 +407,7 @@
       "published": "2026-11-16T16:31:44-05:00"
     },
     {
-      "id": "bc-7887180887064003779",
+      "id": "bc-1941650678149856236",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "California sues OpenAI over AI agents escaping sandboxes, hacking firms",
@@ -371,7 +416,7 @@
       "published": "2026-11-16T15:59:44-05:00"
     },
     {
-      "id": "bc-5781961605680437492",
+      "id": "bc-8429785794024057224",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Barracuda links cloud breach to ARTEX AI-powered cyberattack",
@@ -380,7 +425,7 @@
       "published": "2026-11-16T14:57:13-05:00"
     },
     {
-      "id": "bc-6282870733201861273",
+      "id": "bc-2585511707421057488",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft says months-old bug caused global Microsoft 365 outage",
@@ -389,7 +434,7 @@
       "published": "2026-11-16T11:43:24-05:00"
     },
     {
-      "id": "bc-2399909979119747850",
+      "id": "bc-618709749527905908",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fandango says hackers stole payment card details from checkout pages",
@@ -398,7 +443,7 @@
       "published": "2026-11-16T10:44:21-05:00"
     },
     {
-      "id": "bc-1830180369352802583",
+      "id": "bc-1491688134821264282",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "7 Tips For Complying with CJIS Password and MFA Requirements",
@@ -407,7 +452,7 @@
       "published": "2026-11-16T10:01:11-05:00"
     },
     {
-      "id": "bc-4259009597347123314",
+      "id": "bc-9060603304883833568",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google warns that fully-automated AI attacks are coming soon",
@@ -416,7 +461,7 @@
       "published": "2026-11-16T09:00:00-05:00"
     },
     {
-      "id": "bc-8283054132267601013",
+      "id": "bc-9137151630655607207",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft: Windows Server 2016 reaches end of support in 60 days",
@@ -425,58 +470,13 @@
       "published": "2026-11-16T07:53:18-05:00"
     },
     {
-      "id": "bc-3667162232207725630",
+      "id": "bc-2074299881352810563",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Australian retail giant Coles investigates cybersecurity incident",
       "url": "https://www.bleepingcomputer.com/news/security/australian-retail-giant-coles-investigates-cybersecurity-incident/",
       "points": 0,
       "published": "2026-11-16T06:18:09-05:00"
-    },
-    {
-      "id": "bc-7677469262223571601",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Anthropic’s Claude Fable 5.2 blocks fewer security tasks, while Mythos gets better at finding bugs",
-      "url": "https://www.bleepingcomputer.com/news/artificial-intelligence/anthropics-claude-fable-52-blocks-fewer-security-tasks-while-mythos-gets-better-at-finding-bugs/",
-      "points": 0,
-      "published": "2026-11-16T06:00:00-05:00"
-    },
-    {
-      "id": "bc-2747142096596837039",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "New NoisyTCP vulnerability lets attackers crash Linux servers",
-      "url": "https://www.bleepingcomputer.com/news/linux/new-noisytcp-linux-kernel-flaw-lets-attackers-crash-servers/",
-      "points": 0,
-      "published": "2026-11-16T04:30:04-05:00"
-    },
-    {
-      "id": "bc-6596840150743155591",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft pushes Windows emergency updates to fix activation failures",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-new-windows-emergency-updates-fix-activation-licensing-failures/",
-      "points": 0,
-      "published": "2026-11-16T03:26:52-05:00"
-    },
-    {
-      "id": "bc-3185940576819978697",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "FBI warns ARTEX AI hacking tool is powering global cyberattacks",
-      "url": "https://www.bleepingcomputer.com/news/security/fbi-warns-artex-ai-hacking-tool-is-powering-global-cyberattacks/",
-      "points": 0,
-      "published": "2026-11-15T13:29:53-05:00"
-    },
-    {
-      "id": "bc-4785340217342798267",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "TSMC employee data breach linked to cloud provider",
-      "url": "https://www.bleepingcomputer.com/news/security/tsmc-employee-data-breach-linked-to-cloud-provider/",
-      "points": 0,
-      "published": "2026-11-15T10:23:48-05:00"
     }
   ]
 }
