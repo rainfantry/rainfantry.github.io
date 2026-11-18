@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T00:10:12.963969+00:00",
+  "generated_at": "2026-11-18T14:45:52.014828+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-2480033232616137706",
+      "id": "bc-5629287178097289964",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Dizigom illegal streaming service with 21M monthly visits shuts down",
+      "url": "https://www.bleepingcomputer.com/news/security/dizigom-illegal-streaming-service-with-21m-monthly-visits-shuts-down/",
+      "points": 0,
+      "published": "2026-11-18T06:50:25-05:00"
+    },
+    {
+      "id": "bc-5484034550450861929",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Apache warns of Roller RCE vulnerability exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/apache-warns-of-roller-rce-vulnerability-exploited-in-attacks/",
+      "points": 0,
+      "published": "2026-11-18T05:35:05-05:00"
+    },
+    {
+      "id": "bc-2625366747351160947",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft announces Windows Server 2028 with hardened security",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-announces-windows-server-2028-with-hardened-security/",
+      "points": 0,
+      "published": "2026-11-18T04:24:31-05:00"
+    },
+    {
+      "id": "bc-6827330439422031630",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "British Scattered Spider hacker sentenced to 6 years in prison",
+      "url": "https://www.bleepingcomputer.com/news/security/british-scattered-spider-hacker-sentenced-to-6-years-in-prison/",
+      "points": 0,
+      "published": "2026-11-18T03:24:18-05:00"
+    },
+    {
+      "id": "bc-326936149882906320",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Java4Shell flaw allows RCE attacks on major Java applications",
@@ -353,7 +389,7 @@
       "published": "2026-11-17T18:04:21-05:00"
     },
     {
-      "id": "bc-6487140203435180255",
+      "id": "bc-4103645070616734768",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cloud keys leaked in Docker Hub images are stolen within seconds",
@@ -362,7 +398,7 @@
       "published": "2026-11-17T16:27:17-05:00"
     },
     {
-      "id": "bc-5276754152908871034",
+      "id": "bc-7819421125935192451",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan takes Fugaku supercomputer offlline after cyberattack",
@@ -371,7 +407,7 @@
       "published": "2026-11-17T15:51:21-05:00"
     },
     {
-      "id": "bc-361353179316465247",
+      "id": "bc-7851796730626847231",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apple reports outages affecting iCloud Mail, AppleCare and more",
@@ -380,7 +416,7 @@
       "published": "2026-11-17T14:24:07-05:00"
     },
     {
-      "id": "bc-5432973554814734929",
+      "id": "bc-5728934206565542926",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Researchers hijack Hugging Face account for popular Kokoro AI model",
@@ -389,7 +425,7 @@
       "published": "2026-11-17T13:21:24-05:00"
     },
     {
-      "id": "bc-6867336104612881723",
+      "id": "bc-5969912667376875073",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Tor releases emergency update amid ongoing DDoS attack",
@@ -398,7 +434,7 @@
       "published": "2026-11-17T13:04:15-05:00"
     },
     {
-      "id": "bc-2252325354551758023",
+      "id": "bc-144814282490436371",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Flipper Devices launches $399 ‘Flipper One’ Linux-based multi-tool",
@@ -407,7 +443,7 @@
       "published": "2026-11-17T11:00:00-05:00"
     },
     {
-      "id": "bc-2332680630083115453",
+      "id": "bc-3057774524469211549",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Inside Modern Phishing Kits Built to Steal Microsoft 365 Sessions",
@@ -416,7 +452,7 @@
       "published": "2026-11-17T10:01:11-05:00"
     },
     {
-      "id": "bc-4374535483920208491",
+      "id": "bc-5954079082120590998",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft testing Remote Lock for lost or stolen Windows devices",
@@ -425,7 +461,7 @@
       "published": "2026-11-17T06:19:51-05:00"
     },
     {
-      "id": "bc-9016166404798220710",
+      "id": "bc-3231390903295840569",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Court clears brothers of $25 million Ethereum crypto heist charges",
@@ -434,49 +470,13 @@
       "published": "2026-11-17T04:44:22-05:00"
     },
     {
-      "id": "bc-7707962044317474527",
+      "id": "bc-8056087447133677629",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Uber notifies drivers of data breach affecting nearly 150,000 people",
       "url": "https://www.bleepingcomputer.com/news/security/uber-notifies-drivers-of-data-breach-affecting-nearly-150-000-people/",
       "points": 0,
       "published": "2026-11-17T03:35:42-05:00"
-    },
-    {
-      "id": "bc-4502775788486545816",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Ransomware affiliate suspect extradited to US, faces 27 years in prison",
-      "url": "https://www.bleepingcomputer.com/news/security/alleged-inc-lynx-ransomware-affiliate-extradited-to-us-faces-27-years-in-prison/",
-      "points": 0,
-      "published": "2026-11-17T02:25:44-05:00"
-    },
-    {
-      "id": "bc-4725335311158157718",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Optimizely hack infected CNN, Fox News, BBC, Salesforce sites with malware",
-      "url": "https://www.bleepingcomputer.com/news/security/optimizely-supply-chain-attack-delivers-malware-to-cnn-fox-news-bbc-salesforce-sites/",
-      "points": 0,
-      "published": "2026-11-16T21:12:17-05:00"
-    },
-    {
-      "id": "bc-5043795316217200294",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Gemini AI agents repeatedly bypassed safeguards to attack real website",
-      "url": "https://www.bleepingcomputer.com/news/security/gemini-ai-agents-repeatedly-bypassed-safeguards-to-attack-real-website/",
-      "points": 0,
-      "published": "2026-11-16T17:54:00-05:00"
-    },
-    {
-      "id": "bc-8213567151177470342",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google Project Zero cuts bug disclosures to 30 days amid AI threats",
-      "url": "https://www.bleepingcomputer.com/news/security/google-project-zero-cuts-bug-disclosure-deadline-to-30-days-amid-ai-threats/",
-      "points": 0,
-      "published": "2026-11-16T16:31:44-05:00"
     }
   ]
 }
