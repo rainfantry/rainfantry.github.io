@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T15:06:32.356728+00:00",
+  "generated_at": "2026-11-18T00:10:12.963969+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,79 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-4296531806360600069",
+      "id": "bc-2480033232616137706",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Critical Java4Shell flaw allows RCE attacks on major Java applications",
+      "url": "https://www.bleepingcomputer.com/news/security/critical-java4shell-flaw-allows-rce-attacks-on-major-java-applications/",
+      "points": 0,
+      "published": "2026-11-17T18:04:21-05:00"
+    },
+    {
+      "id": "bc-6487140203435180255",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Cloud keys leaked in Docker Hub images are stolen within seconds",
+      "url": "https://www.bleepingcomputer.com/news/security/cloud-keys-leaked-in-docker-hub-images-are-stolen-within-seconds/",
+      "points": 0,
+      "published": "2026-11-17T16:27:17-05:00"
+    },
+    {
+      "id": "bc-5276754152908871034",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Japan takes Fugaku supercomputer offlline after cyberattack",
+      "url": "https://www.bleepingcomputer.com/news/security/japan-takes-fugaku-supercomputer-offlline-after-cyberattack/",
+      "points": 0,
+      "published": "2026-11-17T15:51:21-05:00"
+    },
+    {
+      "id": "bc-361353179316465247",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Apple reports outages affecting iCloud Mail, AppleCare and more",
+      "url": "https://www.bleepingcomputer.com/news/apple/apple-reports-outages-affecting-icloud-mail-applecare-and-more/",
+      "points": 0,
+      "published": "2026-11-17T14:24:07-05:00"
+    },
+    {
+      "id": "bc-5432973554814734929",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Researchers hijack Hugging Face account for popular Kokoro AI model",
+      "url": "https://www.bleepingcomputer.com/news/security/researchers-hijack-hugging-face-account-for-popular-kokoro-ai-model/",
+      "points": 0,
+      "published": "2026-11-17T13:21:24-05:00"
+    },
+    {
+      "id": "bc-6867336104612881723",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Tor releases emergency update amid ongoing DDoS attack",
+      "url": "https://www.bleepingcomputer.com/news/security/tor-releases-emergency-update-amid-ongoing-ddos-attack/",
+      "points": 0,
+      "published": "2026-11-17T13:04:15-05:00"
+    },
+    {
+      "id": "bc-2252325354551758023",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Flipper Devices launches $399 ‘Flipper One’ Linux-based multi-tool",
+      "url": "https://www.bleepingcomputer.com/news/hardware/flipper-devices-launches-399-flipper-one-linux-based-multi-tool/",
+      "points": 0,
+      "published": "2026-11-17T11:00:00-05:00"
+    },
+    {
+      "id": "bc-2332680630083115453",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Inside Modern Phishing Kits Built to Steal Microsoft 365 Sessions",
+      "url": "https://www.bleepingcomputer.com/news/security/inside-modern-phishing-kits-built-to-steal-microsoft-365-sessions/",
+      "points": 0,
+      "published": "2026-11-17T10:01:11-05:00"
+    },
+    {
+      "id": "bc-4374535483920208491",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft testing Remote Lock for lost or stolen Windows devices",
@@ -353,7 +425,7 @@
       "published": "2026-11-17T06:19:51-05:00"
     },
     {
-      "id": "bc-749062109504951694",
+      "id": "bc-9016166404798220710",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Court clears brothers of $25 million Ethereum crypto heist charges",
@@ -362,7 +434,7 @@
       "published": "2026-11-17T04:44:22-05:00"
     },
     {
-      "id": "bc-5699005600197620409",
+      "id": "bc-7707962044317474527",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Uber notifies drivers of data breach affecting nearly 150,000 people",
@@ -371,7 +443,7 @@
       "published": "2026-11-17T03:35:42-05:00"
     },
     {
-      "id": "bc-1126606592847529662",
+      "id": "bc-4502775788486545816",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ransomware affiliate suspect extradited to US, faces 27 years in prison",
@@ -380,7 +452,7 @@
       "published": "2026-11-17T02:25:44-05:00"
     },
     {
-      "id": "bc-322016559510784919",
+      "id": "bc-4725335311158157718",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Optimizely hack infected CNN, Fox News, BBC, Salesforce sites with malware",
@@ -389,7 +461,7 @@
       "published": "2026-11-16T21:12:17-05:00"
     },
     {
-      "id": "bc-4473226791386970932",
+      "id": "bc-5043795316217200294",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Gemini AI agents repeatedly bypassed safeguards to attack real website",
@@ -398,85 +470,13 @@
       "published": "2026-11-16T17:54:00-05:00"
     },
     {
-      "id": "bc-2855272044002825033",
+      "id": "bc-8213567151177470342",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Google Project Zero cuts bug disclosures to 30 days amid AI threats",
       "url": "https://www.bleepingcomputer.com/news/security/google-project-zero-cuts-bug-disclosure-deadline-to-30-days-amid-ai-threats/",
       "points": 0,
       "published": "2026-11-16T16:31:44-05:00"
-    },
-    {
-      "id": "bc-1941650678149856236",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "California sues OpenAI over AI agents escaping sandboxes, hacking firms",
-      "url": "https://www.bleepingcomputer.com/news/security/california-sues-openai-over-ai-agents-escaping-sandboxes-hacking-firms/",
-      "points": 0,
-      "published": "2026-11-16T15:59:44-05:00"
-    },
-    {
-      "id": "bc-8429785794024057224",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Barracuda links cloud breach to ARTEX AI-powered cyberattack",
-      "url": "https://www.bleepingcomputer.com/news/security/barracuda-links-cloud-breach-to-artex-ai-powered-cyberattack/",
-      "points": 0,
-      "published": "2026-11-16T14:57:13-05:00"
-    },
-    {
-      "id": "bc-2585511707421057488",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft says months-old bug caused global Microsoft 365 outage",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-says-months-old-bug-caused-global-microsoft-365-outage/",
-      "points": 0,
-      "published": "2026-11-16T11:43:24-05:00"
-    },
-    {
-      "id": "bc-618709749527905908",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Fandango says hackers stole payment card details from checkout pages",
-      "url": "https://www.bleepingcomputer.com/news/security/fandango-says-hackers-stole-payment-card-details-from-checkout-pages/",
-      "points": 0,
-      "published": "2026-11-16T10:44:21-05:00"
-    },
-    {
-      "id": "bc-1491688134821264282",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "7 Tips For Complying with CJIS Password and MFA Requirements",
-      "url": "https://www.bleepingcomputer.com/news/security/7-tips-for-complying-with-cjis-password-and-mfa-requirements/",
-      "points": 0,
-      "published": "2026-11-16T10:01:11-05:00"
-    },
-    {
-      "id": "bc-9060603304883833568",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Google warns that fully-automated AI attacks are coming soon",
-      "url": "https://www.bleepingcomputer.com/news/security/google-warns-that-fully-automated-ai-attacks-are-coming-soon/",
-      "points": 0,
-      "published": "2026-11-16T09:00:00-05:00"
-    },
-    {
-      "id": "bc-9137151630655607207",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft: Windows Server 2016 reaches end of support in 60 days",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-windows-server-2016-reaches-end-of-support-in-60-days/",
-      "points": 0,
-      "published": "2026-11-16T07:53:18-05:00"
-    },
-    {
-      "id": "bc-2074299881352810563",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Australian retail giant Coles investigates cybersecurity incident",
-      "url": "https://www.bleepingcomputer.com/news/security/australian-retail-giant-coles-investigates-cybersecurity-incident/",
-      "points": 0,
-      "published": "2026-11-16T06:18:09-05:00"
     }
   ]
 }
