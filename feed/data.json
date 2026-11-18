@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T14:45:52.014828+00:00",
+  "generated_at": "2026-11-18T23:41:01.965675+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,52 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-5629287178097289964",
+      "id": "bc-2995123966168027371",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Ukraine, FBI arrest ransomware gang members tied to $40M in ransoms",
+      "url": "https://www.bleepingcomputer.com/news/security/ukraine-fbi-arrest-ransomware-gang-members-tied-to-40m-in-ransoms/",
+      "points": 0,
+      "published": "2026-11-18T18:08:33-05:00"
+    },
+    {
+      "id": "bc-3321144082806009458",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Coinbase blocks $4.7 million in transfers to Elon Musk deepfake scam",
+      "url": "https://www.bleepingcomputer.com/news/security/coinbase-blocks-47-million-in-transfers-to-elon-musk-deepfake-scam/",
+      "points": 0,
+      "published": "2026-11-18T15:49:32-05:00"
+    },
+    {
+      "id": "bc-416360277355341825",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Data breach impacts 40 Irish credit unions in reported IT provider hack",
+      "url": "https://www.bleepingcomputer.com/news/security/data-breach-impacts-40-irish-credit-unions-in-reported-it-provider-hack/",
+      "points": 0,
+      "published": "2026-11-18T14:39:33-05:00"
+    },
+    {
+      "id": "bc-5240535206281253956",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft’s Agent Framework PyPI package compromised to steal credentials",
+      "url": "https://www.bleepingcomputer.com/news/security/microsofts-agent-framework-pypi-package-compromised-to-steal-credentials/",
+      "points": 0,
+      "published": "2026-11-18T11:58:42-05:00"
+    },
+    {
+      "id": "bc-1231818025955922641",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "From Deepfakes to Helpdesk Impersonation: Why Stronger Verification Matters",
+      "url": "https://www.bleepingcomputer.com/news/security/from-deepfakes-to-helpdesk-impersonation-why-stronger-verification-matters/",
+      "points": 0,
+      "published": "2026-11-18T10:00:10-05:00"
+    },
+    {
+      "id": "bc-4101941534850303814",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Dizigom illegal streaming service with 21M monthly visits shuts down",
@@ -353,7 +398,7 @@
       "published": "2026-11-18T06:50:25-05:00"
     },
     {
-      "id": "bc-5484034550450861929",
+      "id": "bc-3236648960016554797",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apache warns of Roller RCE vulnerability exploited in attacks",
@@ -362,7 +407,7 @@
       "published": "2026-11-18T05:35:05-05:00"
     },
     {
-      "id": "bc-2625366747351160947",
+      "id": "bc-6570150604911852881",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft announces Windows Server 2028 with hardened security",
@@ -371,7 +416,7 @@
       "published": "2026-11-18T04:24:31-05:00"
     },
     {
-      "id": "bc-6827330439422031630",
+      "id": "bc-3560096458550142498",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "British Scattered Spider hacker sentenced to 6 years in prison",
@@ -380,7 +425,7 @@
       "published": "2026-11-18T03:24:18-05:00"
     },
     {
-      "id": "bc-326936149882906320",
+      "id": "bc-6980317108584076341",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Java4Shell flaw allows RCE attacks on major Java applications",
@@ -389,7 +434,7 @@
       "published": "2026-11-17T18:04:21-05:00"
     },
     {
-      "id": "bc-4103645070616734768",
+      "id": "bc-6601975788977004278",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cloud keys leaked in Docker Hub images are stolen within seconds",
@@ -398,7 +443,7 @@
       "published": "2026-11-17T16:27:17-05:00"
     },
     {
-      "id": "bc-7819421125935192451",
+      "id": "bc-7940774340660785388",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Japan takes Fugaku supercomputer offlline after cyberattack",
@@ -407,7 +452,7 @@
       "published": "2026-11-17T15:51:21-05:00"
     },
     {
-      "id": "bc-7851796730626847231",
+      "id": "bc-3369393364169150009",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apple reports outages affecting iCloud Mail, AppleCare and more",
@@ -416,7 +461,7 @@
       "published": "2026-11-17T14:24:07-05:00"
     },
     {
-      "id": "bc-5728934206565542926",
+      "id": "bc-3130781647563124793",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Researchers hijack Hugging Face account for popular Kokoro AI model",
@@ -425,58 +470,13 @@
       "published": "2026-11-17T13:21:24-05:00"
     },
     {
-      "id": "bc-5969912667376875073",
+      "id": "bc-9172372849295826096",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Tor releases emergency update amid ongoing DDoS attack",
       "url": "https://www.bleepingcomputer.com/news/security/tor-releases-emergency-update-amid-ongoing-ddos-attack/",
       "points": 0,
       "published": "2026-11-17T13:04:15-05:00"
-    },
-    {
-      "id": "bc-144814282490436371",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Flipper Devices launches $399 ‘Flipper One’ Linux-based multi-tool",
-      "url": "https://www.bleepingcomputer.com/news/hardware/flipper-devices-launches-399-flipper-one-linux-based-multi-tool/",
-      "points": 0,
-      "published": "2026-11-17T11:00:00-05:00"
-    },
-    {
-      "id": "bc-3057774524469211549",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Inside Modern Phishing Kits Built to Steal Microsoft 365 Sessions",
-      "url": "https://www.bleepingcomputer.com/news/security/inside-modern-phishing-kits-built-to-steal-microsoft-365-sessions/",
-      "points": 0,
-      "published": "2026-11-17T10:01:11-05:00"
-    },
-    {
-      "id": "bc-5954079082120590998",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft testing Remote Lock for lost or stolen Windows devices",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-testing-remote-lock-for-lost-or-stolen-windows-devices/",
-      "points": 0,
-      "published": "2026-11-17T06:19:51-05:00"
-    },
-    {
-      "id": "bc-3231390903295840569",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Court clears brothers of $25 million Ethereum crypto heist charges",
-      "url": "https://www.bleepingcomputer.com/news/security/court-clears-brothers-of-25-million-ethereum-crypto-heist-charges/",
-      "points": 0,
-      "published": "2026-11-17T04:44:22-05:00"
-    },
-    {
-      "id": "bc-8056087447133677629",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Uber notifies drivers of data breach affecting nearly 150,000 people",
-      "url": "https://www.bleepingcomputer.com/news/security/uber-notifies-drivers-of-data-breach-affecting-nearly-150-000-people/",
-      "points": 0,
-      "published": "2026-11-17T03:35:42-05:00"
     }
   ]
 }
