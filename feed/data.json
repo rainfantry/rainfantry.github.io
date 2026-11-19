@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T04:55:31.072378+00:00",
+  "generated_at": "2026-11-19T14:52:08.785529+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,43 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-3010391187646291305",
+      "id": "bc-5435774125395611541",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Drupal patches critical RCE flaw, warns exploits may surface quickly",
+      "url": "https://www.bleepingcomputer.com/news/security/drupal-patches-critical-rce-flaw-warns-exploits-may-surface-quickly/",
+      "points": 0,
+      "published": "2026-11-19T08:08:08-05:00"
+    },
+    {
+      "id": "bc-69230389156508669",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft tests new Edge Lockdown Mode that disables GPU APIs",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-tests-new-edge-lockdown-mode-that-disables-gpu-apis/",
+      "points": 0,
+      "published": "2026-11-19T06:46:00-05:00"
+    },
+    {
+      "id": "bc-4837508562362272829",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft confirms app installation, launch issues after hotpatch",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-confirms-app-installation-launch-issues-after-hotpatch/",
+      "points": 0,
+      "published": "2026-11-19T05:35:05-05:00"
+    },
+    {
+      "id": "bc-6690930755559861866",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "NVIDIA investigating Gentlemen ransomware breach claims",
+      "url": "https://www.bleepingcomputer.com/news/security/nvidia-investigating-gentlemen-ransomware-breach-claims/",
+      "points": 0,
+      "published": "2026-11-19T04:23:21-05:00"
+    },
+    {
+      "id": "bc-8071276367382429604",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ukraine, FBI arrest ransomware gang members tied to $40M in ransoms",
@@ -353,7 +389,7 @@
       "published": "2026-11-18T18:08:33-05:00"
     },
     {
-      "id": "bc-8951752076386839128",
+      "id": "bc-6320012479890728127",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Coinbase blocks $4.7 million in transfers to Elon Musk deepfake scam",
@@ -362,7 +398,7 @@
       "published": "2026-11-18T15:49:32-05:00"
     },
     {
-      "id": "bc-4631627977576134967",
+      "id": "bc-6143388937548757628",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Data breach impacts 40 Irish credit unions in reported IT provider hack",
@@ -371,7 +407,7 @@
       "published": "2026-11-18T14:39:33-05:00"
     },
     {
-      "id": "bc-7916532153721815703",
+      "id": "bc-6680191521738162275",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft’s Agent Framework PyPI package compromised to steal credentials",
@@ -380,7 +416,7 @@
       "published": "2026-11-18T11:58:42-05:00"
     },
     {
-      "id": "bc-5670601028627909143",
+      "id": "bc-4525277585750181040",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "From Deepfakes to Helpdesk Impersonation: Why Stronger Verification Matters",
@@ -389,7 +425,7 @@
       "published": "2026-11-18T10:00:10-05:00"
     },
     {
-      "id": "bc-3199682403096263652",
+      "id": "bc-5607303895768295885",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Dizigom illegal streaming service with 21M monthly visits shuts down",
@@ -398,7 +434,7 @@
       "published": "2026-11-18T06:50:25-05:00"
     },
     {
-      "id": "bc-898488675639686104",
+      "id": "bc-4177147542113908067",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Apache warns of Roller RCE vulnerability exploited in attacks",
@@ -407,7 +443,7 @@
       "published": "2026-11-18T05:35:05-05:00"
     },
     {
-      "id": "bc-4337796563555874821",
+      "id": "bc-641249669525400702",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft announces Windows Server 2028 with hardened security",
@@ -416,7 +452,7 @@
       "published": "2026-11-18T04:24:31-05:00"
     },
     {
-      "id": "bc-1046155962886607916",
+      "id": "bc-3309149638289502679",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "British Scattered Spider hacker sentenced to 6 years in prison",
@@ -425,7 +461,7 @@
       "published": "2026-11-18T03:24:18-05:00"
     },
     {
-      "id": "bc-6315880745403111733",
+      "id": "bc-4237235227550229747",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical Java4Shell flaw allows RCE attacks on major Java applications",
@@ -434,49 +470,13 @@
       "published": "2026-11-17T18:04:21-05:00"
     },
     {
-      "id": "bc-5831033231396695145",
+      "id": "bc-3067224524863130855",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cloud keys leaked in Docker Hub images are stolen within seconds",
       "url": "https://www.bleepingcomputer.com/news/security/cloud-keys-leaked-in-docker-hub-images-are-stolen-within-seconds/",
       "points": 0,
       "published": "2026-11-17T16:27:17-05:00"
-    },
-    {
-      "id": "bc-1144154239044543184",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Japan takes Fugaku supercomputer offlline after cyberattack",
-      "url": "https://www.bleepingcomputer.com/news/security/japan-takes-fugaku-supercomputer-offlline-after-cyberattack/",
-      "points": 0,
-      "published": "2026-11-17T15:51:21-05:00"
-    },
-    {
-      "id": "bc-8484666732513268868",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Apple reports outages affecting iCloud Mail, AppleCare and more",
-      "url": "https://www.bleepingcomputer.com/news/apple/apple-reports-outages-affecting-icloud-mail-applecare-and-more/",
-      "points": 0,
-      "published": "2026-11-17T14:24:07-05:00"
-    },
-    {
-      "id": "bc-2059163927196338925",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Researchers hijack Hugging Face account for popular Kokoro AI model",
-      "url": "https://www.bleepingcomputer.com/news/security/researchers-hijack-hugging-face-account-for-popular-kokoro-ai-model/",
-      "points": 0,
-      "published": "2026-11-17T13:21:24-05:00"
-    },
-    {
-      "id": "bc-2556279466184228408",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Tor releases emergency update amid ongoing DDoS attack",
-      "url": "https://www.bleepingcomputer.com/news/security/tor-releases-emergency-update-amid-ongoing-ddos-attack/",
-      "points": 0,
-      "published": "2026-11-17T13:04:15-05:00"
     }
   ]
 }
