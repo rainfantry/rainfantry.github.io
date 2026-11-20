@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T23:59:34.227891+00:00",
+  "generated_at": "2026-11-20T06:04:23.990437+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,16 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-2032897469755524442",
+      "id": "bc-5342674089577949885",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "VMware patches vCenter zero-day exploited in attacks since September",
+      "url": "https://www.bleepingcomputer.com/news/security/vmware-patches-vcenter-zero-day-exploited-in-attacks-since-september/",
+      "points": 0,
+      "published": "2026-11-19T19:26:25-05:00"
+    },
+    {
+      "id": "bc-1694579856445552283",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers steal data of 1.6 million SBC Medical Group customers",
@@ -353,7 +362,7 @@
       "published": "2026-11-19T17:25:42-05:00"
     },
     {
-      "id": "bc-1175695939960400731",
+      "id": "bc-6113260296861693095",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ASUS warns of critical hard-coded key flaw in Control Center Express",
@@ -362,7 +371,7 @@
       "published": "2026-11-19T16:15:59-05:00"
     },
     {
-      "id": "bc-5177155156489235251",
+      "id": "bc-7145435001198147003",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Transport for London breach exposes 265,000 Oyster card users' data",
@@ -371,7 +380,7 @@
       "published": "2026-11-19T13:20:01-05:00"
     },
     {
-      "id": "bc-4377538747075598648",
+      "id": "bc-5129872901962625755",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP security updates fix 18 flaws, including critical RCE bugs",
@@ -380,7 +389,7 @@
       "published": "2026-11-19T11:28:23-05:00"
     },
     {
-      "id": "bc-7271607715994243431",
+      "id": "bc-2584191061710858249",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Five warning signs of ransomware breach before encryption or data theft",
@@ -389,7 +398,7 @@
       "published": "2026-11-19T10:00:10-05:00"
     },
     {
-      "id": "bc-3137991655451163847",
+      "id": "bc-7304295223052474710",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical NGINX ‘NGINX2Root’ bugs let attackers hijack servers",
@@ -398,7 +407,7 @@
       "published": "2026-11-19T09:57:24-05:00"
     },
     {
-      "id": "bc-8675020127794966729",
+      "id": "bc-7715487819618339733",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal patches critical RCE flaw, warns exploits may surface quickly",
@@ -407,7 +416,7 @@
       "published": "2026-11-19T08:08:08-05:00"
     },
     {
-      "id": "bc-8131502120637140294",
+      "id": "bc-1904783974923022412",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft tests new Edge Lockdown Mode that disables GPU APIs",
@@ -416,7 +425,7 @@
       "published": "2026-11-19T06:46:00-05:00"
     },
     {
-      "id": "bc-151263223162589806",
+      "id": "bc-6751943327284793925",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft confirms app installation, launch issues after hotpatch",
@@ -425,7 +434,7 @@
       "published": "2026-11-19T05:35:05-05:00"
     },
     {
-      "id": "bc-8532382413451815997",
+      "id": "bc-6033934915274477469",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "NVIDIA investigating Gentlemen ransomware breach claims",
@@ -434,7 +443,7 @@
       "published": "2026-11-19T04:23:21-05:00"
     },
     {
-      "id": "bc-4759025398692484508",
+      "id": "bc-495651360114042892",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Ukraine, FBI arrest ransomware gang members tied to $40M in ransoms",
@@ -443,7 +452,7 @@
       "published": "2026-11-18T18:08:33-05:00"
     },
     {
-      "id": "bc-7268472579208399931",
+      "id": "bc-1958457047690276863",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Coinbase blocks $4.7 million in transfers to Elon Musk deepfake scam",
@@ -452,7 +461,7 @@
       "published": "2026-11-18T15:49:32-05:00"
     },
     {
-      "id": "bc-1476174807403778671",
+      "id": "bc-490708776308894241",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Data breach impacts 40 Irish credit unions in reported IT provider hack",
@@ -461,22 +470,13 @@
       "published": "2026-11-18T14:39:33-05:00"
     },
     {
-      "id": "bc-2486648004608491285",
+      "id": "bc-2143515524851200275",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft’s Agent Framework PyPI package compromised to steal credentials",
       "url": "https://www.bleepingcomputer.com/news/security/microsofts-agent-framework-pypi-package-compromised-to-steal-credentials/",
       "points": 0,
       "published": "2026-11-18T11:58:42-05:00"
-    },
-    {
-      "id": "bc-4195262453066527722",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "From Deepfakes to Helpdesk Impersonation: Why Stronger Verification Matters",
-      "url": "https://www.bleepingcomputer.com/news/security/from-deepfakes-to-helpdesk-impersonation-why-stronger-verification-matters/",
-      "points": 0,
-      "published": "2026-11-18T10:00:10-05:00"
     }
   ]
 }
