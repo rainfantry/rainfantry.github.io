@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T04:41:03.183811+00:00",
+  "generated_at": "2026-11-21T13:51:27.066346+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7498504781336540543",
+      "id": "bc-144001831800329305",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Bell Canada says 'agentic' hacker stole enterprise customer data",
@@ -353,7 +353,7 @@
       "published": "2026-11-20T13:51:43-05:00"
     },
     {
-      "id": "bc-5285379513898390247",
+      "id": "bc-7756198500072834733",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use autonomous AI tool Cairn to find zero-day, take over server",
@@ -362,7 +362,7 @@
       "published": "2026-11-20T12:30:00-05:00"
     },
     {
-      "id": "bc-152547377391915844",
+      "id": "bc-9090955276252246873",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vendor data breach exposes Chase, Visa, Mastercard customer info",
@@ -371,7 +371,7 @@
       "published": "2026-11-20T10:58:06-05:00"
     },
     {
-      "id": "bc-2536444206946538086",
+      "id": "bc-1346630743299526507",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Still tracking company passwords in spreadsheets? You’re flying blind.",
@@ -380,7 +380,7 @@
       "published": "2026-11-20T10:00:10-05:00"
     },
     {
-      "id": "bc-869716620721967394",
+      "id": "bc-9079844250969202111",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "N-able says recent security breach led to major service outage",
@@ -389,7 +389,7 @@
       "published": "2026-11-20T08:18:36-05:00"
     },
     {
-      "id": "bc-4149490226737902725",
+      "id": "bc-1197501477452046973",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft now automatically installs Windows 11 26H2 on unmanaged devices",
@@ -398,7 +398,7 @@
       "published": "2026-11-20T07:14:28-05:00"
     },
     {
-      "id": "bc-1595342081427196163",
+      "id": "bc-1085070906224344946",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "F5 releases emergency patches for critical BIG-IP RCE flaws",
@@ -407,7 +407,7 @@
       "published": "2026-11-20T05:57:43-05:00"
     },
     {
-      "id": "bc-3304193790636149548",
+      "id": "bc-8542419124029456298",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5132057 update released with 28 changes and fixes",
@@ -416,7 +416,7 @@
       "published": "2026-11-20T04:25:35-05:00"
     },
     {
-      "id": "bc-1651247679092685192",
+      "id": "bc-7353360581148799466",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "VMware patches vCenter zero-day exploited in attacks since September",
@@ -425,7 +425,7 @@
       "published": "2026-11-19T19:26:25-05:00"
     },
     {
-      "id": "bc-1954478139310041677",
+      "id": "bc-6697897277044115664",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers steal data of 1.6 million SBC Medical Group customers",
@@ -434,7 +434,7 @@
       "published": "2026-11-19T17:25:42-05:00"
     },
     {
-      "id": "bc-2210985099110487218",
+      "id": "bc-5728204854434447247",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ASUS warns of critical hard-coded key flaw in Control Center Express",
@@ -443,7 +443,7 @@
       "published": "2026-11-19T16:15:59-05:00"
     },
     {
-      "id": "bc-4632663345391638754",
+      "id": "bc-3124622565382216348",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Transport for London breach exposes 265,000 Oyster card users' data",
@@ -452,7 +452,7 @@
       "published": "2026-11-19T13:20:01-05:00"
     },
     {
-      "id": "bc-6262256368015214078",
+      "id": "bc-5000278835750167873",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "PHP security updates fix 18 flaws, including critical RCE bugs",
@@ -461,7 +461,7 @@
       "published": "2026-11-19T11:28:23-05:00"
     },
     {
-      "id": "bc-7387134666489094109",
+      "id": "bc-4027546294654680929",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Five warning signs of ransomware breach before encryption or data theft",
@@ -470,7 +470,7 @@
       "published": "2026-11-19T10:00:10-05:00"
     },
     {
-      "id": "bc-6154113866526125191",
+      "id": "bc-2509696846897288500",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Critical NGINX ‘NGINX2Root’ bugs let attackers hijack servers",
