@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T03:55:33.294192+00:00",
+  "generated_at": "2026-11-22T13:44:43.534896+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-900907799807608825",
+      "id": "bc-1714950967701924815",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Rackspace Spot breach let hackers access customer Kubernetes secrets",
@@ -353,7 +353,7 @@
       "published": "2026-11-21T17:59:58-05:00"
     },
     {
-      "id": "bc-3621851507023533530",
+      "id": "bc-772413071835705337",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Entra Connect Health flaw exploited to steal tenant data",
@@ -362,7 +362,7 @@
       "published": "2026-11-21T13:01:58-05:00"
     },
     {
-      "id": "bc-7610616766130024133",
+      "id": "bc-5941606470469971624",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BADBOX botnet returns with record-breaking 40 billion daily ad requests",
@@ -371,7 +371,7 @@
       "published": "2026-11-21T10:17:27-05:00"
     },
     {
-      "id": "bc-3790444936511911659",
+      "id": "bc-2560037062847911247",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI reportedly hacked again, this time targeting nationwide police database",
@@ -380,7 +380,7 @@
       "published": "2026-11-21T09:26:04-05:00"
     },
     {
-      "id": "bc-8181373080771206203",
+      "id": "bc-3577228541858627265",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Bell Canada says 'agentic' hacker stole enterprise customer data",
@@ -389,7 +389,7 @@
       "published": "2026-11-20T13:51:43-05:00"
     },
     {
-      "id": "bc-3984428123271201099",
+      "id": "bc-6009801519101763379",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use autonomous AI tool Cairn to find zero-day, take over server",
@@ -398,7 +398,7 @@
       "published": "2026-11-20T12:30:00-05:00"
     },
     {
-      "id": "bc-2298125521877725137",
+      "id": "bc-1204991440303979951",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vendor data breach exposes Chase, Visa, Mastercard customer info",
@@ -407,7 +407,7 @@
       "published": "2026-11-20T10:58:06-05:00"
     },
     {
-      "id": "bc-5369367532153361536",
+      "id": "bc-1603300456380138169",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Still tracking company passwords in spreadsheets? You’re flying blind.",
@@ -416,7 +416,7 @@
       "published": "2026-11-20T10:00:10-05:00"
     },
     {
-      "id": "bc-1192176237241924854",
+      "id": "bc-3958801072144660870",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "N-able says recent security breach led to major service outage",
@@ -425,7 +425,7 @@
       "published": "2026-11-20T08:18:36-05:00"
     },
     {
-      "id": "bc-2526537011657846576",
+      "id": "bc-3852607107425934269",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft now automatically installs Windows 11 26H2 on unmanaged devices",
@@ -434,7 +434,7 @@
       "published": "2026-11-20T07:14:28-05:00"
     },
     {
-      "id": "bc-1683408395764021251",
+      "id": "bc-1036447463221653364",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "F5 releases emergency patches for critical BIG-IP RCE flaws",
@@ -443,7 +443,7 @@
       "published": "2026-11-20T05:57:43-05:00"
     },
     {
-      "id": "bc-7714467665399744645",
+      "id": "bc-3220699699859323369",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5132057 update released with 28 changes and fixes",
@@ -452,7 +452,7 @@
       "published": "2026-11-20T04:25:35-05:00"
     },
     {
-      "id": "bc-3108343352294779445",
+      "id": "bc-2032162667579726544",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "VMware patches vCenter zero-day exploited in attacks since September",
@@ -461,7 +461,7 @@
       "published": "2026-11-19T19:26:25-05:00"
     },
     {
-      "id": "bc-4788763323340140314",
+      "id": "bc-5623493712890887955",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers steal data of 1.6 million SBC Medical Group customers",
@@ -470,7 +470,7 @@
       "published": "2026-11-19T17:25:42-05:00"
     },
     {
-      "id": "bc-3767029656066949496",
+      "id": "bc-7618504150536221082",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ASUS warns of critical hard-coded key flaw in Control Center Express",
