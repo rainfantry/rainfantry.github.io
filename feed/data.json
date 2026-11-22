@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T13:44:43.534896+00:00",
+  "generated_at": "2026-11-22T22:55:55.210490+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-1714950967701924815",
+      "id": "bc-8992927303107207372",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/",
+      "points": 0,
+      "published": "2026-11-22T13:45:37-05:00"
+    },
+    {
+      "id": "bc-549632554153752734",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Cleverbridge warns hackers stole credit card numbers, CVVs in data breach",
+      "url": "https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/",
+      "points": 0,
+      "published": "2026-11-22T10:43:04-05:00"
+    },
+    {
+      "id": "bc-8009843514755964391",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Signal to block Siri, Gemini AI from capturing chats on iOS, Android",
+      "url": "https://www.bleepingcomputer.com/news/security/signal-to-block-siri-gemini-ai-from-capturing-chats-on-ios-android/",
+      "points": 0,
+      "published": "2026-11-22T10:15:25-05:00"
+    },
+    {
+      "id": "bc-45209149627013640",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Rackspace Spot breach let hackers access customer Kubernetes secrets",
@@ -353,7 +380,7 @@
       "published": "2026-11-21T17:59:58-05:00"
     },
     {
-      "id": "bc-772413071835705337",
+      "id": "bc-3960209314942829148",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Entra Connect Health flaw exploited to steal tenant data",
@@ -362,7 +389,7 @@
       "published": "2026-11-21T13:01:58-05:00"
     },
     {
-      "id": "bc-5941606470469971624",
+      "id": "bc-3372606345549063321",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BADBOX botnet returns with record-breaking 40 billion daily ad requests",
@@ -371,7 +398,7 @@
       "published": "2026-11-21T10:17:27-05:00"
     },
     {
-      "id": "bc-2560037062847911247",
+      "id": "bc-7780635089564688899",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI reportedly hacked again, this time targeting nationwide police database",
@@ -380,7 +407,7 @@
       "published": "2026-11-21T09:26:04-05:00"
     },
     {
-      "id": "bc-3577228541858627265",
+      "id": "bc-8918745147075558252",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Bell Canada says 'agentic' hacker stole enterprise customer data",
@@ -389,7 +416,7 @@
       "published": "2026-11-20T13:51:43-05:00"
     },
     {
-      "id": "bc-6009801519101763379",
+      "id": "bc-5654137341639342106",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use autonomous AI tool Cairn to find zero-day, take over server",
@@ -398,7 +425,7 @@
       "published": "2026-11-20T12:30:00-05:00"
     },
     {
-      "id": "bc-1204991440303979951",
+      "id": "bc-1820061243026074438",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vendor data breach exposes Chase, Visa, Mastercard customer info",
@@ -407,7 +434,7 @@
       "published": "2026-11-20T10:58:06-05:00"
     },
     {
-      "id": "bc-1603300456380138169",
+      "id": "bc-2345956441550046397",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Still tracking company passwords in spreadsheets? You’re flying blind.",
@@ -416,7 +443,7 @@
       "published": "2026-11-20T10:00:10-05:00"
     },
     {
-      "id": "bc-3958801072144660870",
+      "id": "bc-2861751277347419273",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "N-able says recent security breach led to major service outage",
@@ -425,7 +452,7 @@
       "published": "2026-11-20T08:18:36-05:00"
     },
     {
-      "id": "bc-3852607107425934269",
+      "id": "bc-5508809631935136961",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft now automatically installs Windows 11 26H2 on unmanaged devices",
@@ -434,7 +461,7 @@
       "published": "2026-11-20T07:14:28-05:00"
     },
     {
-      "id": "bc-1036447463221653364",
+      "id": "bc-1126697095478027433",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "F5 releases emergency patches for critical BIG-IP RCE flaws",
@@ -443,40 +470,13 @@
       "published": "2026-11-20T05:57:43-05:00"
     },
     {
-      "id": "bc-3220699699859323369",
+      "id": "bc-2823499469030190620",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5132057 update released with 28 changes and fixes",
       "url": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5132057-update-released-with-28-changes-and-fixes/",
       "points": 0,
       "published": "2026-11-20T04:25:35-05:00"
-    },
-    {
-      "id": "bc-2032162667579726544",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "VMware patches vCenter zero-day exploited in attacks since September",
-      "url": "https://www.bleepingcomputer.com/news/security/vmware-patches-vcenter-zero-day-exploited-in-attacks-since-september/",
-      "points": 0,
-      "published": "2026-11-19T19:26:25-05:00"
-    },
-    {
-      "id": "bc-5623493712890887955",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers steal data of 1.6 million SBC Medical Group customers",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-steal-data-of-16-million-sbc-medical-group-customers/",
-      "points": 0,
-      "published": "2026-11-19T17:25:42-05:00"
-    },
-    {
-      "id": "bc-7618504150536221082",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "ASUS warns of critical hard-coded key flaw in Control Center Express",
-      "url": "https://www.bleepingcomputer.com/news/security/asus-warns-of-critical-hard-coded-key-flaw-in-control-center-express/",
-      "points": 0,
-      "published": "2026-11-19T16:15:59-05:00"
     }
   ]
 }
