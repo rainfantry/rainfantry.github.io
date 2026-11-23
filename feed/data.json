@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-23T04:36:22.333842+00:00",
-  "item_count": 50,
+  "generated_at": "2026-11-23T16:45:30.666824+00:00",
+  "item_count": 49,
   "sources": [
     "cisa_kev",
     "nvd",
@@ -335,16 +335,52 @@
       "published": "2026-03-15T22:29:46Z"
     },
     {
-      "id": "hn-47299481",
-      "source": "Hacker News",
-      "source_icon": "🔶",
-      "title": "Microsoft releases urgent Office patch. Russian-state hackers pounce",
-      "url": "https://arstechnica.com/security/2026/02/russian-state-hackers-exploit-office-vulnerability-to-infect-computers/",
-      "points": 11,
-      "published": "2026-03-08T18:05:17Z"
+      "id": "bc-2964928212549201348",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "AI Agents Are Creating a Shared Responsibility Gap",
+      "url": "https://www.bleepingcomputer.com/news/security/ai-agents-are-creating-a-shared-responsibility-gap/",
+      "points": 0,
+      "published": "2026-11-23T10:00:10-05:00"
     },
     {
-      "id": "bc-2001984218147040169",
+      "id": "bc-7922412803492070540",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft testing fix for Windows 11 Bluetooth audio quality drops",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-testing-fix-for-windows-11-bluetooth-audio-quality-drops/",
+      "points": 0,
+      "published": "2026-11-23T08:28:45-05:00"
+    },
+    {
+      "id": "bc-2900043772903546504",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Call center operator gets 8 years for helping scam 30,000 Americans",
+      "url": "https://www.bleepingcomputer.com/news/security/call-center-operator-gets-8-years-for-helping-scam-30-000-americans/",
+      "points": 0,
+      "published": "2026-11-23T07:02:23-05:00"
+    },
+    {
+      "id": "bc-41878305498363472",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft confirms Windows printing issues affecting Forcepoint users",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-confirms-printing-issues-after-kb5132043-windows-hotpatch/",
+      "points": 0,
+      "published": "2026-11-23T04:11:15-05:00"
+    },
+    {
+      "id": "bc-4374715947963054055",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "CISA flags critical Cisco RCE flaw as actively exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/cisa-flags-critical-cisco-expressway-rce-flaw-as-actively-exploited/",
+      "points": 0,
+      "published": "2026-11-23T02:44:19-05:00"
+    },
+    {
+      "id": "bc-7594917982757881055",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices",
@@ -353,7 +389,7 @@
       "published": "2026-11-22T13:45:37-05:00"
     },
     {
-      "id": "bc-9139447087997973970",
+      "id": "bc-7575839475418046260",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cleverbridge warns hackers stole credit card numbers, CVVs in data breach",
@@ -362,7 +398,7 @@
       "published": "2026-11-22T10:43:04-05:00"
     },
     {
-      "id": "bc-3327117477078020900",
+      "id": "bc-4596311607120590135",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Signal to block Siri, Gemini AI from capturing chats on iOS, Android",
@@ -371,7 +407,7 @@
       "published": "2026-11-22T10:15:25-05:00"
     },
     {
-      "id": "bc-1104279799713127437",
+      "id": "bc-1655168513554240804",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Rackspace Spot breach let hackers access customer Kubernetes secrets",
@@ -380,7 +416,7 @@
       "published": "2026-11-21T17:59:58-05:00"
     },
     {
-      "id": "bc-1201299226017751775",
+      "id": "bc-908253856785356573",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Entra Connect Health flaw exploited to steal tenant data",
@@ -389,7 +425,7 @@
       "published": "2026-11-21T13:01:58-05:00"
     },
     {
-      "id": "bc-2859953130697259122",
+      "id": "bc-7781115887755523378",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BADBOX botnet returns with record-breaking 40 billion daily ad requests",
@@ -398,7 +434,7 @@
       "published": "2026-11-21T10:17:27-05:00"
     },
     {
-      "id": "bc-5866997962874763591",
+      "id": "bc-1494790536158976014",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI reportedly hacked again, this time targeting nationwide police database",
@@ -407,7 +443,7 @@
       "published": "2026-11-21T09:26:04-05:00"
     },
     {
-      "id": "bc-1692025350392643593",
+      "id": "bc-1279345607794781106",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Bell Canada says 'agentic' hacker stole enterprise customer data",
@@ -416,7 +452,7 @@
       "published": "2026-11-20T13:51:43-05:00"
     },
     {
-      "id": "bc-2878505013979447030",
+      "id": "bc-3871194137078037054",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use autonomous AI tool Cairn to find zero-day, take over server",
@@ -425,58 +461,13 @@
       "published": "2026-11-20T12:30:00-05:00"
     },
     {
-      "id": "bc-8202319754913157143",
+      "id": "bc-7157237078500490388",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vendor data breach exposes Chase, Visa, Mastercard customer info",
       "url": "https://www.bleepingcomputer.com/news/security/vendor-data-breach-exposes-chase-visa-mastercard-customer-info/",
       "points": 0,
       "published": "2026-11-20T10:58:06-05:00"
-    },
-    {
-      "id": "bc-2346821497978638883",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Still tracking company passwords in spreadsheets? You’re flying blind.",
-      "url": "https://www.bleepingcomputer.com/news/security/still-tracking-company-passwords-in-spreadsheets-youre-flying-blind/",
-      "points": 0,
-      "published": "2026-11-20T10:00:10-05:00"
-    },
-    {
-      "id": "bc-837578187290876601",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "N-able says recent security breach led to major service outage",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/n-able-says-recent-security-breach-led-to-major-service-outage/",
-      "points": 0,
-      "published": "2026-11-20T08:18:36-05:00"
-    },
-    {
-      "id": "bc-9177953449956586084",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft now automatically installs Windows 11 26H2 on unmanaged devices",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-now-automatically-installs-windows-11-26h2-on-personal-and-unmanaged-pcs/",
-      "points": 0,
-      "published": "2026-11-20T07:14:28-05:00"
-    },
-    {
-      "id": "bc-8033514369039413393",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "F5 releases emergency patches for critical BIG-IP RCE flaws",
-      "url": "https://www.bleepingcomputer.com/news/security/f5-releases-emergency-patches-for-critical-big-ip-rce-flaws/",
-      "points": 0,
-      "published": "2026-11-20T05:57:43-05:00"
-    },
-    {
-      "id": "bc-508469669194694238",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Windows 11 KB5132057 update released with 28 changes and fixes",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5132057-update-released-with-28-changes-and-fixes/",
-      "points": 0,
-      "published": "2026-11-20T04:25:35-05:00"
     }
   ]
 }
