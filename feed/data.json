@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T22:55:55.210490+00:00",
+  "generated_at": "2026-11-23T04:36:22.333842+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-8992927303107207372",
+      "id": "bc-2001984218147040169",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices",
@@ -353,7 +353,7 @@
       "published": "2026-11-22T13:45:37-05:00"
     },
     {
-      "id": "bc-549632554153752734",
+      "id": "bc-9139447087997973970",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cleverbridge warns hackers stole credit card numbers, CVVs in data breach",
@@ -362,7 +362,7 @@
       "published": "2026-11-22T10:43:04-05:00"
     },
     {
-      "id": "bc-8009843514755964391",
+      "id": "bc-3327117477078020900",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Signal to block Siri, Gemini AI from capturing chats on iOS, Android",
@@ -371,7 +371,7 @@
       "published": "2026-11-22T10:15:25-05:00"
     },
     {
-      "id": "bc-45209149627013640",
+      "id": "bc-1104279799713127437",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Rackspace Spot breach let hackers access customer Kubernetes secrets",
@@ -380,7 +380,7 @@
       "published": "2026-11-21T17:59:58-05:00"
     },
     {
-      "id": "bc-3960209314942829148",
+      "id": "bc-1201299226017751775",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Entra Connect Health flaw exploited to steal tenant data",
@@ -389,7 +389,7 @@
       "published": "2026-11-21T13:01:58-05:00"
     },
     {
-      "id": "bc-3372606345549063321",
+      "id": "bc-2859953130697259122",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "BADBOX botnet returns with record-breaking 40 billion daily ad requests",
@@ -398,7 +398,7 @@
       "published": "2026-11-21T10:17:27-05:00"
     },
     {
-      "id": "bc-7780635089564688899",
+      "id": "bc-5866997962874763591",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "FBI reportedly hacked again, this time targeting nationwide police database",
@@ -407,7 +407,7 @@
       "published": "2026-11-21T09:26:04-05:00"
     },
     {
-      "id": "bc-8918745147075558252",
+      "id": "bc-1692025350392643593",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Bell Canada says 'agentic' hacker stole enterprise customer data",
@@ -416,7 +416,7 @@
       "published": "2026-11-20T13:51:43-05:00"
     },
     {
-      "id": "bc-5654137341639342106",
+      "id": "bc-2878505013979447030",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers use autonomous AI tool Cairn to find zero-day, take over server",
@@ -425,7 +425,7 @@
       "published": "2026-11-20T12:30:00-05:00"
     },
     {
-      "id": "bc-1820061243026074438",
+      "id": "bc-8202319754913157143",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Vendor data breach exposes Chase, Visa, Mastercard customer info",
@@ -434,7 +434,7 @@
       "published": "2026-11-20T10:58:06-05:00"
     },
     {
-      "id": "bc-2345956441550046397",
+      "id": "bc-2346821497978638883",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Still tracking company passwords in spreadsheets? You’re flying blind.",
@@ -443,7 +443,7 @@
       "published": "2026-11-20T10:00:10-05:00"
     },
     {
-      "id": "bc-2861751277347419273",
+      "id": "bc-837578187290876601",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "N-able says recent security breach led to major service outage",
@@ -452,7 +452,7 @@
       "published": "2026-11-20T08:18:36-05:00"
     },
     {
-      "id": "bc-5508809631935136961",
+      "id": "bc-9177953449956586084",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft now automatically installs Windows 11 26H2 on unmanaged devices",
@@ -461,7 +461,7 @@
       "published": "2026-11-20T07:14:28-05:00"
     },
     {
-      "id": "bc-1126697095478027433",
+      "id": "bc-8033514369039413393",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "F5 releases emergency patches for critical BIG-IP RCE flaws",
@@ -470,7 +470,7 @@
       "published": "2026-11-20T05:57:43-05:00"
     },
     {
-      "id": "bc-2823499469030190620",
+      "id": "bc-508469669194694238",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Windows 11 KB5132057 update released with 28 changes and fixes",
