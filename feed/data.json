@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-24T03:35:22.579745+00:00",
-  "item_count": 49,
+  "generated_at": "2026-11-24T16:40:29.200663+00:00",
+  "item_count": 50,
   "sources": [
     "cisa_kev",
     "nvd",
@@ -335,7 +335,79 @@
       "published": "2026-03-15T22:29:46Z"
     },
     {
-      "id": "bc-9068042261980657804",
+      "id": "hn-47299481",
+      "source": "Hacker News",
+      "source_icon": "🔶",
+      "title": "Microsoft releases urgent Office patch. Russian-state hackers pounce",
+      "url": "https://arstechnica.com/security/2026/02/russian-state-hackers-exploit-office-vulnerability-to-infect-computers/",
+      "points": 11,
+      "published": "2026-03-08T18:05:17Z"
+    },
+    {
+      "id": "bc-5500779113458860882",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "ShinyHunters claims to return after FBI arrests, uses old PGP keys as proof",
+      "url": "https://www.bleepingcomputer.com/news/security/shinyhunters-resurfaces-after-fbi-arrests-uses-old-pgp-keys-as-proof/",
+      "points": 0,
+      "published": "2026-11-24T11:30:19-05:00"
+    },
+    {
+      "id": "bc-2829095979283461353",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "European Commission confirms data theft in EU Academy breach",
+      "url": "https://www.bleepingcomputer.com/news/security/european-commission-confirms-data-theft-in-eu-academy-breach/",
+      "points": 0,
+      "published": "2026-11-24T11:22:44-05:00"
+    },
+    {
+      "id": "bc-5827383456379781887",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Hackers compromise Check Point Servers in 22 organizations",
+      "url": "https://www.bleepingcomputer.com/news/security/hackers-compromise-check-point-servers-in-22-organizations/",
+      "points": 0,
+      "published": "2026-11-24T11:15:23-05:00"
+    },
+    {
+      "id": "bc-6311502698592169467",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Police disrupt 57 illegal streaming services with 7.3 million visits",
+      "url": "https://www.bleepingcomputer.com/news/security/police-disrupt-57-illegal-streaming-services-with-73-million-visits/",
+      "points": 0,
+      "published": "2026-11-24T10:10:10-05:00"
+    },
+    {
+      "id": "bc-5339922112925883667",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "From Vulnerability Noise to Resilience: Rethinking Security in the AI Era",
+      "url": "https://www.bleepingcomputer.com/news/security/from-vulnerability-noise-to-resilience-rethinking-security-in-the-ai-era/",
+      "points": 0,
+      "published": "2026-11-24T10:01:11-05:00"
+    },
+    {
+      "id": "bc-5196033842691700207",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "McDonald's Japan data breach exposes customer location information",
+      "url": "https://www.bleepingcomputer.com/news/security/mcdonalds-japan-data-breach-exposes-customer-location-information/",
+      "points": 0,
+      "published": "2026-11-24T09:09:37-05:00"
+    },
+    {
+      "id": "bc-8248908358905866511",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New Shirudo tool uses AI to shield unpatched Linux systems from exploits",
+      "url": "https://www.bleepingcomputer.com/news/security/new-shirudo-tool-uses-ai-to-shield-unpatched-linux-systems-from-exploits/",
+      "points": 0,
+      "published": "2026-11-24T08:34:23-05:00"
+    },
+    {
+      "id": "bc-3930392413442018009",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "South Korea’s power giant KEPCO confirms data breach impacting 1.5 million",
@@ -344,7 +416,7 @@
       "published": "2026-11-23T15:54:51-05:00"
     },
     {
-      "id": "bc-4584539820777721948",
+      "id": "bc-5282346569699381316",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenRouter drops AI providers over leaked prompts and secrets",
@@ -353,7 +425,7 @@
       "published": "2026-11-23T15:00:20-05:00"
     },
     {
-      "id": "bc-2991478803934993580",
+      "id": "bc-7741932884989879920",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Azure flaw exploited to steal customers' API credentials  ",
@@ -362,7 +434,7 @@
       "published": "2026-11-23T14:42:20-05:00"
     },
     {
-      "id": "bc-4977393373477338586",
+      "id": "bc-2964292965063325119",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Spanish LaLiga confirms hackers stole soccer fans’ personal data",
@@ -371,7 +443,7 @@
       "published": "2026-11-23T13:38:40-05:00"
     },
     {
-      "id": "bc-8902266441818802778",
+      "id": "bc-4572837545376302655",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "GlobeTopper loses $2.5 million after hackers steal $70k in gift cards",
@@ -380,7 +452,7 @@
       "published": "2026-11-23T11:50:01-05:00"
     },
     {
-      "id": "bc-5717717192908101950",
+      "id": "bc-4287894085071390986",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "AI Agents Are Creating a Shared Responsibility Gap",
@@ -389,7 +461,7 @@
       "published": "2026-11-23T10:00:10-05:00"
     },
     {
-      "id": "bc-4727156913880783517",
+      "id": "bc-7548540275027047579",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft testing fix for Windows 11 Bluetooth audio quality drops",
@@ -398,76 +470,13 @@
       "published": "2026-11-23T08:28:45-05:00"
     },
     {
-      "id": "bc-6537621769464218063",
+      "id": "bc-7688005813386386324",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Call center operator gets 8 years for helping scam 30,000 Americans",
       "url": "https://www.bleepingcomputer.com/news/security/call-center-operator-gets-8-years-for-helping-scam-30-000-americans/",
       "points": 0,
       "published": "2026-11-23T07:02:23-05:00"
-    },
-    {
-      "id": "bc-5536226124778372386",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft confirms Windows printing issues affecting Forcepoint users",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-confirms-printing-issues-after-kb5132043-windows-hotpatch/",
-      "points": 0,
-      "published": "2026-11-23T04:11:15-05:00"
-    },
-    {
-      "id": "bc-7245316621645327324",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA flags critical Cisco RCE flaw as actively exploited in attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-flags-critical-cisco-expressway-rce-flaw-as-actively-exploited/",
-      "points": 0,
-      "published": "2026-11-23T02:44:19-05:00"
-    },
-    {
-      "id": "bc-2515610568466389818",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/",
-      "points": 0,
-      "published": "2026-11-22T13:45:37-05:00"
-    },
-    {
-      "id": "bc-2608326050368484474",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Cleverbridge warns hackers stole credit card numbers, CVVs in data breach",
-      "url": "https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/",
-      "points": 0,
-      "published": "2026-11-22T10:43:04-05:00"
-    },
-    {
-      "id": "bc-5234167505668769903",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Signal to block Siri, Gemini AI from capturing chats on iOS, Android",
-      "url": "https://www.bleepingcomputer.com/news/security/signal-to-block-siri-gemini-ai-from-capturing-chats-on-ios-android/",
-      "points": 0,
-      "published": "2026-11-22T10:15:25-05:00"
-    },
-    {
-      "id": "bc-3390676290185580819",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Rackspace Spot breach let hackers access customer Kubernetes secrets",
-      "url": "https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/",
-      "points": 0,
-      "published": "2026-11-21T17:59:58-05:00"
-    },
-    {
-      "id": "bc-975155979325074062",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft Entra Connect Health flaw exploited to steal tenant data",
-      "url": "https://www.bleepingcomputer.com/news/security/microsoft-entra-connect-health-flaw-exploited-to-steal-tenant-data/",
-      "points": 0,
-      "published": "2026-11-21T13:01:58-05:00"
     }
   ]
 }
