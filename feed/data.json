@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T16:45:30.666824+00:00",
+  "generated_at": "2026-11-24T03:35:22.579745+00:00",
   "item_count": 49,
   "sources": [
     "cisa_kev",
@@ -335,7 +335,52 @@
       "published": "2026-03-15T22:29:46Z"
     },
     {
-      "id": "bc-2964928212549201348",
+      "id": "bc-9068042261980657804",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "South Korea’s power giant KEPCO confirms data breach impacting 1.5 million",
+      "url": "https://www.bleepingcomputer.com/news/security/south-koreas-power-giant-kepco-confirms-data-breach-impacting-15-million/",
+      "points": 0,
+      "published": "2026-11-23T15:54:51-05:00"
+    },
+    {
+      "id": "bc-4584539820777721948",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "OpenRouter drops AI providers over leaked prompts and secrets",
+      "url": "https://www.bleepingcomputer.com/news/security/openrouter-drops-ai-providers-over-leaked-prompts-and-secrets/",
+      "points": 0,
+      "published": "2026-11-23T15:00:20-05:00"
+    },
+    {
+      "id": "bc-2991478803934993580",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft Azure flaw exploited to steal customers' API credentials  ",
+      "url": "https://www.bleepingcomputer.com/news/security/microsoft-azure-flaw-exploited-to-steal-customers-api-credentials/",
+      "points": 0,
+      "published": "2026-11-23T14:42:20-05:00"
+    },
+    {
+      "id": "bc-4977393373477338586",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Spanish LaLiga confirms hackers stole soccer fans’ personal data",
+      "url": "https://www.bleepingcomputer.com/news/security/spanish-laliga-confirms-hackers-stole-soccer-fans-personal-data/",
+      "points": 0,
+      "published": "2026-11-23T13:38:40-05:00"
+    },
+    {
+      "id": "bc-8902266441818802778",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "GlobeTopper loses $2.5 million after hackers steal $70k in gift cards",
+      "url": "https://www.bleepingcomputer.com/news/security/globetopper-loses-25-million-after-hackers-steal-70k-in-gift-cards/",
+      "points": 0,
+      "published": "2026-11-23T11:50:01-05:00"
+    },
+    {
+      "id": "bc-5717717192908101950",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "AI Agents Are Creating a Shared Responsibility Gap",
@@ -344,7 +389,7 @@
       "published": "2026-11-23T10:00:10-05:00"
     },
     {
-      "id": "bc-7922412803492070540",
+      "id": "bc-4727156913880783517",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft testing fix for Windows 11 Bluetooth audio quality drops",
@@ -353,7 +398,7 @@
       "published": "2026-11-23T08:28:45-05:00"
     },
     {
-      "id": "bc-2900043772903546504",
+      "id": "bc-6537621769464218063",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Call center operator gets 8 years for helping scam 30,000 Americans",
@@ -362,7 +407,7 @@
       "published": "2026-11-23T07:02:23-05:00"
     },
     {
-      "id": "bc-41878305498363472",
+      "id": "bc-5536226124778372386",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft confirms Windows printing issues affecting Forcepoint users",
@@ -371,7 +416,7 @@
       "published": "2026-11-23T04:11:15-05:00"
     },
     {
-      "id": "bc-4374715947963054055",
+      "id": "bc-7245316621645327324",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA flags critical Cisco RCE flaw as actively exploited in attacks",
@@ -380,7 +425,7 @@
       "published": "2026-11-23T02:44:19-05:00"
     },
     {
-      "id": "bc-7594917982757881055",
+      "id": "bc-2515610568466389818",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices",
@@ -389,7 +434,7 @@
       "published": "2026-11-22T13:45:37-05:00"
     },
     {
-      "id": "bc-7575839475418046260",
+      "id": "bc-2608326050368484474",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Cleverbridge warns hackers stole credit card numbers, CVVs in data breach",
@@ -398,7 +443,7 @@
       "published": "2026-11-22T10:43:04-05:00"
     },
     {
-      "id": "bc-4596311607120590135",
+      "id": "bc-5234167505668769903",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Signal to block Siri, Gemini AI from capturing chats on iOS, Android",
@@ -407,7 +452,7 @@
       "published": "2026-11-22T10:15:25-05:00"
     },
     {
-      "id": "bc-1655168513554240804",
+      "id": "bc-3390676290185580819",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Rackspace Spot breach let hackers access customer Kubernetes secrets",
@@ -416,58 +461,13 @@
       "published": "2026-11-21T17:59:58-05:00"
     },
     {
-      "id": "bc-908253856785356573",
+      "id": "bc-975155979325074062",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Entra Connect Health flaw exploited to steal tenant data",
       "url": "https://www.bleepingcomputer.com/news/security/microsoft-entra-connect-health-flaw-exploited-to-steal-tenant-data/",
       "points": 0,
       "published": "2026-11-21T13:01:58-05:00"
-    },
-    {
-      "id": "bc-7781115887755523378",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "BADBOX botnet returns with record-breaking 40 billion daily ad requests",
-      "url": "https://www.bleepingcomputer.com/news/security/badbox-30-botnet-returns-with-record-breaking-40-billion-daily-ad-requests/",
-      "points": 0,
-      "published": "2026-11-21T10:17:27-05:00"
-    },
-    {
-      "id": "bc-1494790536158976014",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "FBI reportedly hacked again, this time targeting nationwide police database",
-      "url": "https://www.bleepingcomputer.com/news/security/fbi-reportedly-hacked-again-this-time-targeting-nationwide-police-database/",
-      "points": 0,
-      "published": "2026-11-21T09:26:04-05:00"
-    },
-    {
-      "id": "bc-1279345607794781106",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Bell Canada says 'agentic' hacker stole enterprise customer data",
-      "url": "https://www.bleepingcomputer.com/news/security/bell-canada-says-agentic-hacker-stole-enterprise-customer-data/",
-      "points": 0,
-      "published": "2026-11-20T13:51:43-05:00"
-    },
-    {
-      "id": "bc-3871194137078037054",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers use autonomous AI tool Cairn to find zero-day, take over server",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-use-autonomous-ai-tool-cairn-to-find-zero-day-take-over-server/",
-      "points": 0,
-      "published": "2026-11-20T12:30:00-05:00"
-    },
-    {
-      "id": "bc-7157237078500490388",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Vendor data breach exposes Chase, Visa, Mastercard customer info",
-      "url": "https://www.bleepingcomputer.com/news/security/vendor-data-breach-exposes-chase-visa-mastercard-customer-info/",
-      "points": 0,
-      "published": "2026-11-20T10:58:06-05:00"
     }
   ]
 }
