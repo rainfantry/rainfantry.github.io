@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-24T16:40:29.200663+00:00",
-  "item_count": 50,
+  "generated_at": "2026-11-25T01:43:52.488147+00:00",
+  "item_count": 49,
   "sources": [
     "cisa_kev",
     "nvd",
@@ -335,16 +335,43 @@
       "published": "2026-03-15T22:29:46Z"
     },
     {
-      "id": "hn-47299481",
-      "source": "Hacker News",
-      "source_icon": "🔶",
-      "title": "Microsoft releases urgent Office patch. Russian-state hackers pounce",
-      "url": "https://arstechnica.com/security/2026/02/russian-state-hackers-exploit-office-vulnerability-to-infect-computers/",
-      "points": 11,
-      "published": "2026-03-08T18:05:17Z"
+      "id": "bc-6785307533610697507",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Rackspace shuts down Spot cloud platform after security breach",
+      "url": "https://www.bleepingcomputer.com/news/security/rackspace-shuts-down-spot-cloud-platform-after-security-breach/",
+      "points": 0,
+      "published": "2026-11-24T16:37:30-05:00"
     },
     {
-      "id": "bc-5500779113458860882",
+      "id": "bc-5655616001870027821",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New Inception extortion gang launches large-scale vishing campaign",
+      "url": "https://www.bleepingcomputer.com/news/security/new-inception-extortion-gang-launches-large-scale-vishing-campaign/",
+      "points": 0,
+      "published": "2026-11-24T15:21:20-05:00"
+    },
+    {
+      "id": "bc-2770750129136655503",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Turnitin discloses cyberattack affecting customer-facing systems",
+      "url": "https://www.bleepingcomputer.com/news/security/turnitin-discloses-cyberattack-affecting-customer-facing-systems/",
+      "points": 0,
+      "published": "2026-11-24T13:59:52-05:00"
+    },
+    {
+      "id": "bc-585646733476528580",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Radware discloses breach exposing customer cloud access keys",
+      "url": "https://www.bleepingcomputer.com/news/security/radware-discloses-breach-exposing-customer-cloud-access-keys/",
+      "points": 0,
+      "published": "2026-11-24T12:49:05-05:00"
+    },
+    {
+      "id": "bc-1231289554170630261",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ShinyHunters claims to return after FBI arrests, uses old PGP keys as proof",
@@ -353,7 +380,7 @@
       "published": "2026-11-24T11:30:19-05:00"
     },
     {
-      "id": "bc-2829095979283461353",
+      "id": "bc-3626895858372815994",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "European Commission confirms data theft in EU Academy breach",
@@ -362,7 +389,7 @@
       "published": "2026-11-24T11:22:44-05:00"
     },
     {
-      "id": "bc-5827383456379781887",
+      "id": "bc-6518362522214219308",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers compromise Check Point Servers in 22 organizations",
@@ -371,7 +398,7 @@
       "published": "2026-11-24T11:15:23-05:00"
     },
     {
-      "id": "bc-6311502698592169467",
+      "id": "bc-2720454210836552296",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Police disrupt 57 illegal streaming services with 7.3 million visits",
@@ -380,7 +407,7 @@
       "published": "2026-11-24T10:10:10-05:00"
     },
     {
-      "id": "bc-5339922112925883667",
+      "id": "bc-7731339415250315575",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "From Vulnerability Noise to Resilience: Rethinking Security in the AI Era",
@@ -389,7 +416,7 @@
       "published": "2026-11-24T10:01:11-05:00"
     },
     {
-      "id": "bc-5196033842691700207",
+      "id": "bc-1779912541664225181",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "McDonald's Japan data breach exposes customer location information",
@@ -398,7 +425,7 @@
       "published": "2026-11-24T09:09:37-05:00"
     },
     {
-      "id": "bc-8248908358905866511",
+      "id": "bc-338508880263038456",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Shirudo tool uses AI to shield unpatched Linux systems from exploits",
@@ -407,7 +434,7 @@
       "published": "2026-11-24T08:34:23-05:00"
     },
     {
-      "id": "bc-3930392413442018009",
+      "id": "bc-4949348268284197640",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "South Korea’s power giant KEPCO confirms data breach impacting 1.5 million",
@@ -416,7 +443,7 @@
       "published": "2026-11-23T15:54:51-05:00"
     },
     {
-      "id": "bc-5282346569699381316",
+      "id": "bc-1851890414531493993",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenRouter drops AI providers over leaked prompts and secrets",
@@ -425,7 +452,7 @@
       "published": "2026-11-23T15:00:20-05:00"
     },
     {
-      "id": "bc-7741932884989879920",
+      "id": "bc-5562195259415674499",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft Azure flaw exploited to steal customers' API credentials  ",
@@ -434,49 +461,13 @@
       "published": "2026-11-23T14:42:20-05:00"
     },
     {
-      "id": "bc-2964292965063325119",
+      "id": "bc-1320960904177098025",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Spanish LaLiga confirms hackers stole soccer fans’ personal data",
       "url": "https://www.bleepingcomputer.com/news/security/spanish-laliga-confirms-hackers-stole-soccer-fans-personal-data/",
       "points": 0,
       "published": "2026-11-23T13:38:40-05:00"
-    },
-    {
-      "id": "bc-4572837545376302655",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "GlobeTopper loses $2.5 million after hackers steal $70k in gift cards",
-      "url": "https://www.bleepingcomputer.com/news/security/globetopper-loses-25-million-after-hackers-steal-70k-in-gift-cards/",
-      "points": 0,
-      "published": "2026-11-23T11:50:01-05:00"
-    },
-    {
-      "id": "bc-4287894085071390986",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "AI Agents Are Creating a Shared Responsibility Gap",
-      "url": "https://www.bleepingcomputer.com/news/security/ai-agents-are-creating-a-shared-responsibility-gap/",
-      "points": 0,
-      "published": "2026-11-23T10:00:10-05:00"
-    },
-    {
-      "id": "bc-7548540275027047579",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft testing fix for Windows 11 Bluetooth audio quality drops",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-testing-fix-for-windows-11-bluetooth-audio-quality-drops/",
-      "points": 0,
-      "published": "2026-11-23T08:28:45-05:00"
-    },
-    {
-      "id": "bc-7688005813386386324",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Call center operator gets 8 years for helping scam 30,000 Americans",
-      "url": "https://www.bleepingcomputer.com/news/security/call-center-operator-gets-8-years-for-helping-scam-30-000-americans/",
-      "points": 0,
-      "published": "2026-11-23T07:02:23-05:00"
     }
   ]
 }
