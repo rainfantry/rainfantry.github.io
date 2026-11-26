@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T16:24:41.870474+00:00",
+  "generated_at": "2026-11-26T01:17:39.603579+00:00",
   "item_count": 49,
   "sources": [
     "cisa_kev",
@@ -335,7 +335,34 @@
       "published": "2026-03-15T22:29:46Z"
     },
     {
-      "id": "bc-1902390885712639299",
+      "id": "bc-220835278978260602",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Palo Alto Networks warns of Fragnesia flaw exploited in PAN-OS attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/palo-alto-networks-warns-of-fragnesia-flaw-exploited-in-pan-os-attacks/",
+      "points": 0,
+      "published": "2026-11-25T17:05:09-05:00"
+    },
+    {
+      "id": "bc-5263924510887012674",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "1Password customer data stolen after employee GitHub account breach",
+      "url": "https://www.bleepingcomputer.com/news/security/1password-customer-data-stolen-after-employee-github-account-breach/",
+      "points": 0,
+      "published": "2026-11-25T16:33:33-05:00"
+    },
+    {
+      "id": "bc-478382310964956866",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Italy and Switzerland warn of autonomous AI-driven cyberattacks",
+      "url": "https://www.bleepingcomputer.com/news/security/italy-and-switzerland-warn-of-autonomous-ai-driven-cyberattacks/",
+      "points": 0,
+      "published": "2026-11-25T14:39:31-05:00"
+    },
+    {
+      "id": "bc-3001888968686449614",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "CISA warns of critical unpatched flaw in Danfoss refrigeration controllers",
@@ -344,7 +371,7 @@
       "published": "2026-11-25T11:13:40-05:00"
     },
     {
-      "id": "bc-6222398549594914541",
+      "id": "bc-5902171300572066477",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "More Pentests Without More Pentesters: Where AI Safely Helps",
@@ -353,7 +380,7 @@
       "published": "2026-11-25T10:00:10-05:00"
     },
     {
-      "id": "bc-1271580682349014108",
+      "id": "bc-5404548991143897372",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "InfraTrust warns of exploited supply chain flaws in network appliances",
@@ -362,7 +389,7 @@
       "published": "2026-11-25T10:00:00-05:00"
     },
     {
-      "id": "bc-4888087555386366405",
+      "id": "bc-1728802389674048148",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft fixes Microsoft 365 bug blocking access to Office apps",
@@ -371,7 +398,7 @@
       "published": "2026-11-25T06:16:32-05:00"
     },
     {
-      "id": "bc-4988092025662539054",
+      "id": "bc-5510044751189893472",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers now exploit critical Drupal RCE flaw to hijack sites",
@@ -380,7 +407,7 @@
       "published": "2026-11-25T05:10:20-05:00"
     },
     {
-      "id": "bc-7890765762551804642",
+      "id": "bc-2747347563941462426",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft confirms authentication issues after November updates",
@@ -389,7 +416,7 @@
       "published": "2026-11-25T04:02:57-05:00"
     },
     {
-      "id": "bc-2193234055836856947",
+      "id": "bc-3485935314958875225",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Hackers reportedly breached CIA intelligence analysis system",
@@ -398,7 +425,7 @@
       "published": "2026-11-25T02:45:03-05:00"
     },
     {
-      "id": "bc-767603641573698331",
+      "id": "bc-7368243286702364233",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Rackspace shuts down Spot cloud platform after security breach",
@@ -407,7 +434,7 @@
       "published": "2026-11-24T16:37:30-05:00"
     },
     {
-      "id": "bc-9001216950178972530",
+      "id": "bc-6763646179001592814",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Inception extortion gang launches large-scale vishing campaign",
@@ -416,7 +443,7 @@
       "published": "2026-11-24T15:21:20-05:00"
     },
     {
-      "id": "bc-5785240917488507012",
+      "id": "bc-7329353573239599119",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Turnitin discloses cyberattack affecting customer-facing systems",
@@ -425,7 +452,7 @@
       "published": "2026-11-24T13:59:52-05:00"
     },
     {
-      "id": "bc-8199333199965234881",
+      "id": "bc-1149151325042517933",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Radware discloses breach exposing customer cloud access keys",
@@ -434,40 +461,13 @@
       "published": "2026-11-24T12:49:05-05:00"
     },
     {
-      "id": "bc-3897291436495451795",
+      "id": "bc-1173425461034272768",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "ShinyHunters claims to return after FBI arrests, uses old PGP keys as proof",
       "url": "https://www.bleepingcomputer.com/news/security/shinyhunters-resurfaces-after-fbi-arrests-uses-old-pgp-keys-as-proof/",
       "points": 0,
       "published": "2026-11-24T11:30:19-05:00"
-    },
-    {
-      "id": "bc-1538253049535942264",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "European Commission confirms data theft in EU Academy breach",
-      "url": "https://www.bleepingcomputer.com/news/security/european-commission-confirms-data-theft-in-eu-academy-breach/",
-      "points": 0,
-      "published": "2026-11-24T11:22:44-05:00"
-    },
-    {
-      "id": "bc-2868637659712387212",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers compromise Check Point Servers in 22 organizations",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-compromise-check-point-servers-in-22-organizations/",
-      "points": 0,
-      "published": "2026-11-24T11:15:23-05:00"
-    },
-    {
-      "id": "bc-8252477381255624892",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Police disrupt 57 illegal streaming services with 7.3 million visits",
-      "url": "https://www.bleepingcomputer.com/news/security/police-disrupt-57-illegal-streaming-services-with-73-million-visits/",
-      "points": 0,
-      "published": "2026-11-24T10:10:10-05:00"
     }
   ]
 }
