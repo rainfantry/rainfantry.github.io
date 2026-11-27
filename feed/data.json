@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-27T01:15:36.817454+00:00",
-  "item_count": 49,
+  "generated_at": "2026-11-27T15:46:38.544010+00:00",
+  "item_count": 50,
   "sources": [
     "cisa_kev",
     "nvd",
@@ -335,7 +335,88 @@
       "published": "2026-03-15T22:29:46Z"
     },
     {
-      "id": "bc-1697070745496256806",
+      "id": "hn-47299481",
+      "source": "Hacker News",
+      "source_icon": "🔶",
+      "title": "Microsoft releases urgent Office patch. Russian-state hackers pounce",
+      "url": "https://arstechnica.com/security/2026/02/russian-state-hackers-exploit-office-vulnerability-to-infect-computers/",
+      "points": 11,
+      "published": "2026-03-08T18:05:17Z"
+    },
+    {
+      "id": "bc-7284331803725611353",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "US Air Force cloud platform reportedly hacked in latest federal breach",
+      "url": "https://www.bleepingcomputer.com/news/security/us-air-force-cloud-platform-reportedly-hacked-in-latest-federal-breach/",
+      "points": 0,
+      "published": "2026-11-27T10:09:40-05:00"
+    },
+    {
+      "id": "bc-7363927654323562316",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Your Firewall Isn't Enough: The Hidden Risk of Unmanaged VMs",
+      "url": "https://www.bleepingcomputer.com/news/security/your-firewall-isnt-enough-the-hidden-risk-of-unmanaged-vms/",
+      "points": 0,
+      "published": "2026-11-27T10:00:10-05:00"
+    },
+    {
+      "id": "bc-7180456232534767223",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Malwarebytes Antivirus: Get 50% off during Black Friday 2026",
+      "url": "https://www.bleepingcomputer.com/news/security/malwarebytes-antivirus-get-50-percent-off-during-black-friday-2026/",
+      "points": 0,
+      "published": "2026-11-27T09:22:06-05:00"
+    },
+    {
+      "id": "bc-5570573875150003969",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft removes WSUS server role in Windows Server 2028",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-removes-wsus-server-role-in-windows-server-2028/",
+      "points": 0,
+      "published": "2026-11-27T06:18:36-05:00"
+    },
+    {
+      "id": "bc-405617825856340761",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Drupal warns of new site takeover flaw exploited in attacks",
+      "url": "https://www.bleepingcomputer.com/news/security/drupal-warns-of-new-access-bypass-flaw-exploited-in-attacks/",
+      "points": 0,
+      "published": "2026-11-27T05:10:15-05:00"
+    },
+    {
+      "id": "bc-3598059508664333740",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "SAP confirms security incident after suspicious GitHub activity",
+      "url": "https://www.bleepingcomputer.com/news/security/sap-confirms-security-incident-after-suspicious-github-activity/",
+      "points": 0,
+      "published": "2026-11-27T04:56:36-05:00"
+    },
+    {
+      "id": "bc-376023453454838732",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Microsoft pushes emergency hotpatch to fix Windows Server crashes",
+      "url": "https://www.bleepingcomputer.com/news/microsoft/new-out-of-band-oob-emergency-hotpatch-fixes-windows-server-2025-crashes/",
+      "points": 0,
+      "published": "2026-11-27T04:08:16-05:00"
+    },
+    {
+      "id": "bc-1341432146499203228",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New NFS2ROOT Linux flaw can let attackers gain root privileges",
+      "url": "https://www.bleepingcomputer.com/news/security/new-nfs2root-linux-flaw-can-let-attackers-gain-root-privileges/",
+      "points": 0,
+      "published": "2026-11-27T03:06:58-05:00"
+    },
+    {
+      "id": "bc-506905648444392888",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI warns GPT-6.2 Astra will hit usage limits 40% faster because it fixed a bug",
@@ -344,7 +425,7 @@
       "published": "2026-11-26T16:06:22-05:00"
     },
     {
-      "id": "bc-7623221592740312228",
+      "id": "bc-2043354146717872150",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "NordVPN Black Friday Deal: Get 78% off VPN plans in 2026",
@@ -353,7 +434,7 @@
       "published": "2026-11-26T12:58:42-05:00"
     },
     {
-      "id": "bc-7899235779327126410",
+      "id": "bc-6968713181141652824",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake paid expert interviews impersonate brands to steal Google logins",
@@ -362,7 +443,7 @@
       "published": "2026-11-26T12:15:27-05:00"
     },
     {
-      "id": "bc-5627763029672369079",
+      "id": "bc-4458027584740580503",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Remus malware steals Gmail messages via fake Google Sheets extension",
@@ -371,7 +452,7 @@
       "published": "2026-11-26T10:23:28-05:00"
     },
     {
-      "id": "bc-4209828942760668162",
+      "id": "bc-541368595074136966",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SYS010 malware abuses browser management to spy on Gmail, Outlook",
@@ -380,7 +461,7 @@
       "published": "2026-11-26T06:50:17-05:00"
     },
     {
-      "id": "bc-8394067749119595308",
+      "id": "bc-677242735314220560",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Palo Alto Networks warns of Fragnesia flaw exploited in PAN-OS attacks",
@@ -389,85 +470,13 @@
       "published": "2026-11-25T17:05:09-05:00"
     },
     {
-      "id": "bc-903565244067538392",
+      "id": "bc-5598458303835619113",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "1Password customer data stolen after employee GitHub account breach",
       "url": "https://www.bleepingcomputer.com/news/security/1password-customer-data-stolen-after-employee-github-account-breach/",
       "points": 0,
       "published": "2026-11-25T16:33:33-05:00"
-    },
-    {
-      "id": "bc-6691686163090330715",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Italy and Switzerland warn of autonomous AI-driven cyberattacks",
-      "url": "https://www.bleepingcomputer.com/news/security/italy-and-switzerland-warn-of-autonomous-ai-driven-cyberattacks/",
-      "points": 0,
-      "published": "2026-11-25T14:39:31-05:00"
-    },
-    {
-      "id": "bc-6933052937855051753",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "CISA warns of critical unpatched flaw in Danfoss refrigeration controllers",
-      "url": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-critical-unpatched-flaw-in-danfoss-refrigeration-controllers/",
-      "points": 0,
-      "published": "2026-11-25T11:13:40-05:00"
-    },
-    {
-      "id": "bc-6369115965789201983",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "More Pentests Without More Pentesters: Where AI Safely Helps",
-      "url": "https://www.bleepingcomputer.com/news/security/more-pentests-without-more-pentesters-where-ai-safely-helps/",
-      "points": 0,
-      "published": "2026-11-25T10:00:10-05:00"
-    },
-    {
-      "id": "bc-6093678244275283122",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "InfraTrust warns of exploited supply chain flaws in network appliances",
-      "url": "https://www.bleepingcomputer.com/news/security/infratrust-warns-of-exploited-supply-chain-flaws-in-network-appliances/",
-      "points": 0,
-      "published": "2026-11-25T10:00:00-05:00"
-    },
-    {
-      "id": "bc-4488103426179998379",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft fixes Microsoft 365 bug blocking access to Office apps",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-blank-dialog-that-made-microsoft-365-office-apps-unusable/",
-      "points": 0,
-      "published": "2026-11-25T06:16:32-05:00"
-    },
-    {
-      "id": "bc-8497137164431900347",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers now exploit critical Drupal RCE flaw to hijack sites",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-now-exploit-critical-drupal-rce-flaw-to-hijack-sites/",
-      "points": 0,
-      "published": "2026-11-25T05:10:20-05:00"
-    },
-    {
-      "id": "bc-2428910455622800293",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Microsoft confirms authentication issues after November updates",
-      "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-confirms-authentication-issues-after-november-updates/",
-      "points": 0,
-      "published": "2026-11-25T04:02:57-05:00"
-    },
-    {
-      "id": "bc-792383593952712381",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Hackers reportedly breached CIA intelligence analysis system",
-      "url": "https://www.bleepingcomputer.com/news/security/hackers-reportedly-breached-cia-intelligence-analysis-system/",
-      "points": 0,
-      "published": "2026-11-25T02:45:03-05:00"
     }
   ]
 }
