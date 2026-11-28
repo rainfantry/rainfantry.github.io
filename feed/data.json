@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T15:46:38.544010+00:00",
+  "generated_at": "2026-11-28T00:48:38.851450+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,34 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-7284331803725611353",
+      "id": "bc-3859607959447494172",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "pCloud confirms password manager hack after suspicious login alerts",
+      "url": "https://www.bleepingcomputer.com/news/security/pcloud-confirms-password-manager-hack-after-suspicious-login-alerts/",
+      "points": 0,
+      "published": "2026-11-27T14:26:04-05:00"
+    },
+    {
+      "id": "bc-745571418017514129",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "New Boston Scientific data breach exposes personal, medical info",
+      "url": "https://www.bleepingcomputer.com/news/security/new-boston-scientific-data-breach-exposes-personal-medical-info/",
+      "points": 0,
+      "published": "2026-11-27T13:57:42-05:00"
+    },
+    {
+      "id": "bc-4393290708239667189",
+      "source": "BleepingComputer",
+      "source_icon": "📰",
+      "title": "Unpatched Cacti zero-day with public PoC gives remote code execution",
+      "url": "https://www.bleepingcomputer.com/news/security/unpatched-cacti-zero-day-with-public-poc-gives-remote-code-execution/",
+      "points": 0,
+      "published": "2026-11-27T12:06:13-05:00"
+    },
+    {
+      "id": "bc-2173529426347244587",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "US Air Force cloud platform reportedly hacked in latest federal breach",
@@ -353,7 +380,7 @@
       "published": "2026-11-27T10:09:40-05:00"
     },
     {
-      "id": "bc-7363927654323562316",
+      "id": "bc-5027502988448693431",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Your Firewall Isn't Enough: The Hidden Risk of Unmanaged VMs",
@@ -362,7 +389,7 @@
       "published": "2026-11-27T10:00:10-05:00"
     },
     {
-      "id": "bc-7180456232534767223",
+      "id": "bc-4546979747372229404",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Malwarebytes Antivirus: Get 50% off during Black Friday 2026",
@@ -371,7 +398,7 @@
       "published": "2026-11-27T09:22:06-05:00"
     },
     {
-      "id": "bc-5570573875150003969",
+      "id": "bc-7628728545028168261",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft removes WSUS server role in Windows Server 2028",
@@ -380,7 +407,7 @@
       "published": "2026-11-27T06:18:36-05:00"
     },
     {
-      "id": "bc-405617825856340761",
+      "id": "bc-1216448307215014363",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal warns of new site takeover flaw exploited in attacks",
@@ -389,7 +416,7 @@
       "published": "2026-11-27T05:10:15-05:00"
     },
     {
-      "id": "bc-3598059508664333740",
+      "id": "bc-7773723784044134205",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SAP confirms security incident after suspicious GitHub activity",
@@ -398,7 +425,7 @@
       "published": "2026-11-27T04:56:36-05:00"
     },
     {
-      "id": "bc-376023453454838732",
+      "id": "bc-7642645985930257391",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft pushes emergency hotpatch to fix Windows Server crashes",
@@ -407,7 +434,7 @@
       "published": "2026-11-27T04:08:16-05:00"
     },
     {
-      "id": "bc-1341432146499203228",
+      "id": "bc-7810752765968021483",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New NFS2ROOT Linux flaw can let attackers gain root privileges",
@@ -416,7 +443,7 @@
       "published": "2026-11-27T03:06:58-05:00"
     },
     {
-      "id": "bc-506905648444392888",
+      "id": "bc-6202195435082460802",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI warns GPT-6.2 Astra will hit usage limits 40% faster because it fixed a bug",
@@ -425,7 +452,7 @@
       "published": "2026-11-26T16:06:22-05:00"
     },
     {
-      "id": "bc-2043354146717872150",
+      "id": "bc-8113157274803400572",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "NordVPN Black Friday Deal: Get 78% off VPN plans in 2026",
@@ -434,7 +461,7 @@
       "published": "2026-11-26T12:58:42-05:00"
     },
     {
-      "id": "bc-6968713181141652824",
+      "id": "bc-7162955608370202688",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake paid expert interviews impersonate brands to steal Google logins",
@@ -443,40 +470,13 @@
       "published": "2026-11-26T12:15:27-05:00"
     },
     {
-      "id": "bc-4458027584740580503",
+      "id": "bc-4074807218082714246",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Remus malware steals Gmail messages via fake Google Sheets extension",
       "url": "https://www.bleepingcomputer.com/news/security/remus-malware-steals-gmail-messages-via-fake-google-sheets-extension/",
       "points": 0,
       "published": "2026-11-26T10:23:28-05:00"
-    },
-    {
-      "id": "bc-541368595074136966",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "SYS010 malware abuses browser management to spy on Gmail, Outlook",
-      "url": "https://www.bleepingcomputer.com/news/security/sys010-malware-abuses-browser-management-to-spy-on-gmail-outlook/",
-      "points": 0,
-      "published": "2026-11-26T06:50:17-05:00"
-    },
-    {
-      "id": "bc-677242735314220560",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "Palo Alto Networks warns of Fragnesia flaw exploited in PAN-OS attacks",
-      "url": "https://www.bleepingcomputer.com/news/security/palo-alto-networks-warns-of-fragnesia-flaw-exploited-in-pan-os-attacks/",
-      "points": 0,
-      "published": "2026-11-25T17:05:09-05:00"
-    },
-    {
-      "id": "bc-5598458303835619113",
-      "source": "BleepingComputer",
-      "source_icon": "📰",
-      "title": "1Password customer data stolen after employee GitHub account breach",
-      "url": "https://www.bleepingcomputer.com/news/security/1password-customer-data-stolen-after-employee-github-account-breach/",
-      "points": 0,
-      "published": "2026-11-25T16:33:33-05:00"
     }
   ]
 }
