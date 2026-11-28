@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-28T00:48:38.851450+00:00",
+  "generated_at": "2026-11-28T14:42:24.517843+00:00",
   "item_count": 50,
   "sources": [
     "cisa_kev",
@@ -344,7 +344,7 @@
       "published": "2026-03-08T18:05:17Z"
     },
     {
-      "id": "bc-3859607959447494172",
+      "id": "bc-6891210929487239085",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "pCloud confirms password manager hack after suspicious login alerts",
@@ -353,7 +353,7 @@
       "published": "2026-11-27T14:26:04-05:00"
     },
     {
-      "id": "bc-745571418017514129",
+      "id": "bc-2242696166402922743",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New Boston Scientific data breach exposes personal, medical info",
@@ -362,7 +362,7 @@
       "published": "2026-11-27T13:57:42-05:00"
     },
     {
-      "id": "bc-4393290708239667189",
+      "id": "bc-1548449359667585332",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Unpatched Cacti zero-day with public PoC gives remote code execution",
@@ -371,7 +371,7 @@
       "published": "2026-11-27T12:06:13-05:00"
     },
     {
-      "id": "bc-2173529426347244587",
+      "id": "bc-1404431242403233715",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "US Air Force cloud platform reportedly hacked in latest federal breach",
@@ -380,7 +380,7 @@
       "published": "2026-11-27T10:09:40-05:00"
     },
     {
-      "id": "bc-5027502988448693431",
+      "id": "bc-1808894419758033470",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Your Firewall Isn't Enough: The Hidden Risk of Unmanaged VMs",
@@ -389,7 +389,7 @@
       "published": "2026-11-27T10:00:10-05:00"
     },
     {
-      "id": "bc-4546979747372229404",
+      "id": "bc-313864211134856688",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Malwarebytes Antivirus: Get 50% off during Black Friday 2026",
@@ -398,7 +398,7 @@
       "published": "2026-11-27T09:22:06-05:00"
     },
     {
-      "id": "bc-7628728545028168261",
+      "id": "bc-7673739275267400040",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft removes WSUS server role in Windows Server 2028",
@@ -407,7 +407,7 @@
       "published": "2026-11-27T06:18:36-05:00"
     },
     {
-      "id": "bc-1216448307215014363",
+      "id": "bc-8805104965354345131",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Drupal warns of new site takeover flaw exploited in attacks",
@@ -416,7 +416,7 @@
       "published": "2026-11-27T05:10:15-05:00"
     },
     {
-      "id": "bc-7773723784044134205",
+      "id": "bc-5194532665086624540",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "SAP confirms security incident after suspicious GitHub activity",
@@ -425,7 +425,7 @@
       "published": "2026-11-27T04:56:36-05:00"
     },
     {
-      "id": "bc-7642645985930257391",
+      "id": "bc-2063901063405236611",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Microsoft pushes emergency hotpatch to fix Windows Server crashes",
@@ -434,7 +434,7 @@
       "published": "2026-11-27T04:08:16-05:00"
     },
     {
-      "id": "bc-7810752765968021483",
+      "id": "bc-2674552567646654012",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "New NFS2ROOT Linux flaw can let attackers gain root privileges",
@@ -443,7 +443,7 @@
       "published": "2026-11-27T03:06:58-05:00"
     },
     {
-      "id": "bc-6202195435082460802",
+      "id": "bc-2867392725179725944",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "OpenAI warns GPT-6.2 Astra will hit usage limits 40% faster because it fixed a bug",
@@ -452,7 +452,7 @@
       "published": "2026-11-26T16:06:22-05:00"
     },
     {
-      "id": "bc-8113157274803400572",
+      "id": "bc-315079528913221705",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "NordVPN Black Friday Deal: Get 78% off VPN plans in 2026",
@@ -461,7 +461,7 @@
       "published": "2026-11-26T12:58:42-05:00"
     },
     {
-      "id": "bc-7162955608370202688",
+      "id": "bc-5213743332381234102",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Fake paid expert interviews impersonate brands to steal Google logins",
@@ -470,7 +470,7 @@
       "published": "2026-11-26T12:15:27-05:00"
     },
     {
-      "id": "bc-4074807218082714246",
+      "id": "bc-3816528391248428155",
       "source": "BleepingComputer",
       "source_icon": "📰",
       "title": "Remus malware steals Gmail messages via fake Google Sheets extension",
